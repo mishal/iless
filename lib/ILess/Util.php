@@ -193,7 +193,8 @@ class ILess_Util {
       '#/(.?)#e' => "'::'.strtoupper('\\1')",
       '/(^|_)(.)/e' => "strtoupper('\\2')"
     );
-    $camelized = preg_replace(array_keys($replacePairs), array_values($replacePairs), $underscored);
+    // FIXME: php 5.5 is /e modifier deprecated! do a workaround
+    $camelized = @preg_replace(array_keys($replacePairs), array_values($replacePairs), $underscored);
     $camelized[0] = strtolower($camelized[0]);
     return $camelized;
   }
