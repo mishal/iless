@@ -451,7 +451,7 @@ class ILess_Parser_Core {
       $postCompileVisitors[] = new ILess_Visitor_ProcessExtend();
     }
 
-    $postCompileVisitors[] = new ILess_Visitor_toCSS($this->getEnvironment());
+    $postCompileVisitors[] = new ILess_Visitor_ToCSS($this->getEnvironment());
 
     // FIXME: allow plugins to hook here
     return $postCompileVisitors;

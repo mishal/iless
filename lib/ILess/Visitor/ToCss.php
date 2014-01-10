@@ -13,7 +13,7 @@
  * @package ILess
  * @subpackage visitor
  */
-class ILess_Visitor_toCSS extends ILess_Visitor {
+class ILess_Visitor_ToCSS extends ILess_Visitor {
 
   /**
    * The environment
