@@ -8,6 +8,10 @@ The **dynamic** stylesheet language. For more info about the language see the of
 
 ILess is a **PHP port** of the official LESS processor written in Javascript. Most of the code structure remains the same, which should allow for fairly easy updates in the future. 
 
+## Build Status
+
+[![Build Status](https://travis-ci.org/mishal/iless.png?branch=develop)](https://travis-ci.org/mishal/iless)
+
 ## Getting Started
 
 To use ILess in your project you can:
