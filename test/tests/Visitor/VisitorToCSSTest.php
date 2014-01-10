@@ -7,13 +7,13 @@
  */
 
 /**
- * Visitor_toCSS tests
+ * Visitor_ToCSS tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Visitor_toCSS
+ * @covers ILess_Visitor_ToCSS
  */
-class ILess_Visitor_toCSS_Test extends ILess_TestCase
+class ILess_Visitor_ToCSS_Test extends ILess_TestCase
 {
 
   /**
@@ -21,7 +21,7 @@ class ILess_Visitor_toCSS_Test extends ILess_TestCase
    */
   public function testVisit()
   {
-    $v = new ILess_Visitor_toCSS(new ILess_Environment());
+    $v = new ILess_Visitor_ToCSS(new ILess_Environment());
     $this->assertTrue($v->isReplacing());
   }
 
