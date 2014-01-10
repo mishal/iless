@@ -1,0 +1,1 @@
+{"version":3,"file":"media.css","sources":["media.less"],"names":[],"mappings":"AAEC;EADM;IAAE,eAAA","sourcesContent":["@media screen {\n  body { max-width: 60px; }\n}"]}

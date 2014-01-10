@@ -1,0 +1,18 @@
+{
+  "name": "mishal/iless",
+  "type": "library",
+  "description": "Less parser and compiler written for Php",
+  "keywords": ["less", "lesscss", "php", "parser", "compiler", "processor"],
+  "license": "MIT",
+  "homepage": "http://github.com/mishal/iless",
+  "authors": [
+    {"name": "ILess contributors", "homepage": "https://github.com/mishal/iless/wiki/Contributors"}
+  ],
+  "require": {
+    "php": ">=5.2.0",
+    "ext-bcmath": "*"
+  },
+  "autoload": {
+    "psr-0": { "ILess": "lib/" }
+  }
+}

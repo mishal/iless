@@ -1,0 +1,18 @@
+@import "variables.less";
+@import url(foo.less);
+@import "mixins.less";
+
+.bordered {
+  color: @color;
+}
+
+#header {
+  @gradientType: 0;
+  color: @color + #fff;
+  .bordered;
+  .mixin(grey);
+  .border-radius(5px);
+  filter: progid:DXImageTransform.Microsoft.Alpha(opacity = 20);
+  filter: progid:DXImageTransform.Microsoft.Alpha(opacity=@opacity);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#333333, endColorstr=@background, GradientType=@gradientType);
+}

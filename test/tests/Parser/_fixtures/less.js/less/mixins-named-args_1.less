@@ -1,0 +1,9 @@
+.mixin (@a: 1px, @b: 50%) {
+  width: (@a * 5);
+  height: (@b - 1%);
+  args: @arguments;
+}
+.named-arg {
+  color: blue;
+  .mixin(@b: 100%);
+}
