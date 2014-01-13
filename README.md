@@ -73,6 +73,11 @@ For example usage check the `examples` folder in the source files.
     $parser->setVariables(array(
       'color' => '#000000'
     ));
+    
+    // Add a custom function
+    $parser->addFunction('superdarken', function(\ILess_FunctionRegistry $registry, \ILess_Node_Color $color) {
+      return $registry->call('darken', [$color, new \Iless_Node_Dimension(80, '%')]);
+    });
 
     $css = $parser->getCSS();
 
