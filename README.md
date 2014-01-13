@@ -73,6 +73,11 @@ For example usage check the `examples` folder in the source files.
     $parser->setVariables(array(
       'color' => '#000000'
     ));
+    
+    // Add a custom function
+    $parser->addFunction('foo', function() {
+      return return new ILess_Node_Anonymous('"Foobar is here!"');;
+    });
 
     $css = $parser->getCSS();
 
