@@ -294,6 +294,8 @@ class ILess_FunctionRegistry {
       // this is a external callable
       else
       {
+        // provide access to function registry (pass as first parameter)
+        array_unshift($arguments, $this);
         return call_user_func_array($this->functions[$methodName], $arguments);
       }
     }

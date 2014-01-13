@@ -4,7 +4,7 @@ require_once '_bootstrap.php';
 
 class myLessUtils {
 
-  public static function foobar(ILess_Node $color = null)
+  public static function foobar(ILess_FunctionRegistry $registry, ILess_Node $color = null)
   {
     // what can you do here, look to FunctionRegistry.php
     if($color instanceof ILess_Node_Color)

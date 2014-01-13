@@ -152,4 +152,26 @@ class ILess_Function_Test extends ILess_TestCase
     ));
   }
 
+  /**
+   * @covers addFunction
+   */
+  public function testCustomFunction()
+  {
+    $registry = new ILess_FunctionRegistry();
+    $registry->addFunction('foobar', array($this, 'foobarCallable'));
+    $registry->call('foobar', array('a', 'b'));
+  }
+
+  public function foobarCallable()
+  {
+    $registry = func_get_arg(0);
+    // first argument is the registry instance
+    $this->assertInstanceOf('ILess_FunctionRegistry', $registry);
+    $arg1 = func_get_arg(1);
+    // other arguments are passed too
+    $this->assertEquals($arg1, 'a');
+    $arg2 = func_get_arg(2);
+    $this->assertEquals($arg2, 'b');
+  }
+
 }
