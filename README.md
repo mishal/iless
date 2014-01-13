@@ -24,7 +24,7 @@ To use ILess in your project you can:
 
 To run ILess you need:
 
- * `PHP > 5.2`  (yes, you read right)
+ * `PHP >= 5.2`  (yes, you read right)
  * `bcmath` extension installed
 
 ## Feature Highlights
