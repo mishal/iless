@@ -127,4 +127,6 @@ If you did the steps above with your whole heart you are now a **[new creation](
 
 ## Credits
 
-The work is based on the code by Matt Agar, Martin Jantosovic and Josh Schmidt. [All contributors](https://github.com/mishal/iless/wiki/Contributors) are listed on separate [wiki page](https://github.com/mishal/iless/wiki/Contributors).
+The work is based on the code by [Matt Agar](https://github.com/agar), [Martin Jantošovič](https://github.com/Mordred) and [Josh Schmidt](https://github.com/oyejorge). Source maps code based on [phpsourcemaps](https://github.com/bspot/phpsourcemaps) by [bspot](https://github.com/bspot).
+
+[All contributors](https://github.com/mishal/iless/wiki/Contributors) are listed on separate [wiki page](https://github.com/mishal/iless/wiki/Contributors). 
