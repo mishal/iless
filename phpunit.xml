@@ -46,5 +46,8 @@
     <testsuite name="Parser">
       <directory>./test/tests/Parser</directory>
     </testsuite>
+    <testsuite name="CLI">
+      <directory>./test/tests/CLI</directory>
+    </testsuite>
   </testsuites>
 </phpunit>

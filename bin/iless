@@ -1,6 +1,5 @@
 #!/usr/bin/env php
 <?php
-
 /*
  * This file is part of the ILess
  *
@@ -12,11 +11,21 @@
  * The cli interface to the parser
  *
  * @package ILess
- * @subpackage Cli
+ * @subpackage CLI
  */
 
 // register the autoloader
 require_once dirname(__FILE__) . '/../lib/ILess/Autoloader.php';
 ILess_Autoloader::register();
 
-// todo
+try {
+  $cli = new ILess_CLI($argv);
+  $statusCode = $cli->run();
+}
+catch(Exception $e)
+{
+  echo $e;
+  $statusCode = $e->getCode();
+}
+
+exit(is_numeric($statusCode) ? $statusCode : 0);

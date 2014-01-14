@@ -81,6 +81,45 @@ For example usage check the `examples` folder in the source files.
 
     $css = $parser->getCSS();
 
+## Command line usage
+
+To compile the LESS files (or input from `stdin`) you can use the CLI script (located in `bin` directory).
+
+## Examples
+
+Parse the `my.less` and save it to `my.css` with compression enabled.
+
+    $ php bin\iless my.less my.css --compress
+
+Parse input from `stdin` and save it to a file `my.css`.
+
+	$ php bin\iless - my.css
+
+## Usage and available options
+
+      _____        _______ _______ _______
+        |   |      |______ |______ |______
+      __|__ |_____ |______ ______| ______|
+
+     usage: iless [option option=parameter ...] source [destination]
+
+     If source is set to `-` (dash or hyphen-minus), input is read from stdin.
+
+     options:
+        -h, --help               Print help (this message) and exit.
+        -s, --silent             Suppress output of error messages.
+        -x, --compress           Compress output by removing the whitespace.
+        -a, --append             Append the generated CSS to the target file?
+        --no-ie-compat           Disable IE compatibility checks.
+        --source-map             Outputs an inline sourcemap to the generated CSS (or output to filename.map).
+        --source-map-url         The complete URL and filename of the source map to put to the map.
+        --source-map-base-path   Sets sourcemap base path, defaults to current working directory.
+        -v, --version            Print version number and exit.
+        --dump-line-numbers      Outputs filename and line numbers. TYPE can be either 'comments', which will
+                                 output the debug info within comments, 'mediaquery' that will output the
+                                 information within a fake media query which is compatible with the SASS
+                                 format, and 'all' which will do both.
+
 ## Issues
 
 Before opening any issue, please search for [existing issues](https://github.com/mishal/iless/issues). After that if you find a bug or would like to make feature request, please open a new issue. Please *always* create a unit test.
