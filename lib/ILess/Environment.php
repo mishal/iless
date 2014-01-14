@@ -256,7 +256,7 @@ class ILess_Environment {
 
     if(count($invalid))
     {
-      throw new InvalidArgumentException('Invalid options "%s" given.', join(', ', $invalid));
+      throw new InvalidArgumentException(sprintf('Invalid options "%s" given.', join(', ', $invalid)));
     }
 
   }
