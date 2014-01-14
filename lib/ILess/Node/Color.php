@@ -207,13 +207,13 @@ class ILess_Node_Color extends ILess_Node {
   }
 
   /**
-   * Converts the node to ARGB
+   * Returns the HSL components of the color
    *
-   * @return ILess_Node_Anonymous
+   * @return array
    */
   public function toHSL()
   {
-    return new ILess_Node_Anonymous($this->color->toHSL());
+    return $this->color->toHSL();
   }
 
   /**

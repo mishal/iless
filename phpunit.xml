@@ -49,5 +49,8 @@
     <testsuite name="CLI">
       <directory>./test/tests/CLI</directory>
     </testsuite>
+    <testsuite name="Issues">
+      <directory>./test/tests/Issues</directory>
+    </testsuite>
   </testsuites>
 </phpunit>

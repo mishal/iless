@@ -46,7 +46,7 @@ class ILess_Node_Anonymous extends ILess_Node {
   /**
    * Constructor
    *
-   * @param string $value
+   * @param string|ILess_Node_Value $value
    * @param integer $index
    * @param string $currentFileInfo
    * @param boolean $mapLines
