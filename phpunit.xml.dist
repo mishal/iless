@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    processIsolation="false"
+    stopOnError="false"
+    stopOnFailure="false"
+    stopOnIncomplete="false"
+    stopOnSkipped="false"
+    bootstrap = "tests/bootstrap.php">
+
+    <testsuites>
+        <testsuite name="ILess Test Suite">
+            <directory suffix="Test.php">./tests/ILess/Test</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
