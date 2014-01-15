@@ -16,13 +16,13 @@
 class ILess_Visitor_ToCSS_Test extends ILess_TestCase
 {
 
-  /**
-   * @covers __constructor
-   */
-  public function testVisit()
-  {
-    $v = new ILess_Visitor_ToCSS(new ILess_Environment());
-    $this->assertTrue($v->isReplacing());
-  }
+    /**
+     * @covers __constructor
+     */
+    public function testVisit()
+    {
+        $v = new ILess_Visitor_ToCSS(new ILess_Environment());
+        $this->assertTrue($v->isReplacing());
+    }
 
 }

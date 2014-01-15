@@ -14,27 +14,27 @@
  */
 class ILess_Node_UnicodeDescriptor extends ILess_Node
 {
-  /**
-   * Node type
-   *
-   * @var string
-   */
-  protected $type = 'UnicodeDescriptor';
+    /**
+     * Node type
+     *
+     * @var string
+     */
+    protected $type = 'UnicodeDescriptor';
 
-  /**
-   * @see ILess_Node::compile
-   */
-  public function compile(ILess_Environment $env, $arguments = null, $important = null)
-  {
-    return $this;
-  }
+    /**
+     * @see ILess_Node::compile
+     */
+    public function compile(ILess_Environment $env, $arguments = null, $important = null)
+    {
+        return $this;
+    }
 
-  /**
-   * @see ILess_Node::generateCSS
-   */
-  public function generateCSS(ILess_Environment $env, ILess_Output $output)
-  {
-    $output->add($this->value);
-  }
+    /**
+     * @see ILess_Node::generateCSS
+     */
+    public function generateCSS(ILess_Environment $env, ILess_Output $output)
+    {
+        $output->add($this->value);
+    }
 
 }

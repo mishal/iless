@@ -15,46 +15,46 @@
  */
 class ILess_Node_Directive_Test extends ILess_TestCase
 {
-  /**
-   * @covers __constructor
-   */
-  public function testConstructor()
-  {
-    $d = new ILess_Node_Directive('15', new ILess_Node_Anonymous('bar'));
-  }
+    /**
+     * @covers __constructor
+     */
+    public function testConstructor()
+    {
+        $d = new ILess_Node_Directive('15', new ILess_Node_Anonymous('bar'));
+    }
 
-  /**
-   * @covers getType
-   */
-  public function testGetType()
-  {
-    $d = new ILess_Node_Directive('15', new ILess_Node_Anonymous('bar'));
-    $this->assertEquals('Directive', $d->getType());
-  }
+    /**
+     * @covers getType
+     */
+    public function testGetType()
+    {
+        $d = new ILess_Node_Directive('15', new ILess_Node_Anonymous('bar'));
+        $this->assertEquals('Directive', $d->getType());
+    }
 
-  /**
-   * @covers generateCss
-   */
-  public function testGenerateCss()
-  {
-    $env = new ILess_Environment();
-    $output = new ILess_Output();
+    /**
+     * @covers generateCss
+     */
+    public function testGenerateCss()
+    {
+        $env = new ILess_Environment();
+        $output = new ILess_Output();
 
-    $d = new ILess_Node_Directive('15', new ILess_Node_Anonymous('bar'));
+        $d = new ILess_Node_Directive('15', new ILess_Node_Anonymous('bar'));
 
-    $d->generateCss($env, $output);
+        $d->generateCss($env, $output);
 
-    $this->assertEquals('15 bar;', $output->toString());
-  }
+        $this->assertEquals('15 bar;', $output->toString());
+    }
 
-  /**
-   * @covers variable
-   */
-  public function testVariable()
-  {
-    // FIXME: implement more!
-    $d = new ILess_Node_Directive('15', new ILess_Node_Anonymous('bar'));
-    $this->assertEquals(null, $d->variable('foo'));
-  }
+    /**
+     * @covers variable
+     */
+    public function testVariable()
+    {
+        // FIXME: implement more!
+        $d = new ILess_Node_Directive('15', new ILess_Node_Anonymous('bar'));
+        $this->assertEquals(null, $d->variable('foo'));
+    }
 
 }

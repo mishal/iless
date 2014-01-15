@@ -19,19 +19,19 @@ ILess_Autoloader::register();
 
 class ILess_TestCase extends PHPUnit_Framework_TestCase
 {
-  protected function prepareDataForProvider($values, $expected)
-  {
-    return array_map(array($this, 'mapValuesWithExpected'), $values, $expected);
-  }
+    protected function prepareDataForProvider($values, $expected)
+    {
+        return array_map(array($this, 'mapValuesWithExpected'), $values, $expected);
+    }
 
-  protected function mapValuesWithExpected($values, $expected)
-  {
-    return array($values, $expected);
-  }
+    protected function mapValuesWithExpected($values, $expected)
+    {
+        return array($values, $expected);
+    }
 
-  protected function diag($message)
-  {
-    echo "\n" . $message . "\n";
-  }
+    protected function diag($message)
+    {
+        echo "\n" . $message . "\n";
+    }
 
 }

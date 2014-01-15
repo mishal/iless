@@ -15,20 +15,12 @@
  */
 class ILess_Issue_10_Test extends ILess_TestCase
 {
-  public function testIssue()
-  {
-    $parser = new ILess_Parser();
-    $parser->parseString(
-'body {
-    color: fade(#ffcc00, 10%);
-}
-');
+    public function testIssue()
+    {
+        $parser = new ILess_Parser();
+        $parser->parseString("body {\n  color: fade(#ffcc00, 10%);\n}\n");
 
-    $this->assertSame(
-'body {
-  color: rgba(255, 204, 0, 0.1);
-}
-', $parser->getCSS());
-  }
+        $this->assertSame("body {\n  color: rgba(255, 204, 0, 0.1);\n}\n", $parser->getCSS());
+    }
 
 }

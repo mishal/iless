@@ -16,41 +16,41 @@
  */
 class ILess_Node_Variable_Test extends ILess_TestCase
 {
-  /**
-   * @covers __constructor
-   */
-  public function testConstructor()
-  {
-    $v = new ILess_Node_Variable('foo', array(
-        new ILess_Node_Anonymous('foobar')
-    ));
-  }
+    /**
+     * @covers __constructor
+     */
+    public function testConstructor()
+    {
+        $v = new ILess_Node_Variable('foo', array(
+            new ILess_Node_Anonymous('foobar')
+        ));
+    }
 
-  /**
-   * @covers getType
-   */
-  public function testGetType()
-  {
-    $v = new ILess_Node_Value(array(
-        new ILess_Node_Anonymous('foobar')
-    ));
-    $this->assertEquals('Value', $v->getType());
-  }
+    /**
+     * @covers getType
+     */
+    public function testGetType()
+    {
+        $v = new ILess_Node_Value(array(
+            new ILess_Node_Anonymous('foobar')
+        ));
+        $this->assertEquals('Value', $v->getType());
+    }
 
-  /**
-   * @covers generateCss
-   */
-  public function testGenerateCss()
-  {
-    $env = new ILess_Environment();
-    $output = new ILess_Output();
+    /**
+     * @covers generateCss
+     */
+    public function testGenerateCss()
+    {
+        $env = new ILess_Environment();
+        $output = new ILess_Output();
 
-    $v = new ILess_Node_Value(array(
-        new ILess_Node_Anonymous('foobar')
-    ));
+        $v = new ILess_Node_Value(array(
+            new ILess_Node_Anonymous('foobar')
+        ));
 
-    $v->generateCss($env, $output);
-    $this->assertEquals('foobar', $output->toString());
-  }
+        $v->generateCss($env, $output);
+        $this->assertEquals('foobar', $output->toString());
+    }
 
 }

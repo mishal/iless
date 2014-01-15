@@ -15,33 +15,33 @@
  */
 class ILess_Node_Alpha_Test extends ILess_TestCase
 {
-  /**
-   * @covers getType
-   */
-  public function testGetType()
-  {
-    $a = new ILess_Node_Alpha(10);
-    $this->assertEquals('Alpha', $a->getType());
-  }
+    /**
+     * @covers getType
+     */
+    public function testGetType()
+    {
+        $a = new ILess_Node_Alpha(10);
+        $this->assertEquals('Alpha', $a->getType());
+    }
 
-  /**
-   * @covers generateCss
-   */
-  public function testGenerateCSS()
-  {
-    $env = new ILess_Environment();
+    /**
+     * @covers generateCss
+     */
+    public function testGenerateCSS()
+    {
+        $env = new ILess_Environment();
 
-    // with string
-    $a = new ILess_Node_Alpha('50');
-    $output = new ILess_Output();
-    $a->generateCss($env, $output);
-    $this->assertEquals($output->toString(), 'alpha(opacity=50)');
+        // with string
+        $a = new ILess_Node_Alpha('50');
+        $output = new ILess_Output();
+        $a->generateCss($env, $output);
+        $this->assertEquals($output->toString(), 'alpha(opacity=50)');
 
-    // now with another node
-    $output = new ILess_Output();
-    $a = new ILess_Node_Alpha(new ILess_Node_Anonymous('10'));
-    $a->generateCss($env, $output);
-    $this->assertEquals($output->toString(), 'alpha(opacity=10)');
-  }
+        // now with another node
+        $output = new ILess_Output();
+        $a = new ILess_Node_Alpha(new ILess_Node_Anonymous('10'));
+        $a->generateCss($env, $output);
+        $this->assertEquals($output->toString(), 'alpha(opacity=10)');
+    }
 
 }

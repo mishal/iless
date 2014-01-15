@@ -14,12 +14,12 @@
  */
 interface ILess_Node_VisitableInterface
 {
-  /**
-   * Accepts a visit by a visitor
-   *
-   * @param ILess_Visitor $visitor
-   * @return void
-   */
-  public function accept(ILess_Visitor $visitor);
+    /**
+     * Accepts a visit by a visitor
+     *
+     * @param ILess_Visitor $visitor
+     * @return void
+     */
+    public function accept(ILess_Visitor $visitor);
 
 }

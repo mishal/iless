@@ -16,13 +16,13 @@
 class ILess_Visitor_JoinSelector_Test extends ILess_TestCase
 {
 
-  /**
-   * @covers __constructor
-   */
-  public function testVisit()
-  {
-    $v = new ILess_Visitor_JoinSelector(new ILess_Environment());
-    $this->assertFalse($v->isReplacing());
-  }
+    /**
+     * @covers __constructor
+     */
+    public function testVisit()
+    {
+        $v = new ILess_Visitor_JoinSelector(new ILess_Environment());
+        $this->assertFalse($v->isReplacing());
+    }
 
 }

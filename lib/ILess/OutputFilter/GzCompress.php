@@ -15,21 +15,21 @@
  */
 class ILess_OutputFilter_GzCompress extends ILess_OutputFilter
 {
-  /**
-   * Array of default options
-   *
-   * @var array
-   */
-  protected $defaultOptions = array(
-    'compression_level' => 9
-  );
+    /**
+     * Array of default options
+     *
+     * @var array
+     */
+    protected $defaultOptions = array(
+        'compression_level' => 9
+    );
 
-  /**
-   * @see ILess_OutputFilterInterface
-   */
-  public function filter($output)
-  {
-    return gzcompress($output, $this->getOption('compression_level'));
-  }
+    /**
+     * @see ILess_OutputFilterInterface
+     */
+    public function filter($output)
+    {
+        return gzcompress($output, $this->getOption('compression_level'));
+    }
 
 }

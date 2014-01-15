@@ -15,26 +15,26 @@
  */
 class ILess_Node_Anonymous_Test extends ILess_TestCase
 {
-  /**
-   * @covers getType
-   */
-  public function testGetType()
-  {
-    $a = new ILess_Node_Anonymous('foobar');
-    $this->assertEquals('Anonymous', $a->getType());
-  }
+    /**
+     * @covers getType
+     */
+    public function testGetType()
+    {
+        $a = new ILess_Node_Anonymous('foobar');
+        $this->assertEquals('Anonymous', $a->getType());
+    }
 
-  /**
-   * @covers generateCss
-   */
-  public function testGenerateCSS()
-  {
-    $a = new ILess_Node_Anonymous('50');
-    $output = new ILess_Output();
-    $env = new ILess_Environment();
+    /**
+     * @covers generateCss
+     */
+    public function testGenerateCSS()
+    {
+        $a = new ILess_Node_Anonymous('50');
+        $output = new ILess_Output();
+        $env = new ILess_Environment();
 
-    $a->generateCss($env, $output);
-    $this->assertEquals($output->toString(), '50');
-  }
+        $a->generateCss($env, $output);
+        $this->assertEquals($output->toString(), '50');
+    }
 
 }

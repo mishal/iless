@@ -16,14 +16,14 @@
 class ILess_Visitor_Import_Test extends ILess_TestCase
 {
 
-  /**
-   * @covers __constructor
-   */
-  public function testVisit()
-  {
-    $env = new ILess_Environment();
-    $v = new ILess_Visitor_Import($env, new ILess_Importer($env, array(), new ILess_Cache_None()));
-    $this->assertTrue($v->isReplacing());
-  }
+    /**
+     * @covers __constructor
+     */
+    public function testVisit()
+    {
+        $env = new ILess_Environment();
+        $v = new ILess_Visitor_Import($env, new ILess_Importer($env, array(), new ILess_Cache_None()));
+        $this->assertTrue($v->isReplacing());
+    }
 
 }

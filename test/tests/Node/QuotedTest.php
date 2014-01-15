@@ -16,34 +16,34 @@
  */
 class ILess_Node_Quoted_Test extends ILess_TestCase
 {
-  /**
-   * @covers __constructor
-   */
-  public function testConstructor()
-  {
-    $q = new ILess_Node_Quoted('"foobar"', 'foobar');
-  }
+    /**
+     * @covers __constructor
+     */
+    public function testConstructor()
+    {
+        $q = new ILess_Node_Quoted('"foobar"', 'foobar');
+    }
 
-  /**
-   * @covers getType
-   */
-  public function testGetType()
-  {
-    $q = new ILess_Node_Quoted('"foobar"', 'foobar');
-    $this->assertEquals('Quoted', $q->getType());
-  }
+    /**
+     * @covers getType
+     */
+    public function testGetType()
+    {
+        $q = new ILess_Node_Quoted('"foobar"', 'foobar');
+        $this->assertEquals('Quoted', $q->getType());
+    }
 
-  /**
-   * @covers generateCss
-   */
-  public function testGenerateCss()
-  {
-    $env = new ILess_Environment();
-    $output = new ILess_Output();
+    /**
+     * @covers generateCss
+     */
+    public function testGenerateCss()
+    {
+        $env = new ILess_Environment();
+        $output = new ILess_Output();
 
-    $q = new ILess_Node_Quoted('"foobar"', 'foobar');
-    $q->generateCss($env, $output);
-    $this->assertEquals('"foobar"', $output->toString());
-  }
+        $q = new ILess_Node_Quoted('"foobar"', 'foobar');
+        $q->generateCss($env, $output);
+        $this->assertEquals('"foobar"', $output->toString());
+    }
 
 }

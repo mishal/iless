@@ -16,21 +16,21 @@
  */
 class ILess_Node_Url_Test extends ILess_TestCase
 {
-  /**
-   * @covers __constructor
-   */
-  public function testConstructor()
-  {
-    $d = new ILess_Node_Url(new ILess_Node_Quoted('"http://foobar.com/less.css"', 'http://foobar.com/less.css'));
-  }
+    /**
+     * @covers __constructor
+     */
+    public function testConstructor()
+    {
+        $d = new ILess_Node_Url(new ILess_Node_Quoted('"http://foobar.com/less.css"', 'http://foobar.com/less.css'));
+    }
 
-  /**
-   * @covers getType
-   */
-  public function testGetType()
-  {
-    $d = new ILess_Node_Url(new ILess_Node_Quoted('"http://foobar.com/less.css"', 'http://foobar.com/less.css'));
-    $this->assertEquals('Url', $d->getType());
-  }
+    /**
+     * @covers getType
+     */
+    public function testGetType()
+    {
+        $d = new ILess_Node_Url(new ILess_Node_Quoted('"http://foobar.com/less.css"', 'http://foobar.com/less.css'));
+        $this->assertEquals('Url', $d->getType());
+    }
 
 }

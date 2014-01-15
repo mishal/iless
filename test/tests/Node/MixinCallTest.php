@@ -15,35 +15,35 @@
  */
 class ILess_Node_MixinCall_Test extends ILess_TestCase
 {
-  /**
-   * @covers __constructor
-   */
-  public function testConstructor()
-  {
-    $mc = new ILess_Node_MixinCall(array(new ILess_Node_Element('', 'foobar')));
-  }
+    /**
+     * @covers __constructor
+     */
+    public function testConstructor()
+    {
+        $mc = new ILess_Node_MixinCall(array(new ILess_Node_Element('', 'foobar')));
+    }
 
-  /**
-   * @covers getType
-   */
-  public function testGetType()
-  {
-    $mc = new ILess_Node_MixinCall(array(new ILess_Node_Element('', 'foobar')));
-    $this->assertEquals('MixinCall', $mc->getType());
-  }
+    /**
+     * @covers getType
+     */
+    public function testGetType()
+    {
+        $mc = new ILess_Node_MixinCall(array(new ILess_Node_Element('', 'foobar')));
+        $this->assertEquals('MixinCall', $mc->getType());
+    }
 
-  /**
-   * @covers compile
-   */
-  public function testCompile()
-  {
-    $this->setExpectedException('ILess_Exception_Compiler');
+    /**
+     * @covers compile
+     */
+    public function testCompile()
+    {
+        $this->setExpectedException('ILess_Exception_Compiler');
 
-    $env = new ILess_Environment();
-    $mc = new ILess_Node_MixinCall(array(new ILess_Node_Element('', 'foobar')));
+        $env = new ILess_Environment();
+        $mc = new ILess_Node_MixinCall(array(new ILess_Node_Element('', 'foobar')));
 
-    // throws an exception
-    $result = $mc->compile($env);
-  }
+        // throws an exception
+        $result = $mc->compile($env);
+    }
 
 }

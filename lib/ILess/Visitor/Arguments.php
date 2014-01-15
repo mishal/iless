@@ -15,23 +15,23 @@
  */
 class ILess_Visitor_Arguments
 {
-  /**
-   * Visit deeper flag
-   *
-   * @var boolean
-   */
-  public $visitDeeper = true;
+    /**
+     * Visit deeper flag
+     *
+     * @var boolean
+     */
+    public $visitDeeper = true;
 
-  /**
-   * Constructor
-   *
-   * @param array $arguments
-   */
-  public function __construct($arguments = array())
-  {
-    foreach ($arguments as $argument => $value) {
-      $this->$argument = $value;
+    /**
+     * Constructor
+     *
+     * @param array $arguments
+     */
+    public function __construct($arguments = array())
+    {
+        foreach ($arguments as $argument => $value) {
+            $this->$argument = $value;
+        }
     }
-  }
 
 }

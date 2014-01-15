@@ -15,12 +15,12 @@
  */
 interface ILess_OutputFilterInterface
 {
-  /**
-   * Filters the output
-   *
-   * @param string $output
-   * @return string
-   */
-  public function filter($output);
+    /**
+     * Filters the output
+     *
+     * @param string $output
+     * @return string
+     */
+    public function filter($output);
 
 }

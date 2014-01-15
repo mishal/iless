@@ -15,33 +15,33 @@
  */
 class ILess_Node_Element_Test extends ILess_TestCase
 {
-  /**
-   * @covers __constructor
-   */
-  public function testConstructor()
-  {
-    $d = new ILess_Node_Element('>', new ILess_Node_Anonymous('bar'));
-  }
+    /**
+     * @covers __constructor
+     */
+    public function testConstructor()
+    {
+        $d = new ILess_Node_Element('>', new ILess_Node_Anonymous('bar'));
+    }
 
-  /**
-   * @covers getType
-   */
-  public function testGetType()
-  {
-    $d = new ILess_Node_Element('>', new ILess_Node_Anonymous('bar'));
-    $this->assertEquals('Element', $d->getType());
-  }
+    /**
+     * @covers getType
+     */
+    public function testGetType()
+    {
+        $d = new ILess_Node_Element('>', new ILess_Node_Anonymous('bar'));
+        $this->assertEquals('Element', $d->getType());
+    }
 
-  /**
-   * @covers generateCss
-   */
-  public function testGenerateCss()
-  {
-    $env = new ILess_Environment();
-    $output = new ILess_Output();
-    $d = new ILess_Node_Element('>', new ILess_Node_Anonymous('bar'));
-    $d->generateCss($env, $output);
-    $this->assertEquals(' > bar', $output->toString());
-  }
+    /**
+     * @covers generateCss
+     */
+    public function testGenerateCss()
+    {
+        $env = new ILess_Environment();
+        $output = new ILess_Output();
+        $d = new ILess_Node_Element('>', new ILess_Node_Anonymous('bar'));
+        $d->generateCss($env, $output);
+        $this->assertEquals(' > bar', $output->toString());
+    }
 
 }

@@ -16,44 +16,41 @@
  */
 class ILess_Node_Selector_Test extends ILess_TestCase
 {
-  /**
-   * @covers __constructor
-   */
-  public function testConstructor()
-  {
-    $s = new ILess_Node_Selector(array(
-        new ILess_Node_Element(' ', 'foobar')
-    ), array(
-    ));
-  }
+    /**
+     * @covers __constructor
+     */
+    public function testConstructor()
+    {
+        $s = new ILess_Node_Selector(array(
+            new ILess_Node_Element(' ', 'foobar')
+        ), array());
+    }
 
-  /**
-   * @covers getType
-   */
-  public function testGetType()
-  {
-    $s = new ILess_Node_Selector(array(
-        new ILess_Node_Element(' ', 'foobar')
-    ), array(
-    ));
-    $this->assertEquals('Selector', $s->getType());
-  }
+    /**
+     * @covers getType
+     */
+    public function testGetType()
+    {
+        $s = new ILess_Node_Selector(array(
+            new ILess_Node_Element(' ', 'foobar')
+        ), array());
+        $this->assertEquals('Selector', $s->getType());
+    }
 
-  /**
-   * @covers generateCss
-   */
-  public function testGenerateCss()
-  {
-    $env = new ILess_Environment();
-    $output = new ILess_Output();
+    /**
+     * @covers generateCss
+     */
+    public function testGenerateCss()
+    {
+        $env = new ILess_Environment();
+        $output = new ILess_Output();
 
-    $s = new ILess_Node_Selector(array(
-        new ILess_Node_Element(' ', 'foobar')
-    ), array(
-    ));
+        $s = new ILess_Node_Selector(array(
+            new ILess_Node_Element(' ', 'foobar')
+        ), array());
 
-    $s->generateCss($env, $output);
-    $this->assertEquals(" foobar", $output->toString());
-  }
+        $s->generateCss($env, $output);
+        $this->assertEquals(" foobar", $output->toString());
+    }
 
 }

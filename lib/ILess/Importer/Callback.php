@@ -15,68 +15,68 @@
  */
 class ILess_Importer_Callback implements ILess_ImporterInterface
 {
-  /**
-   * Import callback
-   *
-   * @var callable
-   */
-  protected $importCallback;
+    /**
+     * Import callback
+     *
+     * @var callable
+     */
+    protected $importCallback;
 
-  /**
-   * Get last modified callback
-   *
-   * @var callable
-   */
-  protected $lastModifiedCallback;
+    /**
+     * Get last modified callback
+     *
+     * @var callable
+     */
+    protected $lastModifiedCallback;
 
-  /**
-   * Constructor
-   *
-   * @param callable $importCallback The import callback
-   * @param callable $lastModifiedCallback The "getModified" callback
-   * @throws InvalidArgumentException If the callbables are not valid
-   */
-  public function __construct($importCallback, $lastModifiedCallback)
-  {
-    $this->assertCallbable($importCallback);
-    $this->importCallback = $importCallback;
-    $this->assertCallable($lastModifiedCallback);
-    $this->lastModifiedCallback = $lastModifiedCallback;
-  }
-
-  /**
-   * Checks if the given $callable is really callable
-   *
-   * @param mixed $callable The callable
-   * @throws InvalidArgumentException If the callable is not valid
-   */
-  protected function assertCallable($callable)
-  {
-    if (!is_callable($callable, false, $callableName)) {
-      throw new InvalidArgumentException(sprintf('The callable "%s" is not a valid callable.', $callableName));
+    /**
+     * Constructor
+     *
+     * @param callable $importCallback The import callback
+     * @param callable $lastModifiedCallback The "getModified" callback
+     * @throws InvalidArgumentException If the callbables are not valid
+     */
+    public function __construct($importCallback, $lastModifiedCallback)
+    {
+        $this->assertCallbable($importCallback);
+        $this->importCallback = $importCallback;
+        $this->assertCallable($lastModifiedCallback);
+        $this->lastModifiedCallback = $lastModifiedCallback;
     }
 
-    return true;
-  }
+    /**
+     * Checks if the given $callable is really callable
+     *
+     * @param mixed $callable The callable
+     * @throws InvalidArgumentException If the callable is not valid
+     */
+    protected function assertCallable($callable)
+    {
+        if (!is_callable($callable, false, $callableName)) {
+            throw new InvalidArgumentException(sprintf('The callable "%s" is not a valid callable.', $callableName));
+        }
 
-  /**
-   * @see ILess_ImporterInterface::import
-   */
-  public function import($path, ILess_FileInfo $currentFileInfo)
-  {
-    return call_user_func_array($this->importCallback, array(
-        $path, $currentFileInfo
-    ));
-  }
+        return true;
+    }
 
-  /**
-   * @see ILess_Importer::getLastModified
-   */
-  public function getLastModified($path, ILess_FileInfo $currentFileInfo)
-  {
-    return call_user_func_array($this->lastModifiedCallback, array(
-        $path, $currentFileInfo
-    ));
-  }
+    /**
+     * @see ILess_ImporterInterface::import
+     */
+    public function import($path, ILess_FileInfo $currentFileInfo)
+    {
+        return call_user_func_array($this->importCallback, array(
+            $path, $currentFileInfo
+        ));
+    }
+
+    /**
+     * @see ILess_Importer::getLastModified
+     */
+    public function getLastModified($path, ILess_FileInfo $currentFileInfo)
+    {
+        return call_user_func_array($this->lastModifiedCallback, array(
+            $path, $currentFileInfo
+        ));
+    }
 
 }

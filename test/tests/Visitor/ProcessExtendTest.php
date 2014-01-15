@@ -16,13 +16,13 @@
 class ILess_Visitor_ProcessExtend_Test extends ILess_TestCase
 {
 
-  /**
-   * @covers __constructor
-   */
-  public function testConstructor()
-  {
-    $v = new ILess_Visitor_ProcessExtend();
-    $this->assertFalse($v->isReplacing());
-  }
+    /**
+     * @covers __constructor
+     */
+    public function testConstructor()
+    {
+        $v = new ILess_Visitor_ProcessExtend();
+        $this->assertFalse($v->isReplacing());
+    }
 
 }

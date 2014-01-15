@@ -15,13 +15,13 @@
  */
 class ILess_Node_Combinator_Test extends ILess_TestCase
 {
-  /**
-   * @covers __constructor
-   */
-  public function testConstructor()
-  {
-    // FIXME: why is this empty? Missing tests!
-    //$c = new ILess_Node_Combinator('a');
-  }
+    /**
+     * @covers __constructor
+     */
+    public function testConstructor()
+    {
+        // FIXME: why is this empty? Missing tests!
+        //$c = new ILess_Node_Combinator('a');
+    }
 
 }

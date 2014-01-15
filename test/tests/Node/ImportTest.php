@@ -16,61 +16,61 @@
  */
 class ILess_Node_Import_Test extends ILess_TestCase
 {
-  /**
-   * @covers __constructor
-   */
-  public function testConstructor()
-  {
-    $d = new ILess_Node_Import(new ILess_Node_Url(new ILess_Node_Quoted('"foobar.css"', 'foobar.css')));
-  }
+    /**
+     * @covers __constructor
+     */
+    public function testConstructor()
+    {
+        $d = new ILess_Node_Import(new ILess_Node_Url(new ILess_Node_Quoted('"foobar.css"', 'foobar.css')));
+    }
 
-  /**
-   * @covers getType
-   */
-  public function testGetType()
-  {
-    $d = new ILess_Node_Import(new ILess_Node_Url(new ILess_Node_Quoted('"foobar.css"', 'foobar.css')));
-    $this->assertEquals('Import', $d->getType());
-  }
+    /**
+     * @covers getType
+     */
+    public function testGetType()
+    {
+        $d = new ILess_Node_Import(new ILess_Node_Url(new ILess_Node_Quoted('"foobar.css"', 'foobar.css')));
+        $this->assertEquals('Import', $d->getType());
+    }
 
-  /**
-   * @covers generateCss
-   */
-  public function testGenerateCss()
-  {
-    $env = new ILess_Environment();
-    $output = new ILess_Output();
-    $d = new ILess_Node_Import(new ILess_Node_Url(new ILess_Node_Quoted('"foobar.css"', 'foobar.css')));
-    $result = $d->generateCss($env, $output);
-    $this->assertInstanceOf('ILess_Output', $result);
-    $this->assertEquals('@import url("foobar.css");', $output->toString());
+    /**
+     * @covers generateCss
+     */
+    public function testGenerateCss()
+    {
+        $env = new ILess_Environment();
+        $output = new ILess_Output();
+        $d = new ILess_Node_Import(new ILess_Node_Url(new ILess_Node_Quoted('"foobar.css"', 'foobar.css')));
+        $result = $d->generateCss($env, $output);
+        $this->assertInstanceOf('ILess_Output', $result);
+        $this->assertEquals('@import url("foobar.css");', $output->toString());
 
-    // import less when no extension is specified
-    // nothing gets to output
-    $output = new ILess_Output();
-    $d = new ILess_Node_Import(new ILess_Node_Url(new ILess_Node_Quoted('"foobar"', 'foobar')));
-    $d->generateCss($env, $output);
-    $this->assertEquals('', $output->toString());
-  }
+        // import less when no extension is specified
+        // nothing gets to output
+        $output = new ILess_Output();
+        $d = new ILess_Node_Import(new ILess_Node_Url(new ILess_Node_Quoted('"foobar"', 'foobar')));
+        $d->generateCss($env, $output);
+        $this->assertEquals('', $output->toString());
+    }
 
-  public function testCompileForImport()
-  {
-    $env = new ILess_Environment();
-    $d = new ILess_Node_Import(new ILess_Node_Url(new ILess_Node_Quoted('"foobar.css"', 'foobar.css')));
+    public function testCompileForImport()
+    {
+        $env = new ILess_Environment();
+        $d = new ILess_Node_Import(new ILess_Node_Url(new ILess_Node_Quoted('"foobar.css"', 'foobar.css')));
 
-    $result = $d->compileForImport($env);
-    $this->assertInstanceOf('ILess_Node_Import', $result);
-  }
+        $result = $d->compileForImport($env);
+        $this->assertInstanceOf('ILess_Node_Import', $result);
+    }
 
-  public function testCompile()
-  {
-    $env = new ILess_Environment();
-    $d = new ILess_Node_Import(new ILess_Node_Url(new ILess_Node_Quoted('"foobar.css"', 'foobar.css')));
+    public function testCompile()
+    {
+        $env = new ILess_Environment();
+        $d = new ILess_Node_Import(new ILess_Node_Url(new ILess_Node_Quoted('"foobar.css"', 'foobar.css')));
 
-    $result = $d->compile($env);
+        $result = $d->compile($env);
 
-    $this->assertInstanceOf('ILess_Node_Import', $result);
-    $this->assertEquals('@import url("foobar.css");', $result->toCSS($env));
-  }
+        $this->assertInstanceOf('ILess_Node_Import', $result);
+        $this->assertEquals('@import url("foobar.css");', $result->toCSS($env));
+    }
 
 }

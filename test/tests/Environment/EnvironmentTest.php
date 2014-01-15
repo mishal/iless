@@ -14,15 +14,15 @@
  */
 class ILess_Environment_Test extends ILess_TestCase
 {
-  /**
-   * @covers createCopy
-   */
-  public function testNormalizePath()
-  {
-    $env = new ILess_Environment();
-    $copy = ILess_Environment::createCopy($env, array(1));
-    $this->assertInstanceOf('ILess_Environment', $copy);
-    $this->assertEquals($copy->frames, array(1));
-  }
+    /**
+     * @covers createCopy
+     */
+    public function testNormalizePath()
+    {
+        $env = new ILess_Environment();
+        $copy = ILess_Environment::createCopy($env, array(1));
+        $this->assertInstanceOf('ILess_Environment', $copy);
+        $this->assertEquals($copy->frames, array(1));
+    }
 
 }

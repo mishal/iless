@@ -16,29 +16,29 @@
  */
 class ILess_Node_Javascript_Test extends ILess_TestCase
 {
-  /**
-   * @covers __constructor
-   */
-  public function testConstructor()
-  {
-    $d = new ILess_Node_Javascript('"hello".toUpperCase() + \'!\'');
-  }
+    /**
+     * @covers __constructor
+     */
+    public function testConstructor()
+    {
+        $d = new ILess_Node_Javascript('"hello".toUpperCase() + \'!\'');
+    }
 
-  /**
-   * @covers getType
-   */
-  public function testGetType()
-  {
-    $d = new ILess_Node_Javascript('"hello".toUpperCase() + \'!\'');
-    $this->assertEquals('Javascript', $d->getType());
-  }
+    /**
+     * @covers getType
+     */
+    public function testGetType()
+    {
+        $d = new ILess_Node_Javascript('"hello".toUpperCase() + \'!\'');
+        $this->assertEquals('Javascript', $d->getType());
+    }
 
-  public function testCompile()
-  {
-    $env = new ILess_Environment();
-    $d = new ILess_Node_Javascript('"hello".toUpperCase() + \'!\'');
-    $result = $d->compile($env);
-    $this->assertInstanceOf('ILess_Node_Javascript', $result);
-  }
+    public function testCompile()
+    {
+        $env = new ILess_Environment();
+        $d = new ILess_Node_Javascript('"hello".toUpperCase() + \'!\'');
+        $result = $d->compile($env);
+        $this->assertInstanceOf('ILess_Node_Javascript', $result);
+    }
 
 }

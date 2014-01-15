@@ -9,10 +9,10 @@
 
 class ILess_SourceMap_TestGenerator extends ILess_SourceMap_Generator
 {
-  public function generateJson()
-  {
-    return parent::generateJson();
-  }
+    public function generateJson()
+    {
+        return parent::generateJson();
+    }
 }
 
 /**
@@ -20,24 +20,24 @@ class ILess_SourceMap_TestGenerator extends ILess_SourceMap_Generator
  */
 class ILess_SourceMap_Generator_Test extends ILess_TestCase
 {
-  /**
-   * @covers generateJson
-   */
-  public function testBasic()
-  {
-    $g = new ILess_SourceMap_TestGenerator(new ILess_Node_Ruleset(array(), array()), array());
-    $this->assertEquals(
-        '{"version":3,"file":null,"sourceRoot":"","sources":[],"names":[],"mappings":""}',
-        $g->generateJson()
-    );
-  }
+    /**
+     * @covers generateJson
+     */
+    public function testBasic()
+    {
+        $g = new ILess_SourceMap_TestGenerator(new ILess_Node_Ruleset(array(), array()), array());
+        $this->assertEquals(
+            '{"version":3,"file":null,"sourceRoot":"","sources":[],"names":[],"mappings":""}',
+            $g->generateJson()
+        );
+    }
 
-  /**
-   * @covers generateMappings
-   */
-  public function testGenerateMappings()
-  {
-    $g = new ILess_SourceMap_TestGenerator(new ILess_Node_Ruleset(array(), array()), array());
-  }
+    /**
+     * @covers generateMappings
+     */
+    public function testGenerateMappings()
+    {
+        $g = new ILess_SourceMap_TestGenerator(new ILess_Node_Ruleset(array(), array()), array());
+    }
 
 }

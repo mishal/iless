@@ -15,74 +15,74 @@
  */
 class ILess_Node_Condition_Test extends ILess_TestCase
 {
-  /**
-   * @covers __constructor
-   */
-  public function testConstructor()
-  {
-    $c = new ILess_Node_Condition('>', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(4));
-  }
+    /**
+     * @covers __constructor
+     */
+    public function testConstructor()
+    {
+        $c = new ILess_Node_Condition('>', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(4));
+    }
 
-  /**
-   * @covers getType
-   */
-  public function testGetType()
-  {
-    $a = new ILess_Node_Condition('>', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(4));
-    $this->assertEquals('Condition', $a->getType());
-  }
+    /**
+     * @covers getType
+     */
+    public function testGetType()
+    {
+        $a = new ILess_Node_Condition('>', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(4));
+        $this->assertEquals('Condition', $a->getType());
+    }
 
-  /**
-   * @covers compile
-   */
-  public function testCompile()
-  {
-    $env = new ILess_Environment();
+    /**
+     * @covers compile
+     */
+    public function testCompile()
+    {
+        $env = new ILess_Environment();
 
-    // equal
-    $c = new ILess_Node_Condition('=', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(5));
-    $result = $c->compile($env);
-    $this->assertTrue($result);
+        // equal
+        $c = new ILess_Node_Condition('=', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(5));
+        $result = $c->compile($env);
+        $this->assertTrue($result);
 
-    // equal - false condition
-    $c = new ILess_Node_Condition('=', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(4));
-    $result = $c->compile($env);
-    $this->assertFalse($result);
+        // equal - false condition
+        $c = new ILess_Node_Condition('=', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(4));
+        $result = $c->compile($env);
+        $this->assertFalse($result);
 
-    // greater than
-    $c = new ILess_Node_Condition('>', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(4));
-    $result = $c->compile($env);
-    $this->assertTrue($result);
+        // greater than
+        $c = new ILess_Node_Condition('>', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(4));
+        $result = $c->compile($env);
+        $this->assertTrue($result);
 
-    // lower than
-    $c = new ILess_Node_Condition('<', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(4));
-    $result = $c->compile($env);
-    $this->assertFalse($result);
+        // lower than
+        $c = new ILess_Node_Condition('<', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(4));
+        $result = $c->compile($env);
+        $this->assertFalse($result);
 
-    // lower or equal than
-    $c = new ILess_Node_Condition('<=', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(5));
-    $result = $c->compile($env);
-    $this->assertTrue($result);
+        // lower or equal than
+        $c = new ILess_Node_Condition('<=', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(5));
+        $result = $c->compile($env);
+        $this->assertTrue($result);
 
-    // lower or equal than -> operator modified
-    $c = new ILess_Node_Condition('=<', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(5));
-    $result = $c->compile($env);
-    $this->assertTrue($result);
+        // lower or equal than -> operator modified
+        $c = new ILess_Node_Condition('=<', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(5));
+        $result = $c->compile($env);
+        $this->assertTrue($result);
 
-    // greater or equal than
-    $c = new ILess_Node_Condition('>=', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(5));
-    $result = $c->compile($env);
-    $this->assertTrue($result);
+        // greater or equal than
+        $c = new ILess_Node_Condition('>=', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(5));
+        $result = $c->compile($env);
+        $this->assertTrue($result);
 
-    // greater or equal than -> operator modified
-    $c = new ILess_Node_Condition('=>', new ILess_Node_Anonymous(6), new ILess_Node_Anonymous(5));
-    $result = $c->compile($env);
-    $this->assertTrue($result);
+        // greater or equal than -> operator modified
+        $c = new ILess_Node_Condition('=>', new ILess_Node_Anonymous(6), new ILess_Node_Anonymous(5));
+        $result = $c->compile($env);
+        $this->assertTrue($result);
 
-    // greater or equal than -> false condition
-    $c = new ILess_Node_Condition('=>', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(7));
-    $result = $c->compile($env);
-    $this->assertFalse($result);
-  }
+        // greater or equal than -> false condition
+        $c = new ILess_Node_Condition('=>', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(7));
+        $result = $c->compile($env);
+        $this->assertFalse($result);
+    }
 
 }

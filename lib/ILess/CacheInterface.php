@@ -15,42 +15,42 @@
  */
 interface ILess_CacheInterface
 {
-  /**
-   * Returns the cached item for given $cacheKey
-   *
-   * @param string $cacheKey
-   */
-  public function get($cacheKey);
+    /**
+     * Returns the cached item for given $cacheKey
+     *
+     * @param string $cacheKey
+     */
+    public function get($cacheKey);
 
-  /**
-   * Sets the cache for the $cacheKey
-   *
-   * @param string $cacheKey The cache key
-   * @param string $data The data to store
-   * @param integer $ttl The time to live
-   * @return boolean
-   */
-  public function set($cacheKey, $data, $ttl = null);
+    /**
+     * Sets the cache for the $cacheKey
+     *
+     * @param string $cacheKey The cache key
+     * @param string $data The data to store
+     * @param integer $ttl The time to live
+     * @return boolean
+     */
+    public function set($cacheKey, $data, $ttl = null);
 
-  /**
-   * Is the cacheKey stored?
-   *
-   * @param string $cacheKey
-   */
-  public function has($cacheKey);
+    /**
+     * Is the cacheKey stored?
+     *
+     * @param string $cacheKey
+     */
+    public function has($cacheKey);
 
-  /**
-   * Removes item from cache
-   *
-   * @param string $cacheKey
-   */
-  public function remove($cacheKey);
+    /**
+     * Removes item from cache
+     *
+     * @param string $cacheKey
+     */
+    public function remove($cacheKey);
 
-  /**
-   * Removes everything from the cache
-   *
-   * @return void
-   */
-  public function clean();
+    /**
+     * Removes everything from the cache
+     *
+     * @return void
+     */
+    public function clean();
 
 }

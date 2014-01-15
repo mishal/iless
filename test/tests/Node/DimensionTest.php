@@ -15,48 +15,48 @@
  */
 class ILess_Node_Dimension_Test extends ILess_TestCase
 {
-  /**
-   * @covers __constructor
-   */
-  public function testConstructor()
-  {
-    $d = new ILess_Node_Dimension('15');
-  }
+    /**
+     * @covers __constructor
+     */
+    public function testConstructor()
+    {
+        $d = new ILess_Node_Dimension('15');
+    }
 
-  /**
-   * @covers getType
-   */
-  public function testGetType()
-  {
-    $d = new ILess_Node_Dimension('15');
-    $this->assertEquals('Dimension', $d->getType());
-  }
+    /**
+     * @covers getType
+     */
+    public function testGetType()
+    {
+        $d = new ILess_Node_Dimension('15');
+        $this->assertEquals('Dimension', $d->getType());
+    }
 
-  /**
-   * @covers toColor
-   */
-  public function testToColor()
-  {
-    $c = new ILess_Node_Dimension('>', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(4));
-    $color = $c->toColor();
-    // FIXME: Should the color verify that this is not valid color?!
-    $this->assertInstanceOf('ILess_Node_Color', $color);
-  }
+    /**
+     * @covers toColor
+     */
+    public function testToColor()
+    {
+        $c = new ILess_Node_Dimension('>', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(4));
+        $color = $c->toColor();
+        // FIXME: Should the color verify that this is not valid color?!
+        $this->assertInstanceOf('ILess_Node_Color', $color);
+    }
 
-  /**
-   * @covers generateCss
-   */
-  public function testGenerateCss()
-  {
-    $env = new ILess_Environment();
-    $env->strictUnits = true;
+    /**
+     * @covers generateCss
+     */
+    public function testGenerateCss()
+    {
+        $env = new ILess_Environment();
+        $env->strictUnits = true;
 
-    $output = new ILess_Output();
-    $d = new ILess_Node_Dimension('15', 'px');
+        $output = new ILess_Output();
+        $d = new ILess_Node_Dimension('15', 'px');
 
-    $d->generateCss($env, $output);
+        $d->generateCss($env, $output);
 
-    $this->assertEquals('15px', $output->toString());
-  }
+        $this->assertEquals('15px', $output->toString());
+    }
 
 }

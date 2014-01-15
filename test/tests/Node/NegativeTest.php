@@ -15,39 +15,39 @@
  */
 class ILess_Node_Negative_Test extends ILess_TestCase
 {
-  /**
-   * @covers __constructor
-   */
-  public function testConstructor()
-  {
-    $d = new ILess_Node_Negative(new ILess_Node_Anonymous('bar'));
-  }
-
-  /**
-   * @covers getType
-   */
-  public function testGetType()
-  {
-    $d = new ILess_Node_Negative(new ILess_Node_Anonymous('bar'));
-    $this->assertEquals('Negative', $d->getType());
-  }
-
-  /**
-   * @covers generateCss
-   */
-  public function testGenerateCss()
-  {
-    /*
-    $env = new ILess_Environment();
-    $output = new ILess_Output();
-
-    $d = new ILess_Node_Directive('15', new ILess_Node_Anonymous('bar'));
-
-    $d->generateCss($env, $output);
-
-    $this->assertEquals('15 bar;', $output->toString());
-     *
+    /**
+     * @covers __constructor
      */
-  }
+    public function testConstructor()
+    {
+        $d = new ILess_Node_Negative(new ILess_Node_Anonymous('bar'));
+    }
+
+    /**
+     * @covers getType
+     */
+    public function testGetType()
+    {
+        $d = new ILess_Node_Negative(new ILess_Node_Anonymous('bar'));
+        $this->assertEquals('Negative', $d->getType());
+    }
+
+    /**
+     * @covers generateCss
+     */
+    public function testGenerateCss()
+    {
+        /*
+        $env = new ILess_Environment();
+        $output = new ILess_Output();
+
+        $d = new ILess_Node_Directive('15', new ILess_Node_Anonymous('bar'));
+
+        $d->generateCss($env, $output);
+
+        $this->assertEquals('15 bar;', $output->toString());
+         *
+         */
+    }
 
 }

@@ -15,40 +15,40 @@
  */
 class ILess_Color_Test extends ILess_TestCase
 {
-  /**
-   * @covers getAlpha
-   */
-  public function testAlpha()
-  {
-    $color = new ILess_Color();
-    $this->assertEquals(1, $color->getAlpha());
-  }
+    /**
+     * @covers getAlpha
+     */
+    public function testAlpha()
+    {
+        $color = new ILess_Color();
+        $this->assertEquals(1, $color->getAlpha());
+    }
 
-  /**
-   * @covers toString
-   */
-  public function testToString()
-  {
-    $color = new ILess_Color('#ffeeaa');
-    $this->assertEquals('#ffeeaa', $color->toString());
+    /**
+     * @covers toString
+     */
+    public function testToString()
+    {
+        $color = new ILess_Color('#ffeeaa');
+        $this->assertEquals('#ffeeaa', $color->toString());
 
-    // the format remains the same
-    $color = new ILess_Color('#fea');
-    $this->assertEquals('#ffeeaa', $color->toString());
+        // the format remains the same
+        $color = new ILess_Color('#fea');
+        $this->assertEquals('#ffeeaa', $color->toString());
 
-    $color = new ILess_Color('#ff0000');
-    $this->assertEquals('#ff0000', $color->toString());
+        $color = new ILess_Color('#ff0000');
+        $this->assertEquals('#ff0000', $color->toString());
 
-    $this->assertEquals(255, $color->getRed());
-    $this->assertEquals(0, $color->getGreen());
-    $this->assertEquals(0, $color->getBlue());
+        $this->assertEquals(255, $color->getRed());
+        $this->assertEquals(0, $color->getGreen());
+        $this->assertEquals(0, $color->getBlue());
 
-    $color = new ILess_Color('#f60000');
-    $this->assertEquals('#f60000', $color->toString());
+        $color = new ILess_Color('#f60000');
+        $this->assertEquals('#f60000', $color->toString());
 
-    $this->assertEquals(246, $color->getRed());
-    $this->assertEquals(0, $color->getGreen());
-    $this->assertEquals(0, $color->getBlue());
-  }
+        $this->assertEquals(246, $color->getRed());
+        $this->assertEquals(0, $color->getGreen());
+        $this->assertEquals(0, $color->getBlue());
+    }
 
 }

@@ -15,27 +15,27 @@
  */
 class ILess_Node_Comment_Test extends ILess_TestCase
 {
-  /**
-   * @covers getType
-   */
-  public function testGetType()
-  {
-    $a = new ILess_Node_Comment('my comment');
-    $this->assertEquals('Comment', $a->getType());
-  }
+    /**
+     * @covers getType
+     */
+    public function testGetType()
+    {
+        $a = new ILess_Node_Comment('my comment');
+        $this->assertEquals('Comment', $a->getType());
+    }
 
-  /**
-   * @covers generateCss
-   */
-  public function testGenerateCSS()
-  {
-    $env = new ILess_Environment();
+    /**
+     * @covers generateCss
+     */
+    public function testGenerateCSS()
+    {
+        $env = new ILess_Environment();
 
-    $a = new ILess_Node_Comment('my comment');
-    $output = new ILess_Output();
+        $a = new ILess_Node_Comment('my comment');
+        $output = new ILess_Output();
 
-    $a->generateCss($env, $output);
-    $this->assertEquals($output->toString(), 'my comment');
-  }
+        $a->generateCss($env, $output);
+        $this->assertEquals($output->toString(), 'my comment');
+    }
 
 }

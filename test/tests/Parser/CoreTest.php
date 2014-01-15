@@ -9,82 +9,82 @@
 
 class ILess_Test_Parser extends ILess_Parser_Core
 {
-  public function __construct(ILess_Environment $env, ILess_Importer $importer)
-  {
-    parent::__construct($env, $importer, new ILess_Cache_None());
-    ILess_Math::setup(16);
-    ILess_UnitConversion::setup();
-  }
+    public function __construct(ILess_Environment $env, ILess_Importer $importer)
+    {
+        parent::__construct($env, $importer, new ILess_Cache_None());
+        ILess_Math::setup(16);
+        ILess_UnitConversion::setup();
+    }
 
-  public function testParseDirective($string)
-  {
-    $this->setStringToBeParsed($string);
+    public function testParseDirective($string)
+    {
+        $this->setStringToBeParsed($string);
 
-    return parent::parseDirective();
-  }
+        return parent::parseDirective();
+    }
 
-  public function testParseComment($string)
-  {
-    $this->setStringToBeParsed($string);
+    public function testParseComment($string)
+    {
+        $this->setStringToBeParsed($string);
 
-    return parent::parseComment();
-  }
+        return parent::parseComment();
+    }
 
-  public function testParseEntitiesQuoted($string)
-  {
-    $this->setStringToBeParsed($string);
+    public function testParseEntitiesQuoted($string)
+    {
+        $this->setStringToBeParsed($string);
 
-    return parent::parseEntitiesQuoted();
-  }
+        return parent::parseEntitiesQuoted();
+    }
 
-  public function testParseEntitiesKeyword($string)
-  {
-    $this->setStringToBeParsed($string);
+    public function testParseEntitiesKeyword($string)
+    {
+        $this->setStringToBeParsed($string);
 
-    return parent::parseEntitiesKeyword();
-  }
+        return parent::parseEntitiesKeyword();
+    }
 
-  public function testParseEntity($string)
-  {
-    $this->setStringToBeParsed($string);
+    public function testParseEntity($string)
+    {
+        $this->setStringToBeParsed($string);
 
-    return parent::parseEntity();
-  }
+        return parent::parseEntity();
+    }
 
-  public function testParseMixinDefinition($string)
-  {
-    $this->setStringToBeParsed($string);
+    public function testParseMixinDefinition($string)
+    {
+        $this->setStringToBeParsed($string);
 
-    return parent::parseMixinDefinition();
-  }
+        return parent::parseMixinDefinition();
+    }
 
-  public function testParseSelector($string)
-  {
-    $this->setStringToBeParsed($string);
+    public function testParseSelector($string)
+    {
+        $this->setStringToBeParsed($string);
 
-    return parent::parseSelector();
-  }
+        return parent::parseSelector();
+    }
 
-  public function testParseElement($string)
-  {
-    $this->setStringToBeParsed($string);
+    public function testParseElement($string)
+    {
+        $this->setStringToBeParsed($string);
 
-    return parent::parseElement();
-  }
+        return parent::parseElement();
+    }
 
-  public function testParseColor($string)
-  {
-    $this->setStringToBeParsed($string);
+    public function testParseColor($string)
+    {
+        $this->setStringToBeParsed($string);
 
-    return parent::parseEntitiesColor();
-  }
+        return parent::parseEntitiesColor();
+    }
 
-  public function testParseMedia($string)
-  {
-    $this->setStringToBeParsed($string);
+    public function testParseMedia($string)
+    {
+        $this->setStringToBeParsed($string);
 
-    return parent::parseMedia();
-  }
+        return parent::parseMedia();
+    }
 
 }
 
@@ -97,230 +97,230 @@ class ILess_Test_Parser extends ILess_Parser_Core
  */
 class ILess_Parser_Core_Test extends ILess_TestCase
 {
-  public function setUp()
-  {
-    $env = new ILess_Environment(array(), new ILess_FunctionRegistry());
-    $importer = new ILess_Importer($env, array(
-      new ILess_Importer_FileSystem()
-    ), new ILess_Cache_None());
-    $this->parser = new ILess_Test_Parser($env, $importer);
-  }
+    public function setUp()
+    {
+        $env = new ILess_Environment(array(), new ILess_FunctionRegistry());
+        $importer = new ILess_Importer($env, array(
+            new ILess_Importer_FileSystem()
+        ), new ILess_Cache_None());
+        $this->parser = new ILess_Test_Parser($env, $importer);
+    }
 
-  /**
-   * @covers parseEntitiesColor
-   * @dataProvider getDataForParseColorTest
-   */
-  public function testParseColor($color, $expected)
-  {
-    $result = $this->parser->testParseColor($color);
-    $this->assertInstanceOf('ILess_Node_Color', $result);
+    /**
+     * @covers       parseEntitiesColor
+     * @dataProvider getDataForParseColorTest
+     */
+    public function testParseColor($color, $expected)
+    {
+        $result = $this->parser->testParseColor($color);
+        $this->assertInstanceOf('ILess_Node_Color', $result);
 
-    $this->assertEquals($result->toCSS(new ILess_Environment()), $expected);
-  }
+        $this->assertEquals($result->toCSS(new ILess_Environment()), $expected);
+    }
 
-  public function getDataForParseColorTest()
-  {
-    return array(
-      array('#fff', '#ffffff'),
-      array('#c2c3c4', '#c2c3c4')
-    );
-  }
+    public function getDataForParseColorTest()
+    {
+        return array(
+            array('#fff', '#ffffff'),
+            array('#c2c3c4', '#c2c3c4')
+        );
+    }
 
-  /**
-   * @covers ILess_Parser::parseDirective
-   */
-  public function testParseDirective()
-  {
-    $result = $this->parser->testParseDirective('@charset "utf-8";');
-    $this->assertInstanceOf('ILess_Node_Directive', $result);
+    /**
+     * @covers ILess_Parser::parseDirective
+     */
+    public function testParseDirective()
+    {
+        $result = $this->parser->testParseDirective('@charset "utf-8";');
+        $this->assertInstanceOf('ILess_Node_Directive', $result);
 
-    $output = new ILess_Output();
-    $env = new ILess_Environment();
-    $result->generateCss($env, $output);
+        $output = new ILess_Output();
+        $env = new ILess_Environment();
+        $result->generateCss($env, $output);
 
-    $this->assertEquals('@charset "utf-8";', $output->toString());
-  }
+        $this->assertEquals('@charset "utf-8";', $output->toString());
+    }
 
-  /**
-   * @covers ILess_Parser::parseComment
-   * @dataProvider getDataForParseCommentTest
-   */
-  public function testParseComment($comment, $expected, $silent)
-  {
-    $result = $this->parser->testParseComment($comment);
-    $this->assertInstanceOf('ILess_Node_Comment', $result);
+    /**
+     * @covers       ILess_Parser::parseComment
+     * @dataProvider getDataForParseCommentTest
+     */
+    public function testParseComment($comment, $expected, $silent)
+    {
+        $result = $this->parser->testParseComment($comment);
+        $this->assertInstanceOf('ILess_Node_Comment', $result);
 
-    $env = new ILess_Environment();
+        $env = new ILess_Environment();
 
-    $this->assertEquals($silent, $result->isSilent($env));
+        $this->assertEquals($silent, $result->isSilent($env));
 
-    $output = new ILess_Output();
+        $output = new ILess_Output();
 
-    $result->generateCss($env, $output);
+        $result->generateCss($env, $output);
 
-    $this->assertEquals($expected, $output->toString());
-  }
+        $this->assertEquals($expected, $output->toString());
+    }
 
-  public function getDataForParseCommentTest()
-  {
-    return array(
-      array('/* This is an CSS comment */', '/* This is an CSS comment */', false),
-      array('// This is an less comment', '// This is an less comment', true),
-    );
-  }
+    public function getDataForParseCommentTest()
+    {
+        return array(
+            array('/* This is an CSS comment */', '/* This is an CSS comment */', false),
+            array('// This is an less comment', '// This is an less comment', true),
+        );
+    }
 
-  /**
-   * @covers ILess_Parser::parseEntitiesQuoted
-   */
-  public function testParseEntitiesQuoted()
-  {
-    $result = $this->parser->testParseEntitiesQuoted('"milky way"');
-    $this->assertInstanceOf('ILess_Node_Quoted', $result);
+    /**
+     * @covers ILess_Parser::parseEntitiesQuoted
+     */
+    public function testParseEntitiesQuoted()
+    {
+        $result = $this->parser->testParseEntitiesQuoted('"milky way"');
+        $this->assertInstanceOf('ILess_Node_Quoted', $result);
 
-    $output = new ILess_Output();
-    $env = new ILess_Environment();
-    $result->generateCss($env, $output);
+        $output = new ILess_Output();
+        $env = new ILess_Environment();
+        $result->generateCss($env, $output);
 
-    $this->assertEquals('"milky way"', $output->toString());
-  }
+        $this->assertEquals('"milky way"', $output->toString());
+    }
 
-  /**
-   * @covers ILess_Parser::parseEntitiesKeyword
-   */
-  public function testParseEntitiesKeyword()
-  {
-    $result = $this->parser->testParseEntitiesKeyword('black');
-    $this->assertInstanceOf('ILess_Node_Color', $result);
+    /**
+     * @covers ILess_Parser::parseEntitiesKeyword
+     */
+    public function testParseEntitiesKeyword()
+    {
+        $result = $this->parser->testParseEntitiesKeyword('black');
+        $this->assertInstanceOf('ILess_Node_Color', $result);
 
-    $output = new ILess_Output();
-    $env = new ILess_Environment();
-    $result->generateCss($env, $output);
+        $output = new ILess_Output();
+        $env = new ILess_Environment();
+        $result->generateCss($env, $output);
 
-    $this->assertEquals('#000000', $output->toString());
+        $this->assertEquals('#000000', $output->toString());
 
-    $this->setUp();
+        $this->setUp();
 
-    $result = $this->parser->testParseEntitiesKeyword('border-collapse');
-    $this->assertInstanceOf('ILess_Node_Keyword', $result);
+        $result = $this->parser->testParseEntitiesKeyword('border-collapse');
+        $this->assertInstanceOf('ILess_Node_Keyword', $result);
 
-    $output = new ILess_Output();
-    $env = new ILess_Environment();
-    $result->generateCss($env, $output);
+        $output = new ILess_Output();
+        $env = new ILess_Environment();
+        $result->generateCss($env, $output);
 
-    $this->assertEquals('border-collapse', $output->toString());
-  }
+        $this->assertEquals('border-collapse', $output->toString());
+    }
 
-  /**
-   * @covers ILess_Parser::parseMixinDefinition
-   */
-  public function testParseMixinDefinition()
-  {
-    $result = $this->parser->testParseMixinDefinition('.rounded (@radius: 2px, @color){}');
-    $this->assertInstanceOf('ILess_Node_MixinDefinition', $result);
-  }
+    /**
+     * @covers ILess_Parser::parseMixinDefinition
+     */
+    public function testParseMixinDefinition()
+    {
+        $result = $this->parser->testParseMixinDefinition('.rounded (@radius: 2px, @color){}');
+        $this->assertInstanceOf('ILess_Node_MixinDefinition', $result);
+    }
 
-  /**
-   * @covers ILess_Parser::parseEntity
-   * @dataProvider getDataForEntityTest
-   */
-  public function testParseEntity($string, $expectedNode, $expectedOutput)
-  {
-    $result = $this->parser->testParseEntity($string);
-    $this->assertInstanceOf($expectedNode, $result);
-    $output = new ILess_Output();
-    $env = new ILess_Environment();
-    $result->generateCss($env, $output);
-    $this->assertEquals($expectedOutput, $output->toString());
-  }
+    /**
+     * @covers       ILess_Parser::parseEntity
+     * @dataProvider getDataForEntityTest
+     */
+    public function testParseEntity($string, $expectedNode, $expectedOutput)
+    {
+        $result = $this->parser->testParseEntity($string);
+        $this->assertInstanceOf($expectedNode, $result);
+        $output = new ILess_Output();
+        $env = new ILess_Environment();
+        $result->generateCss($env, $output);
+        $this->assertEquals($expectedOutput, $output->toString());
+    }
 
-  public function getDataForEntityTest()
-  {
-    return array(
-      // function calls
-      array('foobar()', 'ILess_Node_Call', 'foobar()'),
-      array('foobar("1")', 'ILess_Node_Call', 'foobar("1")'), // quoted
-      array('foobar(true)', 'ILess_Node_Call', 'foobar(true)'),
-      array('foobar(#fff, 1px)', 'ILess_Node_Call', 'foobar(#ffffff, 1px)'),
-      // alpha
-      array('alpha(opacity=100)', 'ILess_Node_Alpha', 'alpha(opacity=100)'),
+    public function getDataForEntityTest()
+    {
+        return array(
+            // function calls
+            array('foobar()', 'ILess_Node_Call', 'foobar()'),
+            array('foobar("1")', 'ILess_Node_Call', 'foobar("1")'), // quoted
+            array('foobar(true)', 'ILess_Node_Call', 'foobar(true)'),
+            array('foobar(#fff, 1px)', 'ILess_Node_Call', 'foobar(#ffffff, 1px)'),
+            // alpha
+            array('alpha(opacity=100)', 'ILess_Node_Alpha', 'alpha(opacity=100)'),
 
-      // dimensions
-      array('1px', 'ILess_Node_Dimension', '1px'),
-      array('10%', 'ILess_Node_Dimension', '10%'),
+            // dimensions
+            array('1px', 'ILess_Node_Dimension', '1px'),
+            array('10%', 'ILess_Node_Dimension', '10%'),
 
-      // url
-      array('url("http://foo.com")', 'ILess_Node_Url', 'url("http://foo.com")'),
+            // url
+            array('url("http://foo.com")', 'ILess_Node_Url', 'url("http://foo.com")'),
 
-      // keyword
-      array('foobar', 'ILess_Node_Keyword', 'foobar'),
+            // keyword
+            array('foobar', 'ILess_Node_Keyword', 'foobar'),
 
-      // variables
-      array('@color', 'ILess_Node_Variable', ''),
-    );
+            // variables
+            array('@color', 'ILess_Node_Variable', ''),
+        );
 
-  }
+    }
 
-  /**
-   * @covers parseSelector
-   * @dataProvider getDataForSelectorTest
-   */
-  public function testParseSelector($string, $expectedOutput)
-  {
-    $result = $this->parser->testParseSelector($string);
-    $this->assertInstanceOf('ILess_Node_Selector', $result);
-    $output = new ILess_Output();
-    $env = new ILess_Environment();
-    $result->generateCss($env, $output);
-    $this->assertEquals($expectedOutput, $output->toString());
-  }
+    /**
+     * @covers       parseSelector
+     * @dataProvider getDataForSelectorTest
+     */
+    public function testParseSelector($string, $expectedOutput)
+    {
+        $result = $this->parser->testParseSelector($string);
+        $this->assertInstanceOf('ILess_Node_Selector', $result);
+        $output = new ILess_Output();
+        $env = new ILess_Environment();
+        $result->generateCss($env, $output);
+        $this->assertEquals($expectedOutput, $output->toString());
+    }
 
-  public function getDataForSelectorTest()
-  {
-    return array(
-      array('h1 {}', ' h1'),
-      array('div > h1 {}', ' div > h1'),
-      array('div > h1:last {}', ' div > h1:last')
-    );
-  }
+    public function getDataForSelectorTest()
+    {
+        return array(
+            array('h1 {}', ' h1'),
+            array('div > h1 {}', ' div > h1'),
+            array('div > h1:last {}', ' div > h1:last')
+        );
+    }
 
-  /**
-   * @covers parseElement
-   * @dataProvider getDataForElementTest
-   */
-  public function testParseElement($string, $expectedOutput)
-  {
-    $result = $this->parser->testParseElement($string);
-    $this->assertInstanceOf('ILess_Node_Element', $result);
-    $output = new ILess_Output();
-    $env = new ILess_Environment();
-    $result->generateCss($env, $output);
-    $this->assertEquals($expectedOutput, $output->toString());
-  }
+    /**
+     * @covers       parseElement
+     * @dataProvider getDataForElementTest
+     */
+    public function testParseElement($string, $expectedOutput)
+    {
+        $result = $this->parser->testParseElement($string);
+        $this->assertInstanceOf('ILess_Node_Element', $result);
+        $output = new ILess_Output();
+        $env = new ILess_Environment();
+        $result->generateCss($env, $output);
+        $this->assertEquals($expectedOutput, $output->toString());
+    }
 
-  public function getDataForElementTest()
-  {
-    return array(
-      array('h1 {}', 'h1'),
-      array('div > h1 {}', 'div'),
-      array('div > h1:last {}', 'div')
-    );
-  }
+    public function getDataForElementTest()
+    {
+        return array(
+            array('h1 {}', 'h1'),
+            array('div > h1 {}', 'div'),
+            array('div > h1:last {}', 'div')
+        );
+    }
 
-  /**
-   * @covers parseMedia
-   * @dataProvider getDataForMediaTest
-   */
-  public function testParseMedia($string)
-  {
-    $result = $this->parser->testParseMedia($string);
-    $this->assertInstanceOf('ILess_Node_Media', $result);
-  }
+    /**
+     * @covers       parseMedia
+     * @dataProvider getDataForMediaTest
+     */
+    public function testParseMedia($string)
+    {
+        $result = $this->parser->testParseMedia($string);
+        $this->assertInstanceOf('ILess_Node_Media', $result);
+    }
 
-  public function getDataForMediaTest()
-  {
-    return array(
-      array('@media screen { body { max-width: 60; } }'),
-    );
-  }
+    public function getDataForMediaTest()
+    {
+        return array(
+            array('@media screen { body { max-width: 60; } }'),
+        );
+    }
 
 }

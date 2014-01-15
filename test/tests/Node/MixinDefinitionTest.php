@@ -15,21 +15,21 @@
  */
 class ILess_Node_MixinDefinition_Test extends ILess_TestCase
 {
-  /**
-   * @covers __constructor
-   */
-  public function testConstructor()
-  {
-    $md = new ILess_Node_MixinDefinition('foobar');
-  }
+    /**
+     * @covers __constructor
+     */
+    public function testConstructor()
+    {
+        $md = new ILess_Node_MixinDefinition('foobar');
+    }
 
-  /**
-   * @covers getType
-   */
-  public function testGetType()
-  {
-    $md = new ILess_Node_MixinDefinition('foobar');
-    $this->assertEquals('MixinDefinition', $md->getType());
-  }
+    /**
+     * @covers getType
+     */
+    public function testGetType()
+    {
+        $md = new ILess_Node_MixinDefinition('foobar');
+        $this->assertEquals('MixinDefinition', $md->getType());
+    }
 
 }

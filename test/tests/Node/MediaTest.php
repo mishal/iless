@@ -16,29 +16,29 @@
  */
 class ILess_Node_Media_Test extends ILess_TestCase
 {
-  /**
-   * @covers __constructor
-   */
-  public function testConstructor()
-  {
-    $d = new ILess_Node_Media(array('black'));
-  }
+    /**
+     * @covers __constructor
+     */
+    public function testConstructor()
+    {
+        $d = new ILess_Node_Media(array('black'));
+    }
 
-  /**
-   * @covers getType
-   */
-  public function testGetType()
-  {
-    $d = new ILess_Node_Media(array('black'));
-    $this->assertEquals('Media', $d->getType());
-  }
+    /**
+     * @covers getType
+     */
+    public function testGetType()
+    {
+        $d = new ILess_Node_Media(array('black'));
+        $this->assertEquals('Media', $d->getType());
+    }
 
-  public function testCompile()
-  {
-    $env = new ILess_Environment();
-    $d = new ILess_Node_Keyword('black');
-    $result = $d->compile($env);
-    $this->assertInstanceOf('ILess_Node_Keyword', $result);
-  }
+    public function testCompile()
+    {
+        $env = new ILess_Environment();
+        $d = new ILess_Node_Keyword('black');
+        $result = $d->compile($env);
+        $this->assertInstanceOf('ILess_Node_Keyword', $result);
+    }
 
 }

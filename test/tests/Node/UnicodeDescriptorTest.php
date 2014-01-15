@@ -16,34 +16,34 @@
  */
 class ILess_Node_UnicodeDescriptor_Test extends ILess_TestCase
 {
-  /**
-   * @covers __constructor
-   */
-  public function testConstructor()
-  {
-    $d = new ILess_Node_UnicodeDescriptor('foobar');
-  }
+    /**
+     * @covers __constructor
+     */
+    public function testConstructor()
+    {
+        $d = new ILess_Node_UnicodeDescriptor('foobar');
+    }
 
-  /**
-   * @covers getType
-   */
-  public function testGetType()
-  {
-    $d = new ILess_Node_UnicodeDescriptor('foobar');
-    $this->assertEquals('UnicodeDescriptor', $d->getType());
-  }
+    /**
+     * @covers getType
+     */
+    public function testGetType()
+    {
+        $d = new ILess_Node_UnicodeDescriptor('foobar');
+        $this->assertEquals('UnicodeDescriptor', $d->getType());
+    }
 
-  /**
-   * @covers generateCss
-   */
-  public function testGenerateCss()
-  {
-    $env = new ILess_Environment();
-    $output = new ILess_Output();
+    /**
+     * @covers generateCss
+     */
+    public function testGenerateCss()
+    {
+        $env = new ILess_Environment();
+        $output = new ILess_Output();
 
-    $d = new ILess_Node_UnicodeDescriptor('foobar');
-    $d->generateCss($env, $output);
-    $this->assertEquals('foobar', $output->toString());
-  }
+        $d = new ILess_Node_UnicodeDescriptor('foobar');
+        $d->generateCss($env, $output);
+        $this->assertEquals('foobar', $output->toString());
+    }
 
 }

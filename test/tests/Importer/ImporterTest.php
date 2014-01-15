@@ -16,36 +16,36 @@
  */
 class ILess_Importer_Test extends ILess_TestCase
 {
-  /**
-   * @covers registerImporter
-   */
-  public function testRegisterImporter()
-  {
-    $env = new ILess_Environment();
-    $i = new ILess_Importer($env, array(), new ILess_Cache_None());
+    /**
+     * @covers registerImporter
+     */
+    public function testRegisterImporter()
+    {
+        $env = new ILess_Environment();
+        $i = new ILess_Importer($env, array(), new ILess_Cache_None());
 
-    $r = $i->registerImporter(new ILess_Importer_FileSystem(), 'file_system');
-    $i->registerImporter(new ILess_Importer_FileSystem(), 'disc');
+        $r = $i->registerImporter(new ILess_Importer_FileSystem(), 'file_system');
+        $i->registerImporter(new ILess_Importer_FileSystem(), 'disc');
 
-    // fluent interface
-    $this->assertInstanceOf('ILess_Importer', $r);
-    $this->assertInstanceOf('ILess_Importer_FileSystem', $i->getImporter('file_system'));
+        // fluent interface
+        $this->assertInstanceOf('ILess_Importer', $r);
+        $this->assertInstanceOf('ILess_Importer_FileSystem', $i->getImporter('file_system'));
 
-    $this->assertInstanceOf('ILess_Importer_FileSystem', $i->getImporter('disc'));
-  }
+        $this->assertInstanceOf('ILess_Importer_FileSystem', $i->getImporter('disc'));
+    }
 
-  /**
-   * @covers getImporters
-   */
-  public function testGetImporters()
-  {
-    $env = new ILess_Environment();
-    $importer = new ILess_Importer_FileSystem();
-    $i = new ILess_Importer($env, array('disc' => $importer), new ILess_Cache_None());
+    /**
+     * @covers getImporters
+     */
+    public function testGetImporters()
+    {
+        $env = new ILess_Environment();
+        $importer = new ILess_Importer_FileSystem();
+        $i = new ILess_Importer($env, array('disc' => $importer), new ILess_Cache_None());
 
-    $this->assertEquals(array(
-      'disc' => $importer
-    ), $i->getImporters());
-  }
+        $this->assertEquals(array(
+            'disc' => $importer
+        ), $i->getImporters());
+    }
 
 }

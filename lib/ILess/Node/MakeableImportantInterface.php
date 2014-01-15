@@ -15,10 +15,10 @@
  */
 interface ILess_Node_MakeableImportantInterface
 {
-  /**
-   * Makes the node important
-   *
-   * @return void
-   */
-  public function makeImportant();
+    /**
+     * Makes the node important
+     *
+     * @return void
+     */
+    public function makeImportant();
 }

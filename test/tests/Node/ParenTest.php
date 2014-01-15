@@ -16,34 +16,34 @@
  */
 class ILess_Node_Paren_Test extends ILess_TestCase
 {
-  /**
-   * @covers __constructor
-   */
-  public function testConstructor()
-  {
-    $p = new ILess_Node_Paren(new ILess_Node_Anonymous('foobar'));
-  }
+    /**
+     * @covers __constructor
+     */
+    public function testConstructor()
+    {
+        $p = new ILess_Node_Paren(new ILess_Node_Anonymous('foobar'));
+    }
 
-  /**
-   * @covers getType
-   */
-  public function testGetType()
-  {
-    $p = new ILess_Node_Paren(new ILess_Node_Anonymous('foobar'));
-    $this->assertEquals('Paren', $p->getType());
-  }
+    /**
+     * @covers getType
+     */
+    public function testGetType()
+    {
+        $p = new ILess_Node_Paren(new ILess_Node_Anonymous('foobar'));
+        $this->assertEquals('Paren', $p->getType());
+    }
 
-  /**
-   * @covers generateCss
-   */
-  public function testGenerateCss()
-  {
-    $env = new ILess_Environment();
-    $output = new ILess_Output();
+    /**
+     * @covers generateCss
+     */
+    public function testGenerateCss()
+    {
+        $env = new ILess_Environment();
+        $output = new ILess_Output();
 
-    $p = new ILess_Node_Paren(new ILess_Node_Anonymous('foobar'));
-    $p->generateCss($env, $output);
-    $this->assertEquals('(foobar)', $output->toString());
-  }
+        $p = new ILess_Node_Paren(new ILess_Node_Anonymous('foobar'));
+        $p->generateCss($env, $output);
+        $this->assertEquals('(foobar)', $output->toString());
+    }
 
 }

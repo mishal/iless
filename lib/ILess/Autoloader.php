@@ -15,70 +15,70 @@
  */
 class ILess_Autoloader
 {
-  /**
-   * Registered flag
-   *
-   * @var boolean
-   */
-  protected static $registered = false;
+    /**
+     * Registered flag
+     *
+     * @var boolean
+     */
+    protected static $registered = false;
 
-  /**
-   * Library directory
-   *
-   * @var string
-   */
-  protected static $libDir;
+    /**
+     * Library directory
+     *
+     * @var string
+     */
+    protected static $libDir;
 
-  /**
-   * Register the autoloader in the spl autoloader
-   *
-   * @return void
-   * @throws Exception If there was an error in registration
-   */
-  public static function register()
-  {
-    if (self::$registered) {
-      return;
+    /**
+     * Register the autoloader in the spl autoloader
+     *
+     * @return void
+     * @throws Exception If there was an error in registration
+     */
+    public static function register()
+    {
+        if (self::$registered) {
+            return;
+        }
+
+        self::$libDir = dirname(dirname(__FILE__));
+
+        if (false === spl_autoload_register(array('ILess_Autoloader', 'loadClass'))) {
+            throw new Exception('Unable to register ILess_Autoloader::loadClass as an autoloading method.');
+        }
+
+        self::$registered = true;
     }
 
-    self::$libDir = dirname(dirname(__FILE__));
-
-    if (false === spl_autoload_register(array('ILess_Autoloader', 'loadClass'))) {
-      throw new Exception('Unable to register ILess_Autoloader::loadClass as an autoloading method.');
+    /**
+     * Unregisters the autoloader
+     *
+     * @return void
+     */
+    public static function unregister()
+    {
+        spl_autoload_unregister(array('ILess_Autoloader', 'loadClass'));
+        self::$registered = false;
     }
 
-    self::$registered = true;
-  }
+    /**
+     * Loads the class
+     *
+     * @param string $className The class to load
+     */
+    public static function loadClass($className)
+    {
+        // handle only package classes
+        if (strpos($className, 'ILess_') !== 0) {
+            return;
+        }
 
-  /**
-   * Unregisters the autoloader
-   *
-   * @return void
-   */
-  public static function unregister()
-  {
-    spl_autoload_unregister(array('ILess_Autoloader', 'loadClass'));
-    self::$registered = false;
-  }
+        $fileName = self::$libDir . '/' . str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
+        if (file_exists($fileName)) {
+            require $fileName;
 
-  /**
-   * Loads the class
-   *
-   * @param string $className The class to load
-   */
-  public static function loadClass($className)
-  {
-    // handle only package classes
-    if (strpos($className, 'ILess_') !== 0) {
-      return;
+            return true;
+        }
     }
-
-    $fileName = self::$libDir . '/' . str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
-    if (file_exists($fileName)) {
-      require $fileName;
-
-      return true;
-    }
-  }
 
 }
