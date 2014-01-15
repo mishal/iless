@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage debug
  */
-class ILess_DebugInfo {
-
+class ILess_DebugInfo
+{
   /**
    * Comment format
    */
@@ -107,10 +107,10 @@ class ILess_DebugInfo {
   protected function replaceCallback($match)
   {
     $match = $match[0];
-    if($match == '\\')
-    {
+    if ($match == '\\') {
       $match = '\/';
     }
+
     return '\\' . $match;
   }
 

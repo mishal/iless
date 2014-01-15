@@ -32,7 +32,6 @@ class ILess_Node_Dimension_Test extends ILess_TestCase
     $this->assertEquals('Dimension', $d->getType());
   }
 
-
   /**
    * @covers toColor
    */

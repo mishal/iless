@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Paren extends ILess_Node implements ILess_Node_VisitableInterface {
-
+class ILess_Node_Paren extends ILess_Node implements ILess_Node_VisitableInterface
+{
   /**
    * Node type
    *
@@ -45,10 +45,10 @@ class ILess_Node_Paren extends ILess_Node implements ILess_Node_VisitableInterfa
    */
   public function compile(ILess_Environment $env, $arguments = null, $important = null)
   {
-    if(!is_object($this->value))
-    {
+    if (!is_object($this->value)) {
       return $this;
     }
+
     return new ILess_Node_Paren($this->value->compile($env));
   }
 

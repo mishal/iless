@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage test
  */
-class ILess_SourceMap_Test extends ILess_TestCase {
-
+class ILess_SourceMap_Test extends ILess_TestCase
+{
   public function setUp()
   {
     $this->sourceMap = sys_get_temp_dir() . '/media.css.map';
@@ -32,8 +32,7 @@ class ILess_SourceMap_Test extends ILess_TestCase {
 
   public function tearDown()
   {
-    if(isset($this->sourceMap))
-    {
+    if (isset($this->sourceMap)) {
       // @unlink($this->sourceMap);
     }
   }

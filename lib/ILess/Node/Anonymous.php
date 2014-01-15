@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Anonymous extends ILess_Node {
-
+class ILess_Node_Anonymous extends ILess_Node
+{
   /**
    * Node type
    *
@@ -53,7 +53,7 @@ class ILess_Node_Anonymous extends ILess_Node {
    */
   public function __construct($value, $index = 0, ILess_FileInfo $currentFileInfo = null, $mapLines = false)
   {
-    $this->value = (string)($value instanceof ILess_Node ? $value->value : $value);
+    $this->value = (string) ($value instanceof ILess_Node ? $value->value : $value);
     $this->index = $index;
     $this->currentFileInfo = $currentFileInfo;
     $this->mapLines = $mapLines;
@@ -97,8 +97,7 @@ class ILess_Node_Anonymous extends ILess_Node {
    */
   public function compare(ILess_Node $other)
   {
-    if(!self::methodExists($other, 'toCSS'))
-    {
+    if (!self::methodExists($other, 'toCSS')) {
       return -1;
     }
 
@@ -107,8 +106,7 @@ class ILess_Node_Anonymous extends ILess_Node {
     $left = $this->toCSS($env);
     $right = $other->toCSS($env);
 
-    if($left === $right)
-    {
+    if ($left === $right) {
       return 0;
     }
 

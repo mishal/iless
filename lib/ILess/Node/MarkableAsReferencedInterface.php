@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-interface ILess_Node_MarkableAsReferencedInterface {
-
+interface ILess_Node_MarkableAsReferencedInterface
+{
   /**
    * Marks as referenced
    *

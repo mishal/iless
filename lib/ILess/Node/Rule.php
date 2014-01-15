@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Rule extends ILess_Node implements ILess_Node_VisitableInterface, ILess_Node_MakeableImportantInterface {
-
+class ILess_Node_Rule extends ILess_Node implements ILess_Node_VisitableInterface, ILess_Node_MakeableImportantInterface
+{
   /**
    * Node type
    *
@@ -92,8 +92,7 @@ class ILess_Node_Rule extends ILess_Node implements ILess_Node_VisitableInterfac
     $this->currentFileInfo = $currentFileInfo;
     $this->inline = (boolean) $inline;
 
-    if($name[0] === '@')
-    {
+    if ($name[0] === '@') {
       $this->variable = true;
     }
   }
@@ -112,37 +111,30 @@ class ILess_Node_Rule extends ILess_Node implements ILess_Node_VisitableInterfac
   public function compile(ILess_Environment $env, $arguments = null, $important = null)
   {
     $strictMathBypass = false;
-    if($this->name === 'font' && !$env->strictMath)
-    {
+    if ($this->name === 'font' && !$env->strictMath) {
       $strictMathBypass = true;
       $env->strictMath = true;
     }
 
     $e = null;
-    try
-    {
+    try {
       $return = new ILess_Node_Rule($this->name,
                       $this->value->compile($env),
                       $this->important, $this->merge,
                       $this->index, $this->currentFileInfo,
                       $this->inline
                 );
-    }
-    catch(Exception $e)
-    {
-      if($e instanceof ILess_Exception && !$e->getIndex())
-      {
+    } catch (Exception $e) {
+      if ($e instanceof ILess_Exception && !$e->getIndex()) {
         $e->setIndex($this->index);
       }
     }
 
-    if($strictMathBypass)
-    {
+    if ($strictMathBypass) {
       $env->strictMath = false;
     }
 
-    if(isset($e))
-    {
+    if (isset($e)) {
       throw $e;
     }
 
@@ -155,14 +147,10 @@ class ILess_Node_Rule extends ILess_Node implements ILess_Node_VisitableInterfac
   public function generateCSS(ILess_Environment $env, ILess_Output $output)
   {
     $output->add($this->name . ($env->compress ? ':' : ': '), $this->currentFileInfo, $this->index);
-    try
-    {
+    try {
       $this->value->generateCSS($env, $output);
-    }
-    catch(ILess_Exception $e)
-    {
-      if($this->currentFileInfo)
-      {
+    } catch (ILess_Exception $e) {
+      if ($this->currentFileInfo) {
         $e->setCurrentFile($this->currentFileInfo);
         $e->setIndex($this->index);
       }
@@ -187,4 +175,3 @@ class ILess_Node_Rule extends ILess_Node implements ILess_Node_VisitableInterfac
   }
 
 }
-

@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage exception
  */
-class ILess_Exception extends Exception {
-
+class ILess_Exception extends Exception
+{
   /**
    * The current file
    *
@@ -50,13 +50,10 @@ class ILess_Exception extends Exception {
    */
   public function __construct($message = null, Exception $previous = null, $index = null, $currentFile = null, $code = 0)
   {
-    if(PHP_VERSION_ID < 50300)
-    {
+    if (PHP_VERSION_ID < 50300) {
       $this->previous = $previous;
       parent::__construct($message, $code);
-    }
-    else
-    {
+    } else {
       parent::__construct($message, $code, $previous);
     }
 
@@ -72,7 +69,7 @@ class ILess_Exception extends Exception {
    */
   public static function setFileEditorUrlFormat($format)
   {
-    self::$fileEditUrlFormat = (string)$format;
+    self::$fileEditUrlFormat = (string) $format;
   }
 
   /**
@@ -133,24 +130,22 @@ class ILess_Exception extends Exception {
   private function getErrorLine()
   {
     $line = false;
-    if($this->index !== null && ($this->currentFile))
-    {
+    if ($this->index !== null && ($this->currentFile)) {
       $content = null;
       if($this->currentFile instanceof ILess_FileInfo
           && $this->currentFile->importedFile)
       {
         $content = $this->currentFile->importedFile->getContent();
-      }
-      elseif(is_string($this->currentFile) && ILess_Util::isPathAbsolute($this->currentFile)
+      } elseif(is_string($this->currentFile) && ILess_Util::isPathAbsolute($this->currentFile)
           && is_readable($this->currentFile))
       {
         $content = file_get_contents($this->currentFile);
       }
-      if($content)
-      {
+      if ($content) {
         $line = ILess_Util::getLineNumber($content, $this->index);
       }
     }
+
     return $line;
   }
 
@@ -164,26 +159,20 @@ class ILess_Exception extends Exception {
    */
   protected function getFileEditorLink($file, $line = null)
   {
-    if($file instanceof ILess_FileInfo)
-    {
+    if ($file instanceof ILess_FileInfo) {
       $path = $file->filename;
-      if($file->importedFile)
-      {
+      if ($file->importedFile) {
         $path = $file->importedFile->getPath();
       }
-      if(strpos($path, '__string_to_parse__') === 0)
-      {
+      if (strpos($path, '__string_to_parse__') === 0) {
         $path = '[input string]';
       }
-    }
-    else
-    {
+    } else {
       $path = $file;
     }
 
     // when in cli or not accessible via filesystem, don't generate links
-    if(PHP_SAPI == 'cli' || !ILess_Util::isPathAbsolute($path))
-    {
+    if (PHP_SAPI == 'cli' || !ILess_Util::isPathAbsolute($path)) {
       return $path;
     }
 
@@ -204,33 +193,26 @@ class ILess_Exception extends Exception {
   public function __toString()
   {
     $string = $this->message;
-    if($this->currentFile)
-    {
+    if ($this->currentFile) {
       // we have an line from the file
-      if(($line = $this->getErrorLine()) !== false)
-      {
+      if (($line = $this->getErrorLine()) !== false) {
         $string = sprintf('%s (%s, line: %s)', $this->message, $this->getFileEditorLink($this->currentFile, $line), $line);
-      }
-      else
-      {
+      } else {
         $string = sprintf('%s (%s, line: ?)', $this->message, $this->getFileEditorLink($this->currentFile));
       }
     }
 
     $previous = null;
     // PHP 5.3
-    if(method_exists($this, 'getPrevious'))
-    {
+    if (method_exists($this, 'getPrevious')) {
       $previous = $this->getPrevious();
     }
     // PHP 5.2
-    elseif(isset($this->previous))
-    {
+    elseif (isset($this->previous)) {
       $previous = $this->previous;
     }
 
-    if($previous)
-    {
+    if ($previous) {
       $string .= sprintf(", caused by %s, %s\n%s", get_class($previous), $previous->getMessage(), $previous->getTraceAsString());
     }
 

@@ -14,8 +14,8 @@
  * @subpackage node
  * @todo Implement proper mime detection using Fileinfo
  */
-class ILess_Mime {
-
+class ILess_Mime
+{
   /**
    * Mime types extension map
    *
@@ -40,10 +40,10 @@ class ILess_Mime {
   {
     $parts = explode('.', $filepath);
     $ext = '.' . strtolower(array_pop($parts));
-    if(!isset(self::$types[$ext]))
-    {
+    if (!isset(self::$types[$ext])) {
       return;
     }
+
     return self::$types[$ext];
   }
 

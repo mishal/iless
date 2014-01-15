@@ -14,8 +14,8 @@
  * @subpackage test
  * @covers ILess_Node_Javascript
  */
-class ILess_Node_Javascript_Test extends ILess_TestCase {
-
+class ILess_Node_Javascript_Test extends ILess_TestCase
+{
   /**
    * @covers __constructor
    */

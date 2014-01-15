@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Alpha extends ILess_Node implements ILess_Node_VisitableInterface {
-
+class ILess_Node_Alpha extends ILess_Node implements ILess_Node_VisitableInterface
+{
   /**
    * Node type
    *
@@ -36,13 +36,10 @@ class ILess_Node_Alpha extends ILess_Node implements ILess_Node_VisitableInterfa
   public function generateCSS(ILess_Environment $env, ILess_Output $output)
   {
     $output->add('alpha(opacity=');
-    if(self::methodExists($this->value, 'generateCSS'))
-    {
+    if (self::methodExists($this->value, 'generateCSS')) {
       $this->value->generateCSS($env, $output);
-    }
-    else
-    {
-      $output->add((string)$this->value);
+    } else {
+      $output->add((string) $this->value);
     }
     $output->add(')');
   }
@@ -52,10 +49,10 @@ class ILess_Node_Alpha extends ILess_Node implements ILess_Node_VisitableInterfa
    */
   public function compile(ILess_Environment $env, $arguments = null, $important = null)
   {
-    if(self::methodExists($this->value, 'compile'))
-    {
+    if (self::methodExists($this->value, 'compile')) {
       $this->value = $this->value->compile($env);
     }
+
     return $this;
   }
 

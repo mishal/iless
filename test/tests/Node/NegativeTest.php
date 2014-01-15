@@ -45,9 +45,8 @@ class ILess_Node_Negative_Test extends ILess_TestCase
 
     $d->generateCss($env, $output);
 
-
     $this->assertEquals('15 bar;', $output->toString());
-     * 
+     *
      */
   }
 

@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Extend extends ILess_Node implements ILess_Node_VisitableInterface {
-
+class ILess_Node_Extend extends ILess_Node implements ILess_Node_VisitableInterface
+{
   /**
    * Node type
    *
@@ -100,8 +100,7 @@ class ILess_Node_Extend extends ILess_Node implements ILess_Node_VisitableInterf
     $this->selector = $selector;
     $this->option = $option;
     $this->index = $index;
-    if($option == 'all')
-    {
+    if ($option == 'all') {
       $this->allowBefore = true;
       $this->allowAfter = true;
     }
@@ -123,6 +122,7 @@ class ILess_Node_Extend extends ILess_Node implements ILess_Node_VisitableInterf
   public function compile(ILess_Environment $env, $arguments = null, $important = null)
   {
     $env->hasExtends = true;
+
     return new ILess_Node_Extend($this->selector->compile($env), $this->option, $this->index);
   }
 
@@ -141,11 +141,9 @@ class ILess_Node_Extend extends ILess_Node implements ILess_Node_VisitableInterf
   public function findSelfSelectors($selectors)
   {
     $selfElements = array();
-    for($i = 0, $count = count($selectors); $i < $count; $i++)
-    {
+    for ($i = 0, $count = count($selectors); $i < $count; $i++) {
       $selectorElements = $selectors[$i]->elements;
-      if($i > 0 && count($selectorElements) && $selectorElements[0]->combinator->value == '')
-      {
+      if ($i > 0 && count($selectorElements) && $selectorElements[0]->combinator->value == '') {
         $selectorElements[0]->combinator->value = ' ';
       }
       $selfElements = array_merge($selfElements, $selectors[$i]->elements);

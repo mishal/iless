@@ -14,8 +14,8 @@
  * @subpackage test
  * @covers ILess_Importer
  */
-class ILess_Importer_Test extends ILess_TestCase {
-
+class ILess_Importer_Test extends ILess_TestCase
+{
   /**
    * @covers registerImporter
    */

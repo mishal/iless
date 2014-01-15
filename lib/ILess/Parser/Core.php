@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage parser
  */
-class ILess_Parser_Core {
-
+class ILess_Parser_Core
+{
   /**
    * The environment
    *
@@ -97,25 +97,20 @@ class ILess_Parser_Core {
     // save the previous information
     $previousFileInfo = $this->env->currentFileInfo;
 
-    if(!($file instanceof ILess_ImportedFile))
-    {
+    if (!($file instanceof ILess_ImportedFile)) {
       $this->env->setCurrentFile($file);
 
-      if($previousFileInfo)
-      {
+      if ($previousFileInfo) {
         $this->env->currentFileInfo->reference = $previousFileInfo->reference;
       }
 
       // try to load it via importer
       list(, $file) = $this->importer->import($file, $this->env->currentFileInfo);
       $this->env->setCurrentFile($file->getPath());
-    }
-    else
-    {
+    } else {
       $this->env->setCurrentFile($file->getPath());
 
-      if($previousFileInfo)
-      {
+      if ($previousFileInfo) {
         $this->env->currentFileInfo->reference = $previousFileInfo->reference;
       }
     }
@@ -124,13 +119,11 @@ class ILess_Parser_Core {
 
     $rules = $this->parse($file->getContent());
 
-    if($previousFileInfo)
-    {
+    if ($previousFileInfo) {
       $this->env->currentFileInfo = $previousFileInfo;
     }
 
-    if($returnRuleset)
-    {
+    if ($returnRuleset) {
       return new ILess_Node_Ruleset(array(), $rules);
     }
 
@@ -148,7 +141,7 @@ class ILess_Parser_Core {
    */
   public function parseString($string, $filename = '__string_to_parse__')
   {
-    $string = ILess_Util::normalizeString((string)$string);
+    $string = ILess_Util::normalizeString((string) $string);
 
     // we need unique key
     $key = sprintf('%s[__%s__]', $filename, md5($string));
@@ -163,12 +156,12 @@ class ILess_Parser_Core {
     $this->env->currentFileInfo->importedFile = $importedFile;
     $this->importer->setImportedFile($key, $importedFile);
 
-    if($this->env->sourceMap)
-    {
+    if ($this->env->sourceMap) {
       $this->env->setFileContent($key, $string);
     }
 
     $this->rules = array_merge($this->rules, $this->parse($string));
+
     return $this;
   }
 
@@ -181,6 +174,7 @@ class ILess_Parser_Core {
   public function addVariables(array $variables)
   {
     $this->variables = array_merge($this->variables, $variables);
+
     return $this;
   }
 
@@ -192,6 +186,7 @@ class ILess_Parser_Core {
   public function clearVariables()
   {
     $this->variables = array();
+
     return $this;
   }
 
@@ -204,6 +199,7 @@ class ILess_Parser_Core {
   public function setVariables(array $variables)
   {
     $this->variables = $variables;
+
     return $this;
   }
 
@@ -216,22 +212,18 @@ class ILess_Parser_Core {
    */
   public function unsetVariable($variable)
   {
-    if(!is_array($variable))
-    {
+    if (!is_array($variable)) {
       $variable = array($variable);
     }
 
-    foreach($variable as $name)
-    {
-      if(isset($this->variables[$name]))
-      {
+    foreach ($variable as $name) {
+      if (isset($this->variables[$name])) {
         unset($this->variables[$name]);
-      }
-      elseif(isset($this->variables['!' . $name]))
-      {
+      } elseif (isset($this->variables['!' . $name])) {
         unset($this->variables['!'.$name]);
       }
     }
+
     return $this;
   }
 
@@ -251,13 +243,13 @@ class ILess_Parser_Core {
 
     $rules = $this->parsePrimary();
     // has the whole string been parsed?
-    if($this->position < $this->length)
-    {
+    if ($this->position < $this->length) {
       throw new ILess_Exception_Parser(sprintf('There was an error while parsing the string. Near `%s`.',
           // FIXME: what about utf8?
           substr($this->input, $this->position, strpos($this->input, "\n", $this->position) - $this->position)),
           null, $this->position, $this->env->currentFileInfo);
     }
+
     return $rules;
   }
 
@@ -293,6 +285,7 @@ class ILess_Parser_Core {
     $this->setStringToBeParsed(null);
     $this->rules = array();
     $this->variables = array();
+
     return $this;
   }
 
@@ -314,10 +307,10 @@ class ILess_Parser_Core {
    */
   public function getCSS()
   {
-    if(!count($this->rules))
-    {
+    if (!count($this->rules)) {
       return '';
     }
+
     return $this->toCSS($this->getRootRuleset(), $this->variables);
   }
 
@@ -332,6 +325,7 @@ class ILess_Parser_Core {
     $root = new ILess_Node_Ruleset(array(), $this->rules);
     $root->root = true;
     $root->firstRoot = true;
+
     return $root;
   }
 
@@ -347,8 +341,7 @@ class ILess_Parser_Core {
     $this->setupMathAndLocale();
 
     // precompilation visitors
-    foreach($this->getPreCompileVisitors() as $visitor)
-    {
+    foreach ($this->getPreCompileVisitors() as $visitor) {
       $visitor->run($ruleset);
     }
 
@@ -358,26 +351,21 @@ class ILess_Parser_Core {
     $compiled = $ruleset->compile($this->env);
 
     // post compilation visitors
-    foreach($this->getPostCompileVisitors() as $visitor)
-    {
+    foreach ($this->getPostCompileVisitors() as $visitor) {
       $visitor->run($compiled);
     }
 
-    if($this->getEnvironment()->sourceMap)
-    {
+    if ($this->getEnvironment()->sourceMap) {
       $generator = new ILess_SourceMap_Generator($compiled,
           $this->env->getContentsMap(), $this->env->sourceMapOptions);
       // will also save file
       // FIXME: should happen somewhere else?
       $css = $generator->generateCSS($this->env);
-    }
-    else
-    {
+    } else {
       $css = $compiled->toCSS($this->env);
     }
 
-    if($this->env->compress)
-    {
+    if ($this->env->compress) {
       $css = preg_replace('/(^(\s)+)|((\s)+$)/', '', $css);
     }
 
@@ -396,24 +384,20 @@ class ILess_Parser_Core {
   {
     // FIXME: flag to mark variables as prepared!
     $prepared = array();
-    foreach($variables as $name => $value)
-    {
+    foreach ($variables as $name => $value) {
       // user provided node, no need to process it further
-      if($value instanceof ILess_Node)
-      {
+      if ($value instanceof ILess_Node) {
         $prepared[] = $value;
         continue;
       }
       // this is not an "real" variable
-      if(!$value instanceof ILess_Variable)
-      {
+      if (!$value instanceof ILess_Variable) {
         $value = ILess_Variable::create($name, $value);
       }
       $prepared[] = $value->toNode();
     }
 
-    if(count($prepared))
-    {
+    if (count($prepared)) {
       $env->customVariables = new ILess_Node_Ruleset(array(), $prepared);
     }
   }
@@ -427,8 +411,7 @@ class ILess_Parser_Core {
   {
     $preCompileVisitors = array();
     // only if process is allowed
-    if($this->env->processImports)
-    {
+    if ($this->env->processImports) {
       $preCompileVisitors[] = new ILess_Visitor_Import($this->getEnvironment(), $this->getImporter());
     }
     // FIXME: allow plugins to hook here
@@ -446,8 +429,7 @@ class ILess_Parser_Core {
       new ILess_Visitor_JoinSelector()
     );
 
-    if($this->env->hasExtends)
-    {
+    if ($this->env->hasExtends) {
       $postCompileVisitors[] = new ILess_Visitor_ProcessExtend();
     }
 
@@ -470,6 +452,7 @@ class ILess_Parser_Core {
     $this->input = ILess_Util::normalizeString($string);
     // FIXME: What about UTF-8?
     $this->length = strlen($this->input);
+
     return $this;
   }
 
@@ -493,15 +476,11 @@ class ILess_Parser_Core {
         'parseDirective'))
         ) || $this->skipSemicolons())
     {
-      if($node)
-      {
+      if ($node) {
         // we need to take care of arrays
-        if(is_array($node))
-        {
+        if (is_array($node)) {
           $root = array_merge($root, $node);
-        }
-        else
-        {
+        } else {
           $root[] = $node;
         }
       }
@@ -517,8 +496,7 @@ class ILess_Parser_Core {
    */
   protected function parseMixinDefinition()
   {
-    if((!$this->peekChar('.') && !$this->peekChar('#')) || $this->peekChar('/\\G[^{]*\}/'))
-    {
+    if ((!$this->peekChar('.') && !$this->peekChar('#')) || $this->peekChar('/\\G[^{]*\}/')) {
       return;
     }
 
@@ -528,8 +506,7 @@ class ILess_Parser_Core {
     $variadic = false;
     $cond = null;
 
-    if($match = $this->matchReg('/\\G([#.](?:[\w-]|\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+)\s*\(/'))
-    {
+    if ($match = $this->matchReg('/\\G([#.](?:[\w-]|\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+)\s*\(/')) {
       $name = $match[1];
       $argInfo = $this->parseMixinArgs(false);
       $params = $argInfo['args'];
@@ -537,27 +514,22 @@ class ILess_Parser_Core {
 
       // .mixincall("@{a}");
       // looks a bit like a mixin definition.. so we have to be nice and restore
-      if(!$this->matchChar(')'))
-      {
+      if (!$this->matchChar(')')) {
         $this->restore();
       }
 
       $this->parseComments();
 
       // Guard
-      if($this->matchString('when'))
-      {
+      if ($this->matchString('when')) {
         $cond = $this->expect('parseConditions', 'Expected conditions');
       }
 
       $ruleset = $this->parseBlock();
 
-      if(is_array($ruleset))
-      {
+      if (is_array($ruleset)) {
         return new ILess_Node_MixinDefinition($name, $params, $ruleset, $cond, $variadic);
-      }
-      else
-      {
+      } else {
         $this->restore();
       }
     }
@@ -584,38 +556,32 @@ class ILess_Parser_Core {
     $args = null;
     $c = null;
 
-    if(!$this->peekChar('.') && !$this->peekChar('#'))
-    {
+    if (!$this->peekChar('.') && !$this->peekChar('#')) {
       return;
     }
 
     $this->save(); // stop us absorbing part of an invalid selector
 
-    while($e = $this->matchReg('/\\G[#.](?:[\w-]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/'))
-    {
+    while ($e = $this->matchReg('/\\G[#.](?:[\w-]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/')) {
       $elements[] = new ILess_Node_Element($c, $e, $this->position, $this->env->currentFileInfo);
       $c = $this->matchChar('>');
     }
 
-    if($this->matchChar('('))
-    {
+    if ($this->matchChar('(')) {
       $returned = $this->parseMixinArgs(true);
       $args = $returned['args'];
       $this->expect(')');
     }
 
-    if(!$args)
-    {
+    if (!$args) {
       $args = array();
     }
 
-    if($this->parseImportant())
-    {
+    if ($this->parseImportant()) {
       $important = true;
     }
 
-    if(count($elements) > 0 && ($this->matchChar(';') || $this->peekChar('}')))
-    {
+    if (count($elements) > 0 && ($this->matchChar(';') || $this->peekChar('}'))) {
       return new ILess_Node_MixinCall($elements, $args, $index, $this->env->currentFileInfo, $important);
     }
 
@@ -634,45 +600,34 @@ class ILess_Parser_Core {
     $start = $this->position;
     $this->save();
 
-    if(isset($this->input[$this->position]))
-    {
+    if (isset($this->input[$this->position])) {
       $c = $this->input[$this->position];
-      if($c === '.' || $c === '#' || $c === '&')
-      {
+      if ($c === '.' || $c === '#' || $c === '&') {
         return;
       }
     }
 
-    if($name = $this->matchFuncs(array('parseVariable', 'parseRuleProperty')))
-    {
+    if ($name = $this->matchFuncs(array('parseVariable', 'parseRuleProperty'))) {
       // prefer to try to parse first if its a variable or we are compressing
       // but always fallback on the other one
-      if(!$tryAnonymous && ($this->env->compress || ($name[0] === '@')))
-      {
+      if (!$tryAnonymous && ($this->env->compress || ($name[0] === '@'))) {
         $value = $this->matchFuncs(array('parseValue', 'parseAnonymousValue'));
-      }
-      else
-      {
+      } else {
         $value = $this->matchFuncs(array('parseAnonymousValue', 'parseValue'));
       }
 
       $important = $this->parseImportant();
 
-      if(substr($name, -1) === '+')
-      {
+      if (substr($name, -1) === '+') {
         $merge = true;
         $name = substr($name, 0, -1);
       }
 
-      if($value && $this->parseEnd())
-      {
+      if ($value && $this->parseEnd()) {
         return new ILess_Node_Rule($name, $value, $important, $merge, $start, $this->env->currentFileInfo);
-      }
-      else
-      {
+      } else {
         $this->restore();
-        if($value && !$tryAnonymous)
-        {
+        if ($value && !$tryAnonymous) {
           return $this->parseRule(true);
         }
       }
@@ -686,9 +641,9 @@ class ILess_Parser_Core {
    */
   protected function parseAnonymousValue()
   {
-    if(preg_match('/\\G([^@+\/\'"*`(;{}-]*);/', $this->input, $match, 0, $this->position))
-    {
+    if (preg_match('/\\G([^@+\/\'"*`(;{}-]*);/', $this->input, $match, 0, $this->position)) {
       $this->position += strlen($match[0]) - 1;
+
       return new ILess_Node_Anonymous($match[1]);
     }
   }
@@ -706,22 +661,18 @@ class ILess_Parser_Core {
 
     $debugInfo = null;
     // debugging
-    if($this->env->dumpLineNumbers)
-    {
+    if ($this->env->dumpLineNumbers) {
       $debugInfo = $this->getDebugInfo($this->position, $this->input, $this->env);
     }
 
-    while($s = $this->parseLessSelector())
-    {
+    while ($s = $this->parseLessSelector()) {
       $selectors[] = $s;
       $this->parseComments();
-      if(!$this->matchChar(','))
-      {
+      if (!$this->matchChar(',')) {
         break;
       }
 
-      if($s->condition)
-      {
+      if ($s->condition) {
         throw new ILess_Exception_Parser('Guards are only currently allowed on a single selector.', null,
             $this->position, $this->env->currentFileInfo);
       }
@@ -729,17 +680,14 @@ class ILess_Parser_Core {
       $this->parseComments();
     }
 
-    if(count($selectors) > 0 && (is_array($rules = $this->parseBlock())))
-    {
+    if (count($selectors) > 0 && (is_array($rules = $this->parseBlock()))) {
       $ruleset = new ILess_Node_Ruleset($selectors, $rules, $this->env->strictImports);
-      if($debugInfo)
-      {
+      if ($debugInfo) {
         $ruleset->debugInfo = $debugInfo;
       }
+
       return $ruleset;
-    }
-    else
-    {
+    } else {
       // Backtrack
       $this->position = $start;
     }
@@ -774,22 +722,14 @@ class ILess_Parser_Core {
     while(($isLess && ($extend = $this->parseExtend()))
         || ($isLess && ($when = $this->matchString('when') )) || ($e = $this->parseElement()))
     {
-      if($when)
-      {
+      if ($when) {
         $condition = $this->expect('parseConditions', 'Expected condition');
-      }
-      elseif($condition)
-      {
+      } elseif ($condition) {
         throw new ILess_Exception_Parser('CSS guard can only be used at the end of selector.', null, $this->position, $this->env->currentFileInfo);
-      }
-      elseif($extend)
-      {
+      } elseif ($extend) {
         $extendList = array_merge($extendList, $extend);
-      }
-      else
-      {
-        if(count($extendList))
-        {
+      } else {
+        if (count($extendList)) {
           throw new ILess_Exception_Parser('Extend can only be used at the end of selector.', null, $this->position, $this->env->currentFileInfo);
         }
         $c = $this->input[$this->position];
@@ -797,19 +737,16 @@ class ILess_Parser_Core {
         $e = null;
       }
 
-      if($c === '{' || $c === '}' || $c === ';' || $c === ',' || $c === ')')
-      {
+      if ($c === '{' || $c === '}' || $c === ';' || $c === ',' || $c === ')') {
         break;
       }
     }
 
-    if(count($elements))
-    {
+    if (count($elements)) {
       return new ILess_Node_Selector($elements, $extendList, $condition, $this->position, $this->env->currentFileInfo);
     }
 
-    if(count($extendList))
-    {
+    if (count($extendList)) {
       throw new ILess_Exception_Parser('Extend must be used to extend a selector, it cannot be used on its own.', null, $this->position, $this->env->currentFileInfo);
     }
   }
@@ -825,41 +762,34 @@ class ILess_Parser_Core {
     $index = $this->position;
     $extendList = array();
 
-    if(!$this->matchString($isRule ? '&:extend(' : ':extend('))
-    {
+    if (!$this->matchString($isRule ? '&:extend(' : ':extend(')) {
       return;
     }
-    do
-    {
+    do {
       $option = null;
       $elements = array();
-      while(true)
-      {
+      while (true) {
         $option = $this->matchReg('/\\G(all)(?=\s*(\)|,))/');
-        if($option)
-        {
+        if ($option) {
           break;
         }
         $e = $this->parseElement();
-        if(!$e)
-        {
+        if (!$e) {
           break;
         }
         $elements[] = $e;
       }
 
-      if($option)
-      {
+      if ($option) {
         $option = $option[1];
       }
 
       $extendList[] = new ILess_Node_Extend(new ILess_Node_Selector($elements), $option, $index);
-    } while($this->matchChar(','));
+    } while ($this->matchChar(','));
 
     $this->expect('/\\G\)/');
 
-    if($isRule)
-    {
+    if ($isRule) {
       $this->expect('/\\G;/');
     }
 
@@ -906,19 +836,15 @@ class ILess_Parser_Core {
             'parseEntitiesVariableCurly'
           ));
 
-    if(!$e)
-    {
-      if($this->matchChar('('))
-      {
-        if(($v = $this->parseSelector()) && $this->matchChar(')'))
-        {
+    if (!$e) {
+      if ($this->matchChar('(')) {
+        if (($v = $this->parseSelector()) && $this->matchChar(')')) {
           $e = new ILess_Node_Paren($v);
         }
       }
     }
 
-    if($e)
-    {
+    if ($e) {
       return new ILess_Node_Element($c, $e, $this->position, $this->env->currentFileInfo);
     }
   }
@@ -936,22 +862,16 @@ class ILess_Parser_Core {
   protected function parseCombinator()
   {
     $c = isset($this->input[$this->position]) ? $this->input[$this->position] : '';
-    if($c === '>' || $c === '+' || $c === '~' || $c === '|')
-    {
+    if ($c === '>' || $c === '+' || $c === '~' || $c === '|') {
       $this->position++;
-      while($this->isWhitespace())
-      {
+      while ($this->isWhitespace()) {
         $this->position++;
       }
-      return new ILess_Node_Combinator($c);
-    }
-    elseif($this->position > 0 && (preg_match('/\s/', $this->input[$this->position - 1])))
-    {
-      return new ILess_Node_Combinator(' ');
-    }
-    else
-    {
 
+      return new ILess_Node_Combinator($c);
+    } elseif ($this->position > 0 && (preg_match('/\s/', $this->input[$this->position - 1]))) {
+      return new ILess_Node_Combinator(' ');
+    } else {
       return new ILess_Node_Combinator();
     }
   }
@@ -966,18 +886,15 @@ class ILess_Parser_Core {
     $val = null;
     $op = null;
 
-    if(!$this->matchChar('['))
-    {
+    if (!$this->matchChar('[')) {
       return;
     }
 
-    if(!($key = $this->parseEntitiesVariableCurly()))
-    {
+    if (!($key = $this->parseEntitiesVariableCurly())) {
       $key = $this->expect('/\\G(?:[_A-Za-z0-9-\*]*\|)?(?:[_A-Za-z0-9-]|\\\\.)+/');
     }
 
-    if(($op = $this->matchReg('/\\G[|~*$^]?=/')))
-    {
+    if (($op = $this->matchReg('/\\G[|~*$^]?=/'))) {
       $val = $this->match(array(
                 'parseEntitiesQuoted',
                 '/\\G[0-9]+%/',
@@ -987,6 +904,7 @@ class ILess_Parser_Core {
     }
 
     $this->expect(']');
+
     return new ILess_Node_Attribute($key, $op, $val);
   }
 
@@ -1000,16 +918,13 @@ class ILess_Parser_Core {
   protected function parseValue()
   {
     $expressions = array();
-    while($e = $this->parseExpression())
-    {
+    while ($e = $this->parseExpression()) {
       $expressions[] = $e;
-      if(!$this->matchChar(','))
-      {
+      if (!$this->matchChar(',')) {
         break;
       }
     }
-    if(count($expressions) > 0)
-    {
+    if (count($expressions) > 0) {
       return new ILess_Node_Value($expressions);
     }
   }
@@ -1021,8 +936,7 @@ class ILess_Parser_Core {
    */
   protected function parseImportant()
   {
-    if($this->peekChar('!'))
-    {
+    if ($this->peekChar('!')) {
       return $this->matchReg('/\\G! *important/');
     }
   }
@@ -1049,8 +963,7 @@ class ILess_Parser_Core {
    */
   protected function parseVariable()
   {
-    if($this->peekChar('@') && ($name = $this->matchReg('/\\G(@[\w-]+)\s*:/')))
-    {
+    if ($this->peekChar('@') && ($name = $this->matchReg('/\\G(@[\w-]+)\s*:/'))) {
       return $name[1];
     }
   }
@@ -1062,8 +975,7 @@ class ILess_Parser_Core {
    */
   protected function parseRuleProperty()
   {
-    if($name = $this->matchReg('/\\G(\*?-?[_a-zA-Z0-9-]+)\s*(\+?)\s*:/'))
-    {
+    if ($name = $this->matchReg('/\\G(\*?-?[_a-zA-Z0-9-]+)\s*(\+?)\s*:/')) {
       return $name[1] . (isset($name[2]) ? $name[2] : '');
     }
   }
@@ -1085,29 +997,20 @@ class ILess_Parser_Core {
     $name = null;
     $nameLoop = null;
     $returner = array('args' => null, 'variadic' => false);
-    while(true)
-    {
-      if($isCall)
-      {
+    while (true) {
+      if ($isCall) {
         $arg = $this->parseExpression();
-      }
-      else
-      {
+      } else {
         $this->parseComments();
-        if($this->input[$this->position] === '.' && $this->matchReg('/\\G\.{3}/'))
-        {
+        if ($this->input[$this->position] === '.' && $this->matchReg('/\\G\.{3}/')) {
           $returner['variadic'] = true;
-          if($this->matchChar(";") && !$isSemiColonSeperated)
-          {
+          if ($this->matchChar(";") && !$isSemiColonSeperated) {
             $isSemiColonSeperated = true;
           }
 
-          if($isSemiColonSeperated)
-          {
+          if ($isSemiColonSeperated) {
             $argsSemiColon[] = array('variadic' => true);
-          }
-          else
-          {
+          } else {
             $argsComma[] = array('variadic' => true);
           }
           break;
@@ -1115,94 +1018,71 @@ class ILess_Parser_Core {
         $arg = $this->matchFuncs(array('parseEntitiesVariable', 'parseEntitiesLiteral', 'parseEntitiesKeyword'));
       }
 
-      if(!$arg)
-      {
+      if (!$arg) {
         break;
       }
 
       $nameLoop = null;
-      if($arg instanceof ILess_Node_Expression)
-      {
+      if ($arg instanceof ILess_Node_Expression) {
         $arg->throwAwayComments();
       }
 
       $value = $arg;
       $val = null;
 
-      if($isCall)
-      {
+      if ($isCall) {
         // Variable
-        if(count($arg->value) == 1)
-        {
+        if (count($arg->value) == 1) {
           $val = $arg->value[0];
         }
-      }
-      else
-      {
+      } else {
         $val = $arg;
       }
 
-      if($val instanceof ILess_Node_Variable)
-      {
-        if($this->matchChar(':'))
-        {
-          if(count($expressions) > 0)
-          {
-            if($isSemiColonSeperated)
-            {
+      if ($val instanceof ILess_Node_Variable) {
+        if ($this->matchChar(':')) {
+          if (count($expressions) > 0) {
+            if ($isSemiColonSeperated) {
               throw new ILess_Exception_Parser('Cannot mix ; and , as delimiter types', null, $this->position, $this->env->currentFileInfo);
             }
             $expressionContainsNamed = true;
           }
           $value = $this->expect('parseExpression');
           $nameLoop = ($name = $val->name);
-        }
-        elseif(!$isCall && $this->matchReg('/\\G\.{3}/'))
-        {
+        } elseif (!$isCall && $this->matchReg('/\\G\.{3}/')) {
           $returner['variadic'] = true;
-          if($this->matchChar(";") && !$isSemiColonSeperated)
-          {
+          if ($this->matchChar(";") && !$isSemiColonSeperated) {
             $isSemiColonSeperated = true;
           }
-          if($isSemiColonSeperated)
-          {
+          if ($isSemiColonSeperated) {
             $argsSemiColon[] = array('name' => $arg->name, 'variadic' => true);
-          }
-          else
-          {
+          } else {
             $argsComma[] = array('name' => $arg->name, 'variadic' => true);
           }
           break;
-        }
-        elseif(!$isCall)
-        {
+        } elseif (!$isCall) {
           $name = $nameLoop = $val->name;
           $value = null;
         }
       }
 
-      if($value)
-      {
+      if ($value) {
         $expressions[] = $value;
       }
 
       $argsComma[] = array('name' => $nameLoop, 'value' => $value);
 
-      if($this->matchChar(','))
-      {
+      if ($this->matchChar(',')) {
         continue;
       }
 
-      if($this->matchChar(';') || $isSemiColonSeperated)
-      {
-        if($expressionContainsNamed)
-        {
+      if ($this->matchChar(';') || $isSemiColonSeperated) {
+        if ($expressionContainsNamed) {
           throw new ILess_Exception_Parser('Cannot mix ; and , as delimiter types', null, $this->position, $this->env->currentFileInfo);
         }
 
         $isSemiColonSeperated = true;
-        if(count($expressions) > 1)
-        {
+        if (count($expressions) > 1) {
           $value = new ILess_Node_Value($expressions);
         }
         $argsSemiColon[] = array('name' => $name, 'value' => $value);
@@ -1212,6 +1092,7 @@ class ILess_Parser_Core {
       }
     }
     $returner['args'] = ($isSemiColonSeperated ? $argsSemiColon : $argsComma);
+
     return $returner;
   }
 
@@ -1223,8 +1104,7 @@ class ILess_Parser_Core {
   protected function parseAddition()
   {
     $operation = false;
-    if($m = $this->parseMultiplication())
-    {
+    if ($m = $this->parseMultiplication()) {
       $isSpaced = $this->isWhitespace(-1);
       while(($op = ($op = $this->matchReg('/\\G[-+]\s+/')) ? $op : (!$isSpaced ? ($this->match(array('+', '-'))) : false ))
         && ($a = $this->parseMultiplication()))
@@ -1234,6 +1114,7 @@ class ILess_Parser_Core {
         $operation = new ILess_Node_Operation($op, array($operation ? $operation : $m, $a), $isSpaced);
         $isSpaced = $this->isWhitespace(-1);
       }
+
       return $operation ? $operation : $m;
     }
   }
@@ -1247,23 +1128,19 @@ class ILess_Parser_Core {
   {
     $operation = false;
 
-    if($m = $this->parseOperand())
-    {
+    if ($m = $this->parseOperand()) {
       $isSpaced = $this->isWhitespace(-1);
-      while(!$this->peekReg('/\\G\/[*\/]/') && ($op = $this->match(array('/', '*'))) )
-      {
-        if($a = $this->parseOperand())
-        {
+      while (!$this->peekReg('/\\G\/[*\/]/') && ($op = $this->match(array('/', '*'))) ) {
+        if ($a = $this->parseOperand()) {
           $m->parensInOp = true;
           $a->parensInOp = true;
           $operation = new ILess_Node_Operation($op, array($operation ? $operation : $m, $a), $isSpaced);
           $isSpaced = $this->isWhitespace(-1);
-        }
-        else
-        {
+        } else {
           break;
         }
       }
+
       return ($operation ? $operation : $m);
     }
   }
@@ -1277,12 +1154,11 @@ class ILess_Parser_Core {
   {
     $index = $this->position;
     $condition = null;
-    if($a = $this->parseCondition())
-    {
-      while($this->peekReg('/\\G,\s*(not\s*)?\(/') && $this->matchChar(',') && ($b = $this->parseCondition()))
-      {
+    if ($a = $this->parseCondition()) {
+      while ($this->peekReg('/\\G,\s*(not\s*)?\(/') && $this->matchChar(',') && ($b = $this->parseCondition())) {
         $condition = new ILess_Node_Condition('or', $condition ? $condition : $a, $b, $index);
       }
+
       return $condition ? $condition : $a;
     }
   }
@@ -1298,30 +1174,23 @@ class ILess_Parser_Core {
     $index = $this->position;
     $negate = false;
 
-    if($this->matchString('not'))
-    {
+    if ($this->matchString('not')) {
       $negate = true;
     }
 
     $this->expect('(');
-    if($a = ($this->matchFuncs(array('parseAddition', 'parseEntitiesKeyword', 'parseEntitiesQuoted'))))
-    {
-      if($op = $this->matchReg('/\\G(?:>=|<=|=<|[<=>])/'))
-      {
-        if($b = ($this->matchFuncs(array('parseAddition', 'parseEntitiesKeyword', 'parseEntitiesQuoted'))))
-        {
+    if ($a = ($this->matchFuncs(array('parseAddition', 'parseEntitiesKeyword', 'parseEntitiesQuoted')))) {
+      if ($op = $this->matchReg('/\\G(?:>=|<=|=<|[<=>])/')) {
+        if ($b = ($this->matchFuncs(array('parseAddition', 'parseEntitiesKeyword', 'parseEntitiesQuoted')))) {
           $c = new ILess_Node_Condition($op, $a, $b, $index, $negate);
-        }
-        else
-        {
+        } else {
           throw new ILess_Exception_Parser('Unexpected expression', null, $this->position, $this->env->currentFileInfo);
         }
-      }
-      else
-      {
+      } else {
         $c = new ILess_Node_Condition('=', $a, new ILess_Node_Keyword('true'), $index, $negate);
       }
       $this->expect(')');
+
       return $this->matchString('and') ? new ILess_Node_Condition('and', $c, $this->parseCondition()) : $c;
     }
   }
@@ -1333,13 +1202,12 @@ class ILess_Parser_Core {
    */
   protected function parseSubExpression()
   {
-    if($this->matchChar('('))
-    {
-      if($a = $this->parseAddition())
-      {
+    if ($this->matchChar('(')) {
+      if ($a = $this->parseAddition()) {
         $e = new ILess_Node_Expression(array($a));
         $this->expect(')');
         $e->parens = true;
+
         return $e;
       }
     }
@@ -1354,8 +1222,7 @@ class ILess_Parser_Core {
   protected function parseOperand()
   {
     $negate = false;
-    if($this->peekChar('@', 1) || $this->peekChar('(', 1))
-    {
+    if ($this->peekChar('@', 1) || $this->peekChar('(', 1)) {
       $negate = $this->matchChar('-');
     }
 
@@ -1367,8 +1234,7 @@ class ILess_Parser_Core {
         'parseEntitiesCall'
     ));
 
-    if($negate)
-    {
+    if ($negate) {
       $o->parensInOp = true;
       $o = new ILess_Node_Negative($o);
     }
@@ -1384,8 +1250,7 @@ class ILess_Parser_Core {
    */
   protected function parseBlock()
   {
-    if($this->matchChar('{') && (is_array($content = $this->parsePrimary())) && $this->matchChar('}'))
-    {
+    if ($this->matchChar('{') && (is_array($content = $this->parsePrimary())) && $this->matchChar('}')) {
       return $content;
     }
   }
@@ -1398,18 +1263,15 @@ class ILess_Parser_Core {
    */
   protected function parseComment()
   {
-    if(!$this->peekChar('/'))
-    {
+    if (!$this->peekChar('/')) {
       return;
     }
 
-    if($this->peekChar('/', 1))
-    {
+    if ($this->peekChar('/', 1)) {
       return new ILess_Node_Comment($this->matchReg('/\G\/\/.*/'), true, $this->position, $this->env->currentFileInfo);
     }
     //elseif($comment = $this->matchReg('/\G\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?/'))
-    elseif($comment = $this->matchReg('/\\G\/\*(?s).*?\*+\/\n?/'))
-    {
+    elseif ($comment = $this->matchReg('/\\G\/\*(?s).*?\*+\/\n?/')) {
       return new ILess_Node_Comment($comment, false, $this->position, $this->env->currentFileInfo);
     }
   }
@@ -1422,10 +1284,10 @@ class ILess_Parser_Core {
   protected function parseComments()
   {
     $comments = array();
-    while($comment = $this->parseComment())
-    {
+    while ($comment = $this->parseComment()) {
       $comments[] = $comment;
     }
+
     return $comments;
   }
 
@@ -1444,34 +1306,29 @@ class ILess_Parser_Core {
     $hasIdentifier = false;
     $hasExpression = false;
 
-    if(!$this->peekChar('@'))
-    {
+    if (!$this->peekChar('@')) {
       return;
     }
 
     $value = $this->matchFuncs(array('parseImport', 'parseMedia'));
-    if($value)
-    {
+    if ($value) {
       return $value;
     }
 
     $this->save();
     $name = $this->matchReg('/\\G@[a-z-]+/');
 
-    if(!$name)
-    {
+    if (!$name) {
       return;
     }
 
     $nonVendorSpecificName = $name;
     $pos = strpos($name, '-', 2);
-    if($name[1] == '-' && $pos > 0)
-    {
+    if ($name[1] == '-' && $pos > 0) {
       $nonVendorSpecificName = '@' . substr($name, $pos + 1);
     }
 
-    switch($nonVendorSpecificName)
-    {
+    switch ($nonVendorSpecificName) {
       case '@font-face':
         $hasBlock = true;
         break;
@@ -1507,31 +1364,24 @@ class ILess_Parser_Core {
         break;
     }
 
-    if($hasIdentifier)
-    {
+    if ($hasIdentifier) {
       $identifier = $this->matchReg('/\\G[^{]+/');
-      if($identifier)
-      {
+      if ($identifier) {
         $name .= ' ' . trim($identifier);
       }
     }
 
-    if($hasBlock)
-    {
-      if($rules = $this->parseBlock())
-      {
+    if ($hasBlock) {
+      if ($rules = $this->parseBlock()) {
         return new ILess_Node_Directive($name, $rules, $this->position, $this->env->currentFileInfo);
       }
-    }
-    else
-    {
-      if(($value = $hasExpression ? $this->parseExpression() : $this->parseEntity()) && $this->matchChar(';'))
-      {
+    } else {
+      if (($value = $hasExpression ? $this->parseExpression() : $this->parseEntity()) && $this->matchChar(';')) {
         $directive = new ILess_Node_Directive($name, $value, $this->position, $this->env->currentFileInfo);
-        if($this->env->dumpLineNumbers)
-        {
+        if ($this->env->dumpLineNumbers) {
           $directive->debugInfo = $this->getDebugInfo($this->position, $this->input, $this->env);
         }
+
         return $directive;
       }
     }
@@ -1580,8 +1430,7 @@ class ILess_Parser_Core {
   protected function parseEntitiesVariable()
   {
     $index = $this->position;
-    if($this->peekChar('@') && ($name = $this->matchReg('/\\G@@?[\w-]+/')))
-    {
+    if ($this->peekChar('@') && ($name = $this->matchReg('/\\G@@?[\w-]+/'))) {
       return new ILess_Node_Variable($name, $index, $this->env->currentFileInfo);
     }
   }
@@ -1596,13 +1445,11 @@ class ILess_Parser_Core {
     $c = @ord($this->input[$this->position]);
 
     // Is the first char of the dimension 0-9, '.', '+' or '-'
-    if(($c > 57 || $c < 43) || $c === 47 || $c == 44)
-    {
+    if (($c > 57 || $c < 43) || $c === 47 || $c == 44) {
       return;
     }
 
-    if($value = $this->matchReg('/\\G([+-]?\d*\.?\d+)(%|[a-z]+)?/'))
-    {
+    if ($value = $this->matchReg('/\\G([+-]?\d*\.?\d+)(%|[a-z]+)?/')) {
       return new ILess_Node_Dimension($value[1], isset($value[2]) ? $value[2] : null);
     }
   }
@@ -1614,8 +1461,7 @@ class ILess_Parser_Core {
    */
   protected function parseEntitiesColor()
   {
-    if($this->peekChar('#') && ($rgb = $this->matchReg('/\\G#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})/')))
-    {
+    if ($this->peekChar('#') && ($rgb = $this->matchReg('/\\G#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})/'))) {
       return new ILess_Node_Color($rgb[1]);
     }
   }
@@ -1632,25 +1478,22 @@ class ILess_Parser_Core {
     $e = false;
     $index = $this->position;
 
-    if($this->peekChar('~'))
-    {
+    if ($this->peekChar('~')) {
       $j++;
       $e = true; // Escaped strings
     }
 
-    if(!$this->peekChar('"', $j) && !$this->peekChar("'", $j))
-    {
+    if (!$this->peekChar('"', $j) && !$this->peekChar("'", $j)) {
       return;
     }
 
-    if($e)
-    {
+    if ($e) {
       $this->matchChar('~');
     }
 
-    if($str = $this->matchReg('/\\G"((?:[^"\\\\\r\n]|\\\\.)*)"|\'((?:[^\'\\\\\r\n]|\\\\.)*)\'/'))
-    {
+    if ($str = $this->matchReg('/\\G"((?:[^"\\\\\r\n]|\\\\.)*)"|\'((?:[^\'\\\\\r\n]|\\\\.)*)\'/')) {
       $result = $str[0][0] == '"' ? $str[1] : $str[2];
+
       return new ILess_Node_Quoted($str[0], $result, $e, $index, $this->env->currentFileInfo);
     }
   }
@@ -1662,8 +1505,7 @@ class ILess_Parser_Core {
    */
   protected function parseUnicodeDescriptor()
   {
-    if($ud = $this->matchReg('/\\G(U\+[0-9a-fA-F?]+)(\-[0-9a-fA-F?]+)?/'))
-    {
+    if ($ud = $this->matchReg('/\\G(U\+[0-9a-fA-F?]+)(\-[0-9a-fA-F?]+)?/')) {
       return new ILess_Node_UnicodeDescriptor($ud[0]);
     }
   }
@@ -1675,15 +1517,11 @@ class ILess_Parser_Core {
    */
   protected function parseEntitiesKeyword()
   {
-    if($k = $this->matchReg('/\\G[_A-Za-z-][_A-Za-z0-9-]*/'))
-    {
+    if ($k = $this->matchReg('/\\G[_A-Za-z-][_A-Za-z0-9-]*/')) {
       // detected named color and "transparent" keyword
-      if($color = ILess_Color::fromKeyword($k))
-      {
+      if ($color = ILess_Color::fromKeyword($k)) {
         return new ILess_Node_Color($color);
-      }
-      else
-      {
+      } else {
         return new ILess_Node_Keyword($k);
       }
     }
@@ -1696,8 +1534,7 @@ class ILess_Parser_Core {
    */
   protected function parseEntitiesUrl()
   {
-    if($this->input[$this->position] !== 'u' || !$this->matchReg('/\\Gurl\(/'))
-    {
+    if ($this->input[$this->position] !== 'u' || !$this->matchReg('/\\Gurl\(/')) {
       return;
     }
 
@@ -1707,8 +1544,7 @@ class ILess_Parser_Core {
                 '/\\G(?:(?:\\\\[\(\)\'"])|[^\(\)\'"])+/',
                 ));
 
-    if(!$value)
-    {
+    if (!$value) {
       $value = '';
     }
 
@@ -1726,27 +1562,21 @@ class ILess_Parser_Core {
   {
     $index = $this->position;
 
-    if(!preg_match('/\\G([\w-]+|%|progid:[\w\.]+)\(/', $this->input, $name, 0, $this->position))
-    {
+    if (!preg_match('/\\G([\w-]+|%|progid:[\w\.]+)\(/', $this->input, $name, 0, $this->position)) {
       return;
     }
 
     $name = $name[1];
     $nameLC = strtolower($name);
 
-    if($nameLC === 'url')
-    {
+    if ($nameLC === 'url') {
       return null;
-    }
-    else
-    {
+    } else {
       $this->position += strlen($name);
     }
 
-    if($nameLC === 'alpha')
-    {
-      if($alpha = $this->parseAlpha())
-      {
+    if ($nameLC === 'alpha') {
+      if ($alpha = $this->parseAlpha()) {
         return $alpha;
       }
     }
@@ -1755,13 +1585,11 @@ class ILess_Parser_Core {
     $this->matchChar('(');
     $args = $this->parseEntitiesArguments();
 
-    if(!$this->matchChar(')'))
-    {
+    if (!$this->matchChar(')')) {
       return;
     }
 
-    if($name)
-    {
+    if ($name) {
       return new ILess_Node_Call($name, $args, $index, $this->env->currentFileInfo);
     }
   }
@@ -1774,14 +1602,13 @@ class ILess_Parser_Core {
   protected function parseEntitiesArguments()
   {
     $args = array();
-    while($arg = $this->matchFuncs(array('parseEntitiesAssignment', 'parseExpression')))
-    {
+    while ($arg = $this->matchFuncs(array('parseEntitiesAssignment', 'parseExpression'))) {
       $args[] = $arg;
-      if(!$this->matchChar(','))
-      {
+      if (!$this->matchChar(',')) {
         break;
       }
     }
+
     return $args;
   }
 
@@ -1794,8 +1621,7 @@ class ILess_Parser_Core {
    */
   protected function parseEntitiesAssignment()
   {
-    if(($key = $this->matchReg('/\\G\w+(?=\s?=)/')) && $this->matchChar('=') && ($value = $this->parseEntity()))
-    {
+    if (($key = $this->matchReg('/\\G\w+(?=\s?=)/')) && $this->matchChar('=') && ($value = $this->parseEntity())) {
       return new ILess_Node_Assignment($key, $value);
     }
   }
@@ -1809,17 +1635,14 @@ class ILess_Parser_Core {
   protected function parseExpression()
   {
     $entities = array();
-    while($e = $this->matchFuncs(array('parseAddition', 'parseEntity')))
-    {
+    while ($e = $this->matchFuncs(array('parseAddition', 'parseEntity'))) {
       $entities[] = $e;
       // operations do not allow keyword "/" dimension (e.g. small/20px) so we support that here
-      if(!$this->peekReg('/\\G\/[\/*]/') && ($delim = $this->matchChar('/')))
-      {
+      if (!$this->peekReg('/\\G\/[\/*]/') && ($delim = $this->matchChar('/'))) {
         $entities[] = new ILess_Node_Anonymous($delim);
       }
     }
-    if(count($entities) > 0)
-    {
+    if (count($entities) > 0) {
       return new ILess_Node_Expression($entities);
     }
   }
@@ -1831,20 +1654,18 @@ class ILess_Parser_Core {
    */
   protected function parseAlpha()
   {
-    if(!$this->matchString('(opacity='))
-    {
+    if (!$this->matchString('(opacity=')) {
       return;
     }
 
     $value = $this->matchReg('/\\G[0-9]+/');
-    if($value === null)
-    {
+    if ($value === null) {
       $value = $this->parseEntitiesVariable();
     }
 
-    if($value !== null)
-    {
+    if ($value !== null) {
       $this->expect(')');
+
       return new ILess_Node_Alpha($value);
     }
   }
@@ -1857,20 +1678,16 @@ class ILess_Parser_Core {
   protected function parseEntitiesJavascript()
   {
     $e = false;
-    if($this->peekChar('~'))
-    {
+    if ($this->peekChar('~')) {
       $e = true;
     }
-    if(!$this->peekChar('`', $e))
-    {
+    if (!$this->peekChar('`', $e)) {
       return;
     }
-    if($e)
-    {
+    if ($e) {
       $this->matchChar('~');
     }
-    if($str = $this->matchReg('/\\G`([^`]*)`/'))
-    {
+    if ($str = $this->matchReg('/\\G`([^`]*)`/')) {
       return new ILess_Node_Javascript($str[1], $this->position, $e);
     }
   }
@@ -1886,24 +1703,20 @@ class ILess_Parser_Core {
 
     $dir = $this->matchString('@import');
     $options = array();
-    if($dir)
-    {
+    if ($dir) {
       $options = $this->parseImportOptions();
-      if(!$options)
-      {
+      if (!$options) {
         $options = array();
       }
     }
 
-    if($dir && ($path = $this->matchFuncs(array('parseEntitiesQuoted','parseEntitiesUrl'))))
-    {
+    if ($dir && ($path = $this->matchFuncs(array('parseEntitiesQuoted','parseEntitiesUrl')))) {
       $features = $this->parseMediaFeatures();
-      if($this->matchChar(';'))
-      {
-        if($features)
-        {
+      if ($this->matchChar(';')) {
+        if ($features) {
           $features = new ILess_Node_Value($features);
         }
+
         return new ILess_Node_Import($path, $features, $options, $this->position, $this->env->currentFileInfo);
       }
     }
@@ -1920,18 +1733,14 @@ class ILess_Parser_Core {
   {
     $options = array();
     // list of options, surrounded by parens
-    if(!$this->matchChar('('))
-    {
+    if (!$this->matchChar('(')) {
       return null;
     }
-    do
-    {
-      if($o = $this->parseImportOption())
-      {
+    do {
+      if ($o = $this->parseImportOption()) {
         $optionName = $o;
         $value = true;
-        switch($optionName)
-        {
+        switch ($optionName) {
           case 'css':
             $optionName = 'less';
             $value = false;
@@ -1942,13 +1751,13 @@ class ILess_Parser_Core {
             break;
         }
         $options[$optionName] = $value;
-        if(!$this->matchChar(','))
-        {
+        if (!$this->matchChar(',')) {
           break;
         }
       }
-    } while($o);
+    } while ($o);
     $this->expect(')');
+
     return $options;
   }
 
@@ -1959,8 +1768,7 @@ class ILess_Parser_Core {
    */
   protected function parseImportOption()
   {
-    if(($opt = $this->matchReg('/\\G(less|css|multiple|once|inline|reference)/')))
-    {
+    if (($opt = $this->matchReg('/\\G(less|css|multiple|once|inline|reference)/'))) {
       return $opt[1];
     }
   }
@@ -1973,21 +1781,18 @@ class ILess_Parser_Core {
   protected function parseMedia()
   {
     $debugInfo = null;
-    if($this->env->dumpLineNumbers)
-    {
+    if ($this->env->dumpLineNumbers) {
       $debugInfo = $this->getDebugInfo($this->position, $this->input, $this->env);
     }
 
-    if($this->matchReg('/\\G@media/'))
-    {
+    if ($this->matchReg('/\\G@media/')) {
       $features = $this->parseMediaFeatures();
-      if($rules = $this->parseBlock())
-      {
+      if ($rules = $this->parseBlock()) {
         $media = new ILess_Node_Media($rules, $features, $this->position, $this->env->currentFileInfo);
-        if($debugInfo)
-        {
+        if ($debugInfo) {
           $media->debugInfo = $debugInfo;
         }
+
         return $media;
       }
     }
@@ -2001,25 +1806,19 @@ class ILess_Parser_Core {
   protected function parseMediaFeatures()
   {
     $features = array();
-    do
-    {
-      if($e = $this->parseMediaFeature())
-      {
+    do {
+      if ($e = $this->parseMediaFeature()) {
         $features[] = $e;
-        if(!$this->matchChar(','))
-        {
+        if (!$this->matchChar(',')) {
+          break;
+        }
+      } elseif ($e = $this->parseEntitiesVariable()) {
+        $features[] = $e;
+        if (!$this->matchChar(',')) {
           break;
         }
       }
-      elseif($e = $this->parseEntitiesVariable())
-      {
-        $features[] = $e;
-        if(!$this->matchChar(','))
-        {
-          break;
-        }
-      }
-    } while($e);
+    } while ($e);
 
     return $features ? $features : null;
   }
@@ -2033,40 +1832,27 @@ class ILess_Parser_Core {
   protected function parseMediaFeature()
   {
     $nodes = array();
-    do
-    {
-      if($e = $this->matchFuncs(array('parseEntitiesKeyword', 'parseEntitiesVariable')))
-      {
+    do {
+      if ($e = $this->matchFuncs(array('parseEntitiesKeyword', 'parseEntitiesVariable'))) {
         $nodes[] = $e;
-      }
-      elseif($this->matchChar('('))
-      {
+      } elseif ($this->matchChar('(')) {
         $p = $this->parseProperty();
         $e = $this->parseValue();
-        if($this->matchChar(')'))
-        {
-          if($p && $e)
-          {
+        if ($this->matchChar(')')) {
+          if ($p && $e) {
             $nodes[] = new ILess_Node_Paren(new ILess_Node_Rule($p, $e, null, null, $this->position, $this->env->currentFileInfo, true));
-          }
-          elseif($e)
-          {
+          } elseif ($e) {
             $nodes[] = new ILess_Node_Paren($e);
-          }
-          else
-          {
+          } else {
             return null;
           }
-        }
-        else
-        {
+        } else {
           return null;
         }
       }
-    } while($e);
+    } while ($e);
 
-    if($nodes)
-    {
+    if ($nodes) {
       return new ILess_Node_Expression($nodes);
     }
   }
@@ -2078,8 +1864,7 @@ class ILess_Parser_Core {
    */
   protected function parseProperty()
   {
-    if($name = $this->matchReg('/\\G(\*?-?[_a-zA-Z0-9-]+)\s*:/'))
-    {
+    if ($name = $this->matchReg('/\\G(\*?-?[_a-zA-Z0-9-]+)\s*:/')) {
       return $name[1];
     }
   }
@@ -2115,6 +1900,7 @@ class ILess_Parser_Core {
   public function setEnvironment(ILess_Envronment $env)
   {
     $this->env = $env;
+
     return $this;
   }
 
@@ -2137,6 +1923,7 @@ class ILess_Parser_Core {
   public function setImporter(ILess_Importer $importer)
   {
     $this->importer = $importer;
+
     return $this;
   }
 
@@ -2150,6 +1937,7 @@ class ILess_Parser_Core {
   protected function peekChar($tok, $offset = 0)
   {
     $offset += $this->position;
+
     return ($offset < $this->length) && ($this->input[$offset] === $tok);
   }
 
@@ -2172,30 +1960,22 @@ class ILess_Parser_Core {
    */
   protected function match($token)
   {
-    if(!is_array($token))
-    {
+    if (!is_array($token)) {
       $token = array($token);
     }
 
     $match = false;
-    foreach($token as $t)
-    {
-      if(strlen($t) === 1)
-      {
+    foreach ($token as $t) {
+      if (strlen($t) === 1) {
         $match = $this->matchChar($t);
-      }
-      elseif($t[0] !== '/')
-      {
+      } elseif ($t[0] !== '/') {
         // Non-terminal, match using a function call
         $match = $this->$t();
-      }
-      else
-      {
+      } else {
         $match = $this->matchReg($t);
       }
 
-      if($match)
-      {
+      if ($match) {
         return $match;
       }
     }
@@ -2211,10 +1991,8 @@ class ILess_Parser_Core {
    */
   protected function matchFuncs(array $functions)
   {
-    foreach($functions as $func)
-    {
-      if(!method_exists($this, $func))
-      {
+    foreach ($functions as $func) {
+      if (!method_exists($this, $func)) {
         throw new InvalidArgumentException(sprintf('The function "%s" does not exist.', $func));
       }
 
@@ -2222,8 +2000,7 @@ class ILess_Parser_Core {
 
       $match = $this->$func();
 
-      if($match !== null)
-      {
+      if ($match !== null) {
         return $match;
       }
     }
@@ -2235,11 +2012,11 @@ class ILess_Parser_Core {
    * @param string $regexp The regular expression
    * @return string The matched string
    */
-  protected  function matchReg($regexp)
+  protected function matchReg($regexp)
   {
-    if(preg_match($regexp, $this->input, $match, 0, $this->position))
-    {
+    if (preg_match($regexp, $this->input, $match, 0, $this->position)) {
       $this->skipWhitespace(strlen($match[0]));
+
       return count($match) === 1 ? $match[0] : $match;
     }
   }
@@ -2252,9 +2029,9 @@ class ILess_Parser_Core {
    */
   protected function matchChar($char)
   {
-    if(($this->position < $this->length) && ($this->input[$this->position] === $char))
-    {
+    if (($this->position < $this->length) && ($this->input[$this->position] === $char)) {
       $this->skipWhitespace(1);
+
       return $char;
     }
   }
@@ -2272,6 +2049,7 @@ class ILess_Parser_Core {
         && substr_compare($this->input, $string, $this->position, $len, true) === 0)
     {
       $this->skipWhitespace($len);
+
       return $string;
     }
   }
@@ -2287,17 +2065,14 @@ class ILess_Parser_Core {
   protected function expect($token, $message = null)
   {
     $result = $this->match($token);
-    if(!$result)
-    {
+    if (!$result) {
       $excerpt = substr($this->input, $this->position, strpos($this->input, "\n", $this->position) - $this->position);
       throw new ILess_Exception_Parser(
                   $message ? $message :
                   sprintf('Error parsing the string. Expected "%s", but got "%s" near `%s`', $token,
                   $this->input[$this->position], $excerpt),
                   null, $this->position, $this->env->currentFileInfo);
-    }
-    else
-    {
+    } else {
       return $result;
     }
   }
@@ -2333,9 +2108,9 @@ class ILess_Parser_Core {
   {
     $length = strspn($this->input, ';', $this->position);
 
-    if($length)
-    {
+    if ($length) {
       $this->skipWhitespace($length);
+
       return true;
     }
   }
@@ -2348,6 +2123,7 @@ class ILess_Parser_Core {
   protected function save()
   {
     $this->savedPosition = $this->position;
+
     return $this;
   }
 
@@ -2359,6 +2135,7 @@ class ILess_Parser_Core {
   protected function restore()
   {
     $this->position = $this->savedPosition;
+
     return $this;
   }
 
@@ -2374,6 +2151,7 @@ class ILess_Parser_Core {
   {
     $filename = $env->currentFileInfo->filename;
     $lineNumber = ILess_Util::getLineNumber($input, $index);
+
     return new ILess_DebugInfo($filename, $lineNumber);
   }
 

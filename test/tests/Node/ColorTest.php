@@ -59,7 +59,7 @@ class ILess_Node_Color_Test extends ILess_TestCase
   {
     $color = new ILess_Node_Color('#cc00ff');
     $this->assertInstanceOf('ILess_Node_Dimension', $color->getRed());
-    $this->assertEquals('204', (string)$color->getRed());
+    $this->assertEquals('204', (string) $color->getRed());
   }
 
   /**
@@ -69,7 +69,7 @@ class ILess_Node_Color_Test extends ILess_TestCase
   {
     $color = new ILess_Node_Color('#00ddff');
     $this->assertInstanceOf('ILess_Node_Dimension', $color->getGreen());
-    $this->assertEquals('221', (string)$color->getGreen());
+    $this->assertEquals('221', (string) $color->getGreen());
   }
 
   /**
@@ -79,7 +79,7 @@ class ILess_Node_Color_Test extends ILess_TestCase
   {
     $color = new ILess_Node_Color('#ff00cc');
     $this->assertInstanceOf('ILess_Node_Dimension', $color->getBlue());
-    $this->assertEquals('204', (string)$color->getBlue());
+    $this->assertEquals('204', (string) $color->getBlue());
   }
 
   /**
@@ -89,7 +89,7 @@ class ILess_Node_Color_Test extends ILess_TestCase
   {
     $color = new ILess_Node_Color('#ffffff', 0.5);
     $this->assertInstanceOf('ILess_Node_Dimension', $color->getAlpha());
-    $this->assertEquals('0.5', (string)$color->getAlpha());
+    $this->assertEquals('0.5', (string) $color->getAlpha());
   }
 
   /**
@@ -101,7 +101,7 @@ class ILess_Node_Color_Test extends ILess_TestCase
     $saturation = $color->getSaturation();
     $this->assertInstanceOf('ILess_Node_Dimension', $saturation);
 
-    $this->assertEquals('88%', (string)$color->getSaturation());
+    $this->assertEquals('88%', (string) $color->getSaturation());
   }
 
   /**
@@ -111,7 +111,7 @@ class ILess_Node_Color_Test extends ILess_TestCase
   {
     $color = new ILess_Node_Color('#BE3AF2', 0.5);
     $this->assertInstanceOf('ILess_Node_Dimension', $color->getLightness());
-    $this->assertEquals('59%', (string)$color->getLightness());
+    $this->assertEquals('59%', (string) $color->getLightness());
   }
 
   /**
@@ -121,7 +121,7 @@ class ILess_Node_Color_Test extends ILess_TestCase
   {
     $color = new ILess_Node_Color('#BE3AF2', 0.5);
     $this->assertInstanceOf('ILess_Node_Dimension', $color->getHue());
-    $this->assertEquals('283', (string)$color->getHue());
+    $this->assertEquals('283', (string) $color->getHue());
   }
 
   /**

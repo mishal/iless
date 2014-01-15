@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Condition extends ILess_Node implements ILess_Node_VisitableInterface {
-
+class ILess_Node_Condition extends ILess_Node implements ILess_Node_VisitableInterface
+{
   /**
    * Node type
    *
@@ -104,8 +104,7 @@ class ILess_Node_Condition extends ILess_Node implements ILess_Node_VisitableInt
     $a = $this->lvalue->compile($env);
     $b = $this->rvalue->compile($env);
 
-    switch($this->op)
-    {
+    switch ($this->op) {
       case 'and':
         $result = $a && $b;
         break;
@@ -116,16 +115,11 @@ class ILess_Node_Condition extends ILess_Node implements ILess_Node_VisitableInt
 
       default:
 
-        if(self::methodExists($a, 'compare'))
-        {
+        if (self::methodExists($a, 'compare')) {
           $result = $a->compare($b);
-        }
-        elseif(self::methodExists($b, 'compare'))
-        {
+        } elseif (self::methodExists($b, 'compare')) {
           $result = $b->compare($a);
-        }
-        else
-        {
+        } else {
           throw new ILess_Exception_Compiler('Unable to perform the comparison',
               null, $this->index, $env->currentFileInfo);
         }
@@ -140,8 +134,7 @@ class ILess_Node_Condition extends ILess_Node implements ILess_Node_VisitableInt
             case  1: return op === '>' || op === '>=';
         }
          */
-        switch($result)
-        {
+        switch ($result) {
           case -1:
             $result = $this->op === '<' || $this->op === '=<' || $this->op === '<=';
             break;

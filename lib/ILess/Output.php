@@ -12,8 +12,8 @@
  * @package ILess
  * @subpackage util
  */
-class ILess_Output implements Countable {
-
+class ILess_Output implements Countable
+{
   /**
    * Output holder
    *
@@ -34,8 +34,9 @@ class ILess_Output implements Countable {
   {
     $this->output[] = array(
       // commented out to save some memory
-      $chunk //, $fileInfo, $index, $mapLines 
+      $chunk //, $fileInfo, $index, $mapLines
     );
+
     return $this;
   }
 
@@ -67,10 +68,10 @@ class ILess_Output implements Countable {
   public function toString()
   {
     $result = array();
-    foreach($this->output as $o)
-    {
+    foreach ($this->output as $o) {
       $result[] = $o[0];
     }
+
     return join('', $result);
   }
 

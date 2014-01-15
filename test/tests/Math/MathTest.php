@@ -23,7 +23,7 @@ class ILess_Math_Test extends ILess_TestCase
   {
     $this->assertEquals($expected, ILess_Math::toFixed($test, $decimals));
   }
-  
+
   public function getDataForToFixedTest()
   {
     return array(

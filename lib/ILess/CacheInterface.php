@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage cache
  */
-interface ILess_CacheInterface {
-
+interface ILess_CacheInterface
+{
   /**
    * Returns the cached item for given $cacheKey
    *

@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Assignment extends ILess_Node implements ILess_Node_VisitableInterface {
-
+class ILess_Node_Assignment extends ILess_Node implements ILess_Node_VisitableInterface
+{
   /**
    * Node type
    *
@@ -58,12 +58,9 @@ class ILess_Node_Assignment extends ILess_Node implements ILess_Node_VisitableIn
   public function generateCSS(ILess_Environment $env, ILess_Output $output)
   {
     $output->add(sprintf('%s=', $this->key));
-    if(self::methodExists($this->value, 'generateCSS'))
-    {
+    if (self::methodExists($this->value, 'generateCSS')) {
       $this->value->generateCSS($env, $output);
-    }
-    else
-    {
+    } else {
       $output->add($this->value);
     }
   }
@@ -76,10 +73,10 @@ class ILess_Node_Assignment extends ILess_Node implements ILess_Node_VisitableIn
    */
   public function compile(ILess_Environment $env, $arguments = null, $important = null)
   {
-    if(self::methodExists($this->value, 'compile'))
-    {
+    if (self::methodExists($this->value, 'compile')) {
       return new ILess_Node_Assignment($this->key, $this->value->compile($env));
     }
+
     return $this;
   }
 

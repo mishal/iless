@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Color extends ILess_Node {
-
+class ILess_Node_Color extends ILess_Node
+{
   /**
    * Node type
    *
@@ -38,12 +38,9 @@ class ILess_Node_Color extends ILess_Node {
    */
   public function __construct($rgb, $alpha = 1)
   {
-    if(!$rgb instanceof ILess_Color)
-    {
+    if (!$rgb instanceof ILess_Color) {
       $this->color = new ILess_Color($rgb, $alpha);
-    }
-    else
-    {
+    } else {
       $this->color = $rgb;
     }
   }
@@ -243,17 +240,14 @@ class ILess_Node_Color extends ILess_Node {
   {
     $result = array();
 
-    if(!($other instanceof ILess_Node_Color))
-    {
-      if(!self::methodExists($other, 'toColor'))
-      {
+    if (!($other instanceof ILess_Node_Color)) {
+      if (!self::methodExists($other, 'toColor')) {
         throw new InvalidArgumentException('The other node must implement toColor() method to operate');
       }
 
       $other = $other->toColor();
 
-      if(!$other instanceof ILess_Node_Color)
-      {
+      if (!$other instanceof ILess_Node_Color) {
         throw new InvalidArgumentException('The toColor() method must return an instance of ILess_Node_Color');
       }
     }
@@ -261,15 +255,11 @@ class ILess_Node_Color extends ILess_Node {
     $t = $this->getRGB();
     $o = $other->getRGB();
 
-    for($c = 0; $c < 3; $c++)
-    {
+    for ($c = 0; $c < 3; $c++) {
       $result[$c] = ILess_Math::operate($op, $t[$c], $o[$c]);
-      if($result[$c] > 255)
-      {
+      if ($result[$c] > 255) {
         $result[$c] = 255;
-      }
-      elseif($result < 0)
-      {
+      } elseif ($result < 0) {
         $result[$c] = 0;
       }
     }
@@ -286,22 +276,18 @@ class ILess_Node_Color extends ILess_Node {
    */
   public function compare(ILess_Node $other)
   {
-    if(!($other instanceof ILess_Node_Color))
-    {
-      if(!self::methodExists($other, 'toColor'))
-      {
+    if (!($other instanceof ILess_Node_Color)) {
+      if (!self::methodExists($other, 'toColor')) {
         throw new InvalidArgumentException('The other node must implement toColor() method to operate');
       }
       $other = $other->toColor();
-      if(!$other instanceof ILess_Node_Color)
-      {
+      if (!$other instanceof ILess_Node_Color) {
         throw new InvalidArgumentException('The toColor() method must return an instance of ILess_Node_Color');
       }
     }
 
     // cannot compare with another node
-    if(!$other instanceof ILess_Node_Color)
-    {
+    if (!$other instanceof ILess_Node_Color) {
       return -1;
     }
 

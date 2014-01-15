@@ -106,6 +106,7 @@ class ILess_Function_Test extends ILess_TestCase
   {
     $values = array(new ILess_Node_Anonymous('a=1'), new ILess_Node_Anonymous('foobar'));
     $expected = array('a%3D1', 'foobar');
+
     return $this->prepareDataForProvider($values, $expected);
   }
 
@@ -125,6 +126,7 @@ class ILess_Function_Test extends ILess_TestCase
     // THIS IS A bit confusing, the string is returned AS IS in the implementation
     $values = array(new ILess_Node_Anonymous('ms:alwaysHasItsOwnSyntax.For.Stuff()'));
     $expected = array('ms:alwaysHasItsOwnSyntax.For.Stuff()');
+
     return $this->prepareDataForProvider($values, $expected);
   }
 

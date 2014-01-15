@@ -12,8 +12,8 @@
  * @package ILess
  * @subpackage import
  */
-class ILess_Importer {
-
+class ILess_Importer
+{
   /**
    * The environment
    *
@@ -65,6 +65,7 @@ class ILess_Importer {
   public function setEnvironment(ILess_Environment $env)
   {
     $this->env = $env;
+
     return $this;
   }
 
@@ -77,6 +78,7 @@ class ILess_Importer {
   public function setCache(ILess_CacheInterface $cache)
   {
     $this->cache = $cache;
+
     return $this;
   }
 
@@ -107,35 +109,31 @@ class ILess_Importer {
   {
     $cacheKey = $this->generateCacheKey($path);
     // do we have a file in the cache?
-    if($this->cache->has($cacheKey))
-    {
+    if ($this->cache->has($cacheKey)) {
       // check the modified timestamp
       $file = $this->cache->get($cacheKey);
       // search
-      foreach($this->importers as $importer)
-      {
+      foreach ($this->importers as $importer) {
         /* @var $file ILess_ImportedFile */
         $lastModified = $importer->getLastModified($path, $currentFileInfo);
-        if($lastModified !== false && $lastModified == $file->getLastModified())
-        {
+        if ($lastModified !== false && $lastModified == $file->getLastModified()) {
           // the modification time is the same, take the one from cache
           return $this->doImport($file, $currentFileInfo, $importOptions, true);
         }
       }
     }
 
-    foreach($this->importers as $importer)
-    {
+    foreach ($this->importers as $importer) {
       /* @var $importer ILess_ImporterInterface */
       $file = $importer->import($path, $currentFileInfo);
       // import not handled by the importer
-      if($file instanceof ILess_ImportedFile)
-      {
+      if ($file instanceof ILess_ImportedFile) {
         $result = $this->doImport($file, $currentFileInfo, $importOptions);
         /* @var $file ILess_ImportedFile */
         list(, $file) = $result;
         // save the cache
         $this->cache->set($cacheKey, $file);
+
         return $result;
       }
     }
@@ -157,8 +155,7 @@ class ILess_Importer {
   {
     $newEnv = ILess_Environment::createCopy($this->env, $this->env->frames);
 
-    if(!$currentFileInfo)
-    {
+    if (!$currentFileInfo) {
       $currentFileInfo = new ILess_FileInfo(array());
     }
 
@@ -177,46 +174,33 @@ class ILess_Importer {
     $alreadyImported = false;
 
     // check for already imported file
-    if(isset($this->importedFiles[$key]))
-    {
+    if (isset($this->importedFiles[$key])) {
       $alreadyImported = true;
-    }
-    elseif(!$file->getRuleset())
-    {
+    } elseif (!$file->getRuleset()) {
       $parser = new ILess_Parser_Core($newEnv, $this, $this->cache);
-      try
-      {
+      try {
         // we do not parse the root but load the file as is
-        if(isset($importOptions['inline']) && $importOptions['inline'])
-        {
+        if (isset($importOptions['inline']) && $importOptions['inline']) {
           $root = $file->getContent();
-        }
-        else
-        {
+        } else {
           $root = $parser->parseFile($file, true);
           $root->root = false;
           $root->firstRoot = false;
         }
 
         $file->setRuleset($root);
-      }
-      catch(Exception $error)
-      {
+      } catch (Exception $error) {
         $file->setError($error);
       }
 
       $this->setImportedFile($key, $file);
-    }
-    else
-    {
+    } else {
       $this->setImportedFile($key, $file);
     }
 
-    if($fromCache)
-    {
+    if ($fromCache) {
       $ruleset = $this->importedFiles[$key]->getRuleset();
-      if($ruleset instanceof ILess_Node)
-      {
+      if ($ruleset instanceof ILess_Node) {
         // FIXME: this is a workaround for reference and import one issues
         // when taken cache
         $this->updateReferenceInCurrentFileInfo($ruleset, $newEnv->currentFileInfo->reference);
@@ -236,14 +220,11 @@ class ILess_Importer {
    */
   protected function updateReferenceInCurrentFileInfo(ILess_Node $node, $value)
   {
-    if(isset($node->currentFileInfo))
-    {
+    if (isset($node->currentFileInfo)) {
       $node->currentFileInfo->reference = $value;
     }
-    if(ILess_Node::propertyExists($node, 'rules'))
-    {
-      foreach($node->rules as $rule)
-      {
+    if (ILess_Node::propertyExists($node, 'rules')) {
+      foreach ($node->rules as $rule) {
         $this->updateReferenceInCurrentFileInfo($rule, $value);
       }
     }
@@ -259,12 +240,10 @@ class ILess_Importer {
    */
   public function getLastModified($path, ILess_FileInfo $currentFileInfo = null)
   {
-    foreach($this->importers as $importer)
-    {
+    foreach ($this->importers as $importer) {
       /* @var $importer ILess_ImporterInterface */
       $result = $importer->getLastModified($path, $currentFileInfo);
-      if($result !== null)
-      {
+      if ($result !== null) {
         return $result;
       }
     }
@@ -285,15 +264,12 @@ class ILess_Importer {
     // FIXME: what about more than one importer with the same class?
     $name = !is_null($name) ? $name : get_class($importer);
 
-    if($prepend)
-    {
+    if ($prepend) {
       // array unshift with preservation of keys
       $importers = array_reverse($this->importers, true);
       $importers[$name] = $importer;
       $this->importers = array_reverse($importers, true);
-    }
-    else
-    {
+    } else {
       $this->importers[$name] = $importer;
     }
 
@@ -329,10 +305,10 @@ class ILess_Importer {
    */
   public function registerImporters(array $importers)
   {
-    foreach($importers as $name => $importer)
-    {
+    foreach ($importers as $name => $importer) {
       $this->registerImporter($importer, is_numeric($name) ? null : $name);
     }
+
     return $this;
   }
 
@@ -344,6 +320,7 @@ class ILess_Importer {
   public function clearImporters()
   {
     $this->importers = array();
+
     return $this;
   }
 
@@ -369,6 +346,7 @@ class ILess_Importer {
     $this->importedFiles[$key] = $file;
     // save for source map generation
     $this->env->setFileContent($key, $file->getContent());
+
     return $this;
   }
 

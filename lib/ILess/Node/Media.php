@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Media extends ILess_Node implements ILess_Node_VisitableInterface, ILess_Node_MarkableAsReferencedInterface {
-
+class ILess_Node_Media extends ILess_Node implements ILess_Node_VisitableInterface, ILess_Node_MarkableAsReferencedInterface
+{
   /**
    * Media type
    *
@@ -94,6 +94,7 @@ class ILess_Node_Media extends ILess_Node implements ILess_Node_VisitableInterfa
   public function emptySelectors()
   {
     $element = new ILess_Node_Element('', '&', $this->index, $this->currentFileInfo);
+
     return array(
         new ILess_Node_Selector(array($element), array(), null, $this->index, $this->currentFileInfo)
     );
@@ -116,30 +117,24 @@ class ILess_Node_Media extends ILess_Node implements ILess_Node_VisitableInterfa
   {
     $media = new ILess_Node_Media(array(), array(), $this->index, $this->currentFileInfo);
 
-    if($this->debugInfo)
-    {
+    if ($this->debugInfo) {
       $this->rules[0]->debugInfo = $this->debugInfo;
       $media->debugInfo = $this->debugInfo;
     }
 
     $strictMathBypass = false;
-    if(!$env->strictMath)
-    {
+    if (!$env->strictMath) {
       $strictMathBypass = true;
       $env->strictMath = true;
     }
 
-    try
-    {
+    try {
       $media->features = $this->features->compile($env);
-    }
-    catch(Exception $e)
-    {
+    } catch (Exception $e) {
 
     }
 
-    if($strictMathBypass)
-    {
+    if ($strictMathBypass) {
       $env->strictMath = false;
     }
 
@@ -164,14 +159,14 @@ class ILess_Node_Media extends ILess_Node implements ILess_Node_VisitableInterfa
   public function compileTop(ILess_Environment $env)
   {
     $result = $this;
-    if(count($env->mediaBlocks) > 1)
-    {
+    if (count($env->mediaBlocks) > 1) {
       $selectors = $this->emptySelectors();
       $result = new ILess_Node_Ruleset($selectors, $env->mediaBlocks);
       $result->multiMedia = true;
     }
     $env->mediaBlocks = array();
     $env->mediaPath = array();
+
     return $result;
   }
 
@@ -186,8 +181,7 @@ class ILess_Node_Media extends ILess_Node implements ILess_Node_VisitableInterfa
     $path = array_merge($env->mediaPath, array($this));
 
     // Extract the media-query conditions separated with `,` (OR).
-    foreach($path as $key => $p)
-    {
+    foreach ($path as $key => $p) {
       $value = $p->features instanceof ILess_Node_Value ? $p->features->value : $p->features;
       $path[$key] = is_array($value) ? $value : array($value);
     }
@@ -202,14 +196,11 @@ class ILess_Node_Media extends ILess_Node implements ILess_Node_VisitableInterfa
 
     $permuted = $this->permute($path);
     $expressions = array();
-    foreach($permuted as $path)
-    {
-      for($i = 0, $len = count($path); $i < $len; $i++)
-      {
+    foreach ($permuted as $path) {
+      for ($i = 0, $len = count($path); $i < $len; $i++) {
         $path[$i] = self::methodExists($path[$i], 'toCSS') ? $path[$i] : new ILess_Node_Anonymous($path[$i]);
       }
-      for($i = count($path) - 1; $i > 0; $i--)
-      {
+      for ($i = count($path) - 1; $i > 0; $i--) {
         array_splice($path, $i, 0, array(new ILess_Node_Anonymous('and')));
       }
       $expressions[] = new ILess_Node_Expression($path);
@@ -229,28 +220,22 @@ class ILess_Node_Media extends ILess_Node implements ILess_Node_VisitableInterfa
    */
   public function permute(array $array)
   {
-    if(!count($array))
-    {
+    if (!count($array)) {
       return array();
-    }
-    else if(count($array) === 1)
-    {
+    } elseif (count($array) === 1) {
       return $array[0];
-    }
-    else
-    {
+    } else {
       $result = array();
       $rest = $this->permute(array_slice($array, 1));
-      foreach($rest as $r)
-      {
-        foreach($array[0] as $a)
-        {
+      foreach ($rest as $r) {
+        foreach ($array[0] as $a) {
           $result[] = array_merge(
               is_array($a) ? $a : array($a), is_array($r) ? $r : array($r)
           );
         }
       }
     }
+
     return $result;
   }
 
@@ -274,11 +259,9 @@ class ILess_Node_Media extends ILess_Node implements ILess_Node_VisitableInterfa
   {
     $this->isReferenced = true;
     $rules = $this->rules[0]->rules;
-    for($i = 0; $i < count($rules); $i++)
-    {
+    for ($i = 0; $i < count($rules); $i++) {
       //if(self::methodExists($rules[$i], 'markReferenced'))
-      if($rules[$i] instanceof ILess_Node_MarkableAsReferencedInterface)
-      {
+      if ($rules[$i] instanceof ILess_Node_MarkableAsReferencedInterface) {
         $rules[$i]->markReferenced();
       }
     }

@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Directive extends ILess_Node implements ILess_Node_VisitableInterface, ILess_Node_MarkableAsReferencedInterface {
-
+class ILess_Node_Directive extends ILess_Node implements ILess_Node_VisitableInterface, ILess_Node_MarkableAsReferencedInterface
+{
   /**
    * The type
    *
@@ -75,16 +75,12 @@ class ILess_Node_Directive extends ILess_Node implements ILess_Node_VisitableInt
   public function __construct($name, $value, $index = 0, ILess_FileInfo $currentFileInfo = null)
   {
     $this->name = $name;
-    if(is_array($value))
-    {
+    if (is_array($value)) {
       $ruleset = new ILess_Node_Ruleset(array(), $value);
       $ruleset->allowImports = true;
       $this->rules = array($ruleset);
-    }
-    else
-    {
-      if($value && !$value instanceof ILess_Node)
-      {
+    } else {
+      if ($value && !$value instanceof ILess_Node) {
         throw new InvalidArgumentException('Invalid value given. It should be an instance of ILess_Node');
       }
       parent::__construct($value);
@@ -111,12 +107,9 @@ class ILess_Node_Directive extends ILess_Node implements ILess_Node_VisitableInt
   public function generateCSS(ILess_Environment $env, ILess_Output $output)
   {
     $output->add($this->name, $this->currentFileInfo, $this->index);
-    if(count($this->rules))
-    {
+    if (count($this->rules)) {
       $this->outputRuleset($env, $output, $this->rules);
-    }
-    else
-    {
+    } else {
       $output->add(' ');
       $this->value->generateCSS($env, $output);
       $output->add(';');
@@ -132,14 +125,14 @@ class ILess_Node_Directive extends ILess_Node implements ILess_Node_VisitableInt
   public function compile(ILess_Environment $env, $arguments = null, $important = null)
   {
     $evaldDirective = $this;
-    if($this->rules)
-    {
+    if ($this->rules) {
       $env->unshiftFrame($this);
       $evaldDirective = new ILess_Node_Directive($this->name, null, $this->index, $this->currentFileInfo);
       $evaldDirective->rules = array($this->rules[0]->compile($env));
       $evaldDirective->rules[0]->root = true;
       $env->shiftFrame();
     }
+
     return $evaldDirective;
   }
 
@@ -151,8 +144,7 @@ class ILess_Node_Directive extends ILess_Node implements ILess_Node_VisitableInt
    */
   public function variable($name)
   {
-    if(isset($this->rules[0]))
-    {
+    if (isset($this->rules[0])) {
       return $this->rules[0]->variable($name);
     }
   }
@@ -165,8 +157,7 @@ class ILess_Node_Directive extends ILess_Node implements ILess_Node_VisitableInt
    */
   public function find($selector, ILess_Environment $env)
   {
-    if(isset($this->rules[0]))
-    {
+    if (isset($this->rules[0])) {
       return $this->rules[0]->find($selector, $this, $env);
     }
   }
@@ -177,8 +168,7 @@ class ILess_Node_Directive extends ILess_Node implements ILess_Node_VisitableInt
    */
   public function rulesets()
   {
-    if(isset($this->rules[0]))
-    {
+    if (isset($this->rules[0])) {
       return $this->rules[0]->rulesets();
     }
   }
@@ -190,13 +180,10 @@ class ILess_Node_Directive extends ILess_Node implements ILess_Node_VisitableInt
   public function markReferenced()
   {
     $this->isReferenced = true;
-    if($this->rules)
-    {
+    if ($this->rules) {
       $rules = $this->rules[0]->rules;
-      for($i = 0; $i < count($rules); $i++)
-      {
-        if($rules[$i] instanceof ILess_Node_MarkableAsReferencedInterface)
-        {
+      for ($i = 0; $i < count($rules); $i++) {
+        if ($rules[$i] instanceof ILess_Node_MarkableAsReferencedInterface) {
           $rules[$i]->markReferenced();
         }
       }

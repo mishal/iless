@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_DimensionUnit extends ILess_Node {
-
+class ILess_Node_DimensionUnit extends ILess_Node
+{
   /**
    * Length regular expression
    *
@@ -64,10 +64,10 @@ class ILess_Node_DimensionUnit extends ILess_Node {
   public function toString()
   {
     $returnStr = implode('*', $this->numerator);
-    foreach($this->denominator as $d)
-    {
+    foreach ($this->denominator as $d) {
       $returnStr .= '/' . $d;
     }
+
     return $returnStr;
   }
 
@@ -101,6 +101,7 @@ class ILess_Node_DimensionUnit extends ILess_Node {
   public function isLength()
   {
     $css = $this->toCSS(new ILess_Environment());
+
     return !!preg_match(self::LENGTH_REGEXP, $css);
   }
 
@@ -137,26 +138,22 @@ class ILess_Node_DimensionUnit extends ILess_Node {
   public function usedUnits()
   {
     $result = array();
-    foreach(ILess_UnitConversion::$groups as $groupName)
-    {
+    foreach (ILess_UnitConversion::$groups as $groupName) {
       $group = ILess_UnitConversion::${$groupName};
-      for($i = 0; $i < count($this->numerator); $i++)
-      {
+      for ($i = 0; $i < count($this->numerator); $i++) {
         $atomicUnit = $this->numerator[$i];
-        if(isset($group[$atomicUnit]) && !isset($result[$groupName]))
-        {
+        if (isset($group[$atomicUnit]) && !isset($result[$groupName])) {
           $result[$groupName] = $atomicUnit;
         }
       }
-      for($i = 0; $i < count($this->denominator); $i++)
-      {
+      for ($i = 0; $i < count($this->denominator); $i++) {
         $atomicUnit = $this->denominator[$i];
-        if(isset($group[$atomicUnit]) && !isset($result[$groupName]))
-        {
+        if (isset($group[$atomicUnit]) && !isset($result[$groupName])) {
           $result[$groupName] = $atomicUnit;
         }
       }
     }
+
     return $result;
   }
 
@@ -165,21 +162,17 @@ class ILess_Node_DimensionUnit extends ILess_Node {
     $counter = array();
     $backup = null;
 
-    for($i = 0; $i < count($this->numerator); $i++)
-    {
+    for ($i = 0; $i < count($this->numerator); $i++) {
       $atomicUnit = $this->numerator[$i];
-      if(!$backup)
-      {
+      if (!$backup) {
         $backup = $atomicUnit;
       }
       $counter[$atomicUnit] = (isset($counter[$atomicUnit]) ? $counter[$atomicUnit] : 0) + 1;
     }
 
-    for($i = 0; $i < count($this->denominator); $i++)
-    {
+    for ($i = 0; $i < count($this->denominator); $i++) {
       $atomicUnit = $this->denominator[$i];
-      if(!$backup)
-      {
+      if (!$backup) {
         $backup = $atomicUnit;
       }
       $counter[$atomicUnit] = (isset($counter[$atomicUnit]) ? $counter[$atomicUnit] : 0) - 1;
@@ -188,26 +181,19 @@ class ILess_Node_DimensionUnit extends ILess_Node {
     $this->numerator = array();
     $this->denominator = array();
 
-    foreach($counter as $atomicUnit => $count)
-    {
-      if($count > 0)
-      {
-        for($i = 0; $i < $count; $i++)
-        {
+    foreach ($counter as $atomicUnit => $count) {
+      if ($count > 0) {
+        for ($i = 0; $i < $count; $i++) {
           $this->numerator[] = $atomicUnit;
         }
-      }
-      elseif($count < 0)
-      {
-        for($i = 0; $i < -$count; $i++)
-        {
+      } elseif ($count < 0) {
+        for ($i = 0; $i < -$count; $i++) {
           $this->denominator[] = $atomicUnit;
         }
       }
     }
 
-    if(count($this->numerator) === 0 && count($this->denominator) === 0 && $backup)
-    {
+    if (count($this->numerator) === 0 && count($this->denominator) === 0 && $backup) {
       $this->backupUnit = $backup;
     }
 
@@ -220,20 +206,13 @@ class ILess_Node_DimensionUnit extends ILess_Node {
    */
   public function generateCSS(ILess_Environment $env, ILess_Output $output)
   {
-    if(count($this->numerator) >= 1)
-    {
+    if (count($this->numerator) >= 1) {
       $output->add($this->numerator[0]);
-    }
-    else
-    {
-      if(count($this->denominator) >= 1)
-      {
+    } else {
+      if (count($this->denominator) >= 1) {
         $output->add($this->denominator[0]);
-      }
-      else
-      {
-        if((!$env->strictUnits) && $this->backupUnit)
-        {
+      } else {
+        if ((!$env->strictUnits) && $this->backupUnit) {
           $output->add($this->backupUnit);
         }
       }
@@ -267,4 +246,3 @@ class ILess_Node_DimensionUnit extends ILess_Node {
   }
 
 }
-

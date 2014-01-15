@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Import extends ILess_Node implements ILess_Node_VisitableInterface {
-
+class ILess_Node_Import extends ILess_Node implements ILess_Node_VisitableInterface
+{
   /**
    * Node type
    *
@@ -111,15 +111,11 @@ class ILess_Node_Import extends ILess_Node implements ILess_Node_VisitableInterf
     $this->options = array_merge($this->options, $options);
     $this->index = $index;
     $this->currentFileInfo = $currentFileInfo;
-    if(isset($this->options['less']) || $this->options['inline'])
-    {
+    if (isset($this->options['less']) || $this->options['inline']) {
       $this->css = !isset($this->options['less']) || !$this->options['less'] || $this->options['inline'];
-    }
-    else
-    {
+    } else {
       $path = $this->getPath();
-      if($path && preg_match('/css([\?;].*)?$/', $path))
-      {
+      if ($path && preg_match('/css([\?;].*)?$/', $path)) {
         $this->css = true;
       }
     }
@@ -134,8 +130,7 @@ class ILess_Node_Import extends ILess_Node implements ILess_Node_VisitableInterf
   {
     $this->features = $visitor->visit($this->features);
     $this->path = $visitor->visit($this->path);
-    if(!$this->getOption('inline') && $this->root)
-    {
+    if (!$this->getOption('inline') && $this->root) {
       $this->root = $visitor->visit($this->root);
     }
   }
@@ -147,13 +142,11 @@ class ILess_Node_Import extends ILess_Node implements ILess_Node_VisitableInterf
    */
   public function getPath()
   {
-    if($this->path instanceof ILess_Node_Quoted)
-    {
+    if ($this->path instanceof ILess_Node_Quoted) {
       $path = $this->path->value;
+
       return ($this->css || preg_match('/(\.[a-z]*$)|([\?;].*)$/', $path)) ? $path : $path . '.less';
-    }
-    else if($this->path instanceof ILess_Node_Url)
-    {
+    } elseif ($this->path instanceof ILess_Node_Url) {
       return $this->path->value->value;
     }
   }
@@ -163,13 +156,11 @@ class ILess_Node_Import extends ILess_Node implements ILess_Node_VisitableInterf
    */
   public function compile(ILess_Environment $env, $arguments = null, $important = null)
   {
-    if($this->skip)
-    {
+    if ($this->skip) {
       return array();
     }
 
-    if($this->getOption('inline'))
-    {
+    if ($this->getOption('inline')) {
       // FIXME: this section is marked as "todo" in less.js project
       // see: lib/less/tree/import.js
       // original comment: todo needs to reference css file not import
@@ -177,20 +168,17 @@ class ILess_Node_Import extends ILess_Node implements ILess_Node_VisitableInterf
       $contents = new ILess_Node_Anonymous($this->root, 0, new ILess_FileInfo(array(
           'filename' => $this->importedFilename
       )), true);
+
       return $this->features ? new ILess_Node_Media(array($contents), $this->features->value) : array($contents);
-    }
-    elseif($this->css)
-    {
+    } elseif ($this->css) {
       $features = $this->features ? $this->features->compile($env) : null;
       $import = new ILess_Node_Import($this->compilePath($env), $features, $this->options, $this->index);
-      if(!$import->css && $this->hasError())
-      {
+      if (!$import->css && $this->hasError()) {
         throw $this->getError();
       }
+
       return $import;
-    }
-    else
-    {
+    } else {
       // FIXME: check this!
       // if(!$this->root)
       // {
@@ -199,6 +187,7 @@ class ILess_Node_Import extends ILess_Node implements ILess_Node_VisitableInterf
 
       $ruleset = new ILess_Node_Ruleset(array(), $this->root ? $this->root->rules : array());
       $ruleset->compileImports($env);
+
       return $this->features ? new ILess_Node_Media($ruleset->rules, $this->features->value) : $ruleset->rules;
     }
   }
@@ -212,20 +201,18 @@ class ILess_Node_Import extends ILess_Node implements ILess_Node_VisitableInterf
   public function compilePath(ILess_Environment $env)
   {
     $path = $this->path->compile($env);
-    if(!($path instanceof ILess_Node_Url))
-    {
+    if (!($path instanceof ILess_Node_Url)) {
       $rootPath = $this->currentFileInfo && $this->currentFileInfo->rootPath ? $this->currentFileInfo->rootPath : false;
-      if($rootPath)
-      {
+      if ($rootPath) {
         $pathValue = $path->value;
         // Add the base path if the import is relative
-        if($pathValue && ILess_Util::isPathRelative($pathValue))
-        {
+        if ($pathValue && ILess_Util::isPathRelative($pathValue)) {
           $path->value = $rootPath . $pathValue;
         }
       }
       $path->value = ILess_Util::normalizePath($path->value);
     }
+
     return $path;
   }
 
@@ -246,17 +233,16 @@ class ILess_Node_Import extends ILess_Node implements ILess_Node_VisitableInterf
    */
   public function generateCSS(ILess_Environment $env, ILess_Output $output)
   {
-    if($this->css)
-    {
+    if ($this->css) {
       $output->add('@import ', $this->currentFileInfo, $this->index);
       $this->path->generateCSS($env, $output);
-      if($this->features)
-      {
+      if ($this->features) {
         $output->add(' ');
         $this->features->generateCSS($env, $output);
       }
       $output->add(';');
     }
+
     return $output;
   }
 
@@ -293,4 +279,3 @@ class ILess_Node_Import extends ILess_Node implements ILess_Node_VisitableInterf
   }
 
 }
-

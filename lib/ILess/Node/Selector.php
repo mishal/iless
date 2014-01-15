@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Selector extends ILess_Node implements ILess_Node_VisitableInterface, ILess_Node_MarkableAsReferencedInterface {
-
+class ILess_Node_Selector extends ILess_Node implements ILess_Node_VisitableInterface, ILess_Node_MarkableAsReferencedInterface
+{
   /**
    * Node type
    *
@@ -89,8 +89,7 @@ class ILess_Node_Selector extends ILess_Node implements ILess_Node_VisitableInte
     $this->currentFileInfo = $currentFileInfo;
     $this->isReferenced = $isReferenced;
     $this->condition = $condition;
-    if(!$condition)
-    {
+    if (!$condition) {
       $this->compiledCondition = true;
     }
   }
@@ -114,18 +113,17 @@ class ILess_Node_Selector extends ILess_Node implements ILess_Node_VisitableInte
   {
     $elements = $extendList = array();
     // compile elements
-    foreach($this->elements as $e)
-    {
+    foreach ($this->elements as $e) {
       $elements[] = $e->compile($env);
     }
     // compile extended list
-    foreach($this->extendList as $e)
-    {
+    foreach ($this->extendList as $e) {
       $extendList[] = $e->compile($env);
     }
 
     // compile condition
     $compiledCondition = $this->condition ? $this->condition->compile($env) : null;
+
     return $this->createDerived($elements, $extendList, $compiledCondition);
   }
 
@@ -142,6 +140,7 @@ class ILess_Node_Selector extends ILess_Node implements ILess_Node_VisitableInte
     $compiledCondition = !is_null($compiledCondition) ? $compiledCondition : $this->compiledCondition;
     $selector = new ILess_Node_Selector($elements, count($extendList) ? $extendList : $this->extendList, $this->condition, $this->index, $this->currentFileInfo, $this->isReferenced);
     $selector->compiledCondition = $compiledCondition;
+
     return $selector;
   }
 
@@ -150,13 +149,11 @@ class ILess_Node_Selector extends ILess_Node implements ILess_Node_VisitableInte
    */
   public function generateCSS(ILess_Environment $env, ILess_Output $output)
   {
-    if(!$env->firstSelector && $this->elements[0]->combinator->value === '')
-    {
+    if (!$env->firstSelector && $this->elements[0]->combinator->value === '') {
       $output->add(' ', $this->currentFileInfo, $this->index);
     }
 
-    foreach($this->elements as $e)
-    {
+    foreach ($this->elements as $e) {
       /* @var $e ILess_Node_Element */
       $e->generateCSS($env, $output);
     }
@@ -198,44 +195,35 @@ class ILess_Node_Selector extends ILess_Node implements ILess_Node_VisitableInte
    */
   public function match(ILess_Node_Selector $other)
   {
-    if(!$other)
-    {
+    if (!$other) {
       return 0;
     }
 
     $offset = 0;
     $olen = count($other->elements);
-    if($olen)
-    {
-      if($other->elements[0]->value === '&')
-      {
+    if ($olen) {
+      if ($other->elements[0]->value === '&') {
         $offset = 1;
       }
       $olen -= $offset;
     }
 
-    if($olen === 0)
-    {
+    if ($olen === 0) {
       return 0;
     }
 
     $len = count($this->elements);
-    if($len < $olen)
-    {
+    if ($len < $olen) {
       return 0;
     }
 
     $max = min($len, $olen);
 
-    for($i = 0; $i < $max; $i++)
-    {
-      if($this->elements[$i]->value !== $other->elements[$i + $offset]->value)
-      {
+    for ($i = 0; $i < $max; $i++) {
+      if ($this->elements[$i]->value !== $other->elements[$i + $offset]->value) {
         return 0;
       }
     }
-
-
 
     return $max; // return number of matched selectors
   }

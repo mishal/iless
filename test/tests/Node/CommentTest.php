@@ -37,5 +37,5 @@ class ILess_Node_Comment_Test extends ILess_TestCase
     $a->generateCss($env, $output);
     $this->assertEquals($output->toString(), 'my comment');
   }
-  
+
 }

@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage autoload
  */
-class ILess_Autoloader {
-
+class ILess_Autoloader
+{
   /**
    * Registered flag
    *
@@ -37,15 +37,13 @@ class ILess_Autoloader {
    */
   public static function register()
   {
-    if(self::$registered)
-    {
+    if (self::$registered) {
       return;
     }
 
     self::$libDir = dirname(dirname(__FILE__));
 
-    if(false === spl_autoload_register(array('ILess_Autoloader', 'loadClass')))
-    {
+    if (false === spl_autoload_register(array('ILess_Autoloader', 'loadClass'))) {
       throw new Exception('Unable to register ILess_Autoloader::loadClass as an autoloading method.');
     }
 
@@ -71,15 +69,14 @@ class ILess_Autoloader {
   public static function loadClass($className)
   {
     // handle only package classes
-    if(strpos($className, 'ILess_') !== 0)
-    {
+    if (strpos($className, 'ILess_') !== 0) {
       return;
     }
 
     $fileName = self::$libDir . '/' . str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
-    if(file_exists($fileName))
-    {
+    if (file_exists($fileName)) {
       require $fileName;
+
       return true;
     }
   }

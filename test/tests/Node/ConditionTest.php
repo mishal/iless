@@ -85,5 +85,4 @@ class ILess_Node_Condition_Test extends ILess_TestCase
     $this->assertFalse($result);
   }
 
-
 }

@@ -12,8 +12,8 @@
  * @package ILess
  * @subpackage core
  */
-class ILess_Variable {
-
+class ILess_Variable
+{
   /**
    * Dimension detection regexp
    *
@@ -44,7 +44,7 @@ class ILess_Variable {
   {
     $this->name = ltrim($name, '@');
     $this->value = $value;
-    $this->important = (boolean)$important;
+    $this->important = (boolean) $important;
   }
 
   /**
@@ -58,35 +58,29 @@ class ILess_Variable {
   {
     $important = false;
     // name is marked as !name
-    if(strpos($name, '!') === 0)
-    {
+    if (strpos($name, '!') === 0) {
       $important = true;
       $name = substr($name, 1);
     }
 
     // Color
-    if(ILess_Color::isNamedColor($value) || $value === 'transparent' || strpos($value, '#') === 0)
-    {
+    if (ILess_Color::isNamedColor($value) || $value === 'transparent' || strpos($value, '#') === 0) {
       $value = new ILess_Node_Color(new ILess_Color($value));
     }
     // Quoted string
-    elseif(preg_match(self::QUOTED_REGEXP, $value, $matches))
-    {
+    elseif (preg_match(self::QUOTED_REGEXP, $value, $matches)) {
       $value = new ILess_Node_Quoted($matches[0], $matches[0][0] == '"' ? $matches[1] : $matches[2]);
     }
     // URL
-    elseif(strpos($value, 'http://') === 0 || strpos($value, 'https://') === 0)
-    {
+    elseif (strpos($value, 'http://') === 0 || strpos($value, 'https://') === 0) {
       $value = new ILess_Node_Anonymous($value);
     }
     // Dimension
-    elseif(preg_match(self::DIMENSION_REGEXP, $value, $matches))
-    {
+    elseif (preg_match(self::DIMENSION_REGEXP, $value, $matches)) {
       $value = new ILess_Node_Dimension($matches[1], isset($matches[2]) ? $matches[2] : null);
     }
     // everything else
-    else
-    {
+    else {
       $value = new ILess_Node_Anonymous($value);
     }
 

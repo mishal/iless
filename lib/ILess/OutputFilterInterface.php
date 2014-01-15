@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage filter
  */
-interface ILess_OutputFilterInterface {
-
+interface ILess_OutputFilterInterface
+{
   /**
    * Filters the output
    *

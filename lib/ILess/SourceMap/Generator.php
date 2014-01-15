@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage Output
  */
-class ILess_SourceMap_Generator extends ILess_Configurable {
-
+class ILess_SourceMap_Generator extends ILess_Configurable
+{
   /**
    * What version of source map does the generator generate?
    */
@@ -101,8 +101,7 @@ class ILess_SourceMap_Generator extends ILess_Configurable {
   protected function setup()
   {
     // fix windows paths
-    if($basePath = $this->getOption('base_path'))
-    {
+    if ($basePath = $this->getOption('base_path')) {
       $basePath = str_replace('\\', '/', $basePath);
       $this->setOption('base_path', $basePath);
     }
@@ -122,48 +121,39 @@ class ILess_SourceMap_Generator extends ILess_Configurable {
     $this->root->generateCSS($env, $output);
 
     // prepare sources
-    foreach($this->contentsMap as $filename => $contents)
-    {
+    foreach ($this->contentsMap as $filename => $contents) {
       // match md5 hash in square brackets _[#HASH#]_
       // see ILess_Parser_Core::parseString()
-      if(preg_match('/(\[__[0-9a-f]{32}__\])+$/', $filename))
-      {
-        $filename = substr($filename, 0, -38);        
+      if (preg_match('/(\[__[0-9a-f]{32}__\])+$/', $filename)) {
+        $filename = substr($filename, 0, -38);
       }
 
       $this->sources[$this->normalizeFilename($filename)] = $contents;
     }
 
     $sourceMapUrl = null;
-    if($url = $this->getOption('url'))
-    {
+    if ($url = $this->getOption('url')) {
       $sourceMapUrl = $url;
-    }
-    elseif($path = $this->getOption('filename'))
-    {
+    } elseif ($path = $this->getOption('filename')) {
       $sourceMapUrl = $this->normalizeFilename($path);
       // naming conventions, make it foobar.css.map
-      if(!preg_match('/\.map$/', $sourceMapUrl))
-      {
+      if (!preg_match('/\.map$/', $sourceMapUrl)) {
         $sourceMapUrl = sprintf('%s.map', $sourceMapUrl);
       }
     }
 
     $sourceMapContent = $this->generateJson();
     // write map to a file
-    if($file = $this->getOption('write_to'))
-    {
+    if ($file = $this->getOption('write_to')) {
       // FIXME: should this happen here?
       $this->saveMap($file, $sourceMapContent);
     }
     // inline the map
-    else
-    {
+    else {
       $sourceMapUrl = sprintf('data:application/json,%s', ILess_Util::encodeURIComponent($sourceMapContent));
     }
 
-    if($sourceMapUrl)
-    {
+    if ($sourceMapUrl) {
       $output->add(sprintf('/*# sourceMappingURL=%s */', $sourceMapUrl));
     }
 
@@ -181,16 +171,15 @@ class ILess_SourceMap_Generator extends ILess_Configurable {
   {
     $dir = dirname($file);
     // directory does not exist
-    if(!is_dir($dir))
-    {
+    if (!is_dir($dir)) {
       // FIXME: create the dir automatically?
       throw new ILess_Exception(sprintf('The directory "%s" does not exist. Cannot save the source map.', $dir));
     }
     // FIXME: proper saving, with dir write check!
-    if(file_put_contents($file, $content) === false)
-    {
+    if (file_put_contents($file, $content) === false) {
       throw new ILess_Exception(sprintf('Cannot save the source map to "%s"', $file));
     }
+
     return true;
   }
 
@@ -207,11 +196,11 @@ class ILess_SourceMap_Generator extends ILess_Configurable {
         && ($pos = strpos($filename, $basePath)) !== false)
     {
       $filename = substr($filename, $pos + strlen($basePath));
-      if(strpos($filename, '\\') === 0 || strpos($filename, '/') === 0)
-      {
+      if (strpos($filename, '\\') === 0 || strpos($filename, '/') === 0) {
         $filename = substr($filename, 1);
       }
     }
+
     return sprintf('%s%s', $this->getOption('root_path'), $filename);
   }
 
@@ -235,6 +224,7 @@ class ILess_SourceMap_Generator extends ILess_Configurable {
       'original_column' => $originalColumn,
       'source_file' => $sourceFile
     );
+
     return $this;
   }
 
@@ -246,6 +236,7 @@ class ILess_SourceMap_Generator extends ILess_Configurable {
   public function clear()
   {
     $this->mappings = array();
+
     return $this;
   }
 
@@ -258,6 +249,7 @@ class ILess_SourceMap_Generator extends ILess_Configurable {
   public function setEncoder(ILess_SourceMap_Base64VLQ $encoder)
   {
     $this->encoder = $encoder;
+
     return $this;
   }
 
@@ -295,8 +287,7 @@ class ILess_SourceMap_Generator extends ILess_Configurable {
     // A string with the encoded mapping data.
     $sourceMap['mappings'] = $this->generateMappings();
 
-    if($this->getOption('source_contents'))
-    {
+    if ($this->getOption('source_contents')) {
       // An optional list of source content, useful when the 'source' can't be hosted.
       // The contents are listed in the same order as the sources above.
       // 'null' may be used if some original sources should be retrieved by name.
@@ -304,8 +295,7 @@ class ILess_SourceMap_Generator extends ILess_Configurable {
     }
 
     // less.js compat fixes
-    if(count($sourceMap['sources']) && !($sourceMap['sourceRoot']))
-    {
+    if (count($sourceMap['sources']) && !($sourceMap['sourceRoot'])) {
       unset($sourceMap['sourceRoot']);
     }
 
@@ -319,8 +309,7 @@ class ILess_SourceMap_Generator extends ILess_Configurable {
    */
   protected function getSourcesContent()
   {
-    if(empty($this->sources))
-    {
+    if (empty($this->sources)) {
       return;
     }
     // FIXME: we should output only those which were used
@@ -334,38 +323,33 @@ class ILess_SourceMap_Generator extends ILess_Configurable {
    */
   public function generateMappings()
   {
-    if(!count($this->mappings))
-    {
+    if (!count($this->mappings)) {
       return '';
     }
 
     // group mappings by generated line number.
     $groupedMap = $groupedMapEncoded = array();
-    foreach($this->mappings as $m)
-    {
+    foreach ($this->mappings as $m) {
       $groupedMap[$m['generated_line']][] = $m;
     }
     ksort($groupedMap);
 
     $lastGeneratedLine = $lastOriginalIndex = $lastOriginalLine = $lastOriginalColumn = 0;
 
-    foreach($groupedMap as $lineNumber => $line_map)
-    {
-      while(++$lastGeneratedLine < $lineNumber)
-      {
+    foreach ($groupedMap as $lineNumber => $line_map) {
+      while (++$lastGeneratedLine < $lineNumber) {
         $groupedMapEncoded[] = ';';
       }
 
       $lineMapEncoded = array();
       $lastGeneratedColumn = 0;
 
-      foreach($line_map as $m)
-      {
+      foreach ($line_map as $m) {
         $mapEncoded = $this->encoder->encode($m['generated_column'] - $lastGeneratedColumn);
         $lastGeneratedColumn = $m['generated_column'];
 
         // find the index
-        if($m['source_file'] && 
+        if($m['source_file'] &&
             ($index = $this->findFileIndex($this->normalizeFilename($m['source_file']))) !== false)
         {
           $mapEncoded .= $this->encoder->encode($index - $lastOriginalIndex);

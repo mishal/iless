@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage visitor
  */
-class ILess_Visitor_JoinSelector extends ILess_Visitor {
-
+class ILess_Visitor_JoinSelector extends ILess_Visitor
+{
   /**
    * Array of contexts
    *
@@ -61,31 +61,25 @@ class ILess_Visitor_JoinSelector extends ILess_Visitor {
   public function visitRuleset(ILess_Node_Ruleset $node, ILess_Visitor_Arguments $arguments)
   {
     $paths = array();
-    if(!$node->root)
-    {
+    if (!$node->root) {
       $selectors = array();
-      foreach($node->selectors as $selector)
-      {
-        if($selector->getIsOutput())
-        {
+      foreach ($node->selectors as $selector) {
+        if ($selector->getIsOutput()) {
           $selectors[] = $selector;
         }
       }
 
-			if(!count($selectors))
-      {
+			if (!count($selectors)) {
         $node->selectors = array();
 				$node->rules = array();
-			}
-      else
-      {
+			} else {
 				$context = end($this->contexts);
         $paths = $node->joinSelectors($context, $selectors);
 			}
 
       $node->paths = $paths;
     }
-    
+
     $this->contexts[] = $paths;
   }
 
@@ -109,8 +103,7 @@ class ILess_Visitor_JoinSelector extends ILess_Visitor {
   public function visitMedia(ILess_Node_Media $node, ILess_Visitor_Arguments $argument)
   {
     $context = end($this->contexts);
-    if(!count($context) || (is_object($context[0]) && $context[0]->multiMedia))
-    {
+    if (!count($context) || (is_object($context[0]) && $context[0]->multiMedia)) {
       $node->rules[0]->root = true;
     }
   }

@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage visitor
  */
-class ILess_Visitor_ProcessExtend extends ILess_Visitor {
-
+class ILess_Visitor_ProcessExtend extends ILess_Visitor
+{
   /**
    * Extends stack
    *
@@ -32,14 +32,14 @@ class ILess_Visitor_ProcessExtend extends ILess_Visitor {
     $finder = new ILess_Visitor_ExtendFinder();
     $finder->run($root);
 
-    if(!$finder->foundExtends)
-    {
+    if (!$finder->foundExtends) {
       return $root;
     }
 
     $root->allExtends = $this->doExtendChaining($root->allExtends, $root->allExtends);
     $this->allExtendsStack = array();
     $this->allExtendsStack[] = &$root->allExtends;
+
     return $this->visit($root);
   }
 
@@ -59,26 +59,21 @@ class ILess_Visitor_ProcessExtend extends ILess_Visitor {
     // and the second is the target.
     // the seperation into two lists allows us to process a subset of chains with a bigger set, as is the
     // case when processing media queries
-    for($extendIndex = 0, $extendsListCount = count($extendsList); $extendIndex < $extendsListCount; $extendIndex++)
-    {
-      for($targetExtendIndex = 0; $targetExtendIndex < count($extendsListTarget); $targetExtendIndex++)
-      {
+    for ($extendIndex = 0, $extendsListCount = count($extendsList); $extendIndex < $extendsListCount; $extendIndex++) {
+      for ($targetExtendIndex = 0; $targetExtendIndex < count($extendsListTarget); $targetExtendIndex++) {
         $extend = $extendsList[$extendIndex];
         $targetExtend = $extendsListTarget[$targetExtendIndex];
         // look for circular references
-        if($this->inInheritanceChain($targetExtend, $extend))
-        {
+        if ($this->inInheritanceChain($targetExtend, $extend)) {
           continue;
         }
 
         // find a match in the target extends self selector (the bit before :extend)
         $selectorPath = array($targetExtend->selfSelectors[0]);
         $matches = $this->findMatch($extend, $selectorPath);
-        if($matches)
-        {
+        if ($matches) {
           // we found a match, so for each self selector..
-          foreach($extend->selfSelectors as $selfSelector)
-          {
+          foreach ($extend->selfSelectors as $selfSelector) {
             // process the extend as usual
             $newSelector = $this->extendSelector($matches, $selectorPath, $selfSelector);
             // but now we create a new extend from it
@@ -96,8 +91,7 @@ class ILess_Visitor_ProcessExtend extends ILess_Visitor {
             // only process the selector once.. if we have :extend(.a,.b) then multiple
             // extends will look at the same selector path, so when extending
             // we know that any others will be duplicates in terms of what is added to the css
-            if($targetExtend->firstExtendOnThisSelectorPath)
-            {
+            if ($targetExtend->firstExtendOnThisSelectorPath) {
               $newExtend->firstExtendOnThisSelectorPath = true;
               $targetExtend->ruleset->paths[] = $newSelector;
             }
@@ -106,19 +100,14 @@ class ILess_Visitor_ProcessExtend extends ILess_Visitor {
       }
     }
 
-    if($extendsToAdd)
-    {
-      if($iterationCount > 100)
-      {
+    if ($extendsToAdd) {
+      if ($iterationCount > 100) {
         $selectorOne = '{unable to calculate}';
         $selectorTwo = '{unable to calculate}';
-        try
-        {
+        try {
           $selectorOne = $extendsToAdd[0]->selfSelectors[0]->toCSS();
           $selectorTwo = $extendsToAdd[0]->selector->toCSS();
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
 
         }
         throw new ILess_Exception_Parser(
@@ -142,22 +131,19 @@ class ILess_Visitor_ProcessExtend extends ILess_Visitor {
    */
   protected function inInheritanceChain(ILess_Node_Extend $possibleParent, ILess_Node_Extend $possibleChild)
   {
-    if($possibleParent === $possibleChild)
-    {
+    if ($possibleParent === $possibleChild) {
       return true;
     }
 
-    if($possibleChild->parents)
-    {
-      if($this->inInheritanceChain($possibleParent, $possibleChild->parents[0]))
-      {
+    if ($possibleChild->parents) {
+      if ($this->inInheritanceChain($possibleParent, $possibleChild->parents[0])) {
         return true;
       }
-      if($this->inInheritanceChain($possibleParent, $possibleChild->parents[1]))
-      {
+      if ($this->inInheritanceChain($possibleParent, $possibleChild->parents[1])) {
         return true;
       }
     }
+
     return false;
   }
 
@@ -203,8 +189,7 @@ class ILess_Visitor_ProcessExtend extends ILess_Visitor {
    */
   public function visitRuleset(ILess_Node_Ruleset $node, ILess_Visitor_Arguments $arguments)
   {
-    if($node->root)
-    {
+    if ($node->root) {
       return;
     }
 
@@ -212,25 +197,19 @@ class ILess_Visitor_ProcessExtend extends ILess_Visitor {
     $pathsCount = count($node->paths);
 
     // look at each selector path in the ruleset, find any extend matches and then copy, find and replace
-    for($extendIndex = 0, $allExtendCount = count($allExtends); $extendIndex < $allExtendCount; $extendIndex++)
-    {
-      for($pathIndex = 0; $pathIndex < $pathsCount; $pathIndex++)
-      {
+    for ($extendIndex = 0, $allExtendCount = count($allExtends); $extendIndex < $allExtendCount; $extendIndex++) {
+      for ($pathIndex = 0; $pathIndex < $pathsCount; $pathIndex++) {
         $selectorPath = $node->paths[$pathIndex];
         // extending extends happens initially, before the main pass
-        if(ILess_Node::propertyExists($node, 'extendOnEveryPath') && $node->extendOnEveryPath)
-        {
+        if (ILess_Node::propertyExists($node, 'extendOnEveryPath') && $node->extendOnEveryPath) {
           continue;
         }
-        if(end($selectorPath)->extendList)
-        {
+        if (end($selectorPath)->extendList) {
           continue;
         }
         $matches = $this->findMatch($allExtends[$extendIndex], $selectorPath);
-        if($matches)
-        {
-          foreach($allExtends[$extendIndex]->selfSelectors as $selfSelector)
-          {
+        if ($matches) {
+          foreach ($allExtends[$extendIndex]->selfSelectors as $selfSelector) {
             $node->paths[] = $this->extendSelector($matches, $selectorPath, $selfSelector);
           }
         }
@@ -296,31 +275,26 @@ class ILess_Visitor_ProcessExtend extends ILess_Visitor {
     $matches = array();
 
     // loop through the haystack elements
-    for($haystackSelectorIndex = 0, $haystack_path_len = count($haystackSelectorPath); $haystackSelectorIndex < $haystack_path_len; $haystackSelectorIndex++)
-    {
+    for ($haystackSelectorIndex = 0, $haystack_path_len = count($haystackSelectorPath); $haystackSelectorIndex < $haystack_path_len; $haystackSelectorIndex++) {
       $hackstackSelector = $haystackSelectorPath[$haystackSelectorIndex];
 
-      for($hackstackElementIndex = 0, $haystack_elements_len = count($hackstackSelector->elements); $hackstackElementIndex < $haystack_elements_len; $hackstackElementIndex++)
-      {
+      for ($hackstackElementIndex = 0, $haystack_elements_len = count($hackstackSelector->elements); $hackstackElementIndex < $haystack_elements_len; $hackstackElementIndex++) {
         $haystackElement = $hackstackSelector->elements[$hackstackElementIndex];
 
         // if we allow elements before our match we can add a potential match every time. otherwise only at the first element.
-        if($extend->allowBefore || ($haystackSelectorIndex === 0 && $hackstackElementIndex === 0))
-        {
+        if ($extend->allowBefore || ($haystackSelectorIndex === 0 && $hackstackElementIndex === 0)) {
           $potentialMatches[] = array('pathIndex' => $haystackSelectorIndex, 'index' => $hackstackElementIndex, 'matched' => 0, 'initialCombinator' => $haystackElement->combinator);
           $potentialMatches_len++;
         }
 
-        for($i = 0; $i < $potentialMatches_len; $i++)
-        {
+        for ($i = 0; $i < $potentialMatches_len; $i++) {
           $potentialMatch = &$potentialMatches[$i];
 
           // selectors add " " onto the first element. When we use & it joins the selectors together, but if we don't
           // then each selector in haystackSelectorPath has a space before it added in the toCSS phase. so we need to work out
           // what the resulting combinator will be
           $targetCombinator = $haystackElement->combinator->value;
-          if($targetCombinator === '' && $hackstackElementIndex === 0)
-          {
+          if ($targetCombinator === '' && $hackstackElementIndex === 0) {
             $targetCombinator = ' ';
           }
 
@@ -329,17 +303,13 @@ class ILess_Visitor_ProcessExtend extends ILess_Visitor {
               ($potentialMatch['matched'] > 0 && $needleElements[$potentialMatch['matched']]->combinator->value !== $targetCombinator))
           {
             $potentialMatch = null;
-          }
-          else
-          {
+          } else {
             $potentialMatch['matched']++;
           }
 
           // if we are still valid and have finished, test whether we have elements after and whether these are allowed
-          if($potentialMatch)
-          {
-            if($needleElements_len === false)
-            {
+          if ($potentialMatch) {
+            if ($needleElements_len === false) {
               $needleElements_len = count($needleElements);
             }
 
@@ -352,10 +322,8 @@ class ILess_Visitor_ProcessExtend extends ILess_Visitor {
             }
           }
           // if null we remove, if not, we are still valid, so either push as a valid match or continue
-          if($potentialMatch)
-          {
-            if($potentialMatch['finished'])
-            {
+          if ($potentialMatch) {
+            if ($potentialMatch['finished']) {
               $potentialMatch['length'] = $needleElements_len;
               $potentialMatch['endPathIndex'] = $haystackSelectorIndex;
               $potentialMatch['endPathElementIndex'] = $hackstackElementIndex + 1; // index after end of match
@@ -363,9 +331,7 @@ class ILess_Visitor_ProcessExtend extends ILess_Visitor {
               $potentialMatches_len = 0;
               $matches[] = $potentialMatch;
             }
-          }
-          else
-          {
+          } else {
             array_splice($potentialMatches, $i, 1);
             $potentialMatches_len--;
             $i--;
@@ -373,69 +339,61 @@ class ILess_Visitor_ProcessExtend extends ILess_Visitor {
         }
       }
     }
+
     return $matches;
   }
 
   protected function isElementValuesEqual($elementValue1, $elementValue2)
   {
-    if($elementValue1 === $elementValue2)
-    {
+    if ($elementValue1 === $elementValue2) {
       return true;
     }
-    if(is_string($elementValue1) || is_string($elementValue2))
-    {
+    if (is_string($elementValue1) || is_string($elementValue2)) {
       return false;
     }
 
-    if($elementValue1 instanceof ILess_Node_Attribute)
-    {
-      if($elementValue1->operator !== $elementValue2->operator || $elementValue1->key !== $elementValue2->key)
-      {
+    if ($elementValue1 instanceof ILess_Node_Attribute) {
+      if ($elementValue1->operator !== $elementValue2->operator || $elementValue1->key !== $elementValue2->key) {
         return false;
       }
 
-      if(!$elementValue1->value || !$elementValue2->value)
-      {
-        if($elementValue1->value || $elementValue2->value)
-        {
+      if (!$elementValue1->value || !$elementValue2->value) {
+        if ($elementValue1->value || $elementValue2->value) {
           return false;
         }
+
         return true;
       }
       $elementValue1 = ($elementValue1->value->value ? $elementValue1->value->value : $elementValue1->value );
       $elementValue2 = ($elementValue2->value->value ? $elementValue2->value->value : $elementValue2->value );
+
       return $elementValue1 === $elementValue2;
     }
 
     $elementValue1 = $elementValue1->value;
-    if($elementValue1 instanceof ILess_Node_Selector)
-    {
+    if ($elementValue1 instanceof ILess_Node_Selector) {
       $elementValue2 = $elementValue2->value;
-      if(!($elementValue2 instanceof ILess_Node_Selector) || count($elementValue1->elements) !== count($elementValue2->elements))
-      {
+      if (!($elementValue2 instanceof ILess_Node_Selector) || count($elementValue1->elements) !== count($elementValue2->elements)) {
         return false;
       }
-      for($i = 0; $i < count($elementValue1->elements); $i++)
-      {
-        if($elementValue1->elements[$i]->combinator->value !== $elementValue2->elements[$i]->combinator->value)
-        {
-          if($i !== 0 || ($elementValue1->elements[$i]->combinator->value || ' ') !== ($elementValue2->elements[$i]->combinator->value || ' '))
-          {
+      for ($i = 0; $i < count($elementValue1->elements); $i++) {
+        if ($elementValue1->elements[$i]->combinator->value !== $elementValue2->elements[$i]->combinator->value) {
+          if ($i !== 0 || ($elementValue1->elements[$i]->combinator->value || ' ') !== ($elementValue2->elements[$i]->combinator->value || ' ')) {
             return false;
           }
         }
-        if(!$this->isElementValuesEqual($elementValue1->elements[$i]->value, $elementValue2->elements[$i]->value))
-        {
+        if (!$this->isElementValuesEqual($elementValue1->elements[$i]->value, $elementValue2->elements[$i]->value)) {
           return false;
         }
       }
+
       return true;
     }
 
     return false;
   }
 
-  function extendSelector($matches, $selectorPath, $replacementSelector)
+  public function extendSelector($matches, $selectorPath, $replacementSelector)
   {
     //for a set of matches, replace each match with the replacement selector
     $currentSelectorPathIndex = 0;
@@ -443,16 +401,14 @@ class ILess_Visitor_ProcessExtend extends ILess_Visitor {
     $path = array();
     $selectorPath_len = count($selectorPath);
 
-    for($matchIndex = 0, $matches_len = count($matches); $matchIndex < $matches_len; $matchIndex++)
-    {
+    for ($matchIndex = 0, $matches_len = count($matches); $matchIndex < $matches_len; $matchIndex++) {
       $match = $matches[$matchIndex];
       $selector = $selectorPath[$match['pathIndex']];
       $firstElement = new ILess_Node_Element(
           $match['initialCombinator'], $replacementSelector->elements[0]->value, $replacementSelector->elements[0]->index, $replacementSelector->elements[0]->currentFileInfo
       );
 
-      if($match['pathIndex'] > $currentSelectorPathIndex && $currentSelectorPathElementIndex > 0)
-      {
+      if ($match['pathIndex'] > $currentSelectorPathIndex && $currentSelectorPathElementIndex > 0) {
         $last_path = end($path);
         $last_path->elements = array_merge($last_path->elements, array_slice($selectorPath[$currentSelectorPathIndex]->elements, $currentSelectorPathElementIndex));
         $currentSelectorPathElementIndex = 0;
@@ -465,28 +421,23 @@ class ILess_Visitor_ProcessExtend extends ILess_Visitor {
           , array_slice($replacementSelector->elements, 1)
       );
 
-      if($currentSelectorPathIndex === $match['pathIndex'] && $matchIndex > 0)
-      {
+      if ($currentSelectorPathIndex === $match['pathIndex'] && $matchIndex > 0) {
         $last_key = count($path) - 1;
         $path[$last_key]->elements = array_merge($path[$last_key]->elements, $newElements);
-      }
-      else
-      {
+      } else {
         $path = array_merge($path, array_slice($selectorPath, $currentSelectorPathIndex, $match['pathIndex']));
         $path[] = new ILess_Node_Selector($newElements);
       }
 
       $currentSelectorPathIndex = $match['endPathIndex'];
       $currentSelectorPathElementIndex = $match['endPathElementIndex'];
-      if($currentSelectorPathElementIndex >= count($selectorPath[$currentSelectorPathIndex]->elements))
-      {
+      if ($currentSelectorPathElementIndex >= count($selectorPath[$currentSelectorPathIndex]->elements)) {
         $currentSelectorPathElementIndex = 0;
         $currentSelectorPathIndex++;
       }
     }
 
-    if($currentSelectorPathIndex < $selectorPath_len && $currentSelectorPathElementIndex > 0)
-    {
+    if ($currentSelectorPathIndex < $selectorPath_len && $currentSelectorPathElementIndex > 0) {
       $last_path = end($path);
       $last_path->elements = array_merge($last_path->elements, array_slice($selectorPath[$currentSelectorPathIndex]->elements, $currentSelectorPathElementIndex));
       $currentSelectorPathIndex++;

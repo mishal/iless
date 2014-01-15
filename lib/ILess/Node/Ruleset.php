@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInterface, ILess_Node_MarkableAsReferencedInterface, ILess_Node_MakeableImportantInterface {
-
+class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInterface, ILess_Node_MarkableAsReferencedInterface, ILess_Node_MakeableImportantInterface
+{
   /**
    * Node type
    *
@@ -162,15 +162,11 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
    */
   public function accept(ILess_Visitor $visitor)
   {
-    if(count($this->paths))
-    {
-      for($i = 0, $count = count($this->paths); $i < $count; $i++)
-      {
+    if (count($this->paths)) {
+      for ($i = 0, $count = count($this->paths); $i < $count; $i++) {
         $this->paths[$i] = $visitor->visit($this->paths[$i]);
       }
-    }
-    else
-    {
+    } else {
       $this->selectors = $visitor->visit($this->selectors);
     }
     $this->rules = $visitor->visit($this->rules);
@@ -183,10 +179,8 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
   {
     // compile selectors
     $selectors = array();
-    foreach($this->selectors as $s)
-    {
-      if(self::methodExists($s, 'compile'))
-      {
+    foreach ($this->selectors as $s) {
+      if (self::methodExists($s, 'compile')) {
         $selectors[] = $s->compile($env);
       }
     }
@@ -197,8 +191,7 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
     $ruleset->firstRoot = $this->firstRoot;
     $ruleset->allowImports = $this->allowImports;
 
-    if($this->debugInfo)
-    {
+    if ($this->debugInfo) {
       $ruleset->debugInfo = $this->debugInfo;
     }
 
@@ -209,17 +202,14 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
     array_unshift($env->selectors, $this->selectors);
 
     // Evaluate imports
-    if($ruleset->root || $ruleset->allowImports || !$ruleset->strictImports)
-    {
+    if ($ruleset->root || $ruleset->allowImports || !$ruleset->strictImports) {
       $ruleset->compileImports($env);
     }
 
     // Store the frames around mixin definitions,
     // so they can be evaluated like closures when the time comes.
-    foreach($ruleset->rules as $i => $rule)
-    {
-      if($rule instanceof ILess_Node_MixinDefinition)
-      {
+    foreach ($ruleset->rules as $i => $rule) {
+      if ($rule instanceof ILess_Node_MixinDefinition) {
         $ruleset->rules[$i]->frames = $env->frames;
       }
     }
@@ -227,28 +217,21 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
     $mediaBlockCount = count($env->mediaBlocks);
     // Evaluate mixin calls.
     $ruleset_len = count($ruleset->rules);
-    for($i = 0; $i < $ruleset_len; $i++)
-    {
+    for ($i = 0; $i < $ruleset_len; $i++) {
       $rule = $ruleset->rules[$i];
 
-      if($rule instanceof ILess_Node_MixinCall)
-      {
+      if ($rule instanceof ILess_Node_MixinCall) {
         $rules = $rule->compile($env);
         $temp = array();
-        foreach($rules as $r)
-        {
-          if(($r instanceof ILess_Node_Rule) && $r->variable)
-          {
+        foreach ($rules as $r) {
+          if (($r instanceof ILess_Node_Rule) && $r->variable) {
             // do not pollute the scope if the variable is
             // already there. consider returning false here
             // but we need a way to "return" variable from mixins
-            if(!$ruleset->variable($r->name))
-            {
+            if (!$ruleset->variable($r->name)) {
               $temp[] = $r;
             }
-          }
-          else
-          {
+          } else {
             $temp[] = $r;
           }
         }
@@ -261,10 +244,8 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
     }
 
     // Evaluate everything else
-    for($i = 0, $count = count($ruleset->rules); $i < $count; $i++)
-    {
-      if(!($ruleset->rules[$i] instanceof ILess_Node_MixinDefinition))
-      {
+    for ($i = 0, $count = count($ruleset->rules); $i < $count; $i++) {
+      if (!($ruleset->rules[$i] instanceof ILess_Node_MixinDefinition)) {
         $ruleset->rules[$i] = self::methodExists($ruleset->rules[$i], 'compile') ?
             $ruleset->rules[$i]->compile($env) : $ruleset->rules[$i];
       }
@@ -274,10 +255,8 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
     $env->shiftFrame();
     array_shift($env->selectors);
 
-    if($mediaBlockCount)
-    {
-      for($i = $mediaBlockCount, $count = count($env->mediaBlocks); $i < $count; $i++)
-      {
+    if ($mediaBlockCount) {
+      for ($i = $mediaBlockCount, $count = count($env->mediaBlocks); $i < $count; $i++) {
         $env->mediaBlocks[$i]->bubbleSelectors($selectors);
       }
     }
@@ -290,21 +269,18 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
    */
   public function generateCSS(ILess_Environment $env, ILess_Output $output)
   {
-    if(!$this->root)
-    {
+    if (!$this->root) {
       $env->tabLevel++;
     }
 
     $tabRuleStr = $tabSetStr = '';
-    if(!$env->compress && $env->tabLevel)
-    {
+    if (!$env->compress && $env->tabLevel) {
       $tabRuleStr = str_repeat('  ', $env->tabLevel);
       $tabSetStr = str_repeat('  ', $env->tabLevel - 1);
     }
 
     $ruleNodes = $rulesetNodes = array();
-    for($i = 0, $rulesCount = count($this->rules); $i < $rulesCount; $i++)
-    {
+    for ($i = 0, $rulesCount = count($this->rules); $i < $rulesCount; $i++) {
       $rule = $this->rules[$i];
       if((self::propertyExists($rule, 'rules') && $rule->rules) ||
           $rule instanceof ILess_Node_Media ||
@@ -312,41 +288,33 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
           ($this->root && $rule instanceof ILess_Node_Comment))
       {
         $rulesetNodes[] = $rule;
-      }
-      else
-      {
+      } else {
         $ruleNodes[] = $rule;
       }
     }
 
     // If this is the root node, we don't render
     // a selector, or {}.
-    if(!$this->root)
-    {
-      if($this->debugInfo)
-      {
+    if (!$this->root) {
+      if ($this->debugInfo) {
         // debug?
         $debugInfo = self::getDebugInfo($env, $this, $tabSetStr);
-        if($debugInfo)
-        {
+        if ($debugInfo) {
           $output->add($debugInfo)
               ->add($tabSetStr);
         }
       }
 
-      for($i = 0, $count = count($this->paths); $i < $count; $i++)
-      {
+      for ($i = 0, $count = count($this->paths); $i < $count; $i++) {
         $path = $this->paths[$i];
         $env->firstSelector = true;
 
-        for($j = 0, $pathCount = count($path); $j < $pathCount; $j++)
-        {
+        for ($j = 0, $pathCount = count($path); $j < $pathCount; $j++) {
           $path[$j]->generateCSS($env, $output);
           $env->firstSelector = false;
         }
 
-        if($i + 1 < $count)
-        {
+        if ($i + 1 < $count) {
           $output->add($env->compress ? ',' : (",\n" . $tabSetStr));
         }
       }
@@ -358,51 +326,41 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
     $ruleNodesCount = count($ruleNodes);
 
     // Compile rules and rulesets
-    for($i = 0; $i < $ruleNodesCount; $i++)
-    {
+    for ($i = 0; $i < $ruleNodesCount; $i++) {
       $rule = $ruleNodes[$i];
       // @page{ directive ends up with root elements inside it, a mix of rules and rulesets
       // In this instance we do not know whether it is the last property
-      if($i + 1 === $ruleNodesCount && (!$this->root || $rulesetNodesCount === 0 || $this->firstRoot))
-      {
+      if ($i + 1 === $ruleNodesCount && (!$this->root || $rulesetNodesCount === 0 || $this->firstRoot)) {
         $env->lastRule = true;
       }
 
       $rule->generateCSS($env, $output);
 
-      if(!$env->lastRule)
-      {
+      if (!$env->lastRule) {
         $output->add($env->compress ? '' : ("\n" . $tabRuleStr));
-      }
-      else
-      {
+      } else {
         $env->lastRule = false;
       }
     }
 
-    if(!$this->root)
-    {
+    if (!$this->root) {
       $output->add($env->compress ? '}' : ("\n" . $tabSetStr . '}'));
       $env->tabLevel--;
     }
 
     $firstRuleset = true;
-    for($i = 0; $i < $rulesetNodesCount; $i++)
-    {
-      if($ruleNodesCount && $firstRuleset)
-      {
+    for ($i = 0; $i < $rulesetNodesCount; $i++) {
+      if ($ruleNodesCount && $firstRuleset) {
         $output->add($env->compress ? '' : "\n" . ($this->root ? $tabRuleStr : $tabSetStr));
       }
-      if(!$firstRuleset)
-      {
+      if (!$firstRuleset) {
         $output->add($env->compress ? '' : "\n" . ($this->root ? $tabRuleStr : $tabSetStr));
       }
       $firstRuleset = false;
       $rulesetNodes[$i]->generateCSS($env, $output);
     }
 
-    if(!$output->isEmpty() && !$env->compress && $this->firstRoot)
-    {
+    if (!$output->isEmpty() && !$env->compress && $this->firstRoot) {
       $output->add("\n");
     }
   }
@@ -413,8 +371,7 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
    */
   public function markReferenced()
   {
-    foreach($this->selectors as $s)
-    {
+    foreach ($this->selectors as $s) {
       $s->markReferenced();
     }
     $this->isReferenced = true;
@@ -437,26 +394,20 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
    */
   public function compileImports(ILess_Environment $env)
   {
-    for($i = 0; $i < count($this->rules); $i++)
-    {
+    for ($i = 0; $i < count($this->rules); $i++) {
       $rule = $this->rules[$i];
-      if(!($rule instanceof ILess_Node_Import))
-      {
+      if (!($rule instanceof ILess_Node_Import)) {
         continue;
       }
 
       $rules = $rule->compile($env);
-      if(is_array($rules))
-      {
+      if (is_array($rules)) {
         array_splice($this->rules, $i, 1, $rules);
-      }
-      else
-      {
+      } else {
         array_splice($this->rules, $i, 1, array($rules));
       }
 
-      if(count($rules))
-      {
+      if (count($rules)) {
         $i += count($rules) - 1;
       }
 
@@ -472,17 +423,14 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
   public function makeImportant()
   {
     $importantRules = array();
-    foreach($this->rules as $rule)
-    {
-      if($rule instanceof ILess_Node_MakeableImportantInterface)
-      {
+    foreach ($this->rules as $rule) {
+      if ($rule instanceof ILess_Node_MakeableImportantInterface) {
         $importantRules[] = $rule->makeImportant();
-      }
-      else
-      {
+      } else {
         $importantRules[] = $rule;
       }
     }
+
     return new ILess_Node_Ruleset($this->selectors, $importantRules, $this->strictImports);
   }
 
@@ -513,6 +461,7 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
     {
       return false;
     }
+
     return true;
   }
 
@@ -534,17 +483,15 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
    */
   public function variables()
   {
-    if($this->variables === null)
-    {
+    if ($this->variables === null) {
       $this->variables = array();
-      foreach($this->rules as $r)
-      {
-        if($r instanceof ILess_Node_Rule && $r->variable == true)
-        {
+      foreach ($this->rules as $r) {
+        if ($r instanceof ILess_Node_Rule && $r->variable == true) {
           $this->variables[$r->name] = $r;
         }
       }
     }
+
     return $this->variables;
   }
 
@@ -557,6 +504,7 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
   public function variable($name)
   {
     $vars = $this->variables();
+
     return isset($vars[$name]) ? $vars[$name] : null;
   }
 
@@ -568,13 +516,12 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
   public function rulesets()
   {
     $result = array();
-    foreach($this->rules as $rule)
-    {
-      if($rule instanceof ILess_Node_Ruleset || $rule instanceof ILess_Node_MixinDefinition)
-      {
+    foreach ($this->rules as $rule) {
+      if ($rule instanceof ILess_Node_Ruleset || $rule instanceof ILess_Node_MixinDefinition) {
         $result[] = $rule;
       }
     }
+
     return $result;
   }
 
@@ -589,34 +536,24 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
   public function find(ILess_Node $selector, ILess_Environment $env, ILess_Node_Ruleset $self = null)
   {
     $key = $selector->toCSS($env);
-    if(!$self)
-    {
+    if (!$self) {
       $self = $this;
     }
 
-    if(!array_key_exists($key, $this->lookups))
-    {
+    if (!array_key_exists($key, $this->lookups)) {
       $this->lookups[$key] = array();
-      foreach($this->rules as $rule)
-      {
-        if($rule === $self)
-        {
+      foreach ($this->rules as $rule) {
+        if ($rule === $self) {
           continue;
         }
-        if(($rule instanceof ILess_Node_Ruleset) || ($rule instanceof ILess_Node_MixinDefinition))
-        {
-          foreach($rule->selectors as $ruleSelector)
-          {
+        if (($rule instanceof ILess_Node_Ruleset) || ($rule instanceof ILess_Node_MixinDefinition)) {
+          foreach ($rule->selectors as $ruleSelector) {
             $match = $selector->match($ruleSelector);
-            if($match)
-            {
-              if(count($selector->elements) > $match)
-              {
+            if ($match) {
+              if (count($selector->elements) > $match) {
                 $this->lookups[$key] = array_merge($this->lookups[$key], $rule->find(
                         new ILess_Node_Selector(array_slice($selector->elements, $match)), $env, $self));
-              }
-              else
-              {
+              } else {
                 $this->lookups[$key][] = $rule;
               }
               break;
@@ -625,6 +562,7 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
         }
       }
     }
+
     return $this->lookups[$key];
   }
 
@@ -637,10 +575,10 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
   public function joinSelectors(array $context, array $selectors)
   {
     $paths = array();
-    foreach($selectors as $selector)
-    {
+    foreach ($selectors as $selector) {
       $this->joinSelector($paths, $context, $selector);
     }
+
     return $paths;
   }
 
@@ -654,27 +592,21 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
   protected function joinSelector(array &$paths, array $context, ILess_Node_Selector $selector)
   {
     $hasParentSelector = false;
-    foreach($selector->elements as $el)
-    {
-      if($el->value === '&')
-      {
+    foreach ($selector->elements as $el) {
+      if ($el->value === '&') {
         $hasParentSelector = true;
       }
     }
 
-    if(!$hasParentSelector)
-    {
-      if(count($context) > 0)
-      {
-        foreach($context as $contextEl)
-        {
+    if (!$hasParentSelector) {
+      if (count($context) > 0) {
+        foreach ($context as $contextEl) {
           $paths[] = array_merge($contextEl, array($selector));
         }
-      }
-      else
-      {
+      } else {
         $paths[] = array($selector);
       }
+
       return;
     }
 
@@ -696,46 +628,35 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
     // We will build it up. We initiate it with one empty selector as we "multiply" the new selectors
     // by the parents
     $newSelectors = array(array());
-    foreach($selector->elements as $el)
-    {
+    foreach ($selector->elements as $el) {
       // non parent reference elements just get added
-      if($el->value !== '&')
-      {
+      if ($el->value !== '&') {
         $currentElements[] = $el;
-      }
-      else
-      {
+      } else {
         // the new list of selectors to add
         $selectorsMultiplied = array();
 
         // merge the current list of non parent selector elements
         // on to the current list of selectors to add
-        if(count($currentElements) > 0)
-        {
+        if (count($currentElements) > 0) {
           $this->mergeElementsOnToSelectors($currentElements, $newSelectors);
         }
 
         // loop through our current selectors
-        foreach($newSelectors as $sel)
-        {
+        foreach ($newSelectors as $sel) {
           // if we don't have any parent paths, the & might be in a mixin so that it can be used
           // whether there are parents or not
-          if(!count($context))
-          {
+          if (!count($context)) {
             // the combinator used on el should now be applied to the next element instead so that
             // it is not lost
-            if(count($sel) > 0)
-            {
+            if (count($sel) > 0) {
               $sel[0]->elements = array_slice($sel[0]->elements, 0);
               $sel[0]->elements[] = new ILess_Node_Element($el->combinator, '', 0, $el->index, $el->currentFileInfo);
             }
             $selectorsMultiplied[] = $sel;
-          }
-          else
-          {
+          } else {
             // and the parent selectors
-            foreach($context as $parentSel)
-            {
+            foreach ($context as $parentSel) {
               // We need to put the current selectors
               // then join the last selector's elements on to the parents selectors
               // our new selector path
@@ -746,26 +667,21 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
 
               //construct the joined selector - if & is the first thing this will be empty,
               // if not newJoinedSelector will be the last set of elements in the selector
-              if(count($sel) > 0)
-              {
+              if (count($sel) > 0) {
                 $newSelectorPath = $sel;
                 $lastSelector = array_pop($newSelectorPath);
                 $newJoinedSelector = $selector->createDerived(array_slice($lastSelector->elements, 0));
                 $newJoinedSelectorEmpty = false;
-              }
-              else
-              {
+              } else {
                 $newJoinedSelector = $selector->createDerived(array());
               }
 
               //put together the parent selectors after the join
-              if(count($parentSel) > 1)
-              {
+              if (count($parentSel) > 1) {
                 $afterParentJoin = array_merge($afterParentJoin, array_slice($parentSel, 1));
               }
 
-              if(count($parentSel) > 0)
-              {
+              if (count($parentSel) > 0) {
                 $newJoinedSelectorEmpty = false;
                 // join the elements so far with the first part of the parent
                 $newJoinedSelector->elements[] = new ILess_Node_Element(
@@ -774,8 +690,7 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
                 $newJoinedSelector->elements = array_merge($newJoinedSelector->elements, array_slice($parentSel[0]->elements, 1));
               }
 
-              if(!$newJoinedSelectorEmpty)
-              {
+              if (!$newJoinedSelectorEmpty) {
                 // now add the joined selector
                 $newSelectorPath[] = $newJoinedSelector;
               }
@@ -795,15 +710,12 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
 
     // if we have any elements left over (e.g. .a& .b == .b)
     // add them on to all the current selectors
-    if(count($currentElements) > 0)
-    {
+    if (count($currentElements) > 0) {
       $this->mergeElementsOnToSelectors($currentElements, $newSelectors);
     }
 
-    foreach($newSelectors as $newSel)
-    {
-      if(count($newSel))
-      {
+    foreach ($newSelectors as $newSel) {
+      if (count($newSel)) {
         $paths[] = $newSel;
       }
     }
@@ -811,22 +723,18 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
 
   public function mergeElementsOnToSelectors(array $elements, array &$selectors)
   {
-    if(!count($selectors))
-    {
+    if (!count($selectors)) {
       $selectors[] = array(new ILess_Node_Selector($elements));
+
       return;
     }
 
-    foreach($selectors as &$sel)
-    {
+    foreach ($selectors as &$sel) {
       // if the previous thing in sel is a parent this needs to join on to it
-      if(count($sel) > 0)
-      {
+      if (count($sel) > 0) {
         $last = count($sel) - 1;
         $sel[$last] = $sel[$last]->createDerived(array_merge($sel[$last]->elements, $elements));
-      }
-      else
-      {
+      } else {
         $sel[] = new ILess_Node_Selector($elements);
       }
     }

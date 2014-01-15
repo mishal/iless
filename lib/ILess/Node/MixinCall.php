@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_MixinCall extends ILess_Node implements ILess_Node_VisitableInterface {
-
+class ILess_Node_MixinCall extends ILess_Node implements ILess_Node_VisitableInterface
+{
   /**
    * Node type
    *
@@ -83,10 +83,8 @@ class ILess_Node_MixinCall extends ILess_Node implements ILess_Node_VisitableInt
   public function accept(ILess_Visitor $visitor)
   {
     $this->selector = $visitor->visit($this->selector);
-    if(count($this->arguments))
-    {
-      foreach($this->arguments as &$argument)
-      {
+    if (count($this->arguments)) {
+      foreach ($this->arguments as &$argument) {
         $argument['value'] = $visitor->visit($argument['value']);
       }
     }
@@ -102,28 +100,22 @@ class ILess_Node_MixinCall extends ILess_Node implements ILess_Node_VisitableInt
     $isOneFound = false;
 
     $args = array();
-    foreach($this->arguments as $a)
-    {
+    foreach ($this->arguments as $a) {
       $args[] = array('name' => $a['name'], 'value' => $a['value']->compile($env));
     }
 
-    foreach($env->frames as $frame)
-    {
+    foreach ($env->frames as $frame) {
       $mixins = $frame->find($this->selector, $env);
-      if(!$mixins)
-      {
+      if (!$mixins) {
         continue;
       }
 
       $isOneFound = true;
-      for($m = 0; $m < count($mixins); $m++)
-      {
+      for ($m = 0; $m < count($mixins); $m++) {
         $mixin = $mixins[$m];
         $isRecursive = false;
-        foreach($env->frames as $recurFrame)
-        {
-          if(!($mixin instanceof ILess_Node_MixinDefinition))
-          {
+        foreach ($env->frames as $recurFrame) {
+          if (!($mixin instanceof ILess_Node_MixinDefinition)) {
             if((isset($recurFrame->originalRulesetId) && $mixin->rulesetId === $recurFrame->originalRulesetId)
                 || ($mixin === $recurFrame))
             {
@@ -132,65 +124,48 @@ class ILess_Node_MixinCall extends ILess_Node implements ILess_Node_VisitableInt
             }
           }
         }
-        if($isRecursive)
-        {
+        if ($isRecursive) {
           continue;
         }
-        if($mixin->matchArgs($args, $env))
-        {
-          if(!ILess_Node::methodExists($mixin, 'matchCondition') || $mixin->matchCondition($args, $env))
-          {
-            try
-            {
-              if(!$mixin instanceof ILess_Node_MixinDefinition)
-              {
+        if ($mixin->matchArgs($args, $env)) {
+          if (!ILess_Node::methodExists($mixin, 'matchCondition') || $mixin->matchCondition($args, $env)) {
+            try {
+              if (!$mixin instanceof ILess_Node_MixinDefinition) {
                 $mixin = new ILess_Node_MixinDefinition('', array(), $mixin->rules, null, false);
                 $mixin->originalRulesetId = $mixins[$m]->originalRulesetId ? $mixins[$m]->originalRulesetId : $mixin->originalRulesetId;
               }
               $rules = array_merge($rules, $mixin->compile($env, $args, $this->important)->rules);
-            }
-            catch(Exception $e)
-            {
+            } catch (Exception $e) {
               throw new ILess_Exception_Compiler($e->getMessage(), $e, $this->index, $this->currentFileInfo);
             }
           }
           $match = true;
         }
       }
-      if($match)
-      {
-        if(!$this->currentFileInfo || !$this->currentFileInfo->reference)
-        {
-          foreach($rules as $rule)
-          {
-            if($rule instanceof ILess_Node_MarkableAsReferencedInterface)
-            {
+      if ($match) {
+        if (!$this->currentFileInfo || !$this->currentFileInfo->reference) {
+          foreach ($rules as $rule) {
+            if ($rule instanceof ILess_Node_MarkableAsReferencedInterface) {
               $rule->markReferenced();
             }
           }
         }
+
         return $rules;
       }
     }
 
-    if($isOneFound)
-    {
+    if ($isOneFound) {
       $message = array();
-      if($args)
-      {
-        foreach($args as $a)
-        {
+      if ($args) {
+        foreach ($args as $a) {
           $argValue = '';
-          if($a['name'])
-          {
+          if ($a['name']) {
             $argValue .= $a['name'] + ':';
           }
-          if(ILess_Node::methodExists($a['value'], 'toCSS'))
-          {
+          if (ILess_Node::methodExists($a['value'], 'toCSS')) {
             $argValue .= $a['value']->toCSS($env);
-          }
-          else
-          {
+          } else {
             $argValue .= '???';
           }
           $message[] = $argValue;
@@ -200,9 +175,7 @@ class ILess_Node_MixinCall extends ILess_Node implements ILess_Node_VisitableInt
           sprintf('No matching definition was found for `%s(%s)`', trim($this->selector->toCSS($env)), join(',', $message)),
           null,
           $this->index, $this->currentFileInfo);
-    }
-    else
-    {
+    } else {
       throw new ILess_Exception_Compiler(
         sprintf('The mixin `%s` is undefined.', trim($this->selector->toCSS($env))), null, $this->index, $this->currentFileInfo);
     }

@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Value extends ILess_Node implements ILess_Node_VisitableInterface {
-
+class ILess_Node_Value extends ILess_Node implements ILess_Node_VisitableInterface
+{
   /**
    * Node type
    *
@@ -54,16 +54,15 @@ class ILess_Node_Value extends ILess_Node implements ILess_Node_VisitableInterfa
    */
   public function compile(ILess_Environment $env, $arguments = null, $important = null)
   {
-    if(count($this->value) == 1)
-    {
+    if (count($this->value) == 1) {
       return $this->value[0]->compile($env);
     }
 
     $return = array();
-    foreach($this->value as $v)
-    {
+    foreach ($this->value as $v) {
       $return[] = $v->compile($env);
     }
+
     return new ILess_Node_Value($return);
   }
 
@@ -72,11 +71,9 @@ class ILess_Node_Value extends ILess_Node implements ILess_Node_VisitableInterfa
    */
   public function generateCSS(ILess_Environment $env, ILess_Output $output)
   {
-    for($i = 0, $count = count($this->value); $i < $count; $i++)
-    {
+    for ($i = 0, $count = count($this->value); $i < $count; $i++) {
       $this->value[$i]->generateCSS($env, $output);
-      if($i + 1 < $count)
-      {
+      if ($i + 1 < $count) {
         $output->add($env->compress ? ',' : ', ');
       }
     }

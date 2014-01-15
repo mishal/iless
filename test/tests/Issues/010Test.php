@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage test
  */
-class ILess_Issue_10_Test extends ILess_TestCase {
-
+class ILess_Issue_10_Test extends ILess_TestCase
+{
   public function testIssue()
   {
     $parser = new ILess_Parser();

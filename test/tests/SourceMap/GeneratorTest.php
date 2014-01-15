@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-class ILess_SourceMap_TestGenerator extends ILess_SourceMap_Generator {
-  
+class ILess_SourceMap_TestGenerator extends ILess_SourceMap_Generator
+{
   public function generateJson()
   {
     return parent::generateJson();
@@ -18,8 +18,8 @@ class ILess_SourceMap_TestGenerator extends ILess_SourceMap_Generator {
 /**
  * @covers ILess_SourceMap_Generator
  */
-class ILess_SourceMap_Generator_Test extends ILess_TestCase {
-
+class ILess_SourceMap_Generator_Test extends ILess_TestCase
+{
   /**
    * @covers generateJson
    */

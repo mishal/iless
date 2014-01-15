@@ -14,8 +14,8 @@
  * @subpackage test
  * @covers ILess_Node_Media
  */
-class ILess_Node_Media_Test extends ILess_TestCase {
-
+class ILess_Node_Media_Test extends ILess_TestCase
+{
   /**
    * @covers __constructor
    */

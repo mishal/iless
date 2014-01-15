@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage visitor
  */
-abstract class ILess_Visitor {
-
+abstract class ILess_Visitor
+{
   /**
    * Is the visitor replacing?
    *
@@ -36,10 +36,8 @@ abstract class ILess_Visitor {
   public function __construct()
   {
     // prepare the method cache to speed up the visitors
-    foreach(get_class_methods($this) as $method)
-    {
-      if(strpos($method, 'visit') === 0)
-      {
+    foreach (get_class_methods($this) as $method) {
+      if (strpos($method, 'visit') === 0) {
         $this->methodCache[$method] = true;
       }
     }
@@ -69,13 +67,11 @@ abstract class ILess_Visitor {
    */
   public function visit($node)
   {
-    if(is_array($node))
-    {
+    if (is_array($node)) {
       return $this->visitArray($node);
     }
 
-    if(!is_object($node))
-    {
+    if (!is_object($node)) {
       return $node;
     }
 
@@ -88,24 +84,19 @@ abstract class ILess_Visitor {
 
       $newNode = $this->$funcName($node, $arguments);
 
-      if($this->isReplacing())
-      {
+      if ($this->isReplacing()) {
         $node = $newNode;
       }
 
-      if($arguments->visitDeeper && $node instanceof ILess_Node_VisitableInterface)
-      {
+      if ($arguments->visitDeeper && $node instanceof ILess_Node_VisitableInterface) {
         $node->accept($this);
       }
 
       $funcName = sprintf('%sOut', $funcName);
-      if(isset($this->methodCache[$funcName]))
-      {
+      if (isset($this->methodCache[$funcName])) {
         $this->$funcName($node, isset($arguments) ? $arguments : new ILess_Visitor_Arguments());
       }
-    }
-    elseif($node instanceof ILess_Node_VisitableInterface)
-    {
+    } elseif ($node instanceof ILess_Node_VisitableInterface) {
       $node->accept($this);
     }
 
@@ -129,24 +120,21 @@ abstract class ILess_Visitor {
    */
   public function visitArray(array $nodes)
   {
-    if(!$this->isReplacing())
-    {
+    if (!$this->isReplacing()) {
       array_map(array($this, 'visit'), $nodes);
+
       return $nodes;
     }
     $newNodes = array();
-    foreach($nodes as $node)
-    {
+    foreach ($nodes as $node) {
       $evald = $this->visit($node);
-      if(is_array($evald))
-      {
+      if (is_array($evald)) {
         self::flatten($evald, $newNodes);
-      }
-      else
-      {
+      } else {
         $newNodes[] = $evald;
       }
     }
+
     return $newNodes;
   }
 
@@ -159,21 +147,15 @@ abstract class ILess_Visitor {
    */
   protected static function flatten(array $array, array &$out)
   {
-    foreach($array as $item)
-    {
-      if(!is_array($item))
-      {
+    foreach ($array as $item) {
+      if (!is_array($item)) {
         $out[] = $item;
         continue;
       }
-      foreach($item as $nestedItem)
-      {
-        if(is_array($nestedItem))
-        {
+      foreach ($item as $nestedItem) {
+        if (is_array($nestedItem)) {
           self::flatten($nestedItem, $out);
-        }
-        else
-        {
+        } else {
           $out[] = $nestedItem;
         }
       }

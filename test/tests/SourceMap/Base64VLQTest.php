@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-class ILess_SourceMap_Base64VLQTest extends ILess_TestCase {
-
+class ILess_SourceMap_Base64VLQTest extends ILess_TestCase
+{
   public $B64STR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
   public function setUp()
@@ -100,10 +100,10 @@ class ILess_SourceMap_Base64VLQTest extends ILess_TestCase {
   public function provideValidBase64()
   {
     $tuples = array();
-    foreach(str_split($this->B64STR) as $i => $char)
-    {
+    foreach (str_split($this->B64STR) as $i => $char) {
       $tuples[] = array($char, $i);
     }
+
     return $tuples;
   }
 

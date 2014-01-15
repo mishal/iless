@@ -12,8 +12,8 @@
  * @package ILess
  * @subpackage cache
  */
-abstract class ILess_Cache extends ILess_Configurable implements ILess_CacheInterface {
-
+abstract class ILess_Cache extends ILess_Configurable implements ILess_CacheInterface
+{
   /**
    * Creates an instance of cache driver
    *
@@ -22,10 +22,10 @@ abstract class ILess_Cache extends ILess_Configurable implements ILess_CacheInte
    */
   public static function factory($driver, $options = array())
   {
-    if(!class_exists($cacheClass = sprintf('ILess_Cache_%s', $driver)))
-    {
+    if (!class_exists($cacheClass = sprintf('ILess_Cache_%s', $driver))) {
       throw new InvalidArgumentException(sprintf('The cache driver "%s" does not exist.', $driver));
     }
+
     return new $cacheClass($options);
   }
 

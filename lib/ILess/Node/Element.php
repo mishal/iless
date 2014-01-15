@@ -12,8 +12,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Element extends ILess_Node implements ILess_Node_VisitableInterface {
-
+class ILess_Node_Element extends ILess_Node implements ILess_Node_VisitableInterface
+{
   /**
    * Node type
    *
@@ -52,21 +52,15 @@ class ILess_Node_Element extends ILess_Node implements ILess_Node_VisitableInter
    */
   public function __construct($combinator, $value, $index = 0, ILess_FileInfo $currentFileInfo = null)
   {
-    if(!($combinator instanceof ILess_Node_Combinator))
-    {
+    if (!($combinator instanceof ILess_Node_Combinator)) {
       $combinator = new ILess_Node_Combinator($combinator);
     }
 
-    if(is_string($value))
-    {
+    if (is_string($value)) {
       $this->value = trim($value);
-    }
-    elseif($value)
-    {
+    } elseif ($value) {
       $this->value = $value;
-    }
-    else
-    {
+    } else {
       $this->value = '';
     }
 
@@ -103,12 +97,9 @@ class ILess_Node_Element extends ILess_Node implements ILess_Node_VisitableInter
   public function toCSS(ILess_Environment $env)
   {
     $value = self::methodExists($this->value, 'toCSS') ? $this->value->toCSS($env) : $this->value;
-    if($value === '' && strlen($this->combinator->value) && strpos($this->combinator->value, '&') === 0)
-    {
+    if ($value === '' && strlen($this->combinator->value) && strpos($this->combinator->value, '&') === 0) {
       return '';
-    }
-    else
-    {
+    } else {
       return $this->combinator->toCSS($env) . $value;
     }
   }

@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Combinator extends ILess_Node {
-
+class ILess_Node_Combinator extends ILess_Node
+{
   /**
    * Node type
    *
@@ -59,12 +59,9 @@ class ILess_Node_Combinator extends ILess_Node {
    */
   public function __construct($value = null)
   {
-    if($value == ' ')
-    {
+    if ($value == ' ') {
       $value = ' ';
-    }
-    else
-    {
+    } else {
       $value = trim($value);
     }
     parent::__construct($value);

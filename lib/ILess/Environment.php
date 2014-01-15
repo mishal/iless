@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage environment
  */
-class ILess_Environment {
-
+class ILess_Environment
+{
   /**
    * Array of frames
    *
@@ -220,33 +220,26 @@ class ILess_Environment {
    */
   public function __construct(array $options = array(), ILess_FunctionRegistry $registry = null)
   {
-    if($registry)
-    {
+    if ($registry) {
       $this->setFunctionRegistry($registry);
     }
 
     $invalid = array();
-    foreach($options as $option => $value)
-    {
+    foreach ($options as $option => $value) {
       // convert underscored option to camelCased property
-      if(strpos($option, '_') !== false)
-      {
+      if (strpos($option, '_') !== false) {
         $option = ILess_Util::camelize($option);
       }
 
-      if(!property_exists($this, $option))
-      {
+      if (!property_exists($this, $option)) {
         $invalid[] = $option;
-      }
-      else
-      {
-        switch($option)
-        {
+      } else {
+        switch ($option) {
           case 'strictUnits':
           case 'compress':
           case 'importMultiple':
           case 'ieCompat':
-            $value = (boolean)$value;
+            $value = (boolean) $value;
             break;
         }
 
@@ -254,8 +247,7 @@ class ILess_Environment {
       }
     }
 
-    if(count($invalid))
-    {
+    if (count($invalid)) {
       throw new InvalidArgumentException(sprintf('Invalid options "%s" given.', join(', ', $invalid)));
     }
 
@@ -291,6 +283,7 @@ class ILess_Environment {
   public function setFileContent($filePath, $content)
   {
     $this->contentsMap[$filePath] = $content;
+
     return $this;
   }
 
@@ -305,6 +298,7 @@ class ILess_Environment {
     $this->functionRegistry = $registry;
     // provide access to the environment, which is need to access generateCSS()
     $this->functionRegistry->setEnvironment($this);
+
     return $this;
   }
 
@@ -360,14 +354,13 @@ class ILess_Environment {
     );
 
     $copy = new ILess_Environment(array(), $env->getFunctionRegistry());
-    foreach($copyProperties as $property)
-    {
-      if(property_exists($env, $property))
-      {
+    foreach ($copyProperties as $property) {
+      if (property_exists($env, $property)) {
         $copy->$property = $env->$property;
       }
     }
     $copy->frames = $frames;
+
     return $copy;
   }
 
@@ -387,6 +380,7 @@ class ILess_Environment {
   public function inParenthesis()
   {
     $this->parensStack[] = true;
+
     return $this;
   }
 
@@ -396,6 +390,7 @@ class ILess_Environment {
   public function outOfParenthesis()
   {
     array_pop($this->parensStack);
+
     return $this;
   }
 

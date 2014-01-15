@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage CLI
  */
-class ILess_CLI extends ILess_Configurable {
-
+class ILess_CLI extends ILess_Configurable
+{
   /**
    * Maximum line length
    *
@@ -119,28 +119,23 @@ class ILess_CLI extends ILess_Configurable {
   protected function setup()
   {
     // convert flags to options
-    if($this->hasFlag('x'))
-    {
+    if ($this->hasFlag('x')) {
       $this->setOption('compress', true);
     }
 
-    if($this->hasFlag('a'))
-    {
+    if ($this->hasFlag('a')) {
       $this->setOption('append', true);
     }
 
-    if($this->hasFlag('s'))
-    {
+    if ($this->hasFlag('s')) {
       $this->setOption('silent', true);
     }
 
-    if($this->hasFlag('v'))
-    {
+    if ($this->hasFlag('v')) {
       $this->setOption('version', true);
     }
 
-    if($this->hasFlag('h'))
-    {
+    if ($this->hasFlag('h')) {
       $this->setOption('help', true);
     }
 
@@ -160,14 +155,13 @@ class ILess_CLI extends ILess_Configurable {
   protected function convertOptions(array $options)
   {
     $converted = array();
-    foreach($options as $option => $value)
-    {
-      if(strpos($option, '-') !== false)
-      {
+    foreach ($options as $option => $value) {
+      if (strpos($option, '-') !== false) {
         $option = str_replace('-', '_', $option);
       }
       $converted[$option] =  $value;
     }
+
     return $converted;
   }
 
@@ -219,50 +213,40 @@ class ILess_CLI extends ILess_Configurable {
    */
   public function run()
   {
-    if(!$this->isValid())
-    {
+    if (!$this->isValid()) {
       echo $this->getUsage(true);
       // return error
       return 1;
-    }
-    elseif($this->getOption('version'))
-    {
+    } elseif ($this->getOption('version')) {
       echo ILess_Parser::VERSION;
+
       return;
-    }
-    elseif($this->getOption('help'))
-    {
+    } elseif ($this->getOption('help')) {
       echo $this->getUsage();
+
       return;
     }
 
-    try
-    {
+    try {
       $parser = new ILess_Parser($this->prepareOptionsForTheParser());
 
       $toBeParsed = $this->cliArguments['arguments'][0];
 
       // read from stdin
-      if(in_array($toBeParsed, $this->stdAliases))
-      {
+      if (in_array($toBeParsed, $this->stdAliases)) {
         $content = file_get_contents('php://stdin');
         $parser->parseString($content);
-      }
-      else
-      {
-        if(!ILess_Util::isPathAbsolute($toBeParsed))
-        {
+      } else {
+        if (!ILess_Util::isPathAbsolute($toBeParsed)) {
           $toBeParsed = sprintf('%s/%s', $this->currentDir, $toBeParsed);
         }
         $parser->parseFile($toBeParsed);
       }
 
       $toBeSavedTo = null;
-      if(isset($this->cliArguments['arguments'][1]))
-      {
+      if (isset($this->cliArguments['arguments'][1])) {
         $toBeSavedTo = $this->cliArguments['arguments'][1];
-        if(!ILess_Util::isPathAbsolute($toBeSavedTo))
-        {
+        if (!ILess_Util::isPathAbsolute($toBeSavedTo)) {
           $toBeSavedTo = sprintf('%s/%s', $this->currentDir, $toBeSavedTo);
         }
       }
@@ -270,22 +254,17 @@ class ILess_CLI extends ILess_Configurable {
       $css = $parser->getCSS();
 
       // where to put the css?
-      if($toBeSavedTo)
-      {
+      if ($toBeSavedTo) {
         // write the result
         $this->saveCSS($toBeSavedTo, $css, $this->getOption('append'));
-      }
-      else
-      {
+      } else {
         echo $css;
       }
-    }
-    catch(Exception $e)
-    {
-      if(!$this->getOption('silent'))
-      {
+    } catch (Exception $e) {
+      if (!$this->getOption('silent')) {
         $this->renderException($e);
       }
+
       return $e->getCode();
     }
 
@@ -301,36 +280,28 @@ class ILess_CLI extends ILess_Configurable {
   {
     $options = array();
 
-    foreach($this->getOptions() as $option => $value)
-    {
-      switch($option)
-      {
+    foreach ($this->getOptions() as $option => $value) {
+      switch ($option) {
         case 'source_map':
 
           $options['source_map'] = true;
           $options['source_map_options'] = array();
 
-          if(is_string($value))
-          {
+          if (is_string($value)) {
             $options['source_map_options']['write_to'] = $value;
           }
 
-          if($basePath = $this->getOption('source_map_base_path'))
-          {
+          if ($basePath = $this->getOption('source_map_base_path')) {
             $options['source_map_options']['base_path'] = $basePath;
-          }
-          else
-          {
+          } else {
             $options['source_map_options']['base_path'] = $this->currentDir;
           }
 
-          if($url = $this->getOption('source_map_url'))
-          {
+          if ($url = $this->getOption('source_map_url')) {
             $options['source_map_options']['url'] = $url;
           }
           // same as write to
-          elseif(is_string($value))
-          {
+          elseif (is_string($value)) {
             $options['source_map_options']['url'] = basename($value);
           }
 
@@ -371,8 +342,7 @@ class ILess_CLI extends ILess_Configurable {
    */
   protected function saveCss($targetFile, $css, $append = false)
   {
-    if(@file_put_contents($targetFile, $css, $append ? FILE_APPEND | LOCK_EX : LOCK_EX) === false)
-    {
+    if (@file_put_contents($targetFile, $css, $append ? FILE_APPEND | LOCK_EX : LOCK_EX) === false) {
       throw new Exception(sprintf('Error while saving the data to "%s".', $targetFile));
     }
   }
@@ -386,22 +356,17 @@ class ILess_CLI extends ILess_Configurable {
   {
     $options = array();
     $max = 0;
-    foreach($this->validOptions as $optionName => $properties)
-    {
+    foreach ($this->validOptions as $optionName => $properties) {
       $optionName = str_replace('_', '-', $optionName);
       list($help, $flags) = $properties;
-      if($flags)
-      {
+      if ($flags) {
         $option = sprintf('  -%s, --%s', join(',-', $flags), $optionName);
-      }
-      else
-      {
+      } else {
         $option = sprintf('  --%s', $optionName);
       }
 
       // find the largest line
-      if((strlen($option) + 2) > $max)
-      {
+      if ((strlen($option) + 2) > $max) {
         $max = strlen($option) + 2;
       }
 
@@ -412,12 +377,10 @@ class ILess_CLI extends ILess_Configurable {
     }
 
     $optionsFormatted = array();
-    foreach($options as $option)
-    {
+    foreach ($options as $option) {
       list($name, $help) = $option;
       // line will be too long
-      if(strlen($name . $help) + 2 > self::MAX_LINE_LENGTH)
-      {
+      if (strlen($name . $help) + 2 > self::MAX_LINE_LENGTH) {
         $help = wordwrap($help, self::MAX_LINE_LENGTH, PHP_EOL . str_repeat(' ', $max + 2));
       }
       $optionsFormatted[] = sprintf(' %-'.$max.'s %s', $name, $help);
@@ -490,34 +453,26 @@ SIGNATURE;
       'options' => array()
     );
 
-    while($arg = array_shift($args))
-    {
-      if(in_array($arg, $this->stdAliases))
-      {
+    while ($arg = array_shift($args)) {
+      if (in_array($arg, $this->stdAliases)) {
         $return['arguments'][] = $arg;
       }
       // Is it a command? (prefixed with --)
-      elseif(substr($arg, 0, 2) === '--')
-      {
+      elseif (substr($arg, 0, 2) === '--') {
         $value = '';
         $command = substr($arg, 2);
         // is it the syntax '--option=argument'?
-        if(strpos($command, '=') !== false)
-        {
+        if (strpos($command, '=') !== false) {
           list($command, $value) = explode('=', $command, 2);
         }
         $return['options'][$command] = !empty($value) ? $this->convertValue($value) : true;
       }
       // Is it a flag or a serial of flags? (prefixed with -)
-      else if(substr($arg, 0, 1) === '-')
-      {
-        for($i = 1; isset($arg[$i]); $i++)
-        {
+      else if (substr($arg, 0, 1) === '-') {
+        for ($i = 1; isset($arg[$i]); $i++) {
           $return['flags'][] = $arg[$i];
         }
-      }
-      else
-      {
+      } else {
         $return['arguments'][] = $arg;
       }
     }
@@ -534,8 +489,7 @@ SIGNATURE;
    */
   protected function convertValue($value)
   {
-    switch(strtolower($value))
-    {
+    switch (strtolower($value)) {
       case '0':
       case 'false':
       case 'no':

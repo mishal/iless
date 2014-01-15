@@ -6,8 +6,8 @@
  * file that was distributed with this source code.
  */
 
-class ILess_Test_CLI extends ILess_CLI {
-
+class ILess_Test_CLI extends ILess_CLI
+{
   public function parseArguments($args)
   {
     return parent::parseArguments($args);

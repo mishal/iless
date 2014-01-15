@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage cache
  */
-class ILess_Cache_FileSystem extends ILess_Cache {
-
+class ILess_Cache_FileSystem extends ILess_Cache
+{
   /**
    * Read data flag
    */
@@ -61,8 +61,7 @@ class ILess_Cache_FileSystem extends ILess_Cache {
   public function __construct($options = array())
   {
     // this is a cache directory
-    if(is_string($options))
-    {
+    if (is_string($options)) {
       $options = array(
         'cache_dir' => $options
       );
@@ -78,13 +77,11 @@ class ILess_Cache_FileSystem extends ILess_Cache {
    */
   protected function setup()
   {
-    if(!$cacheDir = $this->getOption('cache_dir'))
-    {
+    if (!$cacheDir = $this->getOption('cache_dir')) {
       throw new LogicException('Missing "cache_dir" option.');
     }
 
-    if(!is_dir($cacheDir) || !is_writable($cacheDir))
-    {
+    if (!is_dir($cacheDir) || !is_writable($cacheDir)) {
       throw new InvalidArgumentException(sprintf('The cache directory "%s" does not exist or is not writable.', $cacheDir));
     }
   }
@@ -95,6 +92,7 @@ class ILess_Cache_FileSystem extends ILess_Cache {
   public function has($cacheKey)
   {
     $path = $this->getFilePath($cacheKey);
+
     return file_exists($path) && $this->isValid($path);
   }
 
@@ -105,15 +103,13 @@ class ILess_Cache_FileSystem extends ILess_Cache {
   {
     $file_path = $this->getFilePath($cacheKey);
 
-    if(!file_exists($file_path))
-    {
+    if (!file_exists($file_path)) {
       return;
     }
 
     $data = $this->read($file_path, self::READ_DATA);
 
-    if($data[self::READ_DATA] === null)
-    {
+    if ($data[self::READ_DATA] === null) {
       return;
     }
 
@@ -141,16 +137,15 @@ class ILess_Cache_FileSystem extends ILess_Cache {
    */
   public function clean()
   {
-    if(!is_dir($this->getOption('cache_dir')))
-    {
+    if (!is_dir($this->getOption('cache_dir'))) {
       return true;
     }
 
     $result = true;
-    foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->getOption('cache_dir'))) as $file)
-    {
+    foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->getOption('cache_dir'))) as $file) {
       $result = @unlink($file) && $result;
     }
+
     return $result;
   }
 
@@ -176,6 +171,7 @@ class ILess_Cache_FileSystem extends ILess_Cache {
   protected function isValid($path)
   {
     $data = $this->read($path, self::READ_TIMEOUT);
+
     return time() < $data[self::READ_TIMEOUT];
   }
 
@@ -194,34 +190,29 @@ class ILess_Cache_FileSystem extends ILess_Cache {
   */
   protected function read($path, $type = self::READ_DATA)
   {
-    if(!$fp = @fopen($path, 'rb'))
-    {
+    if (!$fp = @fopen($path, 'rb')) {
       throw new ILess_Exception_Cache(sprintf('Unable to read cache file "%s".', $path));
     }
 
     @flock($fp, LOCK_SH);
     $data[self::READ_TIMEOUT] = intval(@stream_get_contents($fp, 12, 0));
-    if($type != self::READ_TIMEOUT && time() < $data[self::READ_TIMEOUT])
-    {
-      if($type & self::READ_LAST_MODIFIED)
-      {
+    if ($type != self::READ_TIMEOUT && time() < $data[self::READ_TIMEOUT]) {
+      if ($type & self::READ_LAST_MODIFIED) {
         $data[self::READ_LAST_MODIFIED] = intval(@stream_get_contents($fp, 12, 12));
       }
-      if($type & self::READ_DATA)
-      {
+      if ($type & self::READ_DATA) {
         fseek($fp, 0, SEEK_END);
         $length = ftell($fp) - 24;
         fseek($fp, 24);
         $data[self::READ_DATA] = @fread($fp, $length);
       }
-    }
-    else
-    {
+    } else {
       $data[self::READ_LAST_MODIFIED] = null;
       $data[self::READ_DATA] = null;
     }
     @flock($fp, LOCK_UN);
     @fclose($fp);
+
     return $data;
   }
 
@@ -241,16 +232,14 @@ class ILess_Cache_FileSystem extends ILess_Cache {
     $current_umask = umask();
     umask(0000);
 
-    if (!is_dir(dirname($path)))
-    {
+    if (!is_dir(dirname($path))) {
       // create directory structure if needed
       mkdir(dirname($path), 0777, true);
     }
 
     $tmpFile = tempnam(dirname($path), basename($path));
 
-    if(!$fp = @fopen($tmpFile, 'wb'))
-    {
+    if (!$fp = @fopen($tmpFile, 'wb')) {
       throw new ILess_Exception_Cache(sprintf('Unable to write cache file "%s".', $tmpFile));
     }
 
@@ -261,16 +250,15 @@ class ILess_Cache_FileSystem extends ILess_Cache {
 
     // With php < 5.2.6 on win32, renaming to an already existing file doesn't work, but copy does,
     // so we simply assume that when rename() fails that we are on win32 and try to use copy()
-    if(!@rename($tmpFile, $path))
-    {
-      if(copy($tmpFile, $path))
-      {
+    if (!@rename($tmpFile, $path)) {
+      if (copy($tmpFile, $path)) {
         unlink($tmpFile);
       }
     }
 
     chmod($path, 0666);
     umask($current_umask);
+
     return true;
   }
 

@@ -14,8 +14,8 @@
  * @subpackage test
  * @covers ILess_Node_Keyword
  */
-class ILess_Node_Keyword_Test extends ILess_TestCase {
-
+class ILess_Node_Keyword_Test extends ILess_TestCase
+{
   /**
    * @covers __constructor
    */
@@ -40,6 +40,5 @@ class ILess_Node_Keyword_Test extends ILess_TestCase {
     $result = $d->compile($env);
     $this->assertInstanceOf('ILess_Node_Keyword', $result);
   }
-
 
 }

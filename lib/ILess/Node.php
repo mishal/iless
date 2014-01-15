@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-abstract class ILess_Node {
-
+abstract class ILess_Node
+{
   /**
    * The value
    *
@@ -91,10 +91,8 @@ abstract class ILess_Node {
   public static function getDebugInfo(ILess_Environment $env, ILess_Node $context, $lineSeparator = '')
   {
     $result = '';
-    if($context->debugInfo && $env->dumpLineNumbers && !$env->compress)
-    {
-      switch($env->dumpLineNumbers)
-      {
+    if ($context->debugInfo && $env->dumpLineNumbers && !$env->compress) {
+      switch ($env->dumpLineNumbers) {
         case ILess_DebugInfo::FORMAT_COMMENT;
           $result = $context->debugInfo->getAsComment();
           break;
@@ -112,6 +110,7 @@ abstract class ILess_Node {
           break;
       }
     }
+
     return $result;
   }
 
@@ -128,15 +127,14 @@ abstract class ILess_Node {
     $env->tabLevel++;
 
     // compression
-    if($env->compress)
-    {
+    if ($env->compress) {
       $output->add('{');
-      foreach($rules as $rule)
-      {
+      foreach ($rules as $rule) {
         $rule->generateCSS($env, $output);
       }
       $output->add('}');
       $env->tabLevel--;
+
       return;
     }
 
@@ -144,18 +142,16 @@ abstract class ILess_Node {
     $tabRuleStr = $tabSetStr . '  ';
 
     // Non-compressed
-    if(!count($rules))
-    {
+    if (!count($rules)) {
       $output->add(' {' . $tabSetStr . '}');
+
       return;
     }
 
     $output->add(' {' . $tabRuleStr);
     $first = true;
-    foreach($rules as $rule)
-    {
-      if($first)
-      {
+    foreach ($rules as $rule) {
+      if ($first) {
         $rule->generateCSS($env, $output);
         $first = false;
         continue;
@@ -217,6 +213,7 @@ abstract class ILess_Node {
   {
     $output = new ILess_Output();
     $this->generateCSS($env, $output);
+
     return $output->toString();
   }
 

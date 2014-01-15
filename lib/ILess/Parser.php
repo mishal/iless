@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage parser
  */
-class ILess_Parser extends ILess_Parser_Core {
-
+class ILess_Parser extends ILess_Parser_Core
+{
   /**
    * Parser version
    *
@@ -42,24 +42,21 @@ class ILess_Parser extends ILess_Parser_Core {
   {
     $importDirs = array();
     // we have an import dirs option
-    if(isset($options['import_dirs']))
-    {
-      $importDirs = (array)$options['import_dirs'];
+    if (isset($options['import_dirs'])) {
+      $importDirs = (array) $options['import_dirs'];
       unset($options['import_dirs']);
     }
 
     $env = new ILess_Environment($options, new ILess_FunctionRegistry());
 
-    if(!$importers)
-    {
+    if (!$importers) {
       $importers = array(
         new ILess_Importer_FileSystem($importDirs)
       );
     }
 
     // output filters
-    foreach($outputFilters as $filter)
-    {
+    foreach ($outputFilters as $filter) {
       $this->appendFilter($filter);
     }
 
@@ -86,11 +83,11 @@ class ILess_Parser extends ILess_Parser_Core {
    */
   protected function filter($output)
   {
-    foreach($this->outputFilters as $filter)
-    {
+    foreach ($this->outputFilters as $filter) {
       /* @var $filter ILess_OutputFilterInterface */
       $output = $filter->filter($output);
     }
+
     return $output;
   }
 
@@ -103,6 +100,7 @@ class ILess_Parser extends ILess_Parser_Core {
   public function appendFilter(ILess_OutputFilterInterface $filter)
   {
     $this->outputFilters[] = $filter;
+
     return $this;
   }
 
@@ -115,6 +113,7 @@ class ILess_Parser extends ILess_Parser_Core {
   public function prependFilter(ILess_OutputFilterInterface $filter)
   {
     array_unshift($this->outputFilters, $filter);
+
     return $this;
   }
 

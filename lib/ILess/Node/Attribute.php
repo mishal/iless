@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Attribute extends ILess_Node implements ILess_Node_VisitableInterface {
-
+class ILess_Node_Attribute extends ILess_Node implements ILess_Node_VisitableInterface
+{
   /**
    * Node type
    *
@@ -93,8 +93,7 @@ class ILess_Node_Attribute extends ILess_Node implements ILess_Node_VisitableInt
   {
     $value = self::methodExists($this->key, 'toCSS') ? $this->key->toCSS($env) : $this->key;
 
-    if($this->operator)
-    {
+    if ($this->operator) {
       $value .= $this->operator;
       $value .= (self::methodExists($this->value, 'toCSS') ? $this->value->toCSS($env) : $this->value);
     }

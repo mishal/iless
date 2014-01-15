@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-interface ILess_Node_MakeableImportantInterface {
-
+interface ILess_Node_MakeableImportantInterface
+{
   /**
    * Makes the node important
    *

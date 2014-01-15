@@ -14,8 +14,8 @@
  * @subpackage test
  * @covers ILess_Node_Url
  */
-class ILess_Node_Url_Test extends ILess_TestCase {
-
+class ILess_Node_Url_Test extends ILess_TestCase
+{
   /**
    * @covers __constructor
    */

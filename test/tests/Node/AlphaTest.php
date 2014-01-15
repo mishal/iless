@@ -44,5 +44,4 @@ class ILess_Node_Alpha_Test extends ILess_TestCase
     $this->assertEquals($output->toString(), 'alpha(opacity=10)');
   }
 
-
 }

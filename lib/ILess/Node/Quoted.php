@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Quoted extends ILess_Node implements ILess_Node_ComparableInterface {
-
+class ILess_Node_Quoted extends ILess_Node implements ILess_Node_ComparableInterface
+{
   /**
    * Node type
    *
@@ -79,15 +79,13 @@ class ILess_Node_Quoted extends ILess_Node implements ILess_Node_ComparableInter
    */
   public function generateCSS(ILess_Environment $env, ILess_Output $output)
   {
-    if(!$this->escaped)
-    {
+    if (!$this->escaped) {
       $output->add($this->quote, $this->currentFileInfo, $this->index);
     }
 
     $output->add($this->value);
 
-    if(!$this->escaped)
-    {
+    if (!$this->escaped) {
       $output->add($this->quote);
     }
   }
@@ -102,25 +100,22 @@ class ILess_Node_Quoted extends ILess_Node implements ILess_Node_ComparableInter
   {
     $value = $this->value;
     // this is a javascript call, we are not in the browser!
-    if(preg_match_all('/`([^`]+)`/', $this->value, $matches))
-    {
-      foreach($matches as $i => $match)
-      {
+    if (preg_match_all('/`([^`]+)`/', $this->value, $matches)) {
+      foreach ($matches as $i => $match) {
         $js = new ILess_Node_Javascript($matches[1], $this->index, true);
         $js = $js->compile($env)->value;
         $value = str_replace($matches[0][$i], $js, $value);
       }
     }
-    if(preg_match_all('/@\{([\w-]+)\}/', $value, $matches))
-    {
-      foreach($matches[1] as $i => $match)
-      {
+    if (preg_match_all('/@\{([\w-]+)\}/', $value, $matches)) {
+      foreach ($matches[1] as $i => $match) {
         $v = new ILess_Node_Variable('@' . $match, $this->index, $this->currentFileInfo);
         $v = $v->compile($env, true);
         $v = ($v instanceof ILess_Node_Quoted) ? $v->value : $v->toCSS($env);
         $value = str_replace($matches[0][$i], $v, $value);
       }
     }
+
     return new ILess_Node_Quoted($this->quote . $value . $this->quote, $value, $this->escaped, $this->index, $this->currentFileInfo);
   }
 
@@ -132,8 +127,7 @@ class ILess_Node_Quoted extends ILess_Node implements ILess_Node_ComparableInter
    */
   public function compare(ILess_Node $other)
   {
-    if(!self::methodExists($other, 'toCSS'))
-    {
+    if (!self::methodExists($other, 'toCSS')) {
       return -1;
     }
 
@@ -141,8 +135,7 @@ class ILess_Node_Quoted extends ILess_Node implements ILess_Node_ComparableInter
     $left = $this->toCSS($env);
     $right = $other->toCSS($env);
 
-    if($left === $right)
-    {
+    if ($left === $right) {
       return 0;
     }
 

@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage cache
  */
-class ILess_Cache_None extends ILess_Cache {
-
+class ILess_Cache_None extends ILess_Cache
+{
   /**
    * Constructor
    *

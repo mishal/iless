@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Url extends ILess_Node implements ILess_Node_VisitableInterface {
-
+class ILess_Node_Url extends ILess_Node implements ILess_Node_VisitableInterface
+{
   /**
    * Node type
    *
@@ -58,15 +58,14 @@ class ILess_Node_Url extends ILess_Node implements ILess_Node_VisitableInterface
   {
     $value = $this->value->compile($env);
     $rootPath = isset($this->currentFileInfo) && $this->currentFileInfo->rootPath ? $this->currentFileInfo->rootPath : false;
-    if($rootPath && is_string($value->value) && ILess_Util::isPathRelative($value->value))
-    {
-      if(self::propertyExists($value, 'quote') && !$value->quote)
-      {
+    if ($rootPath && is_string($value->value) && ILess_Util::isPathRelative($value->value)) {
+      if (self::propertyExists($value, 'quote') && !$value->quote) {
         $rootPath = preg_replace('/[\(\)\'"\s]/', '\\$1', $rootPath);
       }
       $value->value = $rootPath . $value->value;
     }
     $value->value = ILess_Util::normalizePath($value->value);
+
     return new ILess_Node_Url($value, null);
   }
 

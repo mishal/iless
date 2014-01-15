@@ -12,8 +12,8 @@
  * @package ILess
  * @subpackage util
  */
-class ILess_UnitConversion {
-
+class ILess_UnitConversion
+{
   /**
    * Setup flag
    *
@@ -59,8 +59,7 @@ class ILess_UnitConversion {
    */
   public static function setup()
   {
-    if(self::$setup !== false)
-    {
+    if (self::$setup !== false) {
       return;
     }
 

@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Variable extends ILess_Node {
-
+class ILess_Node_Variable extends ILess_Node
+{
   /**
    * The name
    *
@@ -63,14 +63,12 @@ class ILess_Node_Variable extends ILess_Node {
   public function compile(ILess_Environment $env, $arguments = null, $important = null)
   {
     $name = $this->name;
-    if(strpos($name, '@@') === 0)
-    {
+    if (strpos($name, '@@') === 0) {
       $v = new ILess_Node_Variable(substr($name, 1), $this->index + 1);
       $name = '@' . $v->compile($env)->value;
     }
 
-    if($this->evaluating)
-    {
+    if ($this->evaluating) {
       throw new ILess_Exception_Compiler(
               sprintf('Recursive variable definition for %s', $name),
               null, $this->index,
@@ -85,15 +83,15 @@ class ILess_Node_Variable extends ILess_Node {
       $v = $env->customVariables->variable($name))
     {
       $this->evaluating = false;
+
       return $v->value->compile($env);
     }
 
     // search for the variable
-    foreach($env->frames as $frame)
-    {
-      if($v = $frame->variable($name))
-      {
+    foreach ($env->frames as $frame) {
+      if ($v = $frame->variable($name)) {
         $this->evaluating = false;
+
         return $v->value->compile($env);
       }
     }

@@ -12,8 +12,8 @@
  * @package ILess
  * @subpackage import
  */
-class ILess_Importer_Database extends ILess_Configurable implements ILess_ImporterInterface {
-
+class ILess_Importer_Database extends ILess_Configurable implements ILess_ImporterInterface
+{
   /**
    * The PDO object
    *
@@ -68,6 +68,7 @@ class ILess_Importer_Database extends ILess_Configurable implements ILess_Import
     ));
 
     $result = $stmt->fetch(PDO::FETCH_COLUMN);
+
     return ($result !== false) ? intval($result) : 0;
   }
 
@@ -93,8 +94,7 @@ class ILess_Importer_Database extends ILess_Configurable implements ILess_Import
 
     $result = $stmt->fetch(PDO::FETCH_NUM);
 
-    if($result !== false)
-    {
+    if ($result !== false) {
       return new ILess_ImportedFile($path, $result[0], $result[1]);
     }
 

@@ -12,8 +12,8 @@
  * @package ILess
  * @subpackage node
  */
-interface ILess_Node_VisitableInterface {
-
+interface ILess_Node_VisitableInterface
+{
   /**
    * Accepts a visit by a visitor
    *

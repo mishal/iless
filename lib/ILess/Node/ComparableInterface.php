@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-interface ILess_Node_ComparableInterface {
-
+interface ILess_Node_ComparableInterface
+{
   /**
    * Compares with another node
    *

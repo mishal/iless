@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Keyword extends ILess_Node implements ILess_Node_ComparableInterface {
-
+class ILess_Node_Keyword extends ILess_Node implements ILess_Node_ComparableInterface
+{
   /**
    * Node type
    *
@@ -49,12 +49,9 @@ class ILess_Node_Keyword extends ILess_Node implements ILess_Node_ComparableInte
    */
   public function compare(ILess_Node $other)
   {
-    if($other instanceof ILess_Node_Keyword)
-    {
+    if ($other instanceof ILess_Node_Keyword) {
       return $other->value === $this->value ? 0 : 1;
-    }
-    else
-    {
+    } else {
       return -1;
     }
   }

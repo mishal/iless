@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Call extends ILess_Node implements ILess_Node_VisitableInterface {
-
+class ILess_Node_Call extends ILess_Node implements ILess_Node_VisitableInterface
+{
   /**
    * Node type
    *
@@ -84,20 +84,15 @@ class ILess_Node_Call extends ILess_Node implements ILess_Node_VisitableInterfac
   {
     // prepare arguments
     $args = array();
-    foreach($this->args as $arg)
-    {
+    foreach ($this->args as $arg) {
       $args[] = $arg->compile($env);
     }
-    try
-    {
+    try {
       $result = $env->getFunctionRegistry()->call($this->name, $args);
-      if($result === null)
-      {
+      if ($result === null) {
         $result = new ILess_Node_Call($this->name, $args, $this->index, $this->currentFileInfo);
       }
-    }
-    catch(Exception $e)
-    {
+    } catch (Exception $e) {
       throw new ILess_Exception_Function(sprintf('Error evaluating function `%s`', $this->name), $e, $this->index, $this->currentFileInfo);
     }
 
@@ -110,24 +105,20 @@ class ILess_Node_Call extends ILess_Node implements ILess_Node_VisitableInterfac
   public function generateCSS(ILess_Environment $env, ILess_Output $output)
   {
     // handle IE filters, cannot accept shortened colors
-    if(strpos($this->name, 'progid:') === 0)
-    {
+    if (strpos($this->name, 'progid:') === 0) {
       $canShortenColors = $env->canShortenColors;
       $env->canShortenColors = false;
     }
 
     $output->add(sprintf('%s(', $this->name), $this->currentFileInfo, $this->index);
-    for($i = 0, $count = count($this->args); $i < $count; $i++)
-    {
+    for ($i = 0, $count = count($this->args); $i < $count; $i++) {
       $this->args[$i]->generateCSS($env, $output);
-      if($i + 1 < $count)
-      {
+      if ($i + 1 < $count) {
         $output->add(', ');
       }
     }
 
-    if(isset($canShortenColors))
-    {
+    if (isset($canShortenColors)) {
       // put it back
       $env->canShortenColors = $canShortenColors;
     }

@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Operation extends ILess_Node implements ILess_Node_VisitableInterface {
-
+class ILess_Node_Operation extends ILess_Node implements ILess_Node_VisitableInterface
+{
   /**
    * Node type
    *
@@ -54,8 +54,7 @@ class ILess_Node_Operation extends ILess_Node implements ILess_Node_VisitableInt
   {
     $this->operator = trim($operator);
 
-    if(count($operands) !== 2)
-    {
+    if (count($operands) !== 2) {
       throw new InvalidArgumentException('Invalid operands given. Accepted is an array with 2 operands.');
     }
 
@@ -79,31 +78,23 @@ class ILess_Node_Operation extends ILess_Node implements ILess_Node_VisitableInt
     $a = $this->operands[0]->compile($env);
     $b = $this->operands[1]->compile($env);
 
-    if($env->isMathOn())
-    {
-      if($a instanceof ILess_Node_Dimension && $b instanceof ILess_Node_Color)
-      {
-        if($this->operator === '*' || $this->operator === '+')
-        {
+    if ($env->isMathOn()) {
+      if ($a instanceof ILess_Node_Dimension && $b instanceof ILess_Node_Color) {
+        if ($this->operator === '*' || $this->operator === '+') {
           $temp = $b;
           $b = $a;
           $a = $temp;
-        }
-        else
-        {
+        } else {
           throw new ILess_Exception_Compiler('Can\'t subtract or divide a color from a number.');
         }
       }
 
-      if(!self::methodExists($a, 'operate'))
-      {
+      if (!self::methodExists($a, 'operate')) {
         throw new ILess_Exception_Compiler('Operation on an invalid type.');
       }
 
       return $a->operate($env, $this->operator, $b);
-    }
-    else
-    {
+    } else {
       return new ILess_Node_Operation($this->operator, array($a, $b), $this->isSpaced);
     }
   }
@@ -115,15 +106,13 @@ class ILess_Node_Operation extends ILess_Node implements ILess_Node_VisitableInt
   {
     $this->operands[0]->generateCSS($env, $output);
 
-    if($this->isSpaced)
-    {
+    if ($this->isSpaced) {
       $output->add(' ');
     }
 
     $output->add($this->operator);
 
-    if($this->isSpaced)
-    {
+    if ($this->isSpaced) {
       $output->add(' ');
     }
 

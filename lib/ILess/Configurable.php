@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage Core
  */
-abstract class ILess_Configurable {
-
+abstract class ILess_Configurable
+{
   /**
    * Array of options
    *
@@ -55,14 +55,10 @@ abstract class ILess_Configurable {
   public function setOptions($options)
   {
     // first convert to array if needed
-    if(!is_array($options))
-    {
-      if(is_object($options) && is_callable(array($options, 'toArray')))
-      {
+    if (!is_array($options)) {
+      if (is_object($options) && is_callable(array($options, 'toArray'))) {
         $options = $options->toArray();
-      }
-      else
-      {
+      } else {
         throw new InvalidArgumentException(sprintf('Options for "%s" must be an array or a object with ->toArray() method', get_class($this)));
       }
     }
@@ -111,10 +107,10 @@ abstract class ILess_Configurable {
    */
   public function getOption($name, $default = null)
   {
-    if(isset($this->options[$name]))
-    {
+    if (isset($this->options[$name])) {
       return $this->options[$name];
     }
+
     return $default;
   }
 
@@ -139,6 +135,7 @@ abstract class ILess_Configurable {
   public function setOption($name, $value)
   {
     $this->options[$name] = $value;
+
     return $this;
   }
 
@@ -160,10 +157,10 @@ abstract class ILess_Configurable {
    */
   public function addOptions(array $options)
   {
-    foreach($options as $o => $v)
-    {
+    foreach ($options as $o => $v) {
       $this->setOption($o, $v);
     }
+
     return $this;
   }
 

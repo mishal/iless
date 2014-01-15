@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage Util
  */
-class ILess_Util {
-
+class ILess_Util
+{
   /**
    * Constructor
    *
@@ -56,6 +56,7 @@ class ILess_Util {
   public static function encodeURIComponent($string)
   {
     $revert = array('%21' => '!', '%2A' => '*', '%27' => "'", '%28' => '(', '%29' => ')');
+
     return strtr(rawurlencode($string), $revert);
   }
 
@@ -73,6 +74,7 @@ class ILess_Util {
     $part = substr($string, 0, strlen($string) - strlen(substr($string, $index)));
     // lets count the linebreaks in the part
     $line = substr_count($part, "\n") + 1;
+
     return $line;
   }
 
@@ -95,8 +97,7 @@ class ILess_Util {
    */
   public static function isPathAbsolute($path)
   {
-    if(empty($path))
-    {
+    if (empty($path)) {
       return false;
     }
 
@@ -140,21 +141,16 @@ class ILess_Util {
     $segments = array_reverse(explode('/', str_replace('\\', '/', $path)));
     $path = array();
     $path_len = 0;
-    while($segments)
-    {
+    while ($segments) {
       $segment = array_pop($segments);
-      switch($segment)
-      {
+      switch ($segment) {
         case '.':
           break;
         case '..':
-          if(!$path_len || ( $path[$path_len - 1] === '..'))
-          {
+          if (!$path_len || ( $path[$path_len - 1] === '..')) {
             $path[] = $segment;
             $path_len++;
-          }
-          else
-          {
+          } else {
             array_pop($path);
             $path_len--;
           }
@@ -196,6 +192,7 @@ class ILess_Util {
     // FIXME: php 5.5 is /e modifier deprecated! do a workaround
     $camelized = @preg_replace(array_keys($replacePairs), array_values($replacePairs), $underscored);
     $camelized[0] = strtolower($camelized[0]);
+
     return $camelized;
   }
 

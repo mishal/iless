@@ -17,8 +17,8 @@
 require dirname(__FILE__) . '/../lib/ILess/Autoloader.php';
 ILess_Autoloader::register();
 
-class ILess_TestCase extends PHPUnit_Framework_TestCase {
-
+class ILess_TestCase extends PHPUnit_Framework_TestCase
+{
   protected function prepareDataForProvider($values, $expected)
   {
     return array_map(array($this, 'mapValuesWithExpected'), $values, $expected);

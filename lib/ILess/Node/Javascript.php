@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Javascript extends ILess_Node {
-
+class ILess_Node_Javascript extends ILess_Node
+{
   /**
    * Node type
    *

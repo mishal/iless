@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage visitor
  */
-class ILess_Visitor_ExtendFinder extends ILess_Visitor {
-
+class ILess_Visitor_ExtendFinder extends ILess_Visitor
+{
   /**
    * @var array
    */
@@ -38,10 +38,10 @@ class ILess_Visitor_ExtendFinder extends ILess_Visitor {
   public function run($root)
   {
     $root = $this->visit($root);
-    if(is_object($root))
-    {
+    if (is_object($root)) {
       $root->allExtends = &$this->allExtendsStack[0];
     }
+
     return $root;
   }
 
@@ -75,17 +75,14 @@ class ILess_Visitor_ExtendFinder extends ILess_Visitor {
    */
   public function visitRuleset(ILess_Node_Ruleset $node, ILess_Visitor_Arguments $arguments)
   {
-    if($node->root)
-    {
+    if ($node->root) {
       return;
     }
 
     $allSelectorsExtendList = array();
     // get &:extend(.a); rules which apply to all selectors in this ruleset
-    for($i = 0, $count = count($node->rules); $i < $count; $i++)
-    {
-      if($node->rules[$i] instanceof ILess_Node_Extend)
-      {
+    for ($i = 0, $count = count($node->rules); $i < $count; $i++) {
+      if ($node->rules[$i] instanceof ILess_Node_Extend) {
         $allSelectorsExtendList[] = $node->rules[$i];
         $node->extendOnEveryPath = true;
       }
@@ -93,25 +90,21 @@ class ILess_Visitor_ExtendFinder extends ILess_Visitor {
 
     // now find every selector and apply the extends that apply to all extends
     // and the ones which apply to an individual extend
-    for($i = 0, $count = count($node->paths); $i < $count; $i++)
-    {
+    for ($i = 0, $count = count($node->paths); $i < $count; $i++) {
       $selectorPath = $node->paths[$i];
       $selector = end($selectorPath);
       $list = array_merge($selector->extendList, $allSelectorsExtendList);
       $extendList = array();
-      foreach($list as $allSelectorsExtend)
-      {
+      foreach ($list as $allSelectorsExtend) {
         $extendList[] = clone $allSelectorsExtend;
       }
 
-      for($j = 0, $extendsCount = count($extendList); $j < $extendsCount; $j++)
-      {
+      for ($j = 0, $extendsCount = count($extendList); $j < $extendsCount; $j++) {
         $this->foundExtends = true;
         $extend = $extendList[$j];
         $extend->findSelfSelectors($selectorPath);
         $extend->ruleset = $node;
-        if($j === 0)
-        {
+        if ($j === 0) {
           $extend->firstExtendOnThisSelectorPath = true;
         }
         $temp = count($this->allExtendsStack) - 1;
@@ -129,8 +122,7 @@ class ILess_Visitor_ExtendFinder extends ILess_Visitor {
    */
   public function visitRulesetOut(ILess_Node_Ruleset $node, ILess_Visitor_Arguments $arguments)
   {
-    if(!is_object($node) || !$node->root)
-    {
+    if (!is_object($node) || !$node->root) {
       array_pop($this->contexts);
     }
   }

@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage import
  */
-class ILess_Importer_Callback implements ILess_ImporterInterface {
-
+class ILess_Importer_Callback implements ILess_ImporterInterface
+{
   /**
    * Import callback
    *
@@ -52,10 +52,10 @@ class ILess_Importer_Callback implements ILess_ImporterInterface {
    */
   protected function assertCallable($callable)
   {
-    if(!is_callable($callable, false, $callableName))
-    {
+    if (!is_callable($callable, false, $callableName)) {
       throw new InvalidArgumentException(sprintf('The callable "%s" is not a valid callable.', $callableName));
     }
+
     return true;
   }
 

@@ -12,8 +12,8 @@
  * @package ILess
  * @subpackage import
  */
-interface ILess_ImporterInterface {
-
+interface ILess_ImporterInterface
+{
   /**
    * Imports a file from the path
    *

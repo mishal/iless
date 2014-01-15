@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage output
  */
-class ILess_OutputFilter_GzCompress extends ILess_OutputFilter {
-
+class ILess_OutputFilter_GzCompress extends ILess_OutputFilter
+{
   /**
    * Array of default options
    *

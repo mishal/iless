@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Expression extends ILess_Node implements ILess_Node_VisitableInterface {
-
+class ILess_Node_Expression extends ILess_Node implements ILess_Node_VisitableInterface
+{
   /**
    * The value holder
    *
@@ -73,25 +73,19 @@ class ILess_Node_Expression extends ILess_Node implements ILess_Node_VisitableIn
     $inParenthesis = $this->parens && !$this->parensInOp;
     $doubleParen = false;
 
-    if($inParenthesis)
-    {
+    if ($inParenthesis) {
       $env->inParenthesis();
     }
 
     $count = count($this->value);
-    if($count > 1)
-    {
+    if ($count > 1) {
       $compiled = array();
-      foreach($this->value as $v)
-      {
+      foreach ($this->value as $v) {
         $compiled[] = $v->compile($env);
       }
       $return = new ILess_Node_Expression($compiled);
-    }
-    elseif($count === 1)
-    {
-      if(!isset($this->value[0]))
-      {
+    } elseif ($count === 1) {
+      if (!isset($this->value[0])) {
         $this->value = array_slice($this->value,0);
 			}
 
@@ -101,19 +95,15 @@ class ILess_Node_Expression extends ILess_Node implements ILess_Node_VisitableIn
         $doubleParen = true;
       }
       $return = $this->value[0]->compile($env);
-    }
-    else
-    {
+    } else {
       $return = $this;
     }
 
-    if($inParenthesis)
-    {
+    if ($inParenthesis) {
       $env->outOfParenthesis();
     }
 
-    if($this->parens && $this->parensInOp && !$env->isMathOn() && !$doubleParen)
-    {
+    if ($this->parens && $this->parensInOp && !$env->isMathOn() && !$doubleParen) {
       $return = new ILess_Node_Paren($return);
     }
 
@@ -125,11 +115,9 @@ class ILess_Node_Expression extends ILess_Node implements ILess_Node_VisitableIn
    */
   public function generateCSS(ILess_Environment $env, ILess_Output $output)
   {
-    for($i = 0, $count = count($this->value); $i < $count; $i++)
-    {
+    for ($i = 0, $count = count($this->value); $i < $count; $i++) {
       $this->value[$i]->generateCSS($env, $output);
-      if($i + 1 < $count)
-      {
+      if ($i + 1 < $count) {
         $output->add(' ');
       }
     }
@@ -137,13 +125,10 @@ class ILess_Node_Expression extends ILess_Node implements ILess_Node_VisitableIn
 
   public function throwAwayComments()
   {
-    if(is_array($this->value))
-    {
+    if (is_array($this->value)) {
       $new = array();
-      foreach($this->value as $v)
-      {
-        if($v instanceof ILess_Node_Comment)
-        {
+      foreach ($this->value as $v) {
+        if ($v instanceof ILess_Node_Comment) {
           continue;
         }
         $new[] = $v;

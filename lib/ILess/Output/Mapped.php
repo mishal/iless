@@ -12,8 +12,8 @@
  * @package ILess
  * @subpackage Output
  */
-class ILess_Output_Mapped extends ILess_Output {
-
+class ILess_Output_Mapped extends ILess_Output
+{
   /**
    * The source map generator
    *
@@ -66,17 +66,14 @@ class ILess_Output_Mapped extends ILess_Output {
   public function add($chunk, ILess_FileInfo $fileInfo = null, $index = 0, $mapLines = null)
   {
     // nothing to do
-    if(!$chunk)
-    {
+    if (!$chunk) {
       return $this;
     }
 
     $sourceLines = array();
     $sourceColumns = ' ';
 
-
-    if($fileInfo/* && isset($this->contentsMap[$fileInfo->filename])*/)
-    {
+    if ($fileInfo/* && isset($this->contentsMap[$fileInfo->filename])*/) {
       $inputSource = substr($this->contentsMap[$fileInfo->importedFile->getPath()], 0, $index);
       $sourceLines = explode("\n", $inputSource);
       $sourceColumns = end($sourceLines);
@@ -85,20 +82,15 @@ class ILess_Output_Mapped extends ILess_Output {
     $lines = explode("\n", $chunk);
     $columns = end($lines);
 
-    if($fileInfo)
-    {
-      if(!$mapLines)
-      {
+    if ($fileInfo) {
+      if (!$mapLines) {
         $this->generator->addMapping(
             $this->lineNumber + 1, $this->column, // generated
             count($sourceLines), strlen($sourceColumns), // original
             $fileInfo->filename
         );
-      }
-      else
-      {
-        for($i = 0, $count = count($lines); $i < $count; $i++)
-        {
+      } else {
+        for ($i = 0, $count = count($lines); $i < $count; $i++) {
           $this->generator->addMapping(
             $this->lineNumber + $i + 1, $i === 0 ? $this->column : 0, // generated
             count($sourceLines) + $i, $i === 0 ? strlen($sourceColumns) : 0, // original
@@ -108,12 +100,9 @@ class ILess_Output_Mapped extends ILess_Output {
       }
     }
 
-    if(count($lines) === 1)
-    {
+    if (count($lines) === 1) {
       $this->column += strlen($columns);
-    }
-    else
-    {
+    } else {
       $this->lineNumber += count($lines) - 1;
       $this->column = strlen($columns);
     }
@@ -141,6 +130,7 @@ class ILess_Output_Mapped extends ILess_Output {
   public function setGenerator(ILess_SourceMap_Generator $generator)
   {
     $this->generator = $generator;
+
     return $this;
   }
 

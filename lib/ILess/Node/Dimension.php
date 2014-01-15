@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Dimension extends ILess_Node implements ILess_Node_VisitableInterface {
-
+class ILess_Node_Dimension extends ILess_Node implements ILess_Node_VisitableInterface
+{
   /**
    * Node type
    *
@@ -38,8 +38,7 @@ class ILess_Node_Dimension extends ILess_Node implements ILess_Node_VisitableInt
   public function __construct($value, $unit = null)
   {
     $this->value = $this->toNumber($value);
-    if(!$unit instanceof ILess_Node_DimensionUnit)
-    {
+    if (!$unit instanceof ILess_Node_DimensionUnit) {
       $unit = $unit ? new ILess_Node_DimensionUnit(array($unit)) : new ILess_Node_DimensionUnit();
     }
     $this->unit = $unit;
@@ -56,16 +55,14 @@ class ILess_Node_Dimension extends ILess_Node implements ILess_Node_VisitableInt
   {
     $value = str_replace('+', '', $value);
 
-    if($value[0] == '.')
-    {
+    if ($value[0] == '.') {
       $value = '0' . $value;
     }
 
     // is number to low?
-    if($value != 0 && $value < 0.000001 && $value > -0.000001)
-    {
+    if ($value != 0 && $value < 0.000001 && $value > -0.000001) {
       // would be output 1e-6 etc.
-      $value = (string)preg_replace('/\.?0+$/', '', number_format(floatval($value), 20, '.', ''));
+      $value = (string) preg_replace('/\.?0+$/', '', number_format(floatval($value), 20, '.', ''));
     }
 
     return $value;
@@ -108,18 +105,15 @@ class ILess_Node_Dimension extends ILess_Node implements ILess_Node_VisitableInt
    */
   public function generateCSS(ILess_Environment $env, ILess_Output $output)
   {
-    if($env->strictUnits && !$this->unit->isSingular())
-    {
+    if ($env->strictUnits && !$this->unit->isSingular()) {
       throw new ILess_Exception_Compiler(sprintf('Multiple units in dimension. Correct the units or use the unit function. Bad unit: %s', $this->unit->toString()));
     }
 
 		$value = $this->value;
 
     // Zero values doesn't need a unit
-    if($env->compress)
-    {
-      if($value == 0 && $this->unit->isLength())
-      {
+    if ($env->compress) {
+      if ($value == 0 && $this->unit->isLength()) {
         $output->add($value);
         // no need to continue
         return;
@@ -127,8 +121,7 @@ class ILess_Node_Dimension extends ILess_Node implements ILess_Node_VisitableInt
       // first digit is zero
       // Float values doesn't need a leading zero
       // elseif($value[0] == '0')
-      elseif($value > 0 && $value < 1 && $value[0] === '0')
-      {
+      elseif ($value > 0 && $value < 1 && $value[0] === '0') {
         $value = substr($value, 1);
       }
     }
@@ -163,22 +156,15 @@ class ILess_Node_Dimension extends ILess_Node implements ILess_Node_VisitableInt
   {
     $value = ILess_Math::operate($op, $this->value, $other->value);
     $unit = clone $this->unit;
-    if($op === '+' || $op === '-')
-    {
-      if(!count($unit->numerator) && !count($unit->denominator))
-      {
+    if ($op === '+' || $op === '-') {
+      if (!count($unit->numerator) && !count($unit->denominator)) {
         $unit->numerator = $other->unit->numerator;
         $unit->denominator = $other->unit->denominator;
-      }
-      elseif(!count($other->unit->numerator) && !count($other->unit->denominator))
-      {
+      } elseif (!count($other->unit->numerator) && !count($other->unit->denominator)) {
         // do nothing
-      }
-      else
-      {
+      } else {
         $other = $other->convertTo($this->unit->usedUnits());
-        if($env->strictUnits && $other->unit->toString() !== $unit->toString())
-        {
+        if ($env->strictUnits && $other->unit->toString() !== $unit->toString()) {
           throw new ILess_Exception_Compiler(sprintf(
             'Incompatible units. Change the units or use the unit function. Bad units: %s and %s',
               $unit->toString(),
@@ -187,23 +173,20 @@ class ILess_Node_Dimension extends ILess_Node implements ILess_Node_VisitableInt
         }
         $value = ILess_Math::operate($op, $this->value, $other->value);
       }
-    }
-    elseif($op === '*')
-    {
+    } elseif ($op === '*') {
       $unit->numerator = array_merge($unit->numerator, $other->unit->numerator);
       $unit->denominator = array_merge($unit->denominator, $other->unit->denominator);
       sort($unit->numerator);
       sort($unit->denominator);
       $unit->cancel();
-    }
-    elseif($op === '/')
-    {
+    } elseif ($op === '/') {
       $unit->numerator = array_merge($unit->numerator, $other->unit->denominator);
       $unit->denominator = array_merge($unit->denominator, $other->unit->numerator);
       sort($unit->numerator);
       sort($unit->denominator);
       $unit->cancel();
     }
+
     return new ILess_Node_Dimension($value, $unit);
   }
 
@@ -215,28 +198,22 @@ class ILess_Node_Dimension extends ILess_Node implements ILess_Node_VisitableInt
    */
   public function compare(ILess_Node $other)
   {
-    if(!$other instanceof ILess_Node_Dimension)
-    {
+    if (!$other instanceof ILess_Node_Dimension) {
       return -1;
     }
 
     $a = $this->unify();
 		$b = $other->unify();
 
-    if($b->value > $a->value)
-    {
+    if ($b->value > $a->value) {
       return -1;
-    }
-    elseif($b->value < $a->value)
-    {
+    } elseif ($b->value < $a->value) {
       return 1;
-    }
-    else
-    {
-			if(!$b->unit->isEmpty() && $a->unit->compare($b->unit) !== 0)
-      {
+    } else {
+			if (!$b->unit->isEmpty() && $a->unit->compare($b->unit) !== 0) {
         return -1;
 			}
+
       return 0;
     }
   }
@@ -266,32 +243,25 @@ class ILess_Node_Dimension extends ILess_Node implements ILess_Node_VisitableInt
     $value = $this->value;
     $unit = clone $this->unit;
 
-    if(is_string($conversions))
-    {
+    if (is_string($conversions)) {
       $derivedConversions = array();
-      foreach(ILess_UnitConversion::$groups as $i)
-      {
-        if(isset(ILess_UnitConversion::${$i}[$conversions]))
-        {
+      foreach (ILess_UnitConversion::$groups as $i) {
+        if (isset(ILess_UnitConversion::${$i}[$conversions])) {
           $derivedConversions = array($i => $conversions);
         }
       }
       $conversions = $derivedConversions;
     }
 
-    foreach($conversions as $groupName => $targetUnit)
-    {
+    foreach ($conversions as $groupName => $targetUnit) {
       $group = ILess_UnitConversion::${$groupName};
       // numerator
-      for($i = 0, $count = count($unit->numerator); $i < $count; $i++)
-      {
+      for ($i = 0, $count = count($unit->numerator); $i < $count; $i++) {
         $atomicUnit = $unit->numerator[$i];
-        if(is_object($atomicUnit))
-        {
+        if (is_object($atomicUnit)) {
           continue;
         }
-        if(!isset($group[$atomicUnit]))
-        {
+        if (!isset($group[$atomicUnit])) {
           continue;
         }
 
@@ -300,11 +270,9 @@ class ILess_Node_Dimension extends ILess_Node implements ILess_Node_VisitableInt
       }
 
       // denominator
-      for($i = 0, $count = count($unit->denominator);  $i < $count; $i++)
-      {
+      for ($i = 0, $count = count($unit->denominator);  $i < $count; $i++) {
         $atomicUnit = $unit->denominator[$i];
-        if(!isset($group[$atomicUnit]))
-        {
+        if (!isset($group[$atomicUnit])) {
           continue;
         }
         // $value = $value / ($group[$atomicUnit] / $group[$targetUnit]);
@@ -314,6 +282,7 @@ class ILess_Node_Dimension extends ILess_Node implements ILess_Node_VisitableInt
     }
 
     $unit->cancel();
+
     return new ILess_Node_Dimension($value, $unit);
   }
 

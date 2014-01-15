@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage parser
  */
-class ILess_FileInfo {
-
+class ILess_FileInfo
+{
   /**
    * Full resolved filename of current file
    *
@@ -71,8 +71,7 @@ class ILess_FileInfo {
    */
   public function __construct(array $info = array())
   {
-    foreach($info as $property => $value)
-    {
+    foreach ($info as $property => $value) {
       $this->$property = $value;
     }
   }

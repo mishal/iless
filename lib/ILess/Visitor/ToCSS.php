@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage visitor
  */
-class ILess_Visitor_ToCSS extends ILess_Visitor {
-
+class ILess_Visitor_ToCSS extends ILess_Visitor
+{
   /**
    * The environment
    *
@@ -44,7 +44,7 @@ class ILess_Visitor_ToCSS extends ILess_Visitor {
   public function __construct(ILess_Environment $env)
   {
     parent::__construct();
-    $this->env = $env;    
+    $this->env = $env;
   }
 
   /**
@@ -74,8 +74,7 @@ class ILess_Visitor_ToCSS extends ILess_Visitor {
    */
   public function visitRule(ILess_Node_Rule $node, ILess_Visitor_Arguments $arguments)
   {
-    if($node->variable)
-    {
+    if ($node->variable) {
       return array();
     }
 
@@ -115,10 +114,10 @@ class ILess_Visitor_ToCSS extends ILess_Visitor {
    */
   public function visitComment(ILess_Node_Comment $node, ILess_Visitor_Arguments $arguments)
   {
-    if($node->isSilent($this->getEnvironment()))
-    {
+    if ($node->isSilent($this->getEnvironment())) {
       return array();
     }
+
     return $node;
   }
 
@@ -133,10 +132,10 @@ class ILess_Visitor_ToCSS extends ILess_Visitor {
   {
     $node->accept($this);
     $arguments->visitDeeper = false;
-    if(!count($node->rules))
-    {
+    if (!count($node->rules)) {
       return array();
     }
+
     return $node;
   }
 
@@ -149,28 +148,27 @@ class ILess_Visitor_ToCSS extends ILess_Visitor {
    */
   public function visitDirective(ILess_Node_Directive $node, ILess_Visitor_Arguments $arguments)
   {
-    if(($node->currentFileInfo && $node->currentFileInfo->reference) && !$node->isReferenced)
-    {
+    if (($node->currentFileInfo && $node->currentFileInfo->reference) && !$node->isReferenced) {
       return array();
     }
 
-    if($node->name === '@charset')
-    {
+    if ($node->name === '@charset') {
       // Only output the debug info together with subsequent @charset definitions
       // a comment (or @media statement) before the actual @charset directive would
       // be considered illegal css as it has to be on the first line
-      if($this->charset)
-      {
-        if($node->debugInfo)
-        {
+      if ($this->charset) {
+        if ($node->debugInfo) {
           $comment = new ILess_Node_Comment(sprintf("/*%s */\n", str_replace("\n", '', $node->toCSS($this->getEnvironment()))));
           $comment->debugInfo = $node->debugInfo;
+
           return $this->visit($comment);
         }
+
         return array();
       }
       $this->charset = true;
     }
+
     return $node;
   }
 
@@ -186,36 +184,29 @@ class ILess_Visitor_ToCSS extends ILess_Visitor {
     $arguments->visitDeeper = false;
     $rulesets = array();
 
-    if($node->firstRoot)
-    {
+    if ($node->firstRoot) {
       $this->checkPropertiesInRoot($node->rules);
     }
 
-    if(!$node->root)
-    {
+    if (!$node->root) {
       $paths = array();
-      foreach($node->paths as $p)
-      {
-        if($p[0]->elements[0]->combinator->value === ' ')
-        {
+      foreach ($node->paths as $p) {
+        if ($p[0]->elements[0]->combinator->value === ' ') {
           $p[0]->elements[0]->combinator = new ILess_Node_Combinator('');
         }
-        if($p[0]->getIsReferenced() && $p[0]->getIsOutput())
-        {
-          $paths[] = $p;          
+        if ($p[0]->getIsReferenced() && $p[0]->getIsOutput()) {
+          $paths[] = $p;
         }
       }
 
       $node->paths = $paths;
 
       // Compile rules and rulesets
-      for($i = 0, $count = count($node->rules); $i < $count;)
-      {
+      for ($i = 0, $count = count($node->rules); $i < $count;) {
         $rule = $node->rules[$i];
-        if(ILess_Node::propertyExists($rule, 'rules'))
-        //if($rule instanceof ILess_Node_Rule || $rule instanceof ILess_Node_Ruleset)
-        //if($rule instanceof ILess_Node_Ruleset)
-        {
+        //if ($rule instanceof ILess_Node_Rule || $rule instanceof ILess_Node_Ruleset) {
+        //if ($rule instanceof ILess_Node_Ruleset) {
+        if (ILess_Node::propertyExists($rule, 'rules')) {
           // visit because we are moving them out from being a child
           $rulesets[] = $this->visit($rule);
           array_splice($node->rules, $i, 1);
@@ -227,40 +218,30 @@ class ILess_Visitor_ToCSS extends ILess_Visitor {
 
       // accept the visitor to remove rules and refactor itself
       // then we can decide now whether we want it or not
-      if($count > 0)
-      {
+      if ($count > 0) {
         $node->accept($this);
         $count = count($node->rules);
-        if($count > 0)
-        {
-          if($count > 1)
-          {
+        if ($count > 0) {
+          if ($count > 1) {
             $this->mergeRules($node->rules);
             $this->removeDuplicateRules($node->rules);
           }
           // now decide whether we keep the ruleset
-          if(count($node->paths) > 0)
-          {
+          if (count($node->paths) > 0) {
             array_splice($rulesets, 0, 0, array($node));
           }
         }
-      }
-      else
-      {
+      } else {
         $node->rules = array();
       }
-    }
-    else
-    {
+    } else {
       $node->accept($this);
       $arguments->visitDeeper = false;
-      if($node->firstRoot || count($node->rules) > 0)
-      {
-        array_splice($rulesets, 0, 0, array($node));        
+      if ($node->firstRoot || count($node->rules) > 0) {
+        array_splice($rulesets, 0, 0, array($node));
       }
     }
-    if(count($rulesets) === 1)
-    {
+    if (count($rulesets) === 1) {
       return $rulesets[0];
     }
 
@@ -275,11 +256,9 @@ class ILess_Visitor_ToCSS extends ILess_Visitor {
    */
   protected function checkPropertiesInRoot($rules)
   {
-    for($i = 0, $count = count($rules); $i < $count; $i++)
-    {
+    for ($i = 0, $count = count($rules); $i < $count; $i++) {
       $ruleNode = $rules[$i];
-      if($ruleNode instanceof ILess_Node_Rule && !$ruleNode->variable)
-      {
+      if ($ruleNode instanceof ILess_Node_Rule && !$ruleNode->variable) {
         throw new ILess_Exception_Compiler(
           'Properties must be inside selector blocks, they cannot be in the root.', null,
             $ruleNode->index,
@@ -297,37 +276,28 @@ class ILess_Visitor_ToCSS extends ILess_Visitor {
   protected function mergeRules(array &$rules)
   {
     $groups = array();
-    for($i = 0; $i < count($rules); $i++)
-    {
+    for ($i = 0; $i < count($rules); $i++) {
       $rule = $rules[$i];
-      if(($rule instanceof ILess_Node_Rule) && $rule->merge)
-      {
+      if (($rule instanceof ILess_Node_Rule) && $rule->merge) {
         $key = $rule->name;
-        if($rule->important)
-        {
+        if ($rule->important) {
           $key .= ',!';
         }
-        if(!isset($groups[$key]))
-        {
+        if (!isset($groups[$key])) {
           $groups[$key] = array();
           $parts = &$groups[$key];
-        }
-        else
-        {
+        } else {
           array_splice($rules, $i--, 1);
         }
         $parts[] = $rule;
       }
     }
 
-    foreach($groups as $parts)
-    {
-      if(count($parts) > 1)
-      {
+    foreach ($groups as $parts) {
+      if (count($parts) > 1) {
         $rule = $parts[0];
         $values = array();
-        foreach($parts as $p)
-        {
+        foreach ($parts as $p) {
           $values[] = $p->value;
         }
         $rule->value = new ILess_Node_Value($values);
@@ -344,29 +314,20 @@ class ILess_Visitor_ToCSS extends ILess_Visitor {
   {
     // remove duplicates
     $ruleCache = array();
-    for($i = count($rules) - 1; $i >= 0; $i--)
-    {
+    for ($i = count($rules) - 1; $i >= 0; $i--) {
       $rule = $rules[$i];
-      if($rule instanceof ILess_Node_Rule)
-      {
-        if(!isset($ruleCache[$rule->name]))
-        {
+      if ($rule instanceof ILess_Node_Rule) {
+        if (!isset($ruleCache[$rule->name])) {
           $ruleCache[$rule->name] = $rule;
-        }
-        else
-        {
+        } else {
           $ruleList = &$ruleCache[$rule->name];
-          if($ruleList instanceof ILess_Node_Rule)
-          {
+          if ($ruleList instanceof ILess_Node_Rule) {
             $ruleList = $ruleCache[$rule->name] = array($ruleCache[$rule->name]->toCSS($this->getEnvironment()));
           }
           $ruleCSS = $rule->toCSS($this->getEnvironment());
-          if(array_search($ruleCSS, $ruleList) !== false)
-          {
+          if (array_search($ruleCSS, $ruleList) !== false) {
             array_splice($rules, $i, 1);
-          }
-          else
-          {
+          } else {
             $ruleList[] = $ruleCSS;
           }
         }

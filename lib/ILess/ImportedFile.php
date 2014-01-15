@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage import
  */
-class ILess_ImportedFile {
-
+class ILess_ImportedFile
+{
   /**
    * The absolute path or URL
    *
@@ -73,6 +73,7 @@ class ILess_ImportedFile {
   public function setRuleset($ruleset)
   {
     $this->ruleset = $ruleset;
+
     return $this;
   }
 
@@ -95,6 +96,7 @@ class ILess_ImportedFile {
   public function setError(Exception $error)
   {
     $this->error = $error;
+
     return $this;
   }
 

@@ -14,8 +14,8 @@
  * @package ILess
  * @subpackage import
  */
-class ILess_Importer_FileSystem extends ILess_Configurable implements ILess_ImporterInterface {
-
+class ILess_Importer_FileSystem extends ILess_Configurable implements ILess_ImporterInterface
+{
   /**
    * Array of import paths
    *
@@ -40,7 +40,7 @@ class ILess_Importer_FileSystem extends ILess_Configurable implements ILess_Impo
    */
   public function __construct($importDirs = array(), $options = array())
   {
-    $this->importDirs = (array)$importDirs;
+    $this->importDirs = (array) $importDirs;
     parent::__construct($options);
   }
 
@@ -49,8 +49,7 @@ class ILess_Importer_FileSystem extends ILess_Configurable implements ILess_Impo
    */
   protected function setup()
   {
-    if($this->getOption('clear_stat_cache'))
-    {
+    if ($this->getOption('clear_stat_cache')) {
       clearstatcache();
     }
   }
@@ -60,10 +59,10 @@ class ILess_Importer_FileSystem extends ILess_Configurable implements ILess_Impo
    */
   public function import($dir, ILess_FileInfo $currentFileInfo)
   {
-    if($file = $this->find($dir, $currentFileInfo))
-    {
+    if ($file = $this->find($dir, $currentFileInfo)) {
       return new ILess_ImportedFile($file, file_get_contents($file), filemtime($file));
     }
+
     return false;
   }
 
@@ -72,10 +71,10 @@ class ILess_Importer_FileSystem extends ILess_Configurable implements ILess_Impo
    */
   public function getLastModified($dir, ILess_FileInfo $currentFileInfo)
   {
-    if($file = $this->find($dir, $currentFileInfo))
-    {
+    if ($file = $this->find($dir, $currentFileInfo)) {
       return filemtime($file);
     }
+
     return false;
   }
 
@@ -89,20 +88,15 @@ class ILess_Importer_FileSystem extends ILess_Configurable implements ILess_Impo
   protected function find($dir, ILess_FileInfo $currentFileInfo)
   {
     // try import dirs first
-    foreach($this->importDirs as $importDir)
-    {
-      if(is_readable($importDir . '/' . $dir))
-      {
+    foreach ($this->importDirs as $importDir) {
+      if (is_readable($importDir . '/' . $dir)) {
         return realpath($importDir . '/' . $dir);
       }
     }
 
-    if(is_readable($dir))
-    {
+    if (is_readable($dir)) {
       return realpath($dir);
-    }
-    elseif(is_readable($currentFileInfo->currentDirectory . '/' . $dir))
-    {
+    } elseif (is_readable($currentFileInfo->currentDirectory . '/' . $dir)) {
       return realpath($currentFileInfo->currentDirectory . '/' . $dir);
     }
 
@@ -128,14 +122,12 @@ class ILess_Importer_FileSystem extends ILess_Configurable implements ILess_Impo
    */
   public function addImportDir($dir, $prepend = false)
   {
-    if($prepend)
-    {
+    if ($prepend) {
       array_unshift($this->importDirs, $dir);
-    }
-    else
-    {
+    } else {
       $this->importDirs[] = $dir;
     }
+
     return $this;
   }
 
@@ -147,7 +139,8 @@ class ILess_Importer_FileSystem extends ILess_Configurable implements ILess_Impo
    */
   public function setImportDirs($dirs)
   {
-    $this->importDirs = (array)$dirs;
+    $this->importDirs = (array) $dirs;
+
     return $this;
   }
 

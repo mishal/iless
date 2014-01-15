@@ -14,8 +14,8 @@
  * @subpackage test
  * @covers ILess_Parser_Core
  */
-class ILess_Parser_Parsing_Test extends ILess_TestCase {
-
+class ILess_Parser_Parsing_Test extends ILess_TestCase
+{
   public function setUp()
   {
     $env = new ILess_Environment(array(), new ILess_FunctionRegistry());
@@ -30,8 +30,7 @@ class ILess_Parser_Parsing_Test extends ILess_TestCase {
     $less = glob(dirname(__FILE__). '/_fixtures/simple/less/*.less');
     $css  = glob(dirname(__FILE__).'/_fixtures/simple/css/*.css');
 
-    foreach($less as $i => $lessFile)
-    {
+    foreach ($less as $i => $lessFile) {
       $this->setUp();
       $this->parser->parseFile($lessFile);
       $preCompiled = file_get_contents($css[$i]);
@@ -50,10 +49,8 @@ class ILess_Parser_Parsing_Test extends ILess_TestCase {
       'functions.less'
     );
 
-    foreach($less as $i => $lessFile)
-    {
-      if(in_array(basename($lessFile), $skip))
-      {
+    foreach ($less as $i => $lessFile) {
+      if (in_array(basename($lessFile), $skip)) {
         $this->diag('Skipping test ' . basename($lessFile));
         continue;
       }
@@ -67,12 +64,9 @@ class ILess_Parser_Parsing_Test extends ILess_TestCase {
       $preCompiled = file_get_contents($css[$i]);
 
       // known diff, check of the diff is still ok
-      if(is_readable($fixturesDir . '/diff/' . basename($lessFile) . '.php'))
-      {
+      if (is_readable($fixturesDir . '/diff/' . basename($lessFile) . '.php')) {
         // FIXME: check the diff
-      }
-      else
-      {
+      } else {
         $this->assertEquals($preCompiled, $compiled, sprintf('Compilated CSS matches for "%s"', basename($lessFile)));
       }
     }
@@ -83,8 +77,7 @@ class ILess_Parser_Parsing_Test extends ILess_TestCase {
     $less = glob(dirname(__FILE__). '/_fixtures/php/less/*.less');
     $css  = glob(dirname(__FILE__).'/_fixtures/php/css/*.css');
 
-    foreach($less as $i => $lessFile)
-    {
+    foreach ($less as $i => $lessFile) {
       // reset the parser for each test
       $this->setup();
 

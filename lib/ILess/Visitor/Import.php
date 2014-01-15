@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage visitor
  */
-class ILess_Visitor_Import extends ILess_Visitor {
-
+class ILess_Visitor_Import extends ILess_Visitor
+{
   /**
    * Is replacing flag
    *
@@ -75,20 +75,14 @@ class ILess_Visitor_Import extends ILess_Visitor {
     $arguments->visitDeeper = false;
 
     $inlineCSS = $node->getOption('inline');
-    if(!$node->css || $inlineCSS)
-    {
+    if (!$node->css || $inlineCSS) {
       $e = null;
-      try
-      {
+      try {
         $compiledNode = $node->compileForImport($this->env);
-      }
-      catch(ILess_Exception_Compiler $e)
-      {
+      } catch (ILess_Exception_Compiler $e) {
         $compiledNode = false;
-        if(!$e->getCurrentFile())
-        {
-          if($node->currentFileInfo)
-          {
+        if (!$e->getCurrentFile()) {
+          if ($node->currentFileInfo) {
             $e->setCurrentFile($node->currentFileInfo);
           }
           $e->setIndex($node->index);
@@ -97,13 +91,11 @@ class ILess_Visitor_Import extends ILess_Visitor {
         $node->error = $e;
       }
 
-      if($compiledNode && (!$compiledNode->css || $inlineCSS))
-      {
+      if ($compiledNode && (!$compiledNode->css || $inlineCSS)) {
         $node = $compiledNode;
 
         $env = ILess_Environment::createCopy($this->env, $this->env->frames);
-        if($node->getOption('multiple'))
-        {
+        if ($node->getOption('multiple')) {
           $env->importMultiple = true;
         }
 
@@ -116,19 +108,15 @@ class ILess_Visitor_Import extends ILess_Visitor {
             $node->currentFileInfo && $node->currentFileInfo->reference)
         {
           $node->skip = true;
-        }
-        elseif($alreadyImported && !$env->importMultiple)
-        {
+        } elseif ($alreadyImported && !$env->importMultiple) {
           $node->skip = true;
         }
 
-        if($root = $file->getRuleset())
-        {
+        if ($root = $file->getRuleset()) {
           /* @var $root ILess_Node_Ruleset */
           $node->root = $root;
           $node->importedFilename = $file->getPath();
-          if(!$inlineCSS && !$node->skip)
-          {
+          if (!$inlineCSS && !$node->skip) {
             $visitor = new ILess_Visitor_Import($env, $this->importer);
             $visitor->visit($root);
           }
@@ -148,6 +136,7 @@ class ILess_Visitor_Import extends ILess_Visitor {
   public function visitRule(ILess_Node_Rule $node, ILess_Visitor_Arguments $arguments)
   {
     $arguments->visitDeeper = false;
+
     return $node;
   }
 
@@ -161,6 +150,7 @@ class ILess_Visitor_Import extends ILess_Visitor {
   public function visitDirective(ILess_Node_Directive $node, ILess_Visitor_Arguments $arguments)
   {
     array_unshift($this->env->frames, $node);
+
     return $node;
   }
 
@@ -186,6 +176,7 @@ class ILess_Visitor_Import extends ILess_Visitor {
   public function visitMixinDefinition(ILess_Node_MixinDefinition $node,  ILess_Visitor_Arguments $arguments)
   {
     array_unshift($this->env->frames, $node);
+
     return $node;
   }
 
@@ -210,6 +201,7 @@ class ILess_Visitor_Import extends ILess_Visitor {
   public function visitRuleset(ILess_Node_Ruleset $node, ILess_Visitor_Arguments $arguments)
   {
     array_unshift($this->env->frames, $node);
+
     return $node;
   }
 
@@ -233,6 +225,7 @@ class ILess_Visitor_Import extends ILess_Visitor {
   public function visitMedia(ILess_Node_Media $node, ILess_Visitor_Arguments $arguments)
   {
     array_unshift($this->env->frames, $node->rules);
+
     return $node;
   }
 

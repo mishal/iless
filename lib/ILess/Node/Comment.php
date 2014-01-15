@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Comment extends ILess_Node implements ILess_Node_MarkableAsReferencedInterface {
-
+class ILess_Node_Comment extends ILess_Node implements ILess_Node_MarkableAsReferencedInterface
+{
   /**
    * Node type
    *
@@ -59,7 +59,7 @@ class ILess_Node_Comment extends ILess_Node implements ILess_Node_MarkableAsRefe
   public function __construct($value, $silent = false, $index = 0, ILess_FileInfo $currentFileInfo = null)
   {
     parent::__construct($value);
-    $this->silent = (boolean)$silent;
+    $this->silent = (boolean) $silent;
     $this->index = $index;
     $this->currentFileInfo = $currentFileInfo;
   }
@@ -82,6 +82,7 @@ class ILess_Node_Comment extends ILess_Node implements ILess_Node_MarkableAsRefe
   {
     $isReference = $this->currentFileInfo && $this->currentFileInfo->reference && !$this->isReferenced;
     $isCompressed = $env->compress && !preg_match('/^\/\*!/', $this->value);
+
     return $this->silent || $isReference || $isCompressed;
   }
 
@@ -90,8 +91,7 @@ class ILess_Node_Comment extends ILess_Node implements ILess_Node_MarkableAsRefe
    */
   public function generateCSS(ILess_Environment $env, ILess_Output $output)
   {
-    if($this->debugInfo)
-    {
+    if ($this->debugInfo) {
       $output->add(self::getDebugInfo($env, $this), $this->currentFileInfo, $this->index);
     }
     $output->add(trim($this->value));

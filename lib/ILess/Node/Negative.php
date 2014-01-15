@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Negative extends ILess_Node implements ILess_Node_VisitableInterface {
-
+class ILess_Node_Negative extends ILess_Node implements ILess_Node_VisitableInterface
+{
   /**
    * Node type
    *
@@ -58,16 +58,14 @@ class ILess_Node_Negative extends ILess_Node implements ILess_Node_VisitableInte
    */
   public function compile(ILess_Environment $env, $arguments = null, $important = null)
   {
-    if($env->isMathOn())
-    {
+    if ($env->isMathOn()) {
       $operation = new ILess_Node_Operation('*', array(
           new ILess_Node_Dimension('-1'),
           $this->value
       ));
+
       return $operation->compile($env);
-    }
-    else
-    {
+    } else {
       return new ILess_Node_Negative($this->value->compile($env));
     }
   }

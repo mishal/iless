@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage util
  */
-class ILess_Math {
-
+class ILess_Math
+{
   /**
    * Default precision. Matches the default precision used by Less.js
    *
@@ -46,26 +46,21 @@ class ILess_Math {
    */
   public static function setup($defaultPrecision = null)
   {
-    if(self::$setup)
-    {
+    if (self::$setup) {
       return;
     }
 
-    if($defaultPrecision)
-    {
-      self::$defaultPrecision = (int)$defaultPrecision;
+    if ($defaultPrecision) {
+      self::$defaultPrecision = (int) $defaultPrecision;
     }
 
     bcscale(self::$defaultPrecision);
     self::$oldPrecision = array(ini_get('precision'), ini_get('bcmath.scale'));
 
-    if(function_exists('ini_set'))
-    {
+    if (function_exists('ini_set')) {
       ini_set('bcmath.scale', self::$defaultPrecision);
       ini_set('precision', self::$defaultPrecision);
-    }
-    else
-    {
+    } else {
       trigger_error('Math precision could not be set due to forbidden "ini_set" function.', E_USER_WARNING);
     }
 
@@ -135,6 +130,7 @@ class ILess_Math {
   public static function isGreaterThan($left_operand, $right_operand, $precision = null)
   {
     $result = self::compare($left_operand, $right_operand, $precision);
+
     return $result === 1;
   }
 
@@ -149,6 +145,7 @@ class ILess_Math {
   public static function isGreaterThanOrEqual($left_operand, $right_operand, $precision = null)
   {
     $result = self::compare($left_operand, $right_operand, $precision);
+
     return $result === 1 || $result === 0;
   }
 
@@ -163,6 +160,7 @@ class ILess_Math {
   public static function isLowerThan($left_operand, $right_operand, $precision = null)
   {
     $result = self::compare($left_operand, $right_operand, $precision);
+
     return $result === -1;
   }
 
@@ -177,6 +175,7 @@ class ILess_Math {
   public static function isLowerThanOrEqual($left_operand, $right_operand, $precision = null)
   {
     $result = self::compare($left_operand, $right_operand, $precision);
+
     return $result === -1 || $result === 0;
   }
 
@@ -216,8 +215,7 @@ class ILess_Math {
 
     // Use substr() to find the negative sign at the beginning of the
     // number, rather than using signum() to determine the sign.
-    if(substr($value, 0, 1) === '-')
-    {
+    if (substr($value, 0, 1) === '-') {
       return substr($value, 1);
     }
 
@@ -351,19 +349,16 @@ class ILess_Math {
   {
     $value = self::clean($value);
 
-    if(strpos($value, '.') === false)
-    {
+    if (strpos($value, '.') === false) {
       return $value;
     }
 
-    if(!self::isNegative($value))
-    {
+    if (!self::isNegative($value)) {
       return self::add($value, '0.' . str_repeat('0', $precision) . '5', $precision);
     }
 
     return self::substract($value, '0.' . str_repeat('0', $precision) . '5', $precision);
   }
-
 
   /**
    * Rounding mode to round away from zero.
@@ -375,17 +370,13 @@ class ILess_Math {
   {
     $value = self::clean($value);
 
-    if(strpos($value, '.') === false)
-    {
+    if (strpos($value, '.') === false) {
       return $value;
     }
 
-    if(!self::isNegative($value))
-    {
+    if (!self::isNegative($value)) {
       return self::ceil($value, $precision);
-    }
-    else
-    {
+    } else {
       return self::floor($value, $precision);
     }
   }
@@ -401,12 +392,9 @@ class ILess_Math {
     $value = self::clean($value);
 
     // larger than zero
-    if(!self::isNegative($value))
-    {
+    if (!self::isNegative($value)) {
       return self::floor($value, $precision);
-    }
-    else
-    {
+    } else {
       return self::ceil($value, $precision);
     }
   }
@@ -422,20 +410,16 @@ class ILess_Math {
   {
     $value = self::clean($value);
 
-    if(strpos($value, '.') === false)
-    {
+    if (strpos($value, '.') === false) {
       return $value;
     }
 
     $multiplier = self::power(10, $precision);
     $value = self::multiply($value, $multiplier);
 
-    if(!self::isNegative($value))
-    {
+    if (!self::isNegative($value)) {
       $value = self::add($value, '1', 0);
-    }
-    else
-    {
+    } else {
       $value = self::substract($value, '0', 0);
     }
 
@@ -453,20 +437,16 @@ class ILess_Math {
   {
     $number = self::clean($number);
 
-    if(strpos($number, '.') === false)
-    {
+    if (strpos($number, '.') === false) {
       return $number;
     }
 
     $multiplier = self::power(10, $precision);
     $number = self::multiply($number, $multiplier);
 
-    if(!self::isNegative($number))
-    {
+    if (!self::isNegative($number)) {
       $number = self::add($number, '0', 0);
-    }
-    else
-    {
+    } else {
       $number = self::substract($number, '1', 0);
     }
 
@@ -495,8 +475,7 @@ class ILess_Math {
     $number = (string) $number;
 
     // don't clean numbers without dot
-    if(strpos($number, '.') === false)
-    {
+    if (strpos($number, '.') === false) {
       return $number;
     }
 
@@ -506,13 +485,13 @@ class ILess_Math {
     $clean = ltrim($clean, '0');
 
     // everything has been cleaned
-    if($clean == '.')
-    {
+    if ($clean == '.') {
       return '0';
     }
 
     // remove decimal point if an integer ie. 140. becomes 140
     $clean = rtrim($clean, '.');
+
     return $clean[0] == '.' ? '0' . $clean : $clean;
   }
 
@@ -527,8 +506,7 @@ class ILess_Math {
    */
   public static function operate($operator, $a, $b)
   {
-    switch($operator)
-    {
+    switch ($operator) {
       case '+': return self::clean(self::add($a, $b));
       case '-': return self::clean(self::substract($a, $b));
       case '*': return self::clean(self::multiply($a, $b));
@@ -549,8 +527,7 @@ class ILess_Math {
   {
     $number = self::clean($number);
 
-    if(strpos($number, '.') === false)
-    {
+    if (strpos($number, '.') === false) {
       return $number;
     }
 

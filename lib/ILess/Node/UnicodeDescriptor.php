@@ -12,8 +12,8 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_UnicodeDescriptor extends ILess_Node {
-
+class ILess_Node_UnicodeDescriptor extends ILess_Node
+{
   /**
    * Node type
    *

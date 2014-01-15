@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage color
  */
-class ILess_Color {
-
+class ILess_Color
+{
   /**
    * Array of named colors
    *
@@ -227,44 +227,33 @@ class ILess_Color {
    */
   public function __construct($rgb = array(255, 255, 255), $alpha = 1)
   {
-    if(is_array($rgb))
-    {
+    if (is_array($rgb)) {
       // clean the components
-      foreach($rgb as &$i)
-      {
+      foreach ($rgb as &$i) {
         $i = ILess_Math::clean($i);
       }
       $this->rgb = $rgb;
     }
     // string
-    else
-    {
+    else {
       // this is a named color
-      if(isset(self::$colors[$rgb]))
-      {
+      if (isset(self::$colors[$rgb])) {
         $this->keyword = $rgb;
         $rgb = self::$colors[$rgb];
       }
 
       // strip #
       $rgb = trim($rgb, '#');
-      if(strlen($rgb) == 6)
-      {
-        foreach(str_split($rgb, 2) as $c)
-        {
+      if (strlen($rgb) == 6) {
+        foreach (str_split($rgb, 2) as $c) {
           $this->rgb[] = hexdec($c);
         }
-      }
-      else if(strlen($rgb) == 3)
-      {
+      } elseif (strlen($rgb) == 3) {
         $this->short = true;
-        foreach(str_split($rgb, 1) as $c)
-        {
+        foreach (str_split($rgb, 1) as $c) {
           $this->rgb[] = hexdec($c . $c);
         }
-      }
-      else
-      {
+      } else {
         throw new InvalidArgumentException(sprintf('Invalid color value "%s".', (string) $rgb));
       }
     }
@@ -281,19 +270,16 @@ class ILess_Color {
   protected function getFixedRGB()
   {
     $components = array();
-    foreach($this->rgb as $i)
-    {
+    foreach ($this->rgb as $i) {
       $i = ILess_Math::round($i);
-      if($i > 255)
-      {
+      if ($i > 255) {
         $i = 255;
-      }
-      elseif($i < 0)
-      {
+      } elseif ($i < 0) {
         $i = 0;
       }
       $components[] = $i;
     }
+
     return $components;
   }
 
@@ -307,16 +293,14 @@ class ILess_Color {
   {
     $color = null;
     // is this named color?
-    if(self::isNamedColor($keyword))
-    {
+    if (self::isNamedColor($keyword)) {
       $color = new ILess_Color(substr(ILess_Color::color($keyword), 1));
       $color->keyword = $keyword;
-    }
-    elseif($keyword === 'transparent')
-    {
+    } elseif ($keyword === 'transparent') {
       $color = new ILess_Color(array(255, 255, 255), 0);
       $color->isTransparentKeyword = true;
     }
+
     return $color;
   }
 
@@ -368,6 +352,7 @@ class ILess_Color {
   public function getSaturation()
   {
     $this->toHSL();
+
     return $this->hsl['s'];
   }
 
@@ -380,6 +365,7 @@ class ILess_Color {
   public function getHue()
   {
     $this->toHSL();
+
     return $this->hsl['h'];
   }
 
@@ -391,6 +377,7 @@ class ILess_Color {
   public function getLightness()
   {
     $this->toHSL();
+
     return $this->hsl['l'];
   }
 
@@ -401,8 +388,7 @@ class ILess_Color {
    */
   public function getLuma()
   {
-    if($this->luma !== null)
-    {
+    if ($this->luma !== null) {
       return $this->luma;
     }
 
@@ -412,6 +398,7 @@ class ILess_Color {
     $b = ILess_Math::multiply('0.0722', ILess_Math::divide($this->rgb[2], 255));
 
     $this->luma = ILess_Math::add(ILess_Math::add($r, $g), $b);
+
     return $this->luma;
   }
 
@@ -422,8 +409,7 @@ class ILess_Color {
    */
 	public function toHSL()
   {
-    if($this->hsl)
-    {
+    if ($this->hsl) {
       return $this->hsl;
     }
 
@@ -436,16 +422,12 @@ class ILess_Color {
     $l = ($max + $min) / 2;
     $d = $max - $min;
 
-    if($max === $min)
-    {
+    if ($max === $min) {
       $h = $s = 0;
-    }
-    else
-    {
+    } else {
       $s = $l > 0.5 ? $d / (2 - $max - $min) : $d / ($max + $min);
 
-      switch($max)
-      {
+      switch ($max) {
         case $r: $h = ($g - $b) / $d + ($g < $b ? 6 : 0);
           break;
         case $g: $h = ($b - $r) / $d + 2;
@@ -468,8 +450,7 @@ class ILess_Color {
    */
   public function toHSV()
   {
-    if($this->hsv)
-    {
+    if ($this->hsv) {
       return $this->hsv;
     }
 
@@ -484,8 +465,7 @@ class ILess_Color {
     $v = $max;
 
     $d = $max - $min;
-    if($max === 0)
-    {
+    if ($max === 0) {
       $s = 0;
     } else {
       $s = $d / $max;
@@ -494,13 +474,14 @@ class ILess_Color {
     if ($max === $min) {
       $h = 0;
     } else {
-      switch($max){
+      switch ($max) {
         case $r: $h = ($g - $b) / $d + ($g < $b ? 6 : 0); break;
         case $g: $h = ($b - $r) / $d + 2; break;
         case $b: $h = ($r - $g) / $d + 4; break;
       }
       $h /= 6;
     }
+
     return array('h'=> $h * 360, 's'=> $s, 'v'=> $v, 'a' => $a );
   }
   /**
@@ -515,8 +496,7 @@ class ILess_Color {
         $this->rgb);
 
     $result = '';
-    foreach($argb as $i)
-    {
+    foreach ($argb as $i) {
       $i = ILess_Math::round($i);
       $i = dechex($i > 255 ? 255 : ($i < 0 ? 0 : $i));
       $result .= str_pad($i, 2, '0', STR_PAD_LEFT);
@@ -534,35 +514,29 @@ class ILess_Color {
    */
   public function toString($compress = false, $canShorten = false)
   {
-    if($this->isTransparentKeyword)
-    {
+    if ($this->isTransparentKeyword) {
       return 'transparent';
     }
 
     // no transparency
-    if($this->alpha == 1)
-    {
+    if ($this->alpha == 1) {
       // FIXME: prevent keywords?
       // if($this->keyword)
       // {
         // return $this->keyword;
       // }
       $color = array();
-      foreach($this->getFixedRgb() as $i)
-      {
+      foreach ($this->getFixedRgb() as $i) {
         $color[] = str_pad(dechex($i), 2, '0', STR_PAD_LEFT);
       }
       $color = join('', $color);
       // convert color to short format
-      if($canShorten && $color[0] === $color[1] && $color[2] === $color[3] && $color[4] === $color[5])
-      {
+      if ($canShorten && $color[0] === $color[1] && $color[2] === $color[3] && $color[4] === $color[5]) {
         $color = $color[0] . $color[2] . $color[4];
       }
 
       $color = sprintf('#%s', $color);
-    }
-    else
-    {
+    } else {
       $fixedRGB = $this->getFixedRGB();
       $color = sprintf('rgba(%s)', join($compress ? ',' : ', ', array(
         $fixedRGB[0], $fixedRGB[1], $fixedRGB[2], $this->alpha

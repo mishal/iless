@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage visitor
  */
-class ILess_Visitor_Arguments {
-
+class ILess_Visitor_Arguments
+{
   /**
    * Visit deeper flag
    *
@@ -29,8 +29,7 @@ class ILess_Visitor_Arguments {
    */
   public function __construct($arguments = array())
   {
-    foreach($arguments as $argument => $value)
-    {
+    foreach ($arguments as $argument => $value) {
       $this->$argument = $value;
     }
   }

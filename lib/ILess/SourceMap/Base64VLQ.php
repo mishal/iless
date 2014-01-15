@@ -13,8 +13,8 @@
  * @package ILess
  * @subpackage SourceMap
  */
-class ILess_SourceMap_Base64VLQ {
-
+class ILess_SourceMap_Base64VLQ
+{
   /**
    * Shift
    *
@@ -122,16 +122,14 @@ class ILess_SourceMap_Base64VLQ {
   {
     $encoded = '';
     $vlq = $this->toVLQSigned($aValue);
-    do
-    {
+    do {
       $digit = $vlq & $this->mask;
       $vlq = $this->zeroFill($vlq, $this->shift);
-      if($vlq > 0)
-      {
+      if ($vlq > 0) {
         $digit |= $this->continuationBit;
       }
       $encoded .= $this->base64Encode($digit);
-    } while($vlq > 0);
+    } while ($vlq > 0);
 
     return $encoded;
   }
@@ -146,12 +144,11 @@ class ILess_SourceMap_Base64VLQ {
   {
     $vlq = 0;
     $i = 0;
-    do
-    {
+    do {
       $digit = $this->base64Decode($encoded[$i]);
       $vlq |= ($digit & $this->mask) << ($i * $this->shift);
       $i++;
-    } while($digit & $this->continuationBit);
+    } while ($digit & $this->continuationBit);
 
     return $this->fromVLQSigned($vlq);
   }
@@ -177,10 +174,10 @@ class ILess_SourceMap_Base64VLQ {
    */
   public function base64Encode($number)
   {
-    if($number < 0 || $number > 63)
-    {
+    if ($number < 0 || $number > 63) {
       throw new InvalidArgumentException(sprintf('Invalid number "%s" given. Must be between 0 and 63.', $number));
     }
+
     return $this->intToCharMap[$number];
   }
 
@@ -193,10 +190,10 @@ class ILess_SourceMap_Base64VLQ {
    */
   public function base64Decode($char)
   {
-    if(!array_key_exists($char, $this->charToIntMap))
-    {
+    if (!array_key_exists($char, $this->charToIntMap)) {
       throw new InvalidArgumentException(sprintf('Invalid base 64 digit "%s" given.', $char));
     }
+
     return $this->charToIntMap[$char];
   }
 
