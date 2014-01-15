@@ -13,68 +13,67 @@
  * @package ILess
  * @subpackage parser
  */
-class ILess_FileInfo {
+class ILess_FileInfo
+{
+    /**
+     * Full resolved filename of current file
+     *
+     * @var string
+     */
+    public $filename;
 
-  /**
-   * Full resolved filename of current file
-   *
-   * @var string
-   */
-  public $filename;
+    /**
+     * Path to append to normal URLs for this node
+     *
+     * @var string
+     */
+    public $rootPath;
 
-  /**
-   * Path to append to normal URLs for this node
-   *
-   * @var string
-   */
-  public $rootPath;
+    /**
+     * Path to the current file, absolute
+     *
+     * @var string
+     */
+    public $currentDirectory;
 
-  /**
-   * Path to the current file, absolute
-   *
-   * @var string
-   */
-  public $currentDirectory;
+    /**
+     * Filename of the base file
+     *
+     * @var string
+     */
+    public $rootFilename;
 
-  /**
-   * Filename of the base file
-   *
-   * @var string
-   */
-  public $rootFilename;
+    /**
+     * Absolute path to the entry directory
+     *
+     * @var string
+     */
+    public $entryPath;
 
-  /**
-   * Absolute path to the entry directory
-   *
-   * @var string
-   */
-  public $entryPath;
+    /**
+     * Whether the file should not be output and only output parts that are referenced
+     *
+     * @var boolean
+     */
+    public $reference = false;
 
-  /**
-   * Whether the file should not be output and only output parts that are referenced
-   *
-   * @var boolean
-   */
-  public $reference = false;
+    /**
+     * The imported file
+     *
+     * @var ILess_ImportedFile
+     */
+    public $importedFile;
 
-  /**
-   * The imported file
-   *
-   * @var ILess_ImportedFile
-   */
-  public $importedFile;
-
-  /**
-   * Constructor
-   *
-   * @param string $path
-   */
-  public function __construct(array $info = array())
-  {
-    foreach($info as $property => $value)
+    /**
+     * Constructor
+     *
+     * @param string $path
+     */
+    public function __construct(array $info = array())
     {
-      $this->$property = $value;
+        foreach ($info as $property => $value) {
+            $this->$property = $value;
+        }
     }
-  }
 
 }

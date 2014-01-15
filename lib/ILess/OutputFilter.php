@@ -13,4 +13,6 @@
  * @package ILess
  * @subpackage filter
  */
-abstract class ILess_OutputFilter extends ILess_Configurable implements ILess_OutputFilterInterface {}
+abstract class ILess_OutputFilter extends ILess_Configurable implements ILess_OutputFilterInterface
+{
+}

@@ -13,13 +13,13 @@
  * @package ILess
  * @subpackage node
  */
-interface ILess_Node_ComparableInterface {
-
-  /**
-   * Compares with another node
-   *
-   * @param ILess_Node $other The other node
-   * @return integer
-   */
-  public function compare(ILess_Node $other);
+interface ILess_Node_ComparableInterface
+{
+    /**
+     * Compares with another node
+     *
+     * @param ILess_Node $other The other node
+     * @return integer
+     */
+    public function compare(ILess_Node $other);
 }

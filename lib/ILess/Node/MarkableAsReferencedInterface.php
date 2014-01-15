@@ -13,13 +13,13 @@
  * @package ILess
  * @subpackage node
  */
-interface ILess_Node_MarkableAsReferencedInterface {
-
-  /**
-   * Marks as referenced
-   *
-   * @return void
-   */
-  public function markReferenced();
+interface ILess_Node_MarkableAsReferencedInterface
+{
+    /**
+     * Marks as referenced
+     *
+     * @return void
+     */
+    public function markReferenced();
 
 }

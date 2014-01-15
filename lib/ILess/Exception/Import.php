@@ -13,4 +13,6 @@
  * @package ILess
  * @subpackage exception
  */
-class ILess_Exception_Import extends ILess_Exception {}
+class ILess_Exception_Import extends ILess_Exception
+{
+}

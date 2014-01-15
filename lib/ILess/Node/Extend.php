@@ -13,144 +13,142 @@
  * @package ILess
  * @subpackage node
  */
-class ILess_Node_Extend extends ILess_Node implements ILess_Node_VisitableInterface {
+class ILess_Node_Extend extends ILess_Node implements ILess_Node_VisitableInterface
+{
+    /**
+     * Node type
+     *
+     * @var string
+     */
+    protected $type = 'Extend';
 
-  /**
-   * Node type
-   *
-   * @var string
-   */
-  protected $type = 'Extend';
+    /**
+     * The selector
+     *
+     * @var ILess_Node
+     */
+    public $selector;
 
-  /**
-   * The selector
-   *
-   * @var ILess_Node
-   */
-  public $selector;
+    /**
+     * The option (all)
+     *
+     * @var string
+     */
+    public $option;
 
-  /**
-   * The option (all)
-   *
-   * @var string
-   */
-  public $option;
+    /**
+     * Current index
+     *
+     * @var integer
+     */
+    public $index = 0;
 
-  /**
-   * Current index
-   *
-   * @var integer
-   */
-  public $index = 0;
+    /**
+     * Allow before flag
+     *
+     * @var boolean
+     */
+    public $allowBefore = false;
 
-  /**
-   * Allow before flag
-   *
-   * @var boolean
-   */
-  public $allowBefore = false;
+    /**
+     * Allow after flag
+     *
+     * @var boolean
+     */
+    public $allowAfter = false;
 
-  /**
-   * Allow after flag
-   *
-   * @var boolean
-   */
-  public $allowAfter = false;
+    /**
+     * Array of self selectors
+     *
+     * @var array
+     */
+    public $selfSelectors = array();
 
-  /**
-   * Array of self selectors
-   *
-   * @var array
-   */
-  public $selfSelectors = array();
+    /**
+     * Extend on every path flag
+     *
+     * @var boolean
+     * @see ILess_Visitor_ExtendFinder::visitRuleset
+     */
+    public $extendOnEveryPath = false;
 
-  /**
-   * Extend on every path flag
-   *
-   * @var boolean
-   * @see ILess_Visitor_ExtendFinder::visitRuleset
-   */
-  public $extendOnEveryPath = false;
+    /**
+     * First extend on this path flag
+     *
+     * @var boolean
+     * @see ILess_Visitor_ExtendFinder::visitRuleset
+     */
+    public $firstExtendOnThisSelectorPath = false;
 
-  /**
-   * First extend on this path flag
-   *
-   * @var boolean
-   * @see ILess_Visitor_ExtendFinder::visitRuleset
-   */
-  public $firstExtendOnThisSelectorPath = false;
+    /**
+     * Parents
+     *
+     * @var array
+     * @see ILess_Visitor_ProcessExtend::inInheritanceChain
+     */
+    public $parents;
 
-  /**
-   * Parents
-   *
-   * @var array
-   * @see ILess_Visitor_ProcessExtend::inInheritanceChain
-   */
-  public $parents;
-
-  /**
-   * Constructor
-   *
-   * @param ILess_Node $selector The selector
-   * @param string $option The option
-   * @param integer $index The index
-   */
-  public function __construct(ILess_Node $selector, $option, $index = 0)
-  {
-    $this->selector = $selector;
-    $this->option = $option;
-    $this->index = $index;
-    if($option == 'all')
+    /**
+     * Constructor
+     *
+     * @param ILess_Node $selector The selector
+     * @param string $option The option
+     * @param integer $index The index
+     */
+    public function __construct(ILess_Node $selector, $option, $index = 0)
     {
-      $this->allowBefore = true;
-      $this->allowAfter = true;
+        $this->selector = $selector;
+        $this->option = $option;
+        $this->index = $index;
+        if ($option == 'all') {
+            $this->allowBefore = true;
+            $this->allowAfter = true;
+        }
     }
-  }
 
-  /**
-   * Accepts a visit
-   *
-   * @param ILess_Visitor $visitor
-   */
-  public function accept(ILess_Visitor $visitor)
-  {
-    $this->selector = $visitor->visit($this->selector);
-  }
-
-  /**
-   * @see ILess_Node
-   */
-  public function compile(ILess_Environment $env, $arguments = null, $important = null)
-  {
-    $env->hasExtends = true;
-    return new ILess_Node_Extend($this->selector->compile($env), $this->option, $this->index);
-  }
-
-  /**
-   * @see ILess_Node::generateCSS
-   */
-  public function generateCSS(ILess_Environment $env, ILess_Output $output)
-  {
-  }
-
-  /**
-   * Finds selectors
-   *
-   * @param array $selectors Array of ILess_Node_Selector instances
-   */
-  public function findSelfSelectors($selectors)
-  {
-    $selfElements = array();
-    for($i = 0, $count = count($selectors); $i < $count; $i++)
+    /**
+     * Accepts a visit
+     *
+     * @param ILess_Visitor $visitor
+     */
+    public function accept(ILess_Visitor $visitor)
     {
-      $selectorElements = $selectors[$i]->elements;
-      if($i > 0 && count($selectorElements) && $selectorElements[0]->combinator->value == '')
-      {
-        $selectorElements[0]->combinator->value = ' ';
-      }
-      $selfElements = array_merge($selfElements, $selectors[$i]->elements);
+        $this->selector = $visitor->visit($this->selector);
     }
-    $this->selfSelectors = array(new ILess_Node_Selector($selfElements));
-  }
+
+    /**
+     * @see ILess_Node
+     */
+    public function compile(ILess_Environment $env, $arguments = null, $important = null)
+    {
+        $env->hasExtends = true;
+
+        return new ILess_Node_Extend($this->selector->compile($env), $this->option, $this->index);
+    }
+
+    /**
+     * @see ILess_Node::generateCSS
+     */
+    public function generateCSS(ILess_Environment $env, ILess_Output $output)
+    {
+    }
+
+    /**
+     * Finds selectors
+     *
+     * @param array $selectors Array of ILess_Node_Selector instances
+     */
+    public function findSelfSelectors($selectors)
+    {
+        $selfElements = array();
+        for ($i = 0, $count = count($selectors); $i < $count; $i++) {
+            $selectorElements = $selectors[$i]->elements;
+            if ($i > 0 && count($selectorElements) && $selectorElements[0]->combinator->value == '') {
+                $selectorElements[0]->combinator->value = ' ';
+            }
+            $selfElements = array_merge($selfElements, $selectors[$i]->elements);
+        }
+        $this->selfSelectors = array(new ILess_Node_Selector($selfElements));
+    }
 
 }

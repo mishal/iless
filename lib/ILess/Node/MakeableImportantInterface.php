@@ -13,12 +13,12 @@
  * @package ILess
  * @subpackage node
  */
-interface ILess_Node_MakeableImportantInterface {
-
-  /**
-   * Makes the node important
-   *
-   * @return void
-   */
-  public function makeImportant();
+interface ILess_Node_MakeableImportantInterface
+{
+    /**
+     * Makes the node important
+     *
+     * @return void
+     */
+    public function makeImportant();
 }

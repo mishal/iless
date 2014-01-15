@@ -13,14 +13,14 @@
  * @package ILess
  * @subpackage filter
  */
-interface ILess_OutputFilterInterface {
-
-  /**
-   * Filters the output
-   *
-   * @param string $output
-   * @return string
-   */
-  public function filter($output);
+interface ILess_OutputFilterInterface
+{
+    /**
+     * Filters the output
+     *
+     * @param string $output
+     * @return string
+     */
+    public function filter($output);
 
 }
