@@ -69,7 +69,7 @@ For example usage check the `examples` folder in the source files.
     // parse string
     $parser->parseString('body { color: @color; }');
 
-    // assing variables via the API
+    // assign variables via the API
     $parser->setVariables(array(
       'color' => '#000000'
     ));
@@ -127,6 +127,10 @@ Before opening any issue, please search for [existing issues](https://github.com
 The `master` branch should contain only stable code, while the `develop` branch, as the name suggests, is for development.
 
  * [List of issues](https://github.com/mishal/iless/issues)
+
+## Contributing
+
+Please read [contributing guide](./CONTRIBUTING.md).
 
 ## Why Another Less PHP Processor?
 
