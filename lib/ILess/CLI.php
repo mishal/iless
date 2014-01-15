@@ -214,11 +214,11 @@ class ILess_CLI extends ILess_Configurable
     public function run()
     {
         if (!$this->isValid()) {
-            echo $this->getUsage(true);
+            echo $this->getUsage();
             // return error
             return 1;
         } elseif ($this->getOption('version')) {
-            echo ILess_Parser::VERSION;
+            echo ILess_Parser::VERSION.PHP_EOL;
 
             return;
         } elseif ($this->getOption('help')) {
@@ -393,8 +393,7 @@ usage: {%script_name} [option option=parameter ...] source [destination]
 If source is set to `-` (dash or hyphen-minus), input is read from stdin.
 
 options:
-{%options}
-  ', array(
+{%options}'.PHP_EOL, array(
             '{%signature}' => $this->getSignature(),
             '{%script_name}' => $this->scriptName,
             '{%options}' => join(PHP_EOL, $optionsFormatted)
