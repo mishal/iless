@@ -2,6 +2,10 @@
 
 Looking to contribute? It's great to have you here!
 
+## Howto
+
+Please check the [development guide](https://github.com/mishal/iless/wiki/Development).
+
 ## Coding standards
 
 Please follow the [PSR-2 guidelines](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md), respectively [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md), [PSR-1](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md) and [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md) guidelines.
