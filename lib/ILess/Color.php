@@ -222,8 +222,8 @@ class ILess_Color
     /**
      * Constructor
      *
-     * @param array|string $rgb
-     * @param integer $alpha
+     * @param array|string $rgb The RGB components as an array or string definition
+     * @param integer $alpha The alpha channel
      */
     public function __construct($rgb = array(255, 255, 255), $alpha = 1)
     {
@@ -580,7 +580,7 @@ class ILess_Color
      * Returns the color hex representation
      *
      * @param $color Color name
-     * @return string|false
+     * @return mixed
      */
     public static function color($color)
     {

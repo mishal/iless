@@ -276,7 +276,7 @@ class ILess_Node_Dimension extends ILess_Node implements ILess_Node_VisitableInt
                     continue;
                 }
                 // $value = $value / ($group[$atomicUnit] / $group[$targetUnit]);
-                $value = ILess_Math::divide(ILess_Math::divide($group[$atomicUnit], $group[$targetUnit]));
+                $value = ILess_Math::divide($value, ILess_Math::divide($group[$atomicUnit], $group[$targetUnit]));
                 $unit->denominator[$i] = $targetUnit;
             }
         }

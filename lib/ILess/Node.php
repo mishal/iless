@@ -37,6 +37,13 @@ abstract class ILess_Node
     protected $type;
 
     /**
+     * Current file info
+     *
+     * @var ILess_FileInfo
+     */
+    protected $currentFileInfo;
+
+    /**
      * Constructor
      *
      * @param mixed $value

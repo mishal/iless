@@ -34,6 +34,20 @@ class ILess_Variable
     protected $important = false;
 
     /**
+     * The name
+     *
+     * @var string
+     */
+    protected $name;
+
+    /**
+     * The value
+     *
+     * @var ILess_Node
+     */
+    protected $value;
+
+    /**
      * Constructor
      *
      * @param string $name The name of the variable

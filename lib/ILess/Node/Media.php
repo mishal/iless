@@ -31,7 +31,7 @@ class ILess_Node_Media extends ILess_Node implements ILess_Node_VisitableInterfa
     /**
      * Current file information
      *
-     * @var array
+     * @var ILess_FileInfo
      */
     public $currentFileInfo;
 
@@ -62,7 +62,7 @@ class ILess_Node_Media extends ILess_Node implements ILess_Node_VisitableInterfa
      * @param array $value The array of values
      * @param type $features The array of features
      * @param integer $index The index
-     * @param array $currentFileInfo
+     * @param ILess_FileInfo $currentFileInfo The current file info
      */
     public function __construct(array $value = array(), array $features = array(), $index = 0, ILess_FileInfo $currentFileInfo = null)
     {
@@ -131,7 +131,7 @@ class ILess_Node_Media extends ILess_Node implements ILess_Node_VisitableInterfa
         try {
             $media->features = $this->features->compile($env);
         } catch (Exception $e) {
-
+            // empty on purpose
         }
 
         if ($strictMathBypass) {

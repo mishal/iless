@@ -25,7 +25,7 @@ class ILess_Node_Extend extends ILess_Node implements ILess_Node_VisitableInterf
     /**
      * The selector
      *
-     * @var ILess_Node
+     * @var ILess_Node_Selector
      */
     public $selector;
 
@@ -89,13 +89,20 @@ class ILess_Node_Extend extends ILess_Node implements ILess_Node_VisitableInterf
     public $parents;
 
     /**
+     * The ruleset
+     *
+     * @var ILess_Node_Ruleset
+     */
+    public $ruleset;
+
+    /**
      * Constructor
      *
-     * @param ILess_Node $selector The selector
+     * @param ILess_Node_Selector $selector The selector
      * @param string $option The option
      * @param integer $index The index
      */
-    public function __construct(ILess_Node $selector, $option, $index = 0)
+    public function __construct(ILess_Node_Selector $selector, $option, $index = 0)
     {
         $this->selector = $selector;
         $this->option = $option;

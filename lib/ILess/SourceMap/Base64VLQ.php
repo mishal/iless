@@ -156,9 +156,9 @@ class ILess_SourceMap_Base64VLQ
     /**
      * Right shift with zero fill.
      *
-     * @param number $a number to shift
-     * @param nunber $b number of bits to shift
-     * @return number
+     * @param integer $a number to shift
+     * @param integer $b number of bits to shift
+     * @return integer
      */
     public function zeroFill($a, $b)
     {
@@ -168,7 +168,7 @@ class ILess_SourceMap_Base64VLQ
     /**
      * Encode single 6-bit digit as base64.
      *
-     * @param number $number
+     * @param integer $number
      * @return string
      * @throws InvalidArgumentException If the number is invalid
      */

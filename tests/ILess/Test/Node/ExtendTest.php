@@ -20,7 +20,7 @@ class ILess_Test_Node_ExtendTest extends ILess_Test_TestCase
      */
     public function testConstructor()
     {
-        $d = new ILess_Node_Extend(new ILess_Node_Anonymous('foobar'), 'all');
+        $d = new ILess_Node_Extend(new ILess_Node_Selector(array(new ILess_Node_Anonymous('foobar'))), 'all');
     }
 
     /**
@@ -28,7 +28,7 @@ class ILess_Test_Node_ExtendTest extends ILess_Test_TestCase
      */
     public function testGetType()
     {
-        $d = new ILess_Node_Extend(new ILess_Node_Anonymous('foobar'), 'all');
+        $d = new ILess_Node_Extend(new ILess_Node_Selector(array(new ILess_Node_Anonymous('foobar'))), 'all');
         $this->assertEquals('Extend', $d->getType());
     }
 
@@ -38,7 +38,7 @@ class ILess_Test_Node_ExtendTest extends ILess_Test_TestCase
     public function testCompile()
     {
         $env = new ILess_Environment();
-        $d = new ILess_Node_Extend(new ILess_Node_Anonymous('foobar'), 'all');
+        $d = new ILess_Node_Extend(new ILess_Node_Selector(array(new ILess_Node_Anonymous('foobar'))), 'all');
         $result = $d->compile($env);
         $this->assertInstanceOf('ILess_Node_Extend', $result);
     }

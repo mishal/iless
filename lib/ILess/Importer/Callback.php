@@ -38,7 +38,7 @@ class ILess_Importer_Callback implements ILess_ImporterInterface
      */
     public function __construct($importCallback, $lastModifiedCallback)
     {
-        $this->assertCallbable($importCallback);
+        $this->assertCallable($importCallback);
         $this->importCallback = $importCallback;
         $this->assertCallable($lastModifiedCallback);
         $this->lastModifiedCallback = $lastModifiedCallback;

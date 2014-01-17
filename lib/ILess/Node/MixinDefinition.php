@@ -150,7 +150,7 @@ class ILess_Node_MixinDefinition extends ILess_Node_Ruleset
         $mixinEnv = ILess_Environment::createCopy($env, $mixinFrames);
 
         $compiledArguments = array();
-        $frame = $this->compileParams($env, $mixinEnv, $arguments, $compiledArguments);
+        $frame = $this->compileParams($env, $mixinEnv, (array)$arguments, $compiledArguments);
 
         $ex = new ILess_Node_Expression($compiledArguments);
         array_unshift($frame->rules, new ILess_Node_Rule('@arguments', $ex->compile($env)));

@@ -194,6 +194,7 @@ class ILess_Cache_FileSystem extends ILess_Cache
             throw new ILess_Exception_Cache(sprintf('Unable to read cache file "%s".', $path));
         }
 
+        $data = array();
         @flock($fp, LOCK_SH);
         $data[self::READ_TIMEOUT] = intval(@stream_get_contents($fp, 12, 0));
         if ($type != self::READ_TIMEOUT && time() < $data[self::READ_TIMEOUT]) {

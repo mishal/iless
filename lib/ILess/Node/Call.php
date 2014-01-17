@@ -46,7 +46,7 @@ class ILess_Node_Call extends ILess_Node implements ILess_Node_VisitableInterfac
     /**
      * Current file info
      *
-     * @var string
+     * @var ILess_FileInfo
      */
     protected $currentFileInfo;
 
@@ -55,6 +55,8 @@ class ILess_Node_Call extends ILess_Node implements ILess_Node_VisitableInterfac
      *
      * @param string $name Name of the function
      * @param array $args Array of arguments
+     * @param integer $index The current index
+     * @param ILess_FileInfo $currentFileInfo The current file info
      */
     public function __construct($name, array $args, $index = 0, ILess_FileInfo $currentFileInfo = null)
     {

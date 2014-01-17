@@ -90,7 +90,7 @@ class ILess_Parser_Core
      * @throws ILess_Exception_Parser
      * @param string|ILess_ImportedFile $fil The file to parse (Will be loaded via the importers)
      * @param boolean $returnRuleset Indicates whether the parsed rules should be wrapped in a ruleset.
-     * @return ILess_Node_Ruleset|ILess_Parser
+     * @return mixed If $returnRuleset is true, ILess_Parser_Core, ILess_Node_Ruleset otherwise
      */
     public function parseFile($file, $returnRuleset = false)
     {
@@ -495,17 +495,14 @@ class ILess_Parser_Core
      */
     protected function parseMixinDefinition()
     {
-        if ((!$this->peekChar('.') && !$this->peekChar('#')) || $this->peekChar('/\\G[^{]*\}/')) {
+        if ((!$this->peekChar('.') && !$this->peekChar('#')) || $this->peekReg('/\\G[^{]*\}/')) {
             return;
         }
 
         $this->save();
 
-        $params = array();
-        $variadic = false;
-        $cond = null;
-
         if ($match = $this->matchReg('/\\G([#.](?:[\w-]|\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+)\s*\(/')) {
+            $cond = null;
             $name = $match[1];
             $argInfo = $this->parseMixinArgs(false);
             $params = $argInfo['args'];
@@ -881,9 +878,6 @@ class ILess_Parser_Core
      */
     protected function parseAttribute()
     {
-        $val = null;
-        $op = null;
-
         if (!$this->matchChar('[')) {
             return;
         }
@@ -892,6 +886,7 @@ class ILess_Parser_Core
             $key = $this->expect('/\\G(?:[_A-Za-z0-9-\*]*\|)?(?:[_A-Za-z0-9-]|\\\\.)+/');
         }
 
+        $val = null;
         if (($op = $this->matchReg('/\\G[|~*$^]?=/'))) {
             $val = $this->match(array(
                 'parseEntitiesQuoted',
@@ -993,7 +988,6 @@ class ILess_Parser_Core
         $argsComma = array();
         $expressionContainsNamed = null;
         $name = null;
-        $nameLoop = null;
         $returner = array('args' => null, 'variadic' => false);
         while (true) {
             if ($isCall) {
@@ -1674,10 +1668,12 @@ class ILess_Parser_Core
     protected function parseEntitiesJavascript()
     {
         $e = false;
+        $offset = 0;
         if ($this->peekChar('~')) {
             $e = true;
+            $offset++;
         }
-        if (!$this->peekChar('`', $e)) {
+        if (!$this->peekChar('`', $offset)) {
             return;
         }
         if ($e) {
@@ -1893,7 +1889,7 @@ class ILess_Parser_Core
      * @param ILess_Environment $env
      * @return self
      */
-    public function setEnvironment(ILess_Envronment $env)
+    public function setEnvironment(ILess_Environment $env)
     {
         $this->env = $env;
 
@@ -1951,8 +1947,8 @@ class ILess_Parser_Core
     /**
      * Parse from a token, regexp or string, and move forward if match
      *
-     * @param string $token The token
-     * @return null|bool|object
+     * @param array|string $token The token
+     * @return null|boolean|object
      */
     protected function match($token)
     {
@@ -1960,7 +1956,6 @@ class ILess_Parser_Core
             $token = array($token);
         }
 
-        $match = false;
         foreach ($token as $t) {
             if (strlen($t) === 1) {
                 $match = $this->matchChar($t);

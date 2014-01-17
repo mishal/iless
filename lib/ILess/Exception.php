@@ -18,7 +18,7 @@ class ILess_Exception extends Exception
     /**
      * The current file
      *
-     * @var ILess_ImportedFile
+     * @var ILess_ImportedFile|ILess_FileInfo
      */
     private $currentFile;
 
@@ -45,7 +45,7 @@ class ILess_Exception extends Exception
      * @param string $message
      * @param Exception $previous Previous exception
      * @param integer $index The current parser index
-     * @param ILess_FileInfo|string $currentFile The file
+     * @param ILess_FileInfo|ILess_ImportedFile|string $currentFile The file
      * @param integer $code The exception code
      */
     public function __construct($message = null, Exception $previous = null, $index = null, $currentFile = null, $code = 0)
@@ -85,7 +85,7 @@ class ILess_Exception extends Exception
     /**
      * Returns the file
      *
-     * @return ILess_ImportedFile|null
+     * @return ILess_ImportedFile|ILess_FileInfo|null
      */
     public function getCurrentFile()
     {
@@ -95,7 +95,7 @@ class ILess_Exception extends Exception
     /**
      * Sets the current file
      *
-     * @param ILess_ImportedFile|string $file
+     * @param ILess_ImportedFile|ILess_FileInfo|string $file
      */
     public function setCurrentFile($file)
     {

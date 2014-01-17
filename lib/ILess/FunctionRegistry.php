@@ -256,7 +256,7 @@ class ILess_FunctionRegistry
     /**
      * Returns the environment instance
      *
-     * @return ILess_Environment|null
+     * @return mixed
      */
     public function getEnvironment()
     {
@@ -317,8 +317,7 @@ class ILess_FunctionRegistry
      */
     public function e(ILess_Node $string)
     {
-        return new ILess_Node_Anonymous($string instanceof ILess_Node_Javascript ? $string->evaluated :
-            str_replace(array('~"', '"'), '', (string)$string));
+        return new ILess_Node_Anonymous(str_replace(array('~"', '"'), '', (string)$string));
     }
 
     /**
@@ -388,7 +387,7 @@ class ILess_FunctionRegistry
     public function template(ILess_Node $string /* , $value1, $value2, ... */)
     {
         $args = func_get_args();
-        $string = array_shift($args);
+        array_shift($args);
         $string = $string->value;
         foreach ($args as $arg) {
             if (preg_match('/%[sda]/i', $string, $token)) {
@@ -474,6 +473,7 @@ class ILess_FunctionRegistry
      * Rounds up to an integer
      *
      * @param string $number
+     * @return ILess_Node_Dimension
      */
     public function ceil(ILess_Node_Dimension $number)
     {
@@ -483,7 +483,8 @@ class ILess_FunctionRegistry
     /**
      * Rounds down to an integer
      *
-     * @param string $number
+     * @param mixed $number
+     * @return mixed
      */
     public function floor($number)
     {
@@ -524,10 +525,10 @@ class ILess_FunctionRegistry
     /**
      * Calculates square root of a number
      *
-     * @param string $number
-     * @return string
+     * @param mixed $number
+     * @return mixed
      */
-    public function sqrt(ILess_Node $number)
+    public function sqrt($number)
     {
         return $this->doMath('sqrt', $number);
     }
@@ -536,7 +537,7 @@ class ILess_FunctionRegistry
      * Absolute value of a number
      *
      * @param mixed $number The number
-     * @return ILess_Node_Dimension|string
+     * @return mixed
      */
     public function abs($number)
     {
@@ -547,7 +548,7 @@ class ILess_FunctionRegistry
      * Sine function
      *
      * @param string $number The number
-     * @return ILess_Node_Dimension|string
+     * @return mixed
      */
     public function sin($number)
     {
@@ -558,7 +559,7 @@ class ILess_FunctionRegistry
      * Arcsine - inverse of sine function
      *
      * @param string $number
-     * @return string
+     * @return mixed
      */
     public function asin($number)
     {
@@ -569,7 +570,7 @@ class ILess_FunctionRegistry
      * Cosine function
      *
      * @param string $number
-     * @return string
+     * @return mixed
      */
     public function cos($number)
     {
@@ -580,7 +581,7 @@ class ILess_FunctionRegistry
      * Arccosine - inverse of cosine function
      *
      * @param string $number
-     * @return string
+     * @return mixed
      */
     public function acos($number)
     {
@@ -590,8 +591,8 @@ class ILess_FunctionRegistry
     /**
      * Tangent function
      *
-     * @param string $number
-     * @return string
+     * @param mixed $number
+     * @return mixed
      */
     public function tan($number)
     {
@@ -601,8 +602,8 @@ class ILess_FunctionRegistry
     /**
      * Arctangent - inverse of tangent function
      *
-     * @param string $number
-     * @return string
+     * @param mixed $number
+     * @return mixed
      */
     public function atan($number)
     {
@@ -617,7 +618,7 @@ class ILess_FunctionRegistry
      * @param ILess_Node_DimensionUnit|string $unit The unit
      * @param mixed $argument1 Argument for the mathematical function
      * @param mixed $argument2 Argument for the mathematical function
-     * @return IILess_Node_Dimension
+     * @return mixed
      * @throws ILess_Exception_Compiler
      */
     protected function doMath($func, $number, $unit = null /*, $arguments...*/)
@@ -720,7 +721,7 @@ class ILess_FunctionRegistry
     {
         if (!$number instanceof ILess_Node_Dimension) {
             throw new ILess_Exception_Compiler(sprintf('The first argument to unit must be a number%s',
-                ($number instanceof IILess_Node_Operation ? '. Have you forgotten parenthesis?' : '.')));
+                ($number instanceof ILess_Node_Operation ? '. Have you forgotten parenthesis?' : '.')));
         }
 
         return new ILess_Node_Dimension($number->value, $unit ? $unit->toCSS($this->env) : '');
@@ -787,7 +788,7 @@ class ILess_FunctionRegistry
      * Converts the $number to "real" number
      *
      * @param ILess_Node_Dimension|integer|float $number
-     * @return ILess_Node_Dimension
+     * @return double
      * @throws InvalidArgumentException
      */
     public function number($number)
@@ -819,9 +820,9 @@ class ILess_FunctionRegistry
     /**
      * Creates a color
      *
-     * @param integer $hue The hue
-     * @param integer $saturation The saturation
-     * @param integer $lightness The lightness
+     * @param ILess_Node_Dimension $hue The hue
+     * @param ILess_Node_Dimension $saturation The saturation
+     * @param ILess_Node_Dimension $lightness The lightness
      */
     public function hsl($hue, $saturation, $lightness)
     {
@@ -831,10 +832,10 @@ class ILess_FunctionRegistry
     /**
      * Creates a color from hsla color namespace
      *
-     * @param ILess_Node $hue
-     * @param ILess_Node $saturation
-     * @param ILess_Node $lightness
-     * @param ILess_Node|integer $alpha
+     * @param mixed $hue
+     * @param mixed $saturation
+     * @param mixed $lightness
+     * @param mixed $alpha
      * @return ILess_Node_Color
      */
     public function hsla($hue, $saturation, $lightness, $alpha)
@@ -1712,7 +1713,7 @@ class ILess_FunctionRegistry
 
             $alpha = $color->getAlpha(true);
             $returner .= '<stop offset="' . $positionValue . '" stop-color="' .
-                $color->getColor()->toString($this->env, false) . '"' .
+                $color->getColor()->toString($this->env->compress, false) . '"' .
                 ($alpha < 1 ? ' stop-opacity="' . $alpha . '"' : '') . '/>';
         }
 

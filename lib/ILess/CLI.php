@@ -311,12 +311,10 @@ class ILess_CLI extends ILess_Configurable
                 case 'silent':
                 case 'append':
                     continue 2;
-                    break;
 
                 case 'no_ie_compat':
                     $options['ie_compat'] = false;
                     continue 2;
-                    break;
 
                 default:
                     $options[$option] = $value;

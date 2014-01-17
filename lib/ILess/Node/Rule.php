@@ -67,19 +67,19 @@ class ILess_Node_Rule extends ILess_Node implements ILess_Node_VisitableInterfac
     /**
      * Current file information
      *
-     * @var array
+     * @var ILess_FileInfo
      */
     public $currentFileInfo;
 
     /**
      * Constructor
      *
-     * @param type $name The rule name
+     * @param string $name The rule name
      * @param string|ILess_Node_Value $value The value
      * @param string $important Important keyword
      * @param boolean $merge Merge?
      * @param integer $index Current index
-     * @param array $currentFileInfo Current file info
+     * @param ILess_FileInfo $currentFileInfo The current file info
      * @param boolean $inline Inline flag
      */
     public function __construct($name, $value, $important = null, $merge = null, $index = 0, ILess_FileInfo $currentFileInfo = null, $inline = false)

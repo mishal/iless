@@ -108,7 +108,7 @@ class ILess_Visitor_ProcessExtend extends ILess_Visitor
                     $selectorOne = $extendsToAdd[0]->selfSelectors[0]->toCSS();
                     $selectorTwo = $extendsToAdd[0]->selector->toCSS();
                 } catch (Exception $e) {
-
+                    // cannot calculate
                 }
                 throw new ILess_Exception_Parser(
                     sprintf('Extend circular reference detected. One of the circular extends is currently: %s:extend(%s)', $selectorOne, $selectorTwo)

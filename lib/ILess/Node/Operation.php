@@ -44,6 +44,13 @@ class ILess_Node_Operation extends ILess_Node implements ILess_Node_VisitableInt
     public $isSpaced = false;
 
     /**
+     * Parens
+     *
+     * @var boolean
+     */
+    public $parensInOp = false;
+
+    /**
      * Constructor
      *
      * @param string $operator The operator

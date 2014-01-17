@@ -98,7 +98,7 @@ class ILess_Node_Color extends ILess_Node
      * Returns the red channel
      *
      * @param boolean $raw Return raw value?
-     * @return ILess_Node_Dimension
+     * @return mixed
      */
     public function getRed($raw = false)
     {
@@ -109,7 +109,7 @@ class ILess_Node_Color extends ILess_Node
      * Returns the green channel
      *
      * @param boolean $raw Return raw value?
-     * @return ILess_Node_Dimension
+     * @return mixed
      */
     public function getGreen($raw = false)
     {
@@ -120,7 +120,7 @@ class ILess_Node_Color extends ILess_Node
      * Returns the blue channel
      *
      * @param boolean $raw Return raw value?
-     * @return ILess_Node_Dimension
+     * @return mixed
      */
     public function getBlue($raw = false)
     {
@@ -131,7 +131,7 @@ class ILess_Node_Color extends ILess_Node
      * Returns the alpha channel
      *
      * @param boolean $raw Return raw value?
-     * @return ILess_Node_Dimension|integer
+     * @return mixed
      */
     public function getAlpha($raw = false)
     {
@@ -142,7 +142,7 @@ class ILess_Node_Color extends ILess_Node
      * Returns the color saturation
      *
      * @param boolean $raw Return raw value?
-     * @return ILess_Node_Dimension
+     * @return mixed
      */
     public function getSaturation($raw = false)
     {
@@ -159,7 +159,7 @@ class ILess_Node_Color extends ILess_Node
      * Returns the color hue
      *
      * @param boolean $raw Raw value?
-     * @return ILess_Node_Dimension
+     * @return mixed
      */
     public function getHue($raw = false)
     {
@@ -170,7 +170,7 @@ class ILess_Node_Color extends ILess_Node
      * Returns the lightness
      *
      * @param boolean $raw Return raw value?
-     * @return ILess_Node_Dimension|integer ILess_Node_Dimension if $raw is false
+     * @return mixed ILess_Node_Dimension if $raw is false
      */
     public function getLightness($raw = false)
     {
@@ -182,7 +182,7 @@ class ILess_Node_Color extends ILess_Node
      * Returns the luma
      *
      * @param boolean $raw Return raw value?
-     * @return ILess_Node_Dimension|integer ILess_Node_Dimension if $raw is false
+     * @return mixed ILess_Node_Dimension if $raw is false
      */
     public function getLuma($raw = false)
     {

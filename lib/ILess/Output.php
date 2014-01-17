@@ -17,7 +17,7 @@ class ILess_Output implements Countable
     /**
      * Output holder
      *
-     * @var string
+     * @var array
      */
     protected $output = array();
 

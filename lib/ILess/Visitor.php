@@ -63,7 +63,7 @@ abstract class ILess_Visitor
     /**
      * Visits a node or an array of nodes
      *
-     * @param ILess_Node|array $node
+     * @param ILess_Node|array|string $node
      */
     public function visit($node)
     {

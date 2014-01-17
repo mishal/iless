@@ -53,7 +53,7 @@ class ILess_Node_Quoted extends ILess_Node implements ILess_Node_ComparableInter
     /**
      * Current file info
      *
-     * @var array
+     * @var ILess_FileInfo
      */
     public $currentFileInfo;
 
@@ -64,6 +64,7 @@ class ILess_Node_Quoted extends ILess_Node implements ILess_Node_ComparableInter
      * @param string $string The string without quotes
      * @param boolean $escaped Is the string escaped?
      * @param integer $index Current index
+     * @param ILess_FileInfo $currentFileInfo The current file info
      */
     public function __construct($quotedString, $string, $escaped = false, $index = 0, ILess_FileInfo $currentFileInfo = null)
     {
@@ -110,7 +111,7 @@ class ILess_Node_Quoted extends ILess_Node implements ILess_Node_ComparableInter
         if (preg_match_all('/@\{([\w-]+)\}/', $value, $matches)) {
             foreach ($matches[1] as $i => $match) {
                 $v = new ILess_Node_Variable('@' . $match, $this->index, $this->currentFileInfo);
-                $v = $v->compile($env, true);
+                $v = $v->compile($env);
                 $v = ($v instanceof ILess_Node_Quoted) ? $v->value : $v->toCSS($env);
                 $value = str_replace($matches[0][$i], $v, $value);
             }

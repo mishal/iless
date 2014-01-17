@@ -62,7 +62,6 @@ try {
   $cssContent = $parser->getCSS();
   file_put_contents($cacheDir . '/database.css', $cssContent);
   $css = 'cache/database.css';
-  $cssContent = $cssContent;
 }
 catch(Exception $e)
 {
