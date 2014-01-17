@@ -65,13 +65,6 @@ class ILess_Node_Rule extends ILess_Node implements ILess_Node_VisitableInterfac
     public $merge = false;
 
     /**
-     * Current file information
-     *
-     * @var ILess_FileInfo
-     */
-    public $currentFileInfo;
-
-    /**
      * Constructor
      *
      * @param string $name The rule name

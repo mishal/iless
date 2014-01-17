@@ -23,13 +23,6 @@ class ILess_Node_Url extends ILess_Node implements ILess_Node_VisitableInterface
     protected $type = 'Url';
 
     /**
-     * Current file information
-     *
-     * @var array
-     */
-    public $currentFileInfo;
-
-    /**
      * Constructor
      *
      * @param ILess_Node $value

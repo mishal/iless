@@ -51,13 +51,6 @@ class ILess_Node_MixinCall extends ILess_Node implements ILess_Node_VisitableInt
     public $important = false;
 
     /**
-     * Current file information
-     *
-     * @var array
-     */
-    public $currentFileInfo;
-
-    /**
      * Constructor
      *
      * @param array $elements The elements

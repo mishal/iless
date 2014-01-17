@@ -51,13 +51,6 @@ class ILess_Node_Selector extends ILess_Node implements ILess_Node_VisitableInte
     public $index = 0;
 
     /**
-     * Current file information
-     *
-     * @var ILess_FileInfo
-     */
-    public $currentFileInfo;
-
-    /**
      * Referenced flag
      *
      * @var boolean

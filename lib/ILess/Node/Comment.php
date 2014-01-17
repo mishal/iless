@@ -30,13 +30,6 @@ class ILess_Node_Comment extends ILess_Node implements ILess_Node_MarkableAsRefe
     public $index = 0;
 
     /**
-     * Current file information
-     *
-     * @var ILess_FileInfo
-     */
-    protected $currentFileInfo;
-
-    /**
      * Silent flag
      *
      * @var boolean

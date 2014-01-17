@@ -44,13 +44,6 @@ class ILess_Node_Directive extends ILess_Node implements ILess_Node_VisitableInt
     public $index = 0;
 
     /**
-     * Current file information
-     *
-     * @var ILess_FileInfo
-     */
-    public $currentFileInfo;
-
-    /**
      * Array of variables
      *
      * @var array

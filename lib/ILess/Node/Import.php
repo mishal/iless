@@ -37,13 +37,6 @@ class ILess_Node_Import extends ILess_Node implements ILess_Node_VisitableInterf
     public $index = 0;
 
     /**
-     * Current file info
-     *
-     * @var ILess_FileInfo
-     */
-    public $currentFileInfo;
-
-    /**
      * Array of options
      *
      * @var array

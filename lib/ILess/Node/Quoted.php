@@ -51,13 +51,6 @@ class ILess_Node_Quoted extends ILess_Node implements ILess_Node_ComparableInter
     public $index = 0;
 
     /**
-     * Current file info
-     *
-     * @var ILess_FileInfo
-     */
-    public $currentFileInfo;
-
-    /**
      * Constructor
      *
      * @param string $quotedString Whole string with quotes

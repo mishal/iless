@@ -30,13 +30,6 @@ class ILess_Node_Anonymous extends ILess_Node
     public $index = 0;
 
     /**
-     * Current file info
-     *
-     * @var ILess_FileInfo
-     */
-    public $currentFileInfo;
-
-    /**
      * Map lines flag
      *
      * @var boolean

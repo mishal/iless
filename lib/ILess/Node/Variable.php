@@ -30,13 +30,6 @@ class ILess_Node_Variable extends ILess_Node
     public $index = 0;
 
     /**
-     * Current file information
-     *
-     * @var ILess_FileInfo
-     */
-    public $currentFileInfo;
-
-    /**
      * Evaluating flag
      *
      * @var boolean

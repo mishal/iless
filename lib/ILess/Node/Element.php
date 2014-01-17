@@ -36,13 +36,6 @@ class ILess_Node_Element extends ILess_Node implements ILess_Node_VisitableInter
     public $index = 0;
 
     /**
-     * Current file information
-     *
-     * @var ILess_FileInfo
-     */
-    public $currentFileInfo;
-
-    /**
      * Constructor
      *
      * @param ILess_Node_Combinator|string $combinator The combinator

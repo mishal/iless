@@ -44,13 +44,6 @@ class ILess_Node_Call extends ILess_Node implements ILess_Node_VisitableInterfac
     protected $index = 0;
 
     /**
-     * Current file info
-     *
-     * @var ILess_FileInfo
-     */
-    protected $currentFileInfo;
-
-    /**
      * Constructor
      *
      * @param string $name Name of the function

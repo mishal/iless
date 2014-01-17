@@ -29,13 +29,6 @@ class ILess_Node_Media extends ILess_Node implements ILess_Node_VisitableInterfa
     public $index = 0;
 
     /**
-     * Current file information
-     *
-     * @var ILess_FileInfo
-     */
-    public $currentFileInfo;
-
-    /**
      * Features
      *
      * @var ILess_Node_Value
