@@ -711,7 +711,7 @@ class ILess_Parser_Core
     {
         $elements = array();
         $extendList = array();
-        $condition = false;
+        $condition = null;
         $when = false;
         $extend = false;
 
@@ -1986,8 +1986,6 @@ class ILess_Parser_Core
             if (!method_exists($this, $func)) {
                 throw new InvalidArgumentException(sprintf('The function "%s" does not exist.', $func));
             }
-
-            //echo "<pre>matching: " . $func . "</pre>\n";
 
             $match = $this->$func();
 

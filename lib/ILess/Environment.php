@@ -231,7 +231,7 @@ class ILess_Environment
                 $option = ILess_Util::camelize($option);
             }
 
-            if (!property_exists($this, $option)) {
+            if (!property_exists($this, (string)$option)) {
                 $invalid[] = $option;
             } else {
                 switch ($option) {

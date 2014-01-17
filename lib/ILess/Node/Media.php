@@ -167,7 +167,7 @@ class ILess_Node_Media extends ILess_Node implements ILess_Node_VisitableInterfa
      * Compiles nested media
      *
      * @param ILess_Environment $env
-     * @return ILess_Tree_Ruleset
+     * @return ILess_Node_Ruleset
      */
     public function compileNested(ILess_Environment $env)
     {
@@ -253,7 +253,6 @@ class ILess_Node_Media extends ILess_Node implements ILess_Node_VisitableInterfa
         $this->isReferenced = true;
         $rules = $this->rules[0]->rules;
         for ($i = 0; $i < count($rules); $i++) {
-            //if(self::methodExists($rules[$i], 'markReferenced'))
             if ($rules[$i] instanceof ILess_Node_MarkableAsReferencedInterface) {
                 $rules[$i]->markReferenced();
             }

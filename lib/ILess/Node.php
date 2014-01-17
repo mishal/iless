@@ -187,6 +187,7 @@ abstract class ILess_Node
      * @param ILess_Environment $env
      * @param array $arguments Array of arguments
      * @param boolean $important Important flag
+     * @return ILess_Node
      */
     abstract public function compile(ILess_Environment $env, $arguments = null, $important = null);
 

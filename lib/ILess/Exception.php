@@ -18,7 +18,7 @@ class ILess_Exception extends Exception
     /**
      * The current file
      *
-     * @var ILess_ImportedFile|ILess_FileInfo
+     * @var ILess_ImportedFile|ILess_FileInfo|string
      */
     private $currentFile;
 
@@ -152,7 +152,7 @@ class ILess_Exception extends Exception
     /**
      * Returns file editor link. The link format can be customized.
      *
-     * @param ILess_FileInfo $file The current file
+     * @param ILess_FileInfo|string $file The current file
      * @param integer $line
      * @return string|void
      * @see setFileEditorUrlFormat

@@ -69,12 +69,12 @@ class ILess_Node_Selector extends ILess_Node implements ILess_Node_VisitableInte
      *
      * @param array $elements Array of elements
      * @param array $extendList Extended list
-     * @param ILess_Node_Condition|boolean $condition The condition
+     * @param ILess_Node_Condition $condition The condition
      * @param integer $index Current index
      * @param array $currentFileInfo Current file information
      * @param boolean $isReferenced Referenced flag
      */
-    public function __construct(array $elements, array $extendList = array(), $condition = null, $index = 0, ILess_FileInfo $currentFileInfo = null, $isReferenced = false)
+    public function __construct(array $elements, array $extendList = array(), ILess_Node_Condition $condition = null, $index = 0, ILess_FileInfo $currentFileInfo = null, $isReferenced = false)
     {
         $this->elements = $elements;
         $this->extendList = $extendList;
@@ -113,9 +113,11 @@ class ILess_Node_Selector extends ILess_Node implements ILess_Node_VisitableInte
         foreach ($this->extendList as $e) {
             $extendList[] = $e->compile($env);
         }
-
         // compile condition
-        $compiledCondition = $this->condition ? $this->condition->compile($env) : null;
+        $compiledCondition = null;
+        if ($this->condition) {
+            $compiledCondition = $this->condition->compile($env);
+        }
 
         return $this->createDerived($elements, $extendList, $compiledCondition);
     }
