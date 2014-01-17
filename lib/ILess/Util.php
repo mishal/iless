@@ -176,24 +176,4 @@ class ILess_Util
     {
         return self::removeUtf8ByteOrderMark(self::normalizeLineFeeds($string));
     }
-
-    /**
-     * Returns an camelCased version of the `under_scored` string.
-     *
-     * @param string $underscored String to camelize
-     * @return string Underscored string
-     */
-    public static function camelize($underscored)
-    {
-        $replacePairs = array(
-            '#/(.?)#e' => "'::'.strtoupper('\\1')",
-            '/(^|_)(.)/e' => "strtoupper('\\2')"
-        );
-        // FIXME: php 5.5 is /e modifier deprecated! do a workaround
-        $camelized = @preg_replace(array_keys($replacePairs), array_values($replacePairs), $underscored);
-        $camelized[0] = strtolower($camelized[0]);
-
-        return $camelized;
-    }
-
 }

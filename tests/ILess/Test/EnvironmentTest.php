@@ -25,4 +25,34 @@ class ILess_Test_EnvironmentTest extends ILess_Test_TestCase
         $this->assertEquals($copy->frames, array(1));
     }
 
+    /**
+     * @covers __construct
+     */
+    public function testOptions()
+    {
+        $env = new ILess_Environment(array(
+            'source_map' => true,
+            'strict_units' => 1,
+            'tab_level' => 2,
+            'strictMath' => true,
+        ));
+
+        $this->assertTrue($env->sourceMap);
+        $this->assertTrue($env->strictUnits);
+        $this->assertTrue($env->strictMath);
+        $this->assertEquals(2, $env->tabLevel);
+    }
+
+    /**
+     * @covers __construct
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Invalid options "foo, foo_bar" given.
+     */
+    public function testInvalidOptions()
+    {
+        new ILess_Environment(array(
+            'foo' => true,
+            'foo_bar' => 1,
+        ));
+    }
 }
