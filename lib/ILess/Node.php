@@ -41,7 +41,7 @@ abstract class ILess_Node
      *
      * @var ILess_FileInfo
      */
-    protected $currentFileInfo;
+    public $currentFileInfo;
 
     /**
      * Constructor
