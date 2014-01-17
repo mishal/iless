@@ -66,34 +66,32 @@ class ILess_Output_Mapped extends ILess_Output
     public function add($chunk, ILess_FileInfo $fileInfo = null, $index = 0, $mapLines = null)
     {
         // nothing to do
-        if (!$chunk) {
+        if ($chunk == '') {
             return $this;
-        }
-
-        $sourceLines = array();
-        $sourceColumns = ' ';
-
-        if ($fileInfo /* && isset($this->contentsMap[$fileInfo->filename])*/) {
-            $inputSource = substr($this->contentsMap[$fileInfo->importedFile->getPath()], 0, $index);
-            $sourceLines = explode("\n", $inputSource);
-            $sourceColumns = end($sourceLines);
         }
 
         $lines = explode("\n", $chunk);
         $columns = end($lines);
 
         if ($fileInfo) {
+
+            $inputSource = substr($this->contentsMap[$fileInfo->importedFile->getPath()], 0, $index);
+            $sourceLines = explode("\n", $inputSource);
+            $sourceColumns = end($sourceLines);
+            $sourceLinesCount = count($sourceLines);
+            $sourceColumnsLength = strlen($sourceColumns);
+
             if (!$mapLines) {
                 $this->generator->addMapping(
                     $this->lineNumber + 1, $this->column, // generated
-                    count($sourceLines), strlen($sourceColumns), // original
+                    $sourceLinesCount, $sourceColumnsLength, // original
                     $fileInfo->filename
                 );
             } else {
                 for ($i = 0, $count = count($lines); $i < $count; $i++) {
                     $this->generator->addMapping(
                         $this->lineNumber + $i + 1, $i === 0 ? $this->column : 0, // generated
-                        count($sourceLines) + $i, $i === 0 ? strlen($sourceColumns) : 0, // original
+                        $sourceLinesCount + $i, $i === 0 ? $sourceColumnsLength : 0, // original
                         $fileInfo->filename
                     );
                 }
