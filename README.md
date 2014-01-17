@@ -11,6 +11,7 @@ ILess is a **PHP port** of the official LESS processor written in Javascript. Mo
 ## Build Status
 
 [![Build Status](https://travis-ci.org/mishal/iless.png?branch=master)](https://travis-ci.org/mishal/iless)
+[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/mishal/iless/badges/quality-score.png?s=513af3953e6974968feac9c445db32489c62c35f)](https://scrutinizer-ci.com/g/mishal/iless/)
 
 ## Getting Started
 
