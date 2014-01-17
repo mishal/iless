@@ -225,26 +225,30 @@ class ILess_Environment
         }
 
         $invalid = array();
+
+        // underscored property names
+        $properties = array_keys(get_class_vars(__CLASS__));
+        $properties = array_combine($properties, $properties);
+        $properties = array_change_key_case(array_flip(preg_replace('/((?<=[a-z]|\d)[A-Z]|(?<!^)[A-Z](?=[a-z]))/', '_\\1', $properties)));
+
         foreach ($options as $option => $value) {
-            // convert underscored option to camelCased property
-            if (strpos($option, '_') !== false) {
-                $option = ILess_Util::camelize($option);
-            }
-
-            if (!property_exists($this, $option)) {
+            if (isset($properties[$option])) {
+                $option = $properties[$option];
+            } elseif (!property_exists($this, $option)) {
                 $invalid[] = $option;
-            } else {
-                switch ($option) {
-                    case 'strictUnits':
-                    case 'compress':
-                    case 'importMultiple':
-                    case 'ieCompat':
-                        $value = (boolean)$value;
-                        break;
-                }
-
-                $this->$option = $value;
+                continue;
             }
+
+            switch ($option) {
+                case 'strictUnits':
+                case 'compress':
+                case 'importMultiple':
+                case 'ieCompat':
+                    $value = (boolean)$value;
+                    break;
+            }
+
+            $this->$option = $value;
         }
 
         if (count($invalid)) {

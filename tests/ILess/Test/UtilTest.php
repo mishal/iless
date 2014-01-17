@@ -32,23 +32,4 @@ class ILess_Test_UtilTest extends ILess_Test_TestCase
             array('/a/d/tmp/../foo/test.jpg', '/a/d/foo/test.jpg')
         );
     }
-
-    /**
-     * @covers       camelize
-     * @dataProvider getDataForCamelizeTest
-     */
-    public function testCamelize($underscored, $expected)
-    {
-        $this->assertEquals($expected, ILess_Util::camelize($underscored));
-    }
-
-    public function getDataForCamelizeTest()
-    {
-        return array(
-            array('foo', 'foo'),
-            array('source_map', 'sourceMap'),
-            array('sourceMap', 'sourceMap')
-        );
-    }
-
 }
