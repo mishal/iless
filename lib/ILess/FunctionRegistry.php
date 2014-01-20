@@ -338,7 +338,9 @@ class ILess_FunctionRegistry
      */
     public function min()
     {
-        return $this->doMinmax(true, func_get_args());
+        // php 5.2 compat, func_get_args() can't be used as a function parameter
+        $args = func_get_args();
+        return $this->doMinmax(true, $args);
     }
 
     /**
@@ -348,7 +350,9 @@ class ILess_FunctionRegistry
      */
     public function max()
     {
-        return $this->doMinmax(false, func_get_args());
+        // php 5.2 compat, func_get_args() can't be used as a function parameter
+        $args = func_get_args();
+        return $this->doMinmax(false, $args);
     }
 
     /**
