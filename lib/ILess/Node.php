@@ -66,7 +66,7 @@ abstract class ILess_Node
     /**
      * Checks if given method exists
      *
-     * @param object $var The variable name
+     * @param mixed $var The variable name
      * @param string $methodName The method name
      * @return boolean
      */

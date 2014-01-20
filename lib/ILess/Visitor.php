@@ -63,7 +63,8 @@ abstract class ILess_Visitor
     /**
      * Visits a node or an array of nodes
      *
-     * @param ILess_Node|array|string $node
+     * @param ILess_Node|array|string|null $node The node to visit
+     * @return mixed The visited node
      */
     public function visit($node)
     {
@@ -116,7 +117,7 @@ abstract class ILess_Visitor
     /**
      * Visits an array of nodes
      *
-     * @param array $nodes
+     * @param array $nodes Array of nodes
      */
     public function visitArray(array $nodes)
     {
@@ -141,8 +142,8 @@ abstract class ILess_Visitor
     /**
      * Flattens an array
      *
-     * @param array $array
-     * @param array $out
+     * @param array $array The array to flatten
+     * @param array $out The output array
      * @return void
      */
     protected static function flatten(array $array, array &$out)
