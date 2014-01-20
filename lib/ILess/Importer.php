@@ -177,7 +177,7 @@ class ILess_Importer
         if (isset($this->importedFiles[$key])) {
             $alreadyImported = true;
         } elseif (!$file->getRuleset()) {
-            $parser = new ILess_Parser_Core($newEnv, $this, $this->cache);
+            $parser = new ILess_Parser_Core($newEnv, $this);
             try {
                 // we do not parse the root but load the file as is
                 if (isset($importOptions['inline']) && $importOptions['inline']) {

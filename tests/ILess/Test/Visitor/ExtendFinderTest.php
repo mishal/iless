@@ -21,7 +21,7 @@ class ILess_Test_Visitor_ExtendFinderTest extends ILess_Test_TestCase
      */
     public function testVisit()
     {
-        $v = new ILess_Visitor_ExtendFinder(new ILess_Environment());
+        $v = new ILess_Visitor_ExtendFinder();
         $this->assertFalse($v->isReplacing());
     }
 

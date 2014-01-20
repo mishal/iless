@@ -37,7 +37,7 @@ class ILess_Test_Node_DimensionTest extends ILess_Test_TestCase
      */
     public function testToColor()
     {
-        $c = new ILess_Node_Dimension('>', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(4));
+        $c = new ILess_Node_Dimension('>', new ILess_Node_DimensionUnit());
         $color = $c->toColor();
         // FIXME: Should the color verify that this is not valid color?!
         $this->assertInstanceOf('ILess_Node_Color', $color);

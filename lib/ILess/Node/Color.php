@@ -175,7 +175,7 @@ class ILess_Node_Color extends ILess_Node
     public function getLightness($raw = false)
     {
         return $raw ? $this->color->getLightness() :
-            new ILess_Node_Dimension(ILess_Math::round($this->color->getLightness(true) * 100), '%');
+            new ILess_Node_Dimension(ILess_Math::round($this->color->getLightness() * 100), '%');
     }
 
     /**

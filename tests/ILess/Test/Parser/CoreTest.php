@@ -11,7 +11,7 @@ class ILess_Test_Parser_Core extends ILess_Parser_Core
 {
     public function __construct(ILess_Environment $env, ILess_Importer $importer)
     {
-        parent::__construct($env, $importer, new ILess_Cache_None());
+        parent::__construct($env, $importer);
         ILess_Math::setup(16);
         ILess_UnitConversion::setup();
     }

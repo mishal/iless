@@ -21,7 +21,7 @@ class ILess_Test_Visitor_JoinSelectorTest extends ILess_Test_TestCase
      */
     public function testVisit()
     {
-        $v = new ILess_Visitor_JoinSelector(new ILess_Environment());
+        $v = new ILess_Visitor_JoinSelector();
         $this->assertFalse($v->isReplacing());
     }
 

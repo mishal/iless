@@ -651,7 +651,7 @@ class ILess_Node_Ruleset extends ILess_Node implements ILess_Node_VisitableInter
                         // it is not lost
                         if (count($sel) > 0) {
                             $sel[0]->elements = array_slice($sel[0]->elements, 0);
-                            $sel[0]->elements[] = new ILess_Node_Element($el->combinator, '', 0, $el->index, $el->currentFileInfo);
+                            $sel[0]->elements[] = new ILess_Node_Element($el->combinator, '', $el->index, $el->currentFileInfo);
                         }
                         $selectorsMultiplied[] = $sel;
                     } else {
