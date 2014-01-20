@@ -45,9 +45,7 @@ class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
         $css = glob($fixturesDir . '/less.js/css/*.css');
 
         // skip
-        $skip = array(
-            'functions.less'
-        );
+        $skip = array();
 
         foreach ($less as $i => $lessFile) {
             if (in_array(basename($lessFile), $skip)) {
@@ -64,8 +62,11 @@ class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
             $preCompiled = file_get_contents($css[$i]);
 
             // known diff, check of the diff is still ok
-            if (is_readable($fixturesDir . '/diff/' . basename($lessFile) . '.php')) {
+            if (is_readable($diffFile = $fixturesDir . '/less.js/diff/' . basename($lessFile) . '.php')) {
                 // FIXME: check the diff
+                $diff = include $diffFile;
+                $actualDiff = array_diff(explode("\n", $compiled), explode("\n", $preCompiled));
+                $this->assertEquals($diff, $actualDiff);
             } else {
                 $this->assertEquals($preCompiled, $compiled, sprintf('Compilated CSS matches for "%s"', basename($lessFile)));
             }
@@ -94,6 +95,60 @@ class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
 
             // $this->diag(sprintf('Testing compilation for %s', basename($lessFile)));
             $this->assertSame(addslashes($preCompiled), addslashes($compiled), sprintf('Compilated CSS is ok for "%s".', basename($lessFile)));
+        }
+    }
+
+    public function testBootstrap2Compilation() {
+
+        $fixturesDir = dirname(__FILE__) . '/_fixtures/bootstrap2';
+        $less = array($fixturesDir . '/less/bootstrap.less');
+        $css = array($fixturesDir . '/css/bootstrap.css');
+
+        foreach ($less as $i => $lessFile) {
+
+            // reset the parser for each test
+            $this->setup();
+
+            $this->parser->parseFile($lessFile);
+            $compiled = $this->parser->getCss();
+
+            $preCompiled = file_get_contents($css[$i]);
+
+            // known diff, check of the diff is still ok
+            if (is_readable($diffFile = $fixturesDir . '/diff/' . basename($lessFile) . '.php')) {
+                $diff = include $diffFile;
+                $actualDiff = array_diff(explode("\n", $compiled), explode("\n", $preCompiled));
+                $this->assertEquals($diff, $actualDiff);
+            } else {
+                $this->assertEquals($preCompiled, $compiled, sprintf('Compilated CSS matches for "%s"', basename($lessFile)));
+            }
+        }
+    }
+
+    public function testBootstrap3Compilation() {
+
+        $fixturesDir = dirname(__FILE__) . '/_fixtures/bootstrap3';
+        $less = array($fixturesDir . '/less/bootstrap.less');
+        $css = array($fixturesDir . '/css/bootstrap.css');
+
+        foreach ($less as $i => $lessFile) {
+
+            // reset the parser for each test
+            $this->setup();
+
+            $this->parser->parseFile($lessFile);
+            $compiled = $this->parser->getCss();
+
+            $preCompiled = file_get_contents($css[$i]);
+
+            // known diff, check of the diff is still ok
+            if (is_readable($diffFile = $fixturesDir . '/diff/' . basename($lessFile) . '.php')) {
+                $diff = include $diffFile;
+                $actualDiff = array_diff(explode("\n", $compiled), explode("\n", $preCompiled));
+                $this->assertEquals($diff, $actualDiff);
+            } else {
+                $this->assertEquals($preCompiled, $compiled, sprintf('Compilated CSS matches for "%s"', basename($lessFile)));
+            }
         }
     }
 
