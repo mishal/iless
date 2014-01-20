@@ -81,6 +81,7 @@ class ILess_SourceMap_Generator extends ILess_Configurable
      * Constructor
      *
      * @param ILess_Node_Ruleset $root The root node
+     * @param array $contentsMap Array of file contents map
      * @param array $options Array of options
      * @param ILess_SourceMap_Base64VLQ $encoder The encoder
      */
