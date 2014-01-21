@@ -16,195 +16,92 @@
  */
 class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
 {
-    public function setUp($options = array())
+    protected function createParser($options = array())
     {
         $env = new ILess_Environment($options, new ILess_FunctionRegistry());
         $importer = new ILess_Importer($env, array(
             new ILess_Importer_FileSystem()
         ), new ILess_Cache_None());
-        $this->parser = new ILess_Test_Parser_Core($env, $importer);
+
+        return new ILess_Test_Parser_Core($env, $importer);
     }
 
-    public function testSimpleCompilation()
+    /**
+     * @dataProvider getCompilationData
+     */
+    public function testCompilation($lessFile, $cssFile, $options = array(), $variables = array(), $filter = null)
     {
-        $less = glob(dirname(__FILE__) . '/_fixtures/simple/less/*.less');
-        $css = glob(dirname(__FILE__) . '/_fixtures/simple/css/*.css');
+        $parser = $this->createParser($options);
+        $parser->setVariables($variables);
 
-        foreach ($less as $i => $lessFile) {
-            $this->setUp();
-            $this->parser->parseFile($lessFile);
-            $preCompiled = file_get_contents($css[$i]);
-            $this->assertEquals($preCompiled, $this->parser->getCSS(), sprintf('Testing compilation for %s', basename($lessFile)));
+        $parser->parseFile($lessFile);
+        $preCompiled = file_get_contents($cssFile);
+        $compiled = $parser->getCSS();
+        if (is_callable($filter)) {
+            $compiled = call_user_func($filter, $compiled);
+        }
+
+        // known diff, check of the diff is still ok
+        if (is_readable($diffFile = str_replace('/less/', '/diff/', $lessFile . '.php'))) {
+            // FIXME: check the diff
+            $diff = include $diffFile;
+            $actualDiff = array_diff(explode("\n", $compiled), explode("\n", $preCompiled));
+            $this->assertEquals($diff, $actualDiff);
+        } else {
+            $this->assertEquals($preCompiled, $compiled);
         }
     }
 
-    public function testCompilation()
+    public function getCompilationData()
     {
         $fixturesDir = dirname(__FILE__) . '/_fixtures';
-        $less = glob($fixturesDir . '/less.js/less/*.less');
-        $css = glob($fixturesDir . '/less.js/css/*.css');
 
-        // skip
-        $skip = array();
+        $data = array_merge(
+            array_map(null, glob($fixturesDir . '/simple/less/*.less'), glob($fixturesDir . '/simple/css/*.css')),
+            array_map(null, glob($fixturesDir . '/less.js/less/*.less'), glob($fixturesDir . '/less.js/css/*.css'))
+        );
 
-        foreach ($less as $i => $lessFile) {
-            if (in_array(basename($lessFile), $skip)) {
-                $this->diag('Skipping test ' . basename($lessFile));
-                continue;
-            }
+        $variables = array(
+            'a' => 'black',
+            'fontdir' => '/fonts',
+            'base' => '12px',
+            'myurl' => '"http://example.com/image.jpg"'
+        );
+        $data[] = array($fixturesDir.'/php/less/variables.less' , $fixturesDir.'/php/css/variables.css', array(), $variables);
 
-            // reset the parser for each test
-            $this->setup();
+        $data[] = array($fixturesDir.'/bootstrap2/less/bootstrap.less' , $fixturesDir.'/bootstrap2/css/bootstrap.css');
+        $data[] = array($fixturesDir.'/bootstrap3/less/bootstrap.less' , $fixturesDir.'/bootstrap3/css/bootstrap.css');
 
-            $this->parser->parseFile($lessFile);
-            $compiled = $this->parser->getCss();
+        $data[] = array(
+            $fixturesDir.'/less.js/less/debug/linenumbers.less' ,
+            $fixturesDir.'/less.js/css/debug/linenumbers-all.css',
+            array('dumpLineNumbers' => ILess_DebugInfo::FORMAT_ALL),
+            array(),
+            array($this, 'normalizeDebugPaths'),
+        );
+        $data[] = array(
+            $fixturesDir.'/less.js/less/debug/linenumbers.less' ,
+            $fixturesDir.'/less.js/css/debug/linenumbers-comments.css',
+            array('dumpLineNumbers' => ILess_DebugInfo::FORMAT_COMMENT),
+            array(),
+            array($this, 'normalizeDebugPaths'),
+        );
+        $data[] = array(
+            $fixturesDir.'/less.js/less/debug/linenumbers.less' ,
+            $fixturesDir.'/less.js/css/debug/linenumbers-mediaquery.css',
+            array('dumpLineNumbers' => ILess_DebugInfo::FORMAT_MEDIA_QUERY),
+            array(),
+            array($this, 'normalizeDebugPaths'),
+        );
 
-            $preCompiled = file_get_contents($css[$i]);
-
-            // known diff, check of the diff is still ok
-            if (is_readable($diffFile = $fixturesDir . '/less.js/diff/' . basename($lessFile) . '.php')) {
-                // FIXME: check the diff
-                $diff = include $diffFile;
-                $actualDiff = array_diff(explode("\n", $compiled), explode("\n", $preCompiled));
-                $this->assertEquals($diff, $actualDiff);
-            } else {
-                $this->assertEquals($preCompiled, $compiled, sprintf('Compiled CSS matches for "%s"', basename($lessFile)));
-            }
-        }
+        return $data;
     }
 
-    public function testPhpCompilation()
+    public function normalizeDebugPaths($css)
     {
-        $less = glob(dirname(__FILE__) . '/_fixtures/php/less/*.less');
-        $css = glob(dirname(__FILE__) . '/_fixtures/php/css/*.css');
+        $importPath = str_replace('\\', '/', dirname(__FILE__) . '/_fixtures/less.js/less/debug/import/');
+        $lessPath = str_replace('\\', '/', dirname(__FILE__) . '/_fixtures/less.js/less/debug/');
 
-        foreach ($less as $i => $lessFile) {
-            // reset the parser for each test
-            $this->setup();
-
-            $this->parser->setVariables(array(
-                'a' => 'black',
-                'fontdir' => '/fonts',
-                'base' => '12px',
-                'myurl' => '"http://example.com/image.jpg"'
-            ));
-
-            $this->parser->parseFile($lessFile);
-            $compiled = $this->parser->getCss();
-            $preCompiled = file_get_contents($css[$i]);
-
-            // $this->diag(sprintf('Testing compilation for %s', basename($lessFile)));
-            $this->assertSame(addslashes($preCompiled), addslashes($compiled), sprintf('Compiled CSS is ok for "%s".', basename($lessFile)));
-        }
-    }
-
-    public function testBootstrap2Compilation() {
-
-        $fixturesDir = dirname(__FILE__) . '/_fixtures/bootstrap2';
-        $less = array($fixturesDir . '/less/bootstrap.less');
-        $css = array($fixturesDir . '/css/bootstrap.css');
-
-        foreach ($less as $i => $lessFile) {
-
-            // reset the parser for each test
-            $this->setup();
-
-            $this->parser->parseFile($lessFile);
-            $compiled = $this->parser->getCss();
-
-            $preCompiled = file_get_contents($css[$i]);
-
-            // known diff, check of the diff is still ok
-            if (is_readable($diffFile = $fixturesDir . '/diff/' . basename($lessFile) . '.php')) {
-                $diff = include $diffFile;
-                $actualDiff = array_diff(explode("\n", $compiled), explode("\n", $preCompiled));
-                $this->assertEquals($diff, $actualDiff);
-            } else {
-                $this->assertEquals($preCompiled, $compiled, sprintf('Compiled CSS matches for "%s"', basename($lessFile)));
-            }
-        }
-    }
-
-    public function testBootstrap3Compilation() {
-
-        $fixturesDir = dirname(__FILE__) . '/_fixtures/bootstrap3';
-        $less = array($fixturesDir . '/less/bootstrap.less');
-        $css = array($fixturesDir . '/css/bootstrap.css');
-
-        foreach ($less as $i => $lessFile) {
-
-            // reset the parser for each test
-            $this->setup();
-
-            $this->parser->parseFile($lessFile);
-            $compiled = $this->parser->getCss();
-
-            $preCompiled = file_get_contents($css[$i]);
-
-            // known diff, check of the diff is still ok
-            if (is_readable($diffFile = $fixturesDir . '/diff/' . basename($lessFile) . '.php')) {
-                $diff = include $diffFile;
-                $actualDiff = array_diff(explode("\n", $compiled), explode("\n", $preCompiled));
-                $this->assertEquals($diff, $actualDiff);
-            } else {
-                $this->assertEquals($preCompiled, $compiled, sprintf('Compiled CSS matches for "%s"', basename($lessFile)));
-            }
-        }
-    }
-
-    public function testDebugCompilation() {
-
-        $fixturesDir = dirname(__FILE__) . '/_fixtures/less.js';
-        $lessFile = $fixturesDir . '/less/debug/linenumbers.less';
-
-        // for replacement
-        $importDir = $fixturesDir . '/less/debug/import/';
-        $lessDir = $fixturesDir . '/less/debug/';
-
-        // format "all"
-        $this->setUp(array(
-            'dumpLineNumbers' => ILess_DebugInfo::FORMAT_ALL
-        ));
-
-        $this->parser->parseFile($lessFile);
-        $compiled = $this->parser->getCSS();
-
-        $preCompiled = file_get_contents($fixturesDir . '/css/debug/linenumbers-all.css');
-        $compiled = $this->normalizePaths($compiled, $importDir, $lessDir);
-
-        $this->assertEquals($preCompiled, $compiled, sprintf('Compiled CSS matches for "%s" and dumpLineNumbers with "all" option', basename($lessFile)));
-
-        // format "comment"
-        $this->setUp(array(
-            'dumpLineNumbers' => ILess_DebugInfo::FORMAT_COMMENT
-        ));
-
-        $this->parser->parseFile($lessFile);
-        $compiled = $this->parser->getCSS();
-
-        $preCompiled = file_get_contents($fixturesDir . '/css/debug/linenumbers-comments.css');
-        $compiled = $this->normalizePaths($compiled, $importDir, $lessDir);
-
-        $this->assertEquals($preCompiled, $compiled, sprintf('Compiled CSS matches for "%s" and dumpLineNumbers with "comments" option', basename($lessFile)));
-
-        // format "mediaquery"
-        $this->setUp(array(
-            'dumpLineNumbers' => ILess_DebugInfo::FORMAT_MEDIA_QUERY
-        ));
-
-        $this->parser->parseFile($lessFile);
-        $compiled = $this->parser->getCSS();
-
-        $preCompiled = file_get_contents($fixturesDir . '/css/debug/linenumbers-mediaquery.css');
-        $compiled = $this->normalizePaths($compiled, $importDir, $lessDir);
-
-        $this->assertEquals($preCompiled, $compiled, sprintf('Compiled CSS matches for "%s" and dumpLineNumbers with "comments" option', basename($lessFile)));
-    }
-
-    protected function normalizePaths($css, $importPath, $lessPath)
-    {
-        $importPath = str_replace('\\', '/', $importPath);
-        $lessPath = str_replace('\\', '/', $lessPath);
         return str_replace(array(
             $importPath,
             ILess_DebugInfo::escapeFilenameForMediaQuery($importPath),
