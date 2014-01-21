@@ -59,6 +59,11 @@ class ILess_Importer_Array implements ILess_ImporterInterface
      */
     public function import($path, ILess_FileInfo $currentFileInfo)
     {
+        $normalizedPath = ILess_Util::normalizePath($currentFileInfo->currentDirectory.$path);
+        if (isset($this->files[$normalizedPath])) {
+            $path = $normalizedPath;
+        }
+
         if (isset($this->files[$path])) {
             return new ILess_ImportedFile($path, $this->files[$path], $this->lastModified[$path]);
         }
@@ -71,6 +76,11 @@ class ILess_Importer_Array implements ILess_ImporterInterface
      */
     public function getLastModified($path, ILess_FileInfo $currentFileInfo)
     {
+        $normalizedPath = ILess_Util::normalizePath($currentFileInfo->currentDirectory.$path);
+        if (isset($this->files[$normalizedPath])) {
+            $path = $normalizedPath;
+        }
+
         if (isset($this->lastModified[$path])) {
             return $this->lastModified[$path];
         }
