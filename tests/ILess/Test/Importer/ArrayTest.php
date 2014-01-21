@@ -8,9 +8,6 @@
 
 class ILess_Test_Importer_ArrayTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @covers import
-     */
     public function testSetFile()
     {
         $importer = new ILess_Importer_Array(array());
@@ -25,5 +22,19 @@ class ILess_Test_Importer_ArrayTest extends PHPUnit_Framework_TestCase
         $time = time();
         $importer = new ILess_Importer_Array(array('foo.less' => 'text'), array('foo.less' => $time));
         $this->assertEquals($time, $importer->getLastModified('foo.less', new ILess_FileInfo()));
+    }
+
+    public function testImport()
+    {
+        $importer = new ILess_Importer_Array(array(
+            'vendor/foo.less' => '@import "bar";',
+            'vendor/bar.less' => '@import "foobar"; @import "../parent"; a { color: blue; }',
+            'foobar.less' => 'b { color: red; }',
+            'parent.less' => '/* comment */',
+        ));
+
+        $parser = new ILess_Parser(array(), null, array($importer));
+        $parser->parseString('@import "vendor/foo";');
+        $this->assertEquals("b {\n  color: red;\n}\n/* comment */\na {\n  color: blue;\n}\n", $parser->getCSS());
     }
 }
