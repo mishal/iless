@@ -18,7 +18,7 @@ class ILess_DebugInfo
     /**
      * Comment format
      */
-    const FORMAT_COMMENT = 'comment';
+    const FORMAT_COMMENT = 'comments';
 
     /**
      * Media query format
