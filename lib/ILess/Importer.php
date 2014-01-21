@@ -103,11 +103,17 @@ class ILess_Importer
     }
 
     /**
-     * @see ILess_ImporterInterface::import
+     * Imports the file
+     *
+     * @param string $path The path to import. Path will be searched by the importers
+     * @param ILess_FileInfo $currentFileInfo Current file information
+     * @param array $importOptions Import options
+     * @return array
+     * @throws ILess_Exception_Import If the $path could not be imported
      */
-    public function import($path, ILess_FileInfo $currentFileInfo = null, array $importOptions = array())
+    public function import($path, ILess_FileInfo $currentFileInfo, array $importOptions = array())
     {
-        $cacheKey = $this->generateCacheKey($path);
+        $cacheKey = $this->generateCacheKey($currentFileInfo->currentDirectory . $path);
         // do we have a file in the cache?
         if ($this->cache->has($cacheKey)) {
             // check the modified timestamp
@@ -151,13 +157,9 @@ class ILess_Importer
      * @return array
      */
     protected function doImport(ILess_ImportedFile $file,
-                                ILess_FileInfo $currentFileInfo = null, array $importOptions = array(), $fromCache = false)
+                                ILess_FileInfo $currentFileInfo, array $importOptions = array(), $fromCache = false)
     {
         $newEnv = ILess_Environment::createCopy($this->env, $this->env->frames);
-
-        if (!$currentFileInfo) {
-            $currentFileInfo = new ILess_FileInfo(array());
-        }
 
         // we need to clone here, to prevent modification of node current info object
         $newEnv->currentFileInfo = clone $currentFileInfo;
@@ -238,7 +240,7 @@ class ILess_Importer
      * @return integer
      * @throws ILess_Exception If there was an error
      */
-    public function getLastModified($path, ILess_FileInfo $currentFileInfo = null)
+    public function getLastModified($path, ILess_FileInfo $currentFileInfo)
     {
         foreach ($this->importers as $importer) {
             /* @var $importer ILess_ImporterInterface */
