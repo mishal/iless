@@ -36,7 +36,7 @@ class ILess_DebugInfo
      *
      * @var string
      */
-    protected static $mediaQueryFormat = '@media -sass-debug-info{filename{font-family:%file%}line{font-family:\00003%line%}}';
+    protected static $mediaQueryFormat = "@media -sass-debug-info{filename{font-family:%file%}line{font-family:\\00003%line%}}\n";
 
     /**
      * The line number
@@ -92,8 +92,7 @@ class ILess_DebugInfo
     public function getAsMediaQuery()
     {
         return strtr(self::$mediaQueryFormat, array(
-            '%file%' => preg_replace_callback('/([\.|:|\/|(\\\\)])/',
-                array($this, 'replaceCallback'), sprintf('file://%s', $this->filename)),
+            '%file%' => self::escapeFilenameForMediaQuery(sprintf('file://%s', $this->filename)),
             '%line%' => $this->lineNumber
         ));
     }
@@ -104,7 +103,7 @@ class ILess_DebugInfo
      * @param array $match
      * @return string
      */
-    protected function replaceCallback($match)
+    protected static function replaceCallback($match)
     {
         $match = $match[0];
         if ($match == '\\') {
@@ -112,6 +111,18 @@ class ILess_DebugInfo
         }
 
         return '\\' . $match;
+    }
+
+    /**
+     * Escapes the filename for mediaquery usage
+     *
+     * @param string $filename The filename
+     * @return string
+     */
+    public static function escapeFilenameForMediaQuery($filename)
+    {
+        return preg_replace_callback('/([\.|:|\/|(\\\\)])/',
+                array('self', 'replaceCallback'), $filename);
     }
 
 }

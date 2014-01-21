@@ -115,7 +115,7 @@ class ILess_Environment
     /**
      * Dump line numbers?
      *
-     * @var false|all|comments|mediaquery
+     * @var false|all|comment|mediaquery
      */
     public $dumpLineNumbers = false;
 
@@ -240,6 +240,17 @@ class ILess_Environment
             }
 
             switch ($option) {
+                case 'dumpLineNumbers':
+                    if( !in_array($value, array(
+                        true,
+                        ILess_DebugInfo::FORMAT_ALL,
+                        ILess_DebugInfo::FORMAT_COMMENT,
+                        ILess_DebugInfo::FORMAT_MEDIA_QUERY), true)) {
+                        // FIXME: report possible values?
+                        $invalid[] = $option;
+                    }
+                    break;
+
                 case 'strictUnits':
                 case 'compress':
                 case 'importMultiple':
@@ -348,7 +359,7 @@ class ILess_Environment
             'sourceMapOptions', // options for source map generator
             'importMultiple', // whether we are currently importing multiple copies,
             'relativeUrls', // adjust relative urls?,
-
+            'dumpLineNumbers', // dump line numbers?
             'contentsMap', // filename to contents of all the files
             // properties
             'customVariables', // variables from the php API

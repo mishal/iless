@@ -99,7 +99,7 @@ abstract class ILess_Node
     {
         $result = '';
         if ($context->debugInfo && $env->dumpLineNumbers && !$env->compress) {
-            switch ($env->dumpLineNumbers) {
+            switch ((string)$env->dumpLineNumbers) {
                 case ILess_DebugInfo::FORMAT_COMMENT;
                     $result = $context->debugInfo->getAsComment();
                     break;
@@ -109,7 +109,7 @@ abstract class ILess_Node
                     break;
 
                 case ILess_DebugInfo::FORMAT_ALL;
-                default:
+                case '1':
                     $result = sprintf('%s%s%s',
                         $context->debugInfo->getAsComment(), $lineSeparator,
                         $context->debugInfo->getAsMediaQuery()

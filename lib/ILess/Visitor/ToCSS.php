@@ -158,7 +158,7 @@ class ILess_Visitor_ToCSS extends ILess_Visitor
             // be considered illegal css as it has to be on the first line
             if ($this->charset) {
                 if ($node->debugInfo) {
-                    $comment = new ILess_Node_Comment(sprintf("/*%s */\n", str_replace("\n", '', $node->toCSS($this->getEnvironment()))));
+                    $comment = new ILess_Node_Comment(sprintf("/* %s */\n", str_replace("\n", '', $node->toCSS($this->getEnvironment()))));
                     $comment->debugInfo = $node->debugInfo;
 
                     return $this->visit($comment);

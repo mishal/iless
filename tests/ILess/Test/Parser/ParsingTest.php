@@ -16,9 +16,9 @@
  */
 class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
 {
-    public function setUp()
+    public function setUp($options = array())
     {
-        $env = new ILess_Environment(array(), new ILess_FunctionRegistry());
+        $env = new ILess_Environment($options, new ILess_FunctionRegistry());
         $importer = new ILess_Importer($env, array(
             new ILess_Importer_FileSystem()
         ), new ILess_Cache_None());
@@ -68,7 +68,7 @@ class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
                 $actualDiff = array_diff(explode("\n", $compiled), explode("\n", $preCompiled));
                 $this->assertEquals($diff, $actualDiff);
             } else {
-                $this->assertEquals($preCompiled, $compiled, sprintf('Compilated CSS matches for "%s"', basename($lessFile)));
+                $this->assertEquals($preCompiled, $compiled, sprintf('Compiled CSS matches for "%s"', basename($lessFile)));
             }
         }
     }
@@ -94,7 +94,7 @@ class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
             $preCompiled = file_get_contents($css[$i]);
 
             // $this->diag(sprintf('Testing compilation for %s', basename($lessFile)));
-            $this->assertSame(addslashes($preCompiled), addslashes($compiled), sprintf('Compilated CSS is ok for "%s".', basename($lessFile)));
+            $this->assertSame(addslashes($preCompiled), addslashes($compiled), sprintf('Compiled CSS is ok for "%s".', basename($lessFile)));
         }
     }
 
@@ -120,7 +120,7 @@ class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
                 $actualDiff = array_diff(explode("\n", $compiled), explode("\n", $preCompiled));
                 $this->assertEquals($diff, $actualDiff);
             } else {
-                $this->assertEquals($preCompiled, $compiled, sprintf('Compilated CSS matches for "%s"', basename($lessFile)));
+                $this->assertEquals($preCompiled, $compiled, sprintf('Compiled CSS matches for "%s"', basename($lessFile)));
             }
         }
     }
@@ -147,9 +147,75 @@ class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
                 $actualDiff = array_diff(explode("\n", $compiled), explode("\n", $preCompiled));
                 $this->assertEquals($diff, $actualDiff);
             } else {
-                $this->assertEquals($preCompiled, $compiled, sprintf('Compilated CSS matches for "%s"', basename($lessFile)));
+                $this->assertEquals($preCompiled, $compiled, sprintf('Compiled CSS matches for "%s"', basename($lessFile)));
             }
         }
+    }
+
+    public function testDebugCompilation() {
+
+        $fixturesDir = dirname(__FILE__) . '/_fixtures/less.js';
+        $lessFile = $fixturesDir . '/less/debug/linenumbers.less';
+
+        // for replacement
+        $importDir = $fixturesDir . '/less/debug/import/';
+        $lessDir = $fixturesDir . '/less/debug/';
+
+        // format "all"
+        $this->setUp(array(
+            'dumpLineNumbers' => ILess_DebugInfo::FORMAT_ALL
+        ));
+
+        $this->parser->parseFile($lessFile);
+        $compiled = $this->parser->getCSS();
+
+        $preCompiled = file_get_contents($fixturesDir . '/css/debug/linenumbers-all.css');
+        $compiled = $this->normalizePaths($compiled, $importDir, $lessDir);
+
+        $this->assertEquals($preCompiled, $compiled, sprintf('Compiled CSS matches for "%s" and dumpLineNumbers with "all" option', basename($lessFile)));
+
+        // format "comment"
+        $this->setUp(array(
+            'dumpLineNumbers' => ILess_DebugInfo::FORMAT_COMMENT
+        ));
+
+        $this->parser->parseFile($lessFile);
+        $compiled = $this->parser->getCSS();
+
+        $preCompiled = file_get_contents($fixturesDir . '/css/debug/linenumbers-comments.css');
+        $compiled = $this->normalizePaths($compiled, $importDir, $lessDir);
+
+        $this->assertEquals($preCompiled, $compiled, sprintf('Compiled CSS matches for "%s" and dumpLineNumbers with "comments" option', basename($lessFile)));
+
+        // format "mediaquery"
+        $this->setUp(array(
+            'dumpLineNumbers' => ILess_DebugInfo::FORMAT_MEDIA_QUERY
+        ));
+
+        $this->parser->parseFile($lessFile);
+        $compiled = $this->parser->getCSS();
+
+        $preCompiled = file_get_contents($fixturesDir . '/css/debug/linenumbers-mediaquery.css');
+        $compiled = $this->normalizePaths($compiled, $importDir, $lessDir);
+
+        $this->assertEquals($preCompiled, $compiled, sprintf('Compiled CSS matches for "%s" and dumpLineNumbers with "comments" option', basename($lessFile)));
+    }
+
+    protected function normalizePaths($css, $importPath, $lessPath)
+    {
+        $importPath = str_replace('\\', '/', $importPath);
+        $lessPath = str_replace('\\', '/', $lessPath);
+        return str_replace(array(
+            $importPath,
+            ILess_DebugInfo::escapeFilenameForMediaQuery($importPath),
+            $lessPath,
+            ILess_DebugInfo::escapeFilenameForMediaQuery($lessPath)
+        ), array(
+            '{pathimport}',
+            '{pathimportesc}',
+            '{path}',
+            '{pathesc}',
+        ), $css);
     }
 
 }
