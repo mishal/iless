@@ -41,7 +41,7 @@ class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
             $compiled = call_user_func($filter, $compiled);
         }
 
-        // known diff, check of the diff is still ok
+        // known diff, check if the diff is still ok
         if (is_readable($diffFile = str_replace('/less/', '/diff/', $lessFile . '.php'))) {
             // FIXME: check the diff
             $diff = include $diffFile;
@@ -92,6 +92,11 @@ class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
             array('dumpLineNumbers' => ILess_DebugInfo::FORMAT_MEDIA_QUERY),
             array(),
             array($this, 'normalizeDebugPaths'),
+        );
+        $data[] = array(
+            $fixturesDir.'/less.js/less/compression/compression.less' ,
+            $fixturesDir.'/less.js/css/compression/compression.css',
+            array('compress' => true)
         );
 
         return $data;

@@ -104,8 +104,11 @@ class ILess_Node_Quoted extends ILess_Node implements ILess_Node_ComparableInter
         if (preg_match_all('/@\{([\w-]+)\}/', $value, $matches)) {
             foreach ($matches[1] as $i => $match) {
                 $v = new ILess_Node_Variable('@' . $match, $this->index, $this->currentFileInfo);
+                $canShorted = $env->canShortenColors;
+                $env->canShortenColors = false;
                 $v = $v->compile($env);
                 $v = ($v instanceof ILess_Node_Quoted) ? $v->value : $v->toCSS($env);
+                $env->canShortenColors = $canShorted;
                 $value = str_replace($matches[0][$i], $v, $value);
             }
         }

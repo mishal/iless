@@ -41,7 +41,7 @@ class ILess_Environment
      *
      * @var boolean
      */
-    public $canShortenColors = false;
+    public $canShortenColors = true;
 
     /**
      * The math precision

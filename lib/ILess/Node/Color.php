@@ -221,7 +221,7 @@ class ILess_Node_Color extends ILess_Node
      */
     public function toCSS(ILess_Environment $env)
     {
-        return $this->color->toString($env->compress, $env->canShortenColors);
+        return $this->color->toString($env->compress, $env->compress && $env->canShortenColors);
     }
 
     /**
