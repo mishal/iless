@@ -86,6 +86,15 @@ For example usage check the `examples` folder in the source files.
 
 To compile the LESS files (or input from `stdin`) you can use the CLI script (located in `bin` directory).
 
+## Usage from NetBeans IDE
+
+To compile the LESS files from your NetBeans IDE (*version 7.4 is required*) you need to configure the path to the `iless` executable.
+ [How to setup the compilation](http://wiki.netbeans.org/NetBeans_74_NewAndNoteworthy#Compilation_on_Save).
+
+You have to configure the less path to point to `bin/iless`. On Windows use`bin/iless.cmd`.
+
+**Note**: See additional command line options for the parser below.
+
 ## Examples
 
 Parse the `my.less` and save it to `my.css` with compression enabled.

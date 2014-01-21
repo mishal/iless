@@ -147,7 +147,8 @@ class ILess_CLI extends ILess_Configurable
     }
 
     /**
-     * Converts option names from dash to underscore
+     * Converts option names from dash to underscore. Also converts
+     * less.js command options to ILess valid options.
      *
      * @param array $options
      * @return array
@@ -159,6 +160,13 @@ class ILess_CLI extends ILess_Configurable
             if (strpos($option, '-') !== false) {
                 $option = str_replace('-', '_', $option);
             }
+
+            switch ($option) {
+                case 'line_numbers':
+                    $option = 'dump_line_numbers';
+                    break;
+            }
+
             $converted[$option] = $value;
         }
 
@@ -315,6 +323,11 @@ class ILess_CLI extends ILess_Configurable
                 case 'no_ie_compat':
                     $options['ie_compat'] = false;
                     continue 2;
+
+                // less.js compatibility options
+                case 'line_numbers':
+                    $options['dump_line_numbers'] = $value;
+                    break;
 
                 default:
                     $options[$option] = $value;
