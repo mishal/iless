@@ -73,30 +73,34 @@ class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
         $data[] = array($fixturesDir.'/bootstrap3/less/bootstrap.less' , $fixturesDir.'/bootstrap3/css/bootstrap.css');
 
         $data[] = array(
-            $fixturesDir.'/less.js/less/debug/linenumbers.less' ,
+            $fixturesDir.'/less.js/less/debug/linenumbers.less',
             $fixturesDir.'/less.js/css/debug/linenumbers-all.css',
             array('dumpLineNumbers' => ILess_DebugInfo::FORMAT_ALL),
             array(),
             array($this, 'normalizeDebugPaths'),
         );
         $data[] = array(
-            $fixturesDir.'/less.js/less/debug/linenumbers.less' ,
+            $fixturesDir.'/less.js/less/debug/linenumbers.less',
             $fixturesDir.'/less.js/css/debug/linenumbers-comments.css',
             array('dumpLineNumbers' => ILess_DebugInfo::FORMAT_COMMENT),
             array(),
             array($this, 'normalizeDebugPaths'),
         );
         $data[] = array(
-            $fixturesDir.'/less.js/less/debug/linenumbers.less' ,
+            $fixturesDir.'/less.js/less/debug/linenumbers.less',
             $fixturesDir.'/less.js/css/debug/linenumbers-mediaquery.css',
             array('dumpLineNumbers' => ILess_DebugInfo::FORMAT_MEDIA_QUERY),
             array(),
             array($this, 'normalizeDebugPaths'),
         );
         $data[] = array(
-            $fixturesDir.'/less.js/less/compression/compression.less' ,
+            $fixturesDir.'/less.js/less/compression/compression.less',
             $fixturesDir.'/less.js/css/compression/compression.css',
             array('compress' => true)
+        );
+        $data[] = array(
+            $fixturesDir.'/less.js/less/legacy/legacy.less',
+            $fixturesDir.'/less.js/css/legacy/legacy.css'
         );
 
         return $data;
