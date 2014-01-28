@@ -424,17 +424,15 @@ class ILess_FunctionRegistry
             $mime = $mimeType->value;
         }
 
-        $path = str_replace('\\', '/', $path);
+        $path = ILess_Util::sanitizePath($path);
+
         if (ILess_Util::isPathRelative($path)) {
             if ($this->env->relativeUrls) {
-                $temp = $this->env->currentFileInfo->currentDirectory;
+                $path = $this->env->currentFileInfo->currentDirectory . $path;
             } else {
-                $temp = $this->env->currentFileInfo->entryPath;
+                $path = $this->env->currentFileInfo->entryPath . $path;
             }
-
-            if (!empty($temp)) {
-                $path = ILess_Util::normalizePath(rtrim($temp, '/') . '/' . $path);
-            }
+            $path = ILess_Util::normalizePath($path);
         }
 
         if ($mime === false) {
