@@ -166,18 +166,12 @@ class ILess_Node_Import extends ILess_Node implements ILess_Node_VisitableInterf
         } elseif ($this->css) {
             $features = $this->features ? $this->features->compile($env) : null;
             $import = new ILess_Node_Import($this->compilePath($env), $features, $this->options, $this->index);
-            if (!$import->css && $this->hasError()) {
-                throw $this->getError();
+            if (!$import->css && $import->hasError()) {
+                throw $import->getError();
             }
 
             return $import;
         } else {
-            // FIXME: check this!
-            // if(!$this->root)
-            // {
-            //throw new LogicException('It seems that there is a bug in the parser. Please report it.' . $this->index);
-            // }
-
             $ruleset = new ILess_Node_Ruleset(array(), $this->root ? $this->root->rules : array());
             $ruleset->compileImports($env);
 
