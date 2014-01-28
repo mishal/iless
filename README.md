@@ -42,7 +42,7 @@ To run ILess you need:
 
 ## Usage
 
-For example usage check the `examples` folder in the source files.
+### Basic usage
 
     <?php
     // setup autoloading
@@ -62,9 +62,9 @@ For example usage check the `examples` folder in the source files.
       // dirname(__FILE__) . '/less/import'
       __DIR__ . '/less/import'
       ))
-	);
+    );
 
-	// parses the file
+    // parses the file
     $parser->parseFile('screen.less');
 
     // parse string
@@ -81,6 +81,31 @@ For example usage check the `examples` folder in the source files.
     });
 
     $css = $parser->getCSS();
+
+### Using the cache
+
+    // setup the parser to use the cache
+    $parser = new ILess_Parser(array(), new ILess_Cache_FileSystem(array(
+      'cache_dir' => sys_get_temp_dir(),
+      'ttl' => 86400 // the lifetime of cached files in seconds (1 day by default)
+    ));
+
+The parser will use the cache driver to save *serialized data* from parsed files and strings and to save *generated CSS*.
+The `ttl` option allows to set the lifetime of the cached files. The **change of the imported files will regenerate the cache** for those files automatically.
+
+The cache of the CSS will be different if you assign different variables through the API (See the example above how to do it)
+and for different options like `compress`, ....
+
+The generated CSS will be also cached for the `ttl` seconds. The change in the imported files (variables, and options) will cause the CSS regeneration.
+
+**Note**: The generated cached files can be copied in the cloud, the modification time of the imported files does not depend on the modification time of the cache files.
+
+### Custom cache driver
+
+If you would like to cache the parsed data and generated CSS somewhere else (like `memcached`, `database`) simple create your own driver by
+implementing `ILess_CacheInterface`. See the [lib/ILess/CacheInterface.php](./lib/ILess/CacheInterface.php).
+
+For more examples check the [examples](./examples) folder in the source files.
 
 ## Command line usage
 

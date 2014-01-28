@@ -29,6 +29,13 @@ class ILess_Parser extends ILess_Parser_Core
     protected $outputFilters = array();
 
     /**
+     * The cache
+     *
+     * @var ILess_CacheInterface
+     */
+    protected $cache;
+
+    /**
      * Constructor
      *
      * @param array $options Array of options
@@ -60,11 +67,13 @@ class ILess_Parser extends ILess_Parser_Core
             $this->appendFilter($filter);
         }
 
-        parent::__construct($env, new ILess_Importer($env, $importers, $cache ? $cache : new ILess_Cache_None()));
+        $this->cache = $cache ? $cache : new ILess_Cache_None();
+
+        parent::__construct($env, new ILess_Importer($env, $importers, $this->cache));
     }
 
     /**
-     * Converts the ruleset to CSS. Applies the output filters to the output
+     * Converts the ruleset to CSS. Applies the output filters to the output.
      *
      * @param ILess_Node_Ruleset $ruleset
      * @param array $variables
@@ -72,7 +81,41 @@ class ILess_Parser extends ILess_Parser_Core
      */
     protected function toCSS(ILess_Node_Ruleset $ruleset, array $variables)
     {
-        return $this->filter(parent::toCSS($ruleset, $variables));
+        // the cache key consists of:
+        // 1) parsed rules
+        // 2) assigned variables via the API
+        // 3) environment options
+        $cacheKey = $this->generateCacheKey(serialize($ruleset).serialize($variables).serialize($this->getEnvironment()));
+
+        $rebuild = true;
+        if ($this->cache->has($cacheKey)) {
+            $rebuild = false;
+            list($css, $importedFiles) = $this->cache->get($cacheKey);
+            // we need to check if the file has been modified
+            foreach($importedFiles as $importedFileArray) {
+                list($lastModifiedBefore, $path, $currentFileInfo) = $importedFileArray;
+                $lastModified = $this->importer->getLastModified($path, $currentFileInfo);
+                if ($lastModifiedBefore != $lastModified) {
+                    $rebuild = true;
+                    // no need to continue, we will rebuild the CSS
+                    break;
+                }
+            }
+        }
+
+        if ($rebuild) {
+            $css = parent::toCSS($ruleset, $variables);
+            // what have been imported?
+            $importedFiles = array();
+            foreach($this->importer->getImportedFiles() as $importedFile) {
+                // we need to save original path, last modified timestamp and currentFileInfo object
+                // see ILess_Importer::setImportedFile()
+                $importedFiles[] = array($importedFile[0]->getLastModified(), $importedFile[1], $importedFile[2]);
+            }
+            $this->cache->set($cacheKey, array($css, $importedFiles));
+        }
+
+        return $this->filter($css);
     }
 
     /**

@@ -124,7 +124,7 @@ class ILess_Importer
                 $lastModified = $importer->getLastModified($path, $currentFileInfo);
                 if ($lastModified !== false && $lastModified == $file->getLastModified()) {
                     // the modification time is the same, take the one from cache
-                    return $this->doImport($file, $currentFileInfo, $importOptions, true);
+                    return $this->doImport($file, $path, $currentFileInfo, $importOptions, true);
                 }
             }
         }
@@ -134,7 +134,7 @@ class ILess_Importer
             $file = $importer->import($path, $currentFileInfo);
             // import not handled by the importer
             if ($file instanceof ILess_ImportedFile) {
-                $result = $this->doImport($file, $currentFileInfo, $importOptions);
+                $result = $this->doImport($file, $path, $currentFileInfo, $importOptions);
                 /* @var $file ILess_ImportedFile */
                 list(, $file) = $result;
                 // save the cache
@@ -151,12 +151,14 @@ class ILess_Importer
      * Does the import
      *
      * @param ILess_ImportedFile $file The imported file
+     * @param string $path The original path
      * @param ILess_FileInfo $currentFileInfo Current file info
      * @param array $importOptions Import options
      * @param boolean $fromCache Is the imported file coming from cache?
      * @return array
      */
     protected function doImport(ILess_ImportedFile $file,
+                                $path,
                                 ILess_FileInfo $currentFileInfo, array $importOptions = array(), $fromCache = false)
     {
         $newEnv = ILess_Environment::createCopy($this->env, $this->env->frames);
@@ -195,13 +197,13 @@ class ILess_Importer
                 $file->setError($error);
             }
 
-            $this->setImportedFile($key, $file);
+            $this->setImportedFile($key, $file, $path, $currentFileInfo);
         } else {
-            $this->setImportedFile($key, $file);
+            $this->setImportedFile($key, $file, $path, $currentFileInfo);
         }
 
         if ($fromCache) {
-            $ruleset = $this->importedFiles[$key]->getRuleset();
+            $ruleset = $this->importedFiles[$key][0]->getRuleset();
             if ($ruleset instanceof ILess_Node) {
                 // FIXME: this is a workaround for reference and import one issues
                 // when taken cache
@@ -210,7 +212,7 @@ class ILess_Importer
         }
 
         return array(
-            $alreadyImported, $this->importedFiles[$key]
+            $alreadyImported, $this->importedFiles[$key][0]
         );
     }
 
@@ -339,15 +341,17 @@ class ILess_Importer
     /**
      * Sets the imported file
      *
-     * @param string $key
-     * @param ILess_ImportedFile $file
+     * @param string $pathAbsolute The absolute path
+     * @param ILess_ImportedFile $file The imported file
+     * @param string $path The original path to import
+     * @param ILess_FileInfo $currentFileInfo
      * @return ILess_Importer
      */
-    public function setImportedFile($key, ILess_ImportedFile $file)
+    public function setImportedFile($pathAbsolute, ILess_ImportedFile $file, $path, ILess_FileInfo $currentFileInfo)
     {
-        $this->importedFiles[$key] = $file;
+        $this->importedFiles[$pathAbsolute] = array($file, $path, $currentFileInfo);
         // save for source map generation
-        $this->env->setFileContent($key, $file->getContent());
+        $this->env->setFileContent($pathAbsolute, $file->getContent());
 
         return $this;
     }
@@ -355,13 +359,13 @@ class ILess_Importer
     /**
      * Returns the imported file
      *
-     * @param string $path The path of the file
+     * @param string $absolutePath The absolute path of the file
      * @param mixed $default The default when no file with given $path is already imported
-     * @return ILess_ImportedFile|null
+     * @return array Array(ILess_ImportedFile, $originalPath, ILess_CurrentFileInfo)
      */
-    public function getImportedFile($path, $default = null)
+    public function getImportedFile($absolutePath, $default = null)
     {
-        return isset($this->importedFiles[$path]) ? $this->importedFiles[$path] : $default;
+        return isset($this->importedFiles[$absolutePath]) ? $this->importedFiles[$absolutePath] : $default;
     }
 
     /**

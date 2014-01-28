@@ -154,7 +154,7 @@ class ILess_Parser_Core
         // save information, so the exceptions can handle errors in the string
         // and source map is generated for the string
         $this->env->currentFileInfo->importedFile = $importedFile;
-        $this->importer->setImportedFile($key, $importedFile);
+        $this->importer->setImportedFile($key, $importedFile, $key, $this->env->currentFileInfo);
 
         if ($this->env->sourceMap) {
             $this->env->setFileContent($key, $string);
