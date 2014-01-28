@@ -85,7 +85,16 @@ class ILess_Parser extends ILess_Parser_Core
         // 1) parsed rules
         // 2) assigned variables via the API
         // 3) environment options
-        $cacheKey = $this->generateCacheKey(serialize($ruleset).serialize($variables).serialize($this->getEnvironment()));
+        $cacheKey = $this->generateCacheKey(serialize($this->rules).serialize($variables).serialize(
+            array(
+                // FIXME: verify
+                $this->env->compress, $this->env->sourceMap,
+                $this->env->sourceMapOptions, $this->env->relativeUrls,
+                $this->env->precision, $this->env->debug, $this->env->dumpLineNumbers,
+                $this->env->canShortenColors, $this->env->ieCompat, $this->env->strictMath,
+                $this->env->strictUnits
+            )
+        ));
 
         $rebuild = true;
         if ($this->cache->has($cacheKey)) {
