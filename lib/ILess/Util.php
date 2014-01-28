@@ -126,9 +126,10 @@ class ILess_Util
      * Normalizes the path
      *
      * @param string $path The path or url
+     * @param boolean $sanitize Sanitize before normalizing?
      * @return string The normalized path
      */
-    public static function normalizePath($path)
+    public static function normalizePath($path, $sanitize = true)
     {
         // leave http(s) paths:
         if (strpos($path, 'http://') === 0
@@ -137,8 +138,11 @@ class ILess_Util
             return $path;
         }
 
-        // WINDOWS path separator is \\
-        $segments = array_reverse(explode('/', str_replace('\\', '/', $path)));
+        if ($sanitize) {
+            $path = self::sanitizePath($path);
+        }
+
+        $segments = array_reverse(explode('/', $path));
         $path = array();
         $path_len = 0;
         while ($segments) {
@@ -164,6 +168,16 @@ class ILess_Util
         }
 
         return implode('/', $path);
+    }
+
+    /**
+     * Sanitizes a path. Replaces Windows path separator
+     *
+     * @param string $path The path to sanizize
+     */
+    public static function sanitizePath($path)
+    {
+        return str_replace('\\', '/', $path);
     }
 
     /**

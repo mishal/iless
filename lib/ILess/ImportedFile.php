@@ -67,7 +67,7 @@ class ILess_ImportedFile
     /**
      * Sets the ruleset
      *
-     * @param string|ILess_Node_Ruleset $ruleset
+     * @param string|ILess_Node_Ruleset|null $ruleset
      * @return ILess_ImportedFile
      */
     public function setRuleset($ruleset)
