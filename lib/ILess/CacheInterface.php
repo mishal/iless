@@ -26,7 +26,7 @@ interface ILess_CacheInterface
      * Sets the cache for the $cacheKey
      *
      * @param string $cacheKey The cache key
-     * @param string $data The data to store
+     * @param mixed $data The data to store
      * @param integer $ttl The time to live
      * @return boolean
      */
