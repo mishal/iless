@@ -19,7 +19,6 @@ interface ILess_ImporterInterface
      *
      * @param string $path The path to a file
      * @param ILess_FileInfo $currentFileInfo The current file information
-     * @param boolean $load Load the content of the file?
      * @return ILess_ImportedFile
      */
     public function import($path, ILess_FileInfo $currentFileInfo);
@@ -29,7 +28,7 @@ interface ILess_ImporterInterface
      *
      * @param string $path The path to a file
      * @param ILess_FileInfo $currentFileInfo The current file information
-     * @return integer The unix timestamp
+     * @return integer The unix timestamp of last modification
      */
     public function getLastModified($path, ILess_FileInfo $currentFileInfo);
 

@@ -57,9 +57,9 @@ class ILess_Importer_FileSystem extends ILess_Configurable implements ILess_Impo
     /**
      * @see ILess_ImporterInterface::import
      */
-    public function import($dir, ILess_FileInfo $currentFileInfo)
+    public function import($path, ILess_FileInfo $currentFileInfo)
     {
-        if ($file = $this->find($dir, $currentFileInfo)) {
+        if ($file = $this->find($path, $currentFileInfo)) {
             return new ILess_ImportedFile($file, file_get_contents($file), filemtime($file));
         }
 
@@ -69,9 +69,9 @@ class ILess_Importer_FileSystem extends ILess_Configurable implements ILess_Impo
     /**
      * @see ILess_Importer::getLastModified
      */
-    public function getLastModified($dir, ILess_FileInfo $currentFileInfo)
+    public function getLastModified($path, ILess_FileInfo $currentFileInfo)
     {
-        if ($file = $this->find($dir, $currentFileInfo)) {
+        if ($file = $this->find($path, $currentFileInfo)) {
             return filemtime($file);
         }
 
@@ -81,23 +81,23 @@ class ILess_Importer_FileSystem extends ILess_Configurable implements ILess_Impo
     /**
      * Tries to find a file
      *
-     * @param string $dir The path to a file
+     * @param string $path The path to a file
      * @param ILess_FileInfo $currentFileInfo
      * @return string|false
      */
-    protected function find($dir, ILess_FileInfo $currentFileInfo)
+    protected function find($path, ILess_FileInfo $currentFileInfo)
     {
         // try import dirs first
         foreach ($this->importDirs as $importDir) {
-            if (is_readable($importDir . '/' . $dir)) {
-                return realpath($importDir . '/' . $dir);
+            if (is_readable($importDir . '/' . $path)) {
+                return realpath($importDir . '/' . $path);
             }
         }
 
-        if (is_readable($dir)) {
-            return realpath($dir);
-        } elseif (is_readable($currentFileInfo->currentDirectory . '/' . $dir)) {
-            return realpath($currentFileInfo->currentDirectory . '/' . $dir);
+        if (is_readable($path)) {
+            return realpath($path);
+        } elseif (is_readable($currentFileInfo->currentDirectory . '/' . $path)) {
+            return realpath($currentFileInfo->currentDirectory . '/' . $path);
         }
 
         return false;
@@ -116,7 +116,7 @@ class ILess_Importer_FileSystem extends ILess_Configurable implements ILess_Impo
     /**
      * Adds import directory
      *
-     * @param string $dir The path
+     * @param string $dir The directory
      * @param boolean $prepend Prepend?
      * @return ILess_Importer_FileSystem
      */
