@@ -53,10 +53,10 @@ class ILess_Cache_FileSystem extends ILess_Cache
     /**
      * Constructor
      *
-     * @param string $cacheDir The cache directory
+     * @param string $cacheDir The cache directory. Will be automatically created.
      * @param array|string $options Array of options
      * @throws LogicException If "cache_dir" option is missing
-     * @throws InvalidArgumentException If the cache directory does not exist or is not readable
+     * @throws ILess_Exception_Cache If the cache directory does not exist or is not writable.
      */
     public function __construct($options = array())
     {
@@ -73,7 +73,7 @@ class ILess_Cache_FileSystem extends ILess_Cache
      * Setups the driver
      *
      * @throws LogicException If the cache_dir option is missing
-     * @throws InvalidArgumentException If the cache directory does not exist or is not writable
+     * @throws ILess_Exception_Cache If the cache directory does not exist or is not writable.
      */
     protected function setup()
     {
@@ -81,9 +81,37 @@ class ILess_Cache_FileSystem extends ILess_Cache
             throw new LogicException('Missing "cache_dir" option.');
         }
 
-        if (!is_dir($cacheDir) || !is_writable($cacheDir)) {
-            throw new InvalidArgumentException(sprintf('The cache directory "%s" does not exist or is not writable.', $cacheDir));
+        // remove last DIRECTORY_SEPARATOR
+        if(DIRECTORY_SEPARATOR == substr($cacheDir, -1)) {
+            $cacheDir = substr($cacheDir, 0, -1);
+            $this->setOption('cache_dir', $cacheDir);
         }
+
+        $this->setupCacheDir($cacheDir);
+    }
+
+    /**
+     * Setups the cache directory.
+     *
+     * @param string $cacheDir
+     * @throws ILess_Exception_Cache If the cache directory does not exist or is not writable.
+     * @return true If the setup was successfull
+     */
+    protected function setupCacheDir($cacheDir)
+    {
+        // create cache dir if needed
+        if(!is_dir($cacheDir))
+        {
+            $current_umask = umask(0000);
+            if(@mkdir($cacheDir, 0777, true) === false) {
+                throw new ILess_Exception_Cache(sprintf('The cache directory "%s" could not be created.', $cacheDir));
+            }
+            umask($current_umask);
+        } elseif(!is_writable($cacheDir)) {
+            throw new ILess_Exception_Cache(sprintf('The cache directory "%s" is not writable.', $cacheDir));
+        }
+
+        return true;
     }
 
     /**
