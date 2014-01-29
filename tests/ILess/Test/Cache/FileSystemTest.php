@@ -20,7 +20,11 @@ class ILess_Test_Cache_FileSystemTest extends ILess_Test_TestCase
      */
     public function testDirectorySetupThrowsException()
     {
-        $dir = '\000YY:\/N0nSeNse\\x';
+        if (DIRECTORY_SEPARATOR == '/') {
+            $dir = '/root';
+        } else {
+            $dir = '\000YY:\/N0nSeNse/x';
+        }
         $this->setExpectedException('ILess_Exception_Cache', sprintf('The cache directory "%s" could not be created.', $dir));
         $cache = new ILess_Cache_FileSystem(array('cache_dir' => $dir));
     }
