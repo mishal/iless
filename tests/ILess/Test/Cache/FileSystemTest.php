@@ -21,7 +21,7 @@ class ILess_Test_Cache_FileSystemTest extends ILess_Test_TestCase
     public function testDirectorySetupThrowsException()
     {
         if (DIRECTORY_SEPARATOR == '/') {
-            $dir = '/root';
+            $dir = '/root/foobar';
         } else {
             $dir = '\000YY:\/N0nSeNse/x';
         }
