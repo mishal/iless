@@ -13,7 +13,8 @@ class ILess_Test_Importer_ArrayTest extends PHPUnit_Framework_TestCase
         $importer = new ILess_Importer_Array(array());
         $this->assertFalse($importer->import('foo.less', new ILess_FileInfo()));
 
-        $importer->setFile('foo.less', 'text');
+        $fluent = $importer->setFile('foo.less', 'text');
+        $this->assertSame($importer, $fluent);
         $this->assertEquals(new ILess_ImportedFile('foo.less', 'text', -1), $importer->import('foo.less', new ILess_FileInfo()));
     }
 

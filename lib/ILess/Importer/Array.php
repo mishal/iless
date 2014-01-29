@@ -47,11 +47,14 @@ class ILess_Importer_Array implements ILess_ImporterInterface
      * @param string  $path         The file name
      * @param string  $content      The file source
      * @param integer $lastModified The file last modified timestamp
+     * @return ILess_Importer_Array
      */
     public function setFile($path, $content, $lastModified = -1)
     {
         $this->files[$path] = $content;
         $this->lastModified[$path] = $lastModified;
+
+        return $this;
     }
 
     /**
