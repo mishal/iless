@@ -23,7 +23,7 @@ class ILess_Environment
     public $frames = array();
 
     /**
-     * Cstom variables
+     * Custom variables
      *
      * @var ILess_Node_Ruleset
      */

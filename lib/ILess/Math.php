@@ -261,7 +261,7 @@ class ILess_Math
     }
 
     /**
-     * Subtract one arbitrary precision number from another
+     * Substract one arbitrary precision number from another
      *
      * @param string $left_operand The left operand, as a string.
      * @param string $right_operand The right operand, as a string.
