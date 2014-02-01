@@ -118,8 +118,9 @@ class ILess_Node_Rule extends ILess_Node implements ILess_Node_VisitableInterfac
                 $this->inline
             );
         } catch (Exception $e) {
-            if ($e instanceof ILess_Exception && !$e->getIndex()) {
+            if ($e instanceof ILess_Exception) {
                 $e->setIndex($this->index);
+                $e->setCurrentFile($this->currentFileInfo);
             }
         }
 

@@ -253,7 +253,7 @@ class ILess_Color
                     $this->rgb[] = hexdec($c . $c);
                 }
             } else {
-                throw new InvalidArgumentException(sprintf('Invalid color value "%s".', (string)$rgb));
+                throw new InvalidArgumentException('Argument must be a color keyword or 3/6 digit hex e.g. #FFF.');
             }
         }
 

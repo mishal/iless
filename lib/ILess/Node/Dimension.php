@@ -166,7 +166,7 @@ class ILess_Node_Dimension extends ILess_Node implements ILess_Node_VisitableInt
                 $other = $other->convertTo($this->unit->usedUnits());
                 if ($env->strictUnits && $other->unit->toString() !== $unit->toString()) {
                     throw new ILess_Exception_Compiler(sprintf(
-                        'Incompatible units. Change the units or use the unit function. Bad units: %s and %s',
+                        'Incompatible units. Change the units or use the unit function. Bad units: \'%s\' and \'%s\'.',
                         $unit->toString(),
                         $other->unit->toString()
                     ));

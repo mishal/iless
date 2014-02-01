@@ -1648,9 +1648,7 @@ class ILess_FunctionRegistry
     public function svggradient(ILess_Node $direction /*  $stop1, $stop2, ... */)
     {
         if (func_num_args() < 3) {
-            throw new ILess_Exception_Compiler(
-                sprintf('The `svggradient` function expects at least 3 parameters. %s given.
-            direction, start_color [start_position], [color position,]..., end_color [end_position]', func_num_args()));
+            throw new ILess_Exception_Compiler('svg-gradient expects direction, start_color [start_position], [color position,]..., end_color [end_position]');
         }
 
         $arguments = func_get_args();
@@ -1680,7 +1678,7 @@ class ILess_FunctionRegistry
                 $rectangleDimension = 'x="-50" y="-50" width="101" height="101"';
                 break;
             default:
-                throw new ILess_Exception_Compiler("The `svggradient` direction must be 'to bottom', 'to right', 'to bottom right', 'to top right' or 'ellipse at center'");
+                throw new ILess_Exception_Compiler("svg-gradient direction must be 'to bottom', 'to right', 'to bottom right', 'to top right' or 'ellipse at center'");
         }
 
         $returner = '<?xml version="1.0" ?>' .
@@ -1702,7 +1700,7 @@ class ILess_FunctionRegistry
                 || (!(($i === 0 || $i + 1 === count($stops)) && $position === null)
                     && !($position instanceof ILess_Node_Dimension))
             ) {
-                throw new ILess_Exception_Compiler('The `svggradient` function expects direction, start_color [start_position], [color position,]..., end_color [end_position]');
+                throw new ILess_Exception_Compiler('svg-gradient expects direction, start_color [start_position], [color position,]..., end_color [end_position]');
             }
 
             if ($position) {

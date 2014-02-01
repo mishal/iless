@@ -101,7 +101,7 @@ class ILess_Visitor_Import extends ILess_Visitor
 
                 // import the file
                 list($alreadyImported, $file) = $this->importer->import($node->getPath(),
-                    $node->currentFileInfo, $node->options);
+                    $node->currentFileInfo, $node->options, $node->index);
 
                 /* @var $file ILess_ImportedFile */
                 if ($alreadyImported &&

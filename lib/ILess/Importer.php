@@ -108,10 +108,11 @@ class ILess_Importer
      * @param string $path The path to import. Path will be searched by the importers
      * @param ILess_FileInfo $currentFileInfo Current file information
      * @param array $importOptions Import options
+     * @param integer $index Current index
      * @return array
      * @throws ILess_Exception_Import If the $path could not be imported
      */
-    public function import($path, ILess_FileInfo $currentFileInfo, array $importOptions = array())
+    public function import($path, ILess_FileInfo $currentFileInfo, array $importOptions = array(), $index = 0)
     {
         $cacheKey = $this->generateCacheKey($currentFileInfo->currentDirectory . $path);
         // do we have a file in the cache?
@@ -132,7 +133,7 @@ class ILess_Importer
         foreach ($this->importers as $importer) {
             /* @var $importer ILess_ImporterInterface */
             $file = $importer->import($path, $currentFileInfo);
-            // import not handled by the importer
+            // import is handled by the importer
             if ($file instanceof ILess_ImportedFile) {
                 $result = $this->doImport($file, $path, $currentFileInfo, $importOptions);
                 /* @var $file ILess_ImportedFile */
@@ -144,7 +145,7 @@ class ILess_Importer
             }
         }
 
-        throw new ILess_Exception_Import(sprintf('Cannot find "%s" for import.', $path));
+        throw new ILess_Exception_Import(sprintf("'%s' wasn't found.", $path), null, $index, $currentFileInfo);
     }
 
     /**
@@ -193,7 +194,12 @@ class ILess_Importer
                 }
 
                 $file->setRuleset($root);
+            // we need to catch parse exceptions
+            } catch (ILess_Exception_Parser $e) {
+                // rethrow
+                throw $e;
             } catch (Exception $error) {
+                // FIXME: what other exceptions are allowed here?
                 $file->setError($error);
             }
 

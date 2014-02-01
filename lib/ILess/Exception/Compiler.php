@@ -8,7 +8,7 @@
  */
 
 /**
- * Compiler exception
+ * Compiler exception represents an syntax error.
  *
  * @package ILess
  * @subpackage exception

@@ -92,7 +92,7 @@ class ILess_Node_Operation extends ILess_Node implements ILess_Node_VisitableInt
                     $b = $a;
                     $a = $temp;
                 } else {
-                    throw new ILess_Exception_Compiler('Can\'t subtract or divide a color from a number.');
+                    throw new ILess_Exception_Compiler('Can\'t substract or divide a color from a number.');
                 }
             }
 

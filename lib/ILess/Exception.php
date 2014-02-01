@@ -30,6 +30,20 @@ class ILess_Exception extends Exception
     private $index;
 
     /**
+     * Current line
+     *
+     * @var integer
+     */
+    private $currentLine;
+
+    /**
+     * Current column
+     *
+     * @var integer
+     */
+    private $currentColumn = 0;
+
+    /**
      * File editor link. Allows variable holders:
      *
      *  * `%file` or `%f` - current file
@@ -50,6 +64,8 @@ class ILess_Exception extends Exception
      */
     public function __construct($message = null, Exception $previous = null, $index = null, $currentFile = null, $code = 0)
     {
+        $message = $this->formatMessage($message, $previous);
+
         if (PHP_VERSION_ID < 50300) {
             $this->previous = $previous;
             parent::__construct($message, $code);
@@ -59,6 +75,44 @@ class ILess_Exception extends Exception
 
         $this->currentFile = $currentFile;
         $this->index = $index;
+
+        if ($currentFile)
+        {
+            list($this->currentLine, $this->currentColumn) = $this->getLocation($currentFile);
+        }
+
+    }
+
+    /**
+     * Formats the message
+     *
+     * @param string $message
+     * @param Exception $previous Previous exception
+     * @return string
+     */
+    private function formatMessage($message, Exception $previous = null)
+    {
+        $messageFormatted = $message;
+        if ($previous) {
+            $messageFormatted .= sprintf(': %s', $previous->getMessage());
+        }
+        return $messageFormatted;
+    }
+
+    /**
+     * Returns the current line and column
+     *
+     * @param ILess_FileInfo|ILess_ImportedFile|string $currentFile The file
+     * @return array
+     */
+    private function getLocation($currentFile)
+    {
+        $line = null;
+        $column = 0;
+
+        return array(
+            $line, $column
+        );
     }
 
     /**
@@ -125,11 +179,11 @@ class ILess_Exception extends Exception
     /**
      * Returns current line from the file
      *
-     * @return integer|false If the index is not present
+     * @return integer|null If the index is not present
      */
-    private function getErrorLine()
+    public function getErrorLine()
     {
-        $line = false;
+        $line = null;
         if ($this->index !== null && ($this->currentFile)) {
             $content = null;
             if ($this->currentFile instanceof ILess_FileInfo
@@ -195,27 +249,19 @@ class ILess_Exception extends Exception
         $string = $this->message;
         if ($this->currentFile) {
             // we have an line from the file
-            if (($line = $this->getErrorLine()) !== false) {
-                $string = sprintf('%s (%s, line: %s)', $this->message, $this->getFileEditorLink($this->currentFile, $line), $line);
+            if (($line = $this->getErrorLine()) !== null) {
+                $string = sprintf('%s in %s, line: %s', $this->message, $this->getFileEditorLink($this->currentFile, $line), $line);
             } else {
-                $string = sprintf('%s (%s, line: ?)', $this->message, $this->getFileEditorLink($this->currentFile));
+                $string = sprintf('%s in %s, line: ?', $this->message, $this->getFileEditorLink($this->currentFile));
             }
         }
 
-        $previous = null;
-        // PHP 5.3
-        if (method_exists($this, 'getPrevious')) {
-            $previous = $this->getPrevious();
-        } // PHP 5.2
-        elseif (isset($this->previous)) {
-            $previous = $this->previous;
-        }
-
-        if ($previous) {
-            $string .= sprintf(", caused by %s, %s\n%s", get_class($previous), $previous->getMessage(), $previous->getTraceAsString());
-        }
-
         return $string;
+    }
+
+    public function prettyPrint()
+    {
+        return sprintf('<h2>%s</h2><pre>%s</pre>', get_class($this), $this->__toString());
     }
 
 }

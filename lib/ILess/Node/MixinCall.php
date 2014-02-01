@@ -154,7 +154,7 @@ class ILess_Node_MixinCall extends ILess_Node implements ILess_Node_VisitableInt
                 foreach ($args as $a) {
                     $argValue = '';
                     if ($a['name']) {
-                        $argValue .= $a['name'] + ':';
+                        $argValue .= $a['name'] . ':';
                     }
                     if (ILess_Node::methodExists($a['value'], 'toCSS')) {
                         $argValue .= $a['value']->toCSS($env);
@@ -164,13 +164,14 @@ class ILess_Node_MixinCall extends ILess_Node implements ILess_Node_VisitableInt
                     $message[] = $argValue;
                 }
             }
+
             throw new ILess_Exception_Compiler(
                 sprintf('No matching definition was found for `%s(%s)`', trim($this->selector->toCSS($env)), join(',', $message)),
                 null,
                 $this->index, $this->currentFileInfo);
         } else {
             throw new ILess_Exception_Compiler(
-                sprintf('The mixin `%s` is undefined.', trim($this->selector->toCSS($env))), null, $this->index, $this->currentFileInfo);
+                sprintf('%s is undefined.', trim($this->selector->toCSS($env))), null, $this->index, $this->currentFileInfo);
         }
     }
 
