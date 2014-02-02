@@ -56,13 +56,13 @@ class ILess_Exception extends Exception
     /**
      * Constructor
      *
-     * @param string $message
-     * @param Exception $previous Previous exception
+     * @param string $message The exception message
      * @param integer $index The current parser index
      * @param ILess_FileInfo|ILess_ImportedFile|string $currentFile The file
+     * @param Exception $previous Previous exception
      * @param integer $code The exception code
      */
-    public function __construct($message = null, Exception $previous = null, $index = null, $currentFile = null, $code = 0)
+    public function __construct($message = null, $index = null, $currentFile = null, Exception $previous = null, $code = 0)
     {
         $message = $this->formatMessage($message, $previous);
 

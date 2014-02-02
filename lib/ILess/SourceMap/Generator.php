@@ -165,19 +165,19 @@ class ILess_SourceMap_Generator extends ILess_Configurable
      *
      * @param string $file The absolute path to a file
      * @param string $content The content to write
-     * @throws ILess_Exception If the file could not be saved
+     * @throws ILess_Exception_IO If the file could not be saved
+     * @throws InvalidArgumentException If the directory to write the map to does not exist or is not writable
      */
     protected function saveMap($file, $content)
     {
         $dir = dirname($file);
-        // directory does not exist
-        if (!is_dir($dir)) {
-            // FIXME: create the dir automatically?
-            throw new ILess_Exception(sprintf('The directory "%s" does not exist. Cannot save the source map.', $dir));
+
+        if (!is_dir($dir) || !is_writable($dir)) {
+            throw new InvalidArgumentException(sprintf('The directory "%s" does not exist or is not writable. Cannot save the source map.', $dir));
         }
-        // FIXME: proper saving, with dir write check!
-        if (file_put_contents($file, $content) === false) {
-            throw new ILess_Exception(sprintf('Cannot save the source map to "%s"', $file));
+
+        if (@file_put_contents($file, $content, LOCK_EX) === false) {
+            throw new ILess_Exception_IO(sprintf('Cannot save the source map to "%s".', $file));
         }
 
         return true;

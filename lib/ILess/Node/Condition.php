@@ -120,8 +120,7 @@ class ILess_Node_Condition extends ILess_Node implements ILess_Node_VisitableInt
                 } elseif (self::methodExists($b, 'compare')) {
                     $result = $b->compare($a);
                 } else {
-                    throw new ILess_Exception_Compiler('Unable to perform the comparison',
-                        null, $this->index, $env->currentFileInfo);
+                    throw new ILess_Exception_Compiler('Unable to perform the comparison', $this->index, $env->currentFileInfo);
                 }
 
                 // FIXME: Operators has beed modified. its seems that there is a bug in less.js

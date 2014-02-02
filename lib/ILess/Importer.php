@@ -145,7 +145,7 @@ class ILess_Importer
             }
         }
 
-        throw new ILess_Exception_Import(sprintf("'%s' wasn't found.", $path), null, $index, $currentFileInfo);
+        throw new ILess_Exception_Import(sprintf("'%s' wasn't found.", $path), $index, $currentFileInfo);
     }
 
     /**

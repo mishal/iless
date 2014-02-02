@@ -250,7 +250,7 @@ class ILess_Parser_Core
 
         // has the whole string been parsed?
         if ($this->furthestPosition < $this->length - 1) {
-            throw new ILess_Exception_Parser('Unrecognised input.', null, $this->furthestPosition, $this->env->currentFileInfo);
+            throw new ILess_Exception_Parser('Unrecognised input.', $this->furthestPosition, $this->env->currentFileInfo);
         }
 
         return $rules;
@@ -300,7 +300,7 @@ class ILess_Parser_Core
                         $parserCurrentIndex++;
                         continue;
                     }
-                    throw new ILess_Exception_Parser('Unescaped `\\`.', null, $parserCurrentIndex, $this->env->currentFileInfo);
+                    throw new ILess_Exception_Parser('Unescaped `\\`.', $parserCurrentIndex, $this->env->currentFileInfo);
                 case 34:
                 case 39:
                 case 96:  // ", ' and `
@@ -318,7 +318,7 @@ class ILess_Parser_Core
                         }
                         if ($cc2 == 92) { // \
                             if ($parserCurrentIndex == $length - 1) {
-                                throw new ILess_Exception_Parser('Unescaped `\\`.', null, $parserCurrentIndex, $this->env->currentFileInfo);
+                                throw new ILess_Exception_Parser('Unescaped `\\`.', $parserCurrentIndex, $this->env->currentFileInfo);
                             }
                             $parserCurrentIndex++;
                         }
@@ -327,7 +327,7 @@ class ILess_Parser_Core
                         continue;
                     }
 
-                    throw new ILess_Exception_Parser(sprintf('Unmatched `%s`.', chr($cc)), null, $currentChunkStartIndex, $this->env->currentFileInfo);
+                    throw new ILess_Exception_Parser(sprintf('Unmatched `%s`.', chr($cc)), $currentChunkStartIndex, $this->env->currentFileInfo);
                 case 47: // /, check for comment
                     if ($parenLevel || ($parserCurrentIndex == $length - 1)) {
                         continue;
@@ -357,14 +357,14 @@ class ILess_Parser_Core
                             }
                         }
                         if ($parserCurrentIndex == $length - 1) {
-                            throw new ILess_Exception_Parser('Missing closing `*/`.', null, $currentChunkStartIndex, $this->env->currentFileInfo);
+                            throw new ILess_Exception_Parser('Missing closing `*/`.', $currentChunkStartIndex, $this->env->currentFileInfo);
                         }
                     }
                     continue;
 
                 case 42: // *, check for unmatched */
                     if (($parserCurrentIndex < $length - 1) && (ord($this->input[$parserCurrentIndex + 1]) == 47)) {
-                        throw new ILess_Exception_Parser('Unmatched `/*`', null, $parserCurrentIndex, $this->env->currentFileInfo);
+                        throw new ILess_Exception_Parser('Unmatched `/*`', $parserCurrentIndex, $this->env->currentFileInfo);
                     }
                     continue;
             }
@@ -374,20 +374,20 @@ class ILess_Parser_Core
             if($level > 0)
             {
                 if (($lastMultiComment > $lastOpening) && ($lastMultiCommentEndBrace > $lastMultiComment)) {
-                    throw new ILess_Exception_Parser('Missing closing `}` or `*/`.', null, $lastOpening, $this->env->currentFileInfo);
+                    throw new ILess_Exception_Parser('Missing closing `}` or `*/`.', $lastOpening, $this->env->currentFileInfo);
                 } else {
-                    throw new ILess_Exception_Parser('Missing closing `}`', null, $lastOpening, $this->env->currentFileInfo);
+                    throw new ILess_Exception_Parser('Missing closing `}`', $lastOpening, $this->env->currentFileInfo);
                 }
             }
 
-            throw new ILess_Exception_Parser('Missing opening `{`', null, $lastClosing, $this->env->currentFileInfo);
+            throw new ILess_Exception_Parser('Missing opening `{`', $lastClosing, $this->env->currentFileInfo);
 
         } else if ($parenLevel !== 0) {
 
             if ($parenLevel > 0) {
-                throw new ILess_Exception_Parser('Missing closing `)`.', null, $parserCurrentIndex, $this->env->currentFileInfo);
+                throw new ILess_Exception_Parser('Missing closing `)`.', $parserCurrentIndex, $this->env->currentFileInfo);
             } else {
-                throw new ILess_Exception_Parser('Missing opening `(`.', null, $parserCurrentIndex, $this->env->currentFileInfo);
+                throw new ILess_Exception_Parser('Missing opening `(`.', $parserCurrentIndex, $this->env->currentFileInfo);
             }
         }
 
@@ -812,8 +812,7 @@ class ILess_Parser_Core
             }
 
             if ($s->condition) {
-                throw new ILess_Exception_Compiler('Guards are only currently allowed on a single selector.', null,
-                    $this->position, $this->env->currentFileInfo);
+                throw new ILess_Exception_Compiler('Guards are only currently allowed on a single selector.', $this->position, $this->env->currentFileInfo);
             }
 
             $this->parseComments();
@@ -865,12 +864,12 @@ class ILess_Parser_Core
             if ($when) {
                 $condition = $this->expect('parseConditions', 'Expected condition');
             } elseif ($condition) {
-                throw new ILess_Exception_Parser('CSS guard can only be used at the end of selector.', null, $this->position, $this->env->currentFileInfo);
+                throw new ILess_Exception_Parser('CSS guard can only be used at the end of selector.', $this->position, $this->env->currentFileInfo);
             } elseif ($extend) {
                 $extendList = array_merge($extendList, $extend);
             } else {
                 if (count($extendList)) {
-                    throw new ILess_Exception_Compiler('Extend can only be used at the end of selector.', null, $this->position, $this->env->currentFileInfo);
+                    throw new ILess_Exception_Compiler('Extend can only be used at the end of selector.', $this->position, $this->env->currentFileInfo);
                 }
                 $c = $this->input[$this->position];
                 $elements[] = $e;
@@ -887,7 +886,7 @@ class ILess_Parser_Core
         }
 
         if (count($extendList)) {
-            throw new ILess_Exception_Compiler('Extend must be used to extend a selector, it cannot be used on its own.', null, $this->position, $this->env->currentFileInfo);
+            throw new ILess_Exception_Compiler('Extend must be used to extend a selector, it cannot be used on its own.', $this->position, $this->env->currentFileInfo);
         }
     }
 
@@ -1180,7 +1179,7 @@ class ILess_Parser_Core
                 if ($this->matchChar(':')) {
                     if (count($expressions) > 0) {
                         if ($isSemiColonSeperated) {
-                            throw new ILess_Exception_Compiler('Cannot mix ; and , as delimiter types', null, $this->position, $this->env->currentFileInfo);
+                            throw new ILess_Exception_Compiler('Cannot mix ; and , as delimiter types', $this->position, $this->env->currentFileInfo);
                         }
                         $expressionContainsNamed = true;
                     }
@@ -1215,7 +1214,7 @@ class ILess_Parser_Core
 
             if ($this->matchChar(';') || $isSemiColonSeperated) {
                 if ($expressionContainsNamed) {
-                    throw new ILess_Exception_Compiler('Cannot mix ; and , as delimiter types', null, $this->position, $this->env->currentFileInfo);
+                    throw new ILess_Exception_Compiler('Cannot mix ; and , as delimiter types', $this->position, $this->env->currentFileInfo);
                 }
 
                 $isSemiColonSeperated = true;
@@ -1320,7 +1319,7 @@ class ILess_Parser_Core
                 if ($b = ($this->matchFuncs(array('parseAddition', 'parseEntitiesKeyword', 'parseEntitiesQuoted')))) {
                     $c = new ILess_Node_Condition($op, $a, $b, $index, $negate);
                 } else {
-                    throw new ILess_Exception_Parser('Unexpected expression', null, $this->position, $this->env->currentFileInfo);
+                    throw new ILess_Exception_Parser('Unexpected expression', $this->position, $this->env->currentFileInfo);
                 }
             } else {
                 $c = new ILess_Node_Condition('=', $a, new ILess_Node_Keyword('true'), $index, $negate);
@@ -2203,7 +2202,7 @@ class ILess_Parser_Core
             throw new ILess_Exception_Compiler(
                 $message ? $message :
                     sprintf('Expected \'%s\' got \'%s\'', $token, $this->input[$this->position]),
-                null, $this->position, $this->env->currentFileInfo);
+                    $this->position, $this->env->currentFileInfo);
         } else {
             return $result;
         }

@@ -129,7 +129,7 @@ class ILess_Node_MixinCall extends ILess_Node implements ILess_Node_VisitableInt
                             }
                             $rules = array_merge($rules, $mixin->compile($env, $args, $this->important)->rules);
                         } catch (Exception $e) {
-                            throw new ILess_Exception_Compiler($e->getMessage(), $e, $this->index, $this->currentFileInfo);
+                            throw new ILess_Exception_Compiler($e->getMessage(), $this->index, $this->currentFileInfo, $e);
                         }
                     }
                     $match = true;
@@ -167,11 +167,10 @@ class ILess_Node_MixinCall extends ILess_Node implements ILess_Node_VisitableInt
 
             throw new ILess_Exception_Compiler(
                 sprintf('No matching definition was found for `%s(%s)`', trim($this->selector->toCSS($env)), join(',', $message)),
-                null,
                 $this->index, $this->currentFileInfo);
         } else {
             throw new ILess_Exception_Compiler(
-                sprintf('%s is undefined.', trim($this->selector->toCSS($env))), null, $this->index, $this->currentFileInfo);
+                sprintf('%s is undefined.', trim($this->selector->toCSS($env))), $this->index, $this->currentFileInfo);
         }
     }
 

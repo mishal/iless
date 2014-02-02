@@ -88,7 +88,7 @@ class ILess_Node_Call extends ILess_Node implements ILess_Node_VisitableInterfac
                 $result = new ILess_Node_Call($this->name, $args, $this->index, $this->currentFileInfo);
             }
         } catch (Exception $e) {
-            throw new ILess_Exception_Function(sprintf('Error evaluating function `%s`', $this->name), $e, $this->index, $this->currentFileInfo);
+            throw new ILess_Exception_Function(sprintf('Error evaluating function `%s`', $this->name), $this->index, $this->currentFileInfo, $e);
         }
 
         return $result;

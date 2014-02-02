@@ -260,7 +260,7 @@ class ILess_Visitor_ToCSS extends ILess_Visitor
             $ruleNode = $rules[$i];
             if ($ruleNode instanceof ILess_Node_Rule && !$ruleNode->variable) {
                 throw new ILess_Exception_Compiler(
-                    'Properties must be inside selector blocks, they cannot be in the root.', null,
+                    'Properties must be inside selector blocks, they cannot be in the root.',
                     $ruleNode->index,
                     $ruleNode->currentFileInfo
                 );

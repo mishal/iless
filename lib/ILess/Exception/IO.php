@@ -8,11 +8,11 @@
  */
 
 /**
- * Cache exception
+ * Exception for a filesystem operation failure
  *
  * @package ILess
  * @subpackage exception
  */
-class ILess_Exception_Cache extends ILess_Exception_IO
+class ILess_Exception_IO extends ILess_Exception
 {
 }

@@ -64,8 +64,7 @@ class ILess_Node_Variable extends ILess_Node
         if ($this->evaluating) {
             throw new ILess_Exception_Compiler(
                 sprintf('Recursive variable definition for %s', $name),
-                null, $this->index,
-                $this->currentFileInfo
+                $this->index, $this->currentFileInfo
             );
         }
 
@@ -96,8 +95,8 @@ class ILess_Node_Variable extends ILess_Node
         {
             throw new ILess_Exception_Compiler(
                 sprintf('The variable `%s` is not defined.', $name),
-                null, $this->index,
-                $this->currentFileInfo);
+                $this->index, $this->currentFileInfo
+            );
         }
     }
 

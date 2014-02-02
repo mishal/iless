@@ -111,7 +111,7 @@ class ILess_Visitor_ProcessExtend extends ILess_Visitor
                     // cannot calculate
                 }
                 throw new ILess_Exception_Parser(
-                    sprintf('Extend circular reference detected. One of the circular extends is currently: %s:extend(%s)', $selectorOne, $selectorTwo)
+                    sprintf('Extend circular reference detected. One of the circular extends is currently: %s:extend(%s).', $selectorOne, $selectorTwo)
                 );
             }
 
