@@ -25,7 +25,7 @@ To use ILess in your project you can:
 
 To run ILess you need:
 
- * `PHP >= 5.2`  (yes, you read right)
+ * `PHP >= 5.2`
  * `bcmath` extension installed
 
 ## Feature Highlights
@@ -36,8 +36,9 @@ To run ILess you need:
  * Generates **source maps** (usefull for debugging the generated CSS)
  * Generates debugging information with SASS compatible information and/or simple comments
  * Supports output filters
- * Allows caching of the precompiled files
+ * Allows caching of the precompiled files and the generated CSS
  * Is **unit tested** using PHPUnit
+ * Has developer friendly exception messages with location of the error and file excerpt (output is colorized when used by command line)
  * Has well documented API - see the generated [API docs](http://apigen.juzna.cz).
 
 ## Usage
@@ -74,7 +75,7 @@ To run ILess you need:
     $parser->setVariables(array(
       'color' => '#000000'
     ));
-    
+
     // Add a custom function
     $parser->addFunction('superdarken', function(\ILess_FunctionRegistry $registry, \ILess_Node_Color $color) {
       return $registry->call('darken', [$color, new \Iless_Node_Dimension(80, '%')]);
@@ -207,4 +208,4 @@ If you did the steps above with your whole heart you are now a **[new creation](
 
 The work is based on the code by [Matt Agar](https://github.com/agar), [Martin Jantošovič](https://github.com/Mordred) and [Josh Schmidt](https://github.com/oyejorge). Source maps code based on [phpsourcemaps](https://github.com/bspot/phpsourcemaps) by [bspot](https://github.com/bspot).
 
-[All contributors](https://github.com/mishal/iless/wiki/Contributors) are listed on separate [wiki page](https://github.com/mishal/iless/wiki/Contributors). 
+[All contributors](https://github.com/mishal/iless/wiki/Contributors) are listed on separate [wiki page](https://github.com/mishal/iless/wiki/Contributors).
