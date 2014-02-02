@@ -1147,7 +1147,7 @@ class ILess_FunctionRegistry
         }
 
         if (!$color instanceof ILess_Node_Color) {
-            throw new InvalidArgumentException('Cannot darken the color. Invalid argument given. "%s"');
+            throw new InvalidArgumentException('Cannot darken the color. Invalid color given.');
         }
 
         $percentage = $percentage ? $percentage->value / 100 : 10;
