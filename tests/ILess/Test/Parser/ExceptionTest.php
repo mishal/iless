@@ -39,7 +39,7 @@ class ILess_Test_Parser_ExceptionTest extends ILess_Test_TestCase
     {
         if(in_array(basename($lessFile), array(
              // FIXME: leave for now (problematic or not implemented)
-            'css-guard-default-func.less', // not implemented by the parser           
+            'css-guard-default-func.less', // not implemented by the parser
             'javascript-error.less', // leave this forever
             'javascript-undefined-var.less', // leave this forever
             'mixins-guards-default-func-1.less', // not implemented by the parser yet
@@ -51,7 +51,7 @@ class ILess_Test_Parser_ExceptionTest extends ILess_Test_TestCase
             $this->diag('Skipped test: '. $lessFile);
             return;
         }
-        
+
         list($exceptionClass, $message, $line, $column) = $this->getTestException($exception);
 
         $parser = $this->createParser();
@@ -62,17 +62,15 @@ class ILess_Test_Parser_ExceptionTest extends ILess_Test_TestCase
         }
         catch (ILess_Exception $e) {
 
-            // we tolerate case
+            // we tolerate case diffs
             $messageThrown = strtolower(trim($e->getMessage(), '.'));
             $messageExpected = strtolower(trim($message, '.'));
-            
-            $this->assertEquals($messageExpected, $messageThrown);            
-            
-            // is the exception the same?
-            $this->assertEquals($exceptionClass, get_class($e));
-            $this->assertEquals($line, $e->getErrorLine());
-            // FIXME: implement!
-            // $this->assertEquals($column, $e->getErrorColumn());
+
+            $this->assertEquals($messageExpected, $messageThrown, 'The exception message matches');
+            $this->assertEquals($exceptionClass, get_class($e), 'The exception class matches');
+            $this->assertEquals($line, $e->getErrorLine(), 'The line matches');
+            $this->assertEquals($column, $e->getErrorColumn(), 'The column matches');
+
             return;
         }
         catch(Exception $e)
@@ -111,7 +109,7 @@ class ILess_Test_Parser_ExceptionTest extends ILess_Test_TestCase
             $line = null;
         }
 
-        preg_match('/column (\d)+:/', $message, $match);
+        preg_match('/column (\d+):/', $message, $match);
         if (isset($match[1]))
         {
             $column = (integer)$match[1];

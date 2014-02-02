@@ -61,21 +61,58 @@ class ILess_Util
     }
 
     /**
-     * Returns the line number from the $string for a character at specified $index
+     * Returns the line number and column from the $string for a character at specified $index.
+     * Also includes an extract from the string (optionally).
      *
-     * @param string $string
-     * @param integer $index
-     * @return integer
+     * @param string $string The string
+     * @param integer $index The current position
+     * @param boolean|integer $extract Include extract from the string at specified line? Integer value means how many lines will be extracted
+     * @return array Array of line, column and extract from the string
      */
-    public static function getLineNumber($string, $index)
+    public static function getLocation($string, $index, $column = null, $extract = false)
     {
-        // FIXME: use mb_substr?
+        // FIXME: what about utf8?
         // we have a part from the beginning to the current index
         $part = substr($string, 0, strlen($string) - strlen(substr($string, $index)));
         // lets count the linebreaks in the part
         $line = substr_count($part, "\n") + 1;
+        $lines = explode("\n", $part);
+		$column = strlen(end($lines)) + 1;
 
-        return $line;
+        $extractContent = null;
+        if ($extract) {
+            if (is_numeric($extract))
+            {
+                $extractContent = self::getExcerpt($string, $line, $column, $extract);
+            } else {
+                $extractContent = self::getExcerpt($string, $line, $column);
+            }
+        }
+
+        return array($line, $column, $extractContent);
+    }
+
+    /**
+     * Returns the excerpt from the string at given line
+     *
+     * @param string $string The string
+     * @param integer $currentLine The current line. If -1 is passed, the whole string will be returned
+     * @param integer $currentColumn The current column
+     * @param integer $limitLines How many lines?
+     * @return ILess_StringExcerpt
+     */
+    public static function getExcerpt($string, $currentLine, $currentColumn = null, $limitLines = 3)
+    {
+        $lines = explode("\n", self::normalizeLineFeeds($string));
+
+        if ($limitLines > 0)
+        {
+           $start = $i = max(0, $currentLine - floor($limitLines * 2/3));
+           $lines = array_slice($lines, $start, $limitLines, true);
+           end($lines);
+        }
+
+        return new ILess_StringExcerpt($lines, $currentLine, $currentColumn);
     }
 
     /**

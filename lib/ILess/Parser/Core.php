@@ -1853,7 +1853,7 @@ class ILess_Parser_Core
                     $features = new ILess_Node_Value($features);
                 }
 
-                return new ILess_Node_Import($path, $features, $options, $this->position, $this->env->currentFileInfo);
+                return new ILess_Node_Import($path, $features, $options, $this->savedPosition, $this->env->currentFileInfo);
             }
         }
 
@@ -2280,10 +2280,9 @@ class ILess_Parser_Core
      */
     protected function getDebugInfo($index, $input, ILess_Environment $env)
     {
-        $filename = $env->currentFileInfo->filename;
-        $lineNumber = ILess_Util::getLineNumber($input, $index);
+        list($lineNumber) = ILess_Util::getLocation($input, $index);
 
-        return new ILess_DebugInfo($filename, $lineNumber);
+        return new ILess_DebugInfo($env->currentFileInfo->filename, $lineNumber);
     }
 
 }

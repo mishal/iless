@@ -434,7 +434,45 @@ SIGNATURE;
      */
     protected function renderException(Exception $e)
     {
-        printf("%s: %s\n", $this->scriptName, $e->getMessage());
+        $hasColors = $this->detectColors();
+
+        // excerpt?
+        if ($e instanceof ILess_Exception) {
+
+            printf("%s: %s\n", $this->scriptName, $hasColors ?
+                ILess_ANSIColor::colorize($e->toString(false), 'red') : $e->toString(false));
+
+            if ($excerpt = $e->getExcerpt()) {
+                $hasColors ?
+                    printf("%s\n", $excerpt->toTerminal()) :
+                    printf("%s\n", $excerpt->toText());
+            }
+
+        } else {
+            printf("%s: %s\n", $this->scriptName,
+                    $hasColors ? ANSIColor::colorize($e->getMessage(), 'red') : $e->getMessage());
+        }
+    }
+
+    /**
+     * Converts the string to plain text.
+     *
+     * @return string $string The string
+     */
+    protected function toText($string)
+    {
+        return strip_tags($string);
+    }
+
+    /**
+     * Does the console support colors?
+     *
+     * @return boolean
+     */
+    protected function detectColors()
+    {
+        return (getenv('ConEmuANSI') === 'ON' || getenv('ANSICON') !== FALSE ||
+               (defined('STDOUT') && function_exists('posix_isatty') && posix_isatty(STDOUT)));
     }
 
     /**

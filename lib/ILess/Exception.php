@@ -32,16 +32,23 @@ class ILess_Exception extends Exception
     /**
      * Current line
      *
-     * @var integer
+     * @var integer|null
      */
-    private $currentLine;
+    private $errorLine;
 
     /**
      * Current column
      *
-     * @var integer
+     * @var integer|null
      */
-    private $currentColumn = 0;
+    private $errorColumn;
+
+    /**
+     * Excerpt from the string which contains error
+     *
+     * @var string
+     */
+    private $excerpt;
 
     /**
      * File editor link. Allows variable holders:
@@ -52,6 +59,13 @@ class ILess_Exception extends Exception
      * @var string
      */
     protected static $fileEditUrlFormat = 'editor://open?file=%f&line=%l';
+
+    /**
+     * File excerpt line number
+     *
+     * @var integer|false
+     */
+    protected static $fileExcerptLineNumber = 3;
 
     /**
      * Constructor
@@ -76,17 +90,15 @@ class ILess_Exception extends Exception
         $this->currentFile = $currentFile;
         $this->index = $index;
 
-        if ($currentFile)
-        {
-            list($this->currentLine, $this->currentColumn) = $this->getLocation($currentFile);
+        if ($currentFile && $this->index !== null) {
+            $this->updateFileErrorInformation();
         }
-
     }
 
     /**
      * Formats the message
      *
-     * @param string $message
+     * @param string $message The exception message
      * @param Exception $previous Previous exception
      * @return string
      */
@@ -103,16 +115,44 @@ class ILess_Exception extends Exception
      * Returns the current line and column
      *
      * @param ILess_FileInfo|ILess_ImportedFile|string $currentFile The file
+     * @param integer $index Current position index
+     * @param boolean $excerpt Include the string excerpt?
      * @return array
      */
-    private function getLocation($currentFile)
+    protected function getLocation($currentFile, $index, $column = null, $excerpt = true)
     {
-        $line = null;
-        $column = 0;
+        $line = $column = $excerptContent = null;
+        if ($index !== null && $currentFile) {
+            $content = null;
+            if ($currentFile instanceof ILess_FileInfo
+                && $currentFile->importedFile
+            ) {
+                $content = $currentFile->importedFile->getContent();
+            } elseif (is_string($currentFile) && ILess_Util::isPathAbsolute($currentFile)
+                && is_readable($currentFile)
+            ) {
+                $content = file_get_contents($currentFile);
+            }
+            if ($content) {
+                list($line, $column, $excerptContent) = ILess_Util::getLocation($content, $index, $column, $excerpt);
+            }
+        }
 
         return array(
-            $line, $column
+            $line, $column, $excerptContent
         );
+    }
+
+    /**
+     * Updates the line, column and excerpt
+     *
+     * @return void
+     */
+    protected function updateFileErrorInformation()
+    {
+        // recalculate the location
+        list($this->errorLine, $this->errorColumn, $this->excerpt) =
+                $this->getLocation($this->currentFile, $this->index, $this->errorColumn, self::getFileExcerptLineNumber());
     }
 
     /**
@@ -137,6 +177,26 @@ class ILess_Exception extends Exception
     }
 
     /**
+     * Sets the number of lines to display in file excerpts when an exception is displayed
+     *
+     * @param integer|false $number
+     */
+    public static function setFileExcerptLineNumber($number)
+    {
+        self::$fileExcerptLineNumber = $number;
+    }
+
+    /**
+     * Returns the number of lines to display in file excerpts
+     *
+     * @return integer|false
+     */
+    public static function getFileExcerptLineNumber()
+    {
+        return self::$fileExcerptLineNumber;
+    }
+
+    /**
      * Returns the file
      *
      * @return ILess_ImportedFile|ILess_FileInfo|null
@@ -150,10 +210,15 @@ class ILess_Exception extends Exception
      * Sets the current file
      *
      * @param ILess_ImportedFile|ILess_FileInfo|string $file
+     * @param integer $index The current index
      */
-    public function setCurrentFile($file)
+    public function setCurrentFile($file, $index = null)
     {
         $this->currentFile = $file;
+        if ($index !== null) {
+            $this->index = $index;
+        }
+        $this->updateFileErrorInformation();
     }
 
     /**
@@ -167,40 +232,44 @@ class ILess_Exception extends Exception
     }
 
     /**
+     * Returns the excerpt from the string which contains the error
+     *
+     * @return string
+     */
+    final public function getExcerpt()
+    {
+        return $this->excerpt;
+    }
+
+    /**
      * Sets index
      *
      * @param integer $index
      */
-    public function setIndex($index)
+    final public function setIndex($index)
     {
         $this->index = $index;
+        $this->updateFileErrorInformation();
     }
 
     /**
      * Returns current line from the file
      *
-     * @return integer|null If the index is not present
+     * @return integer|null
      */
-    public function getErrorLine()
+    final public function getErrorLine()
     {
-        $line = null;
-        if ($this->index !== null && ($this->currentFile)) {
-            $content = null;
-            if ($this->currentFile instanceof ILess_FileInfo
-                && $this->currentFile->importedFile
-            ) {
-                $content = $this->currentFile->importedFile->getContent();
-            } elseif (is_string($this->currentFile) && ILess_Util::isPathAbsolute($this->currentFile)
-                && is_readable($this->currentFile)
-            ) {
-                $content = file_get_contents($this->currentFile);
-            }
-            if ($content) {
-                $line = ILess_Util::getLineNumber($content, $this->index);
-            }
-        }
+        return $this->errorLine;
+    }
 
-        return $line;
+    /**
+     * Returns the error column
+     *
+     * @return integer|null
+     */
+    final public function getErrorColumn()
+    {
+        return $this->errorColumn;
     }
 
     /**
@@ -246,22 +315,48 @@ class ILess_Exception extends Exception
      */
     public function __toString()
     {
-        $string = $this->message;
+        return $this->toString();
+    }
+
+    /**
+     * Converts the exception to string
+     *
+     * @param boolean $includeExcerpt Include excerpt?
+     * @param boolean $html Convert to HTML?
+     * @return string
+     */
+    public function toString($includeExcerpt = true, $html = true)
+    {
+        $string = array();
         if ($this->currentFile) {
             // we have an line from the file
             if (($line = $this->getErrorLine()) !== null) {
-                $string = sprintf('%s in %s, line: %s', $this->message, $this->getFileEditorLink($this->currentFile, $line), $line);
+                $string[] = sprintf('%s in %s on line: %s, column: %s', $this->message, $this->getFileEditorLink($this->currentFile, $line), $line, $this->errorColumn);
+                if ($includeExcerpt && $this->excerpt)
+                {
+                    if ($html) {
+                        $string[] = sprintf('<pre>%s</pre>', $this->excerpt->toHtml());
+                    } else {
+                        $string[] = $this->excerpt->toText();
+                    }
+                }
             } else {
-                $string = sprintf('%s in %s, line: ?', $this->message, $this->getFileEditorLink($this->currentFile));
+                $string[] = sprintf('%s in %s on line: ?', $this->message, $this->getFileEditorLink($this->currentFile));
             }
+        } else {
+            $string[] = $this->message;
         }
 
-        return $string;
+        return join("\n", $string);
     }
 
+    /**
+     *
+     * @return string
+     */
     public function prettyPrint()
     {
-        return sprintf('<h2>%s</h2><pre>%s</pre>', get_class($this), $this->__toString());
+        return sprintf('<h2>%s</h2>%s', get_class($this), $this->__toString());
     }
 
 }
