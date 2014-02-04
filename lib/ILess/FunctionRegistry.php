@@ -474,10 +474,10 @@ class ILess_FunctionRegistry
     /**
      * Rounds up to an integer
      *
-     * @param string $number
+     * @param mixed $number
      * @return ILess_Node_Dimension
      */
-    public function ceil(ILess_Node_Dimension $number)
+    public function ceil($number)
     {
         return new ILess_Node_Dimension(ceil($this->number($number)), $number->unit);
     }
