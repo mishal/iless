@@ -69,8 +69,10 @@ class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
         );
         $data[] = array($fixturesDir.'/php/less/variables.less' , $fixturesDir.'/php/css/variables.css', array(), $variables);
 
-        $data[] = array($fixturesDir.'/bootstrap2/less/bootstrap.less' , $fixturesDir.'/bootstrap2/css/bootstrap.css');
-        $data[] = array($fixturesDir.'/bootstrap3/less/bootstrap.less' , $fixturesDir.'/bootstrap3/css/bootstrap.css');
+        $data[] = array($fixturesDir.'/bootstrap2/less/bootstrap.less' , $fixturesDir.'/bootstrap2/css/bootstrap.css');        
+        $data[] = array($fixturesDir.'/bootstrap3/less/bootstrap.less' , $fixturesDir.'/bootstrap3/css/bootstrap.css', array(
+            'strict_math' => true
+        ));
 
         $data[] = array(
             $fixturesDir.'/less.js/less/debug/linenumbers.less',
