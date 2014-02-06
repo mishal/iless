@@ -323,4 +323,47 @@ class ILess_Test_Parser_CoreTest extends ILess_Test_TestCase
         );
     }
 
+    public function testAssignVariablesAndReset()
+    {
+        $env = new ILess_Environment(array(), new ILess_FunctionRegistry());
+        $importer = new ILess_Importer($env, array(
+            new ILess_Importer_FileSystem()
+        ), new ILess_Cache_None());
+        $parser = new ILess_Test_Parser_Core($env, $importer);
+
+        $parser->setVariables(array(
+            'color' => 'red'
+        ));
+
+        $parser->parseString('body { color: @color; }');
+        $generated = $parser->getCSS();
+
+        $this->assertEquals(
+'body {
+  color: #ff0000;
+}
+', $generated);
+
+        // reset
+        $parser->reset();
+        $this->assertEquals('', $parser->getCSS());
+
+        $parser->setVariables(array(
+            'color' => 'blue'
+        ));
+
+        $parser->parseString('body { color: @color; }');
+        $parser->reset(false);
+
+        $parser->parseString('h1 { color: @color; }');
+
+        $generated = $parser->getCSS();
+        $this->assertEquals(
+'h1 {
+  color: #0000ff;
+}
+', $generated);
+
+    }
+
 }

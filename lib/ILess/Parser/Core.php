@@ -419,13 +419,18 @@ class ILess_Parser_Core
     /**
      * Resets the parser
      *
+     * @param boolean $variables Reset also assigned variables via the API?
      * @return ILess_Parser_Core
      */
-    public function reset()
+    public function reset($variables = true)
     {
         $this->setStringToBeParsed(null);
         $this->rules = array();
-        $this->variables = array();
+
+        if ($variables)
+        {
+            $this->variables = array();
+        }
 
         return $this;
     }
