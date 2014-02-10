@@ -205,13 +205,6 @@ class ILess_Environment
     public $contentsMap = array();
 
     /**
-     * Has extends? For speed improvement
-     *
-     * @var boolean
-     */
-    public $hasExtends = false;
-
-    /**
      * The function registry
      *
      * @var ILess_FunctionRegistry
@@ -337,7 +330,8 @@ class ILess_Environment
         $this->currentFileInfo = new ILess_FileInfo(array(
             'currentDirectory' => $dirname,
             'filename' => $file,
-            'rootPath' => $this->currentFileInfo->rootPath ? $this->currentFileInfo->rootPath : $this->rootPath,
+            'rootPath' => $this->currentFileInfo && $this->currentFileInfo->rootPath ?
+                          $this->currentFileInfo->rootPath : $this->rootPath,
             'entryPath' => $dirname
         ));
     }
@@ -364,14 +358,12 @@ class ILess_Environment
             'sourceMapOptions', // options for source map generator
             'importMultiple', // whether we are currently importing multiple copies,
             'relativeUrls', // adjust relative urls?,
-            'rootPath',
+            'rootPath', // root path
             'dumpLineNumbers', // dump line numbers?
             'contentsMap', // filename to contents of all the files
             // properties
             'customVariables', // variables from the php API
             'currentFileInfo', // current file information object
-            // for performance:
-            'hasExtends'
         );
 
         $copy = new ILess_Environment(array(), $env->getFunctionRegistry());

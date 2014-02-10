@@ -175,7 +175,10 @@ class ILess_Importer
             //   then rootPath should become 'less/module/nav/'
             // - If path of imported file is '../mixins.less' and rootPath is 'less/',
             //   then rootPath should become 'less/../'
-            $newFileInfo->rootPath = $newFileInfo->rootPath . 'foobaraahoj/';
+            if (!ILess_Util::isPathAbsolute($path) && (($lastSlash = strrpos($path, '/')) !== false)) {
+                $relativeSubDirectory = substr($path, 0, $lastSlash + 1);
+                $newFileInfo->rootPath = $newFileInfo->rootPath . $relativeSubDirectory;
+            }
         }
 
         // we need to clone here, to prevent modification of node current info object

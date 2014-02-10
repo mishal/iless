@@ -54,15 +54,11 @@ class ILess_Node_Url extends ILess_Node implements ILess_Node_VisitableInterface
         if ($rootPath && is_string($value->value) && ILess_Util::isPathRelative($value->value)) {
             $quoteExists = self::propertyExists($value, 'quote');
             if ($quoteExists && empty($value->quote) || !$quoteExists) {
-                $rootPath = preg_replace('/[\(\)\'"\s]/', '\\1', $rootPath);
-                /*$rootPath = preg_match('/[\(\)\'"\s]/', $rootPath, $matches);
-                var_dump($matches);
-                exit;
-                */
+                $rootPath = preg_replace_callback('/[\(\)\'"\s]/', array($this, 'rootPathReplaceCallback'), $rootPath);
             }
             $value->value = $rootPath . $value->value;
         }
-        $value->value = ILess_Util::normalizePath($value->value);
+        $value->value = ILess_Util::normalizePath($value->value, false);
 
         return new ILess_Node_Url($value, null);
     }
@@ -75,6 +71,17 @@ class ILess_Node_Url extends ILess_Node implements ILess_Node_VisitableInterface
         $output->add('url(');
         $this->value->generateCSS($env, $output);
         $output->add(')');
+    }
+
+    /**
+     * Replace callback
+     *
+     * @param $match
+     * @return string
+     */
+    protected function rootPathReplaceCallback($match)
+    {
+        return '\\' . $match[0];
     }
 
 }

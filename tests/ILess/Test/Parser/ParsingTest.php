@@ -18,6 +18,13 @@ require_once dirname(__FILE__) . '/Core.php';
  */
 class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
 {
+    /**
+     * Parser default options
+     *
+     * @var array
+     */
+    protected $parserDefaultOptions = array();
+
     protected function createParser($options = array())
     {
         $env = new ILess_Environment($options, new ILess_FunctionRegistry());
@@ -33,6 +40,12 @@ class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
      */
     public function testCompilation($lessFile, $cssFile, $options = array(), $variables = array(), $filter = null)
     {
+        // default options
+        if($options !== false && !count($options))
+        {
+            $options = $this->parserDefaultOptions;
+        }
+
         $parser = $this->createParser($options);
         $parser->setVariables($variables);
 
@@ -45,7 +58,6 @@ class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
 
         // known diff, check if the diff is still ok
         if (is_readable($diffFile = str_replace('/less/', '/diff/', $lessFile . '.php'))) {
-            // FIXME: check the diff
             $diff = include $diffFile;
             $actualDiff = array_diff(explode("\n", $compiled), explode("\n", $preCompiled));
             $this->assertEquals($diff, $actualDiff);
@@ -57,7 +69,7 @@ class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
     public function getCompilationData()
     {
         $fixturesDir = dirname(__FILE__) . '/_fixtures';
-        /*
+
         $data = array_merge(
             array_map(null, glob($fixturesDir . '/simple/less/*.less'), glob($fixturesDir . '/simple/css/*.css')),
             array_map(null, glob($fixturesDir . '/less.js/less/*.less'), glob($fixturesDir . '/less.js/css/*.css'))
@@ -106,16 +118,13 @@ class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
             $fixturesDir.'/less.js/less/legacy/legacy.less',
             $fixturesDir.'/less.js/css/legacy/legacy.css'
         );
-        */
-        /*
         $data[] = array(
             $fixturesDir.'/relative_urls/less/simple.less',
             $fixturesDir.'/relative_urls/css/simple.css',
             array(
                 'relative_urls' => true
             )
-        );*/
-
+        );
         $data[] = array(
             $fixturesDir.'/less.js/less/static-urls/urls.less',
             $fixturesDir.'/less.js/css/static-urls/urls.css',
