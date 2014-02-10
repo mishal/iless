@@ -560,6 +560,7 @@ class ILess_Parser_Core
         if ($this->env->processImports) {
             $preCompileVisitors[] = new ILess_Visitor_Import($this->getEnvironment(), $this->getImporter());
         }
+
         // FIXME: allow plugins to hook here
         return $preCompileVisitors;
     }
@@ -572,14 +573,10 @@ class ILess_Parser_Core
     protected function getPostCompileVisitors()
     {
         $postCompileVisitors = array(
-            new ILess_Visitor_JoinSelector()
+            new ILess_Visitor_JoinSelector(),
+            new ILess_Visitor_ProcessExtend(),
+            new ILess_Visitor_ToCSS($this->getEnvironment())
         );
-
-        if ($this->env->hasExtends) {
-            $postCompileVisitors[] = new ILess_Visitor_ProcessExtend();
-        }
-
-        $postCompileVisitors[] = new ILess_Visitor_ToCSS($this->getEnvironment());
 
         // FIXME: allow plugins to hook here
         return $postCompileVisitors;

@@ -128,8 +128,6 @@ class ILess_Node_Extend extends ILess_Node implements ILess_Node_VisitableInterf
      */
     public function compile(ILess_Environment $env, $arguments = null, $important = null)
     {
-        $env->hasExtends = true;
-
         return new ILess_Node_Extend($this->selector->compile($env), $this->option, $this->index);
     }
 
