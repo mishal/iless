@@ -70,6 +70,13 @@ class ILess_Environment
     public $relativeUrls = false;
 
     /**
+     * Root path
+     *
+     * @var string
+     */
+    public $rootPath;
+
+    /**
      * @var array
      */
     public $mediaBlocks = array();
@@ -320,10 +327,9 @@ class ILess_Environment
     /**
      * Sets current file
      *
-     * @param string $file The absolute path to a file
-     * @param string $urlRoot The root URL
+     * @param string $file The path to a file
      */
-    public function setCurrentFile($file, $urlRoot = null)
+    public function setCurrentFile($file)
     {
         $file = ILess_Util::normalizePath($file);
         $dirname = preg_replace('/[^\/\\\\]*$/', '', $file);
@@ -331,9 +337,8 @@ class ILess_Environment
         $this->currentFileInfo = new ILess_FileInfo(array(
             'currentDirectory' => $dirname,
             'filename' => $file,
-            'rootPath' => null, // FIXME: root path in web environment, remove?!
-            'entryPath' => $dirname,
-            'uri_root' => !empty($urlRoot) ? (rtrim($urlRoot, '/') . '/') : ''
+            'rootPath' => $this->currentFileInfo->rootPath ? $this->currentFileInfo->rootPath : $this->rootPath,
+            'entryPath' => $dirname
         ));
     }
 
@@ -359,6 +364,7 @@ class ILess_Environment
             'sourceMapOptions', // options for source map generator
             'importMultiple', // whether we are currently importing multiple copies,
             'relativeUrls', // adjust relative urls?,
+            'rootPath',
             'dumpLineNumbers', // dump line numbers?
             'contentsMap', // filename to contents of all the files
             // properties

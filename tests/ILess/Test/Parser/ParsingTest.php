@@ -7,6 +7,8 @@
  * file that was distributed with this source code.
  */
 
+require_once dirname(__FILE__) . '/Core.php';
+
 /**
  * Parsing tests
  *
@@ -55,7 +57,7 @@ class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
     public function getCompilationData()
     {
         $fixturesDir = dirname(__FILE__) . '/_fixtures';
-
+        /*
         $data = array_merge(
             array_map(null, glob($fixturesDir . '/simple/less/*.less'), glob($fixturesDir . '/simple/css/*.css')),
             array_map(null, glob($fixturesDir . '/less.js/less/*.less'), glob($fixturesDir . '/less.js/css/*.css'))
@@ -103,6 +105,25 @@ class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
         $data[] = array(
             $fixturesDir.'/less.js/less/legacy/legacy.less',
             $fixturesDir.'/less.js/css/legacy/legacy.css'
+        );
+        */
+        /*
+        $data[] = array(
+            $fixturesDir.'/relative_urls/less/simple.less',
+            $fixturesDir.'/relative_urls/css/simple.css',
+            array(
+                'relative_urls' => true
+            )
+        );*/
+
+        $data[] = array(
+            $fixturesDir.'/less.js/less/static-urls/urls.less',
+            $fixturesDir.'/less.js/css/static-urls/urls.css',
+            array(
+                'strict_math' => true,
+                'relative_urls' => false,
+                'root_path' => 'folder (1)/'
+            )
         );
 
         return $data;

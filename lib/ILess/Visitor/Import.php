@@ -77,7 +77,6 @@ class ILess_Visitor_Import extends ILess_Visitor
         $inlineCSS = $node->getOption('inline');
         if (!$node->css || $inlineCSS) {
             $e = null;
-
             try {
                 $compiledNode = $node->compileForImport($this->env);
             } catch (ILess_Exception $e) {

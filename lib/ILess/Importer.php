@@ -164,8 +164,22 @@ class ILess_Importer
     {
         $newEnv = ILess_Environment::createCopy($this->env, $this->env->frames);
 
+        $newFileInfo = clone $currentFileInfo;
+
+        if ($this->env->relativeUrls) {
+            // Pass on an updated rootPath if path of imported file is relative and file
+            // is in a (sub|sup) directory
+            //
+            // Examples:
+            // - If path of imported file is 'module/nav/nav.less' and rootPath is 'less/',
+            //   then rootPath should become 'less/module/nav/'
+            // - If path of imported file is '../mixins.less' and rootPath is 'less/',
+            //   then rootPath should become 'less/../'
+            $newFileInfo->rootPath = $newFileInfo->rootPath . 'foobaraahoj/';
+        }
+
         // we need to clone here, to prevent modification of node current info object
-        $newEnv->currentFileInfo = clone $currentFileInfo;
+        $newEnv->currentFileInfo = $newFileInfo;
         $newEnv->processImports = false;
 
         if ($currentFileInfo->reference

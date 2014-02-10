@@ -8,8 +8,13 @@
     bootstrap = "tests/bootstrap.php">
 
     <testsuites>
+        <!--
         <testsuite name="ILess Test Suite">
             <directory suffix="Test.php">./tests/ILess/Test</directory>
+        </testsuite>
+        //-->
+        <testsuite name="ILess Test Suite">
+            <file suffix="Test.php">./tests/ILess/Test/Parser/ParsingTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>

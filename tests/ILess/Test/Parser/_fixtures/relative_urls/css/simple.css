@@ -1,0 +1,10 @@
+h1 {
+  color: #ff0000;
+}
+
+body {
+  background: url("images/image.png");
+}
+#foo {
+  background: url("images/image.png");
+}
