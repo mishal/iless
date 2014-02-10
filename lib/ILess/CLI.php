@@ -450,7 +450,7 @@ SIGNATURE;
 
         } else {
             printf("%s: %s\n", $this->scriptName,
-                    $hasColors ? ANSIColor::colorize($e->getMessage(), 'red') : $e->getMessage());
+                    $hasColors ? ILess_ANSIColor::colorize($e->getMessage(), 'red') : $e->getMessage());
         }
     }
 
