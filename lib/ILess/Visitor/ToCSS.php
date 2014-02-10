@@ -90,6 +90,9 @@ class ILess_Visitor_ToCSS extends ILess_Visitor
      */
     public function visitMixinDefinition(ILess_Node_MixinDefinition $node, ILess_Visitor_Arguments $arguments)
     {
+        // mixin definitions do not get compiled - this means they keep state
+        // so we have to clear that state here so it isn't used if toCSS is called twice
+        $node->frames = array();
         return array();
     }
 
