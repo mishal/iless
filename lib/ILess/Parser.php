@@ -183,4 +183,14 @@ class ILess_Parser extends ILess_Parser_Core
         return $this->getEnvironment()->getFunctionRegistry()->addFunction($functionName, $callable, $aliases);
     }
 
+    /**
+     * Returns the cache
+     *
+     * @return ILess_CacheInterface
+     */
+    public function getCache()
+    {
+        return $this->cache;
+    }
+
 }
