@@ -176,7 +176,7 @@ Please read [contributing guide](./CONTRIBUTING.md).
 
 ## Why Another Less PHP Processor?
 
-There is a lack of **maintanable** PHP version of the LESS compiler which would compile the favourite LESS front-end frameworks like Twitter Bootstrap (version 3 and 2).
+There is a lack of **maintanable** PHP version of the LESS compiler which would compile the favourite LESS front-end frameworks like Bootstrap (version 3 and 2).
 
 Why porting the JS version to PHP? Why not? The main reason is to follow new language features with less effort by simly porting the code to PHP.
 
