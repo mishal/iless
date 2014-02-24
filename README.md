@@ -119,6 +119,11 @@ To compile the LESS files from your NetBeans IDE (*version 7.4 is required*) you
 
 You have to configure the less path to point to `bin/iless`. On Windows use`bin/iless.cmd`.
 
+## Usage from PhpStorm IDE
+
+To compile the LESS files from your PhpStorm IDE you need to configure the `File watcher` for `.less` files. [See the manual](http://www.jetbrains.com/phpstorm/webhelp/transpiling-sass-less-and-scss-to-css.html#d151302e621) how to do it.
+You have to configure the `program` option to point to `bin/iless`. On Windows use `bin/iless.cmd`.
+
 **Note**: See additional command line options for the parser below.
 
 ## Examples
@@ -133,28 +138,29 @@ Parse input from `stdin` and save it to a file `my.css`.
 
 ## Usage and available options
 
-      _____        _______ _______ _______
-        |   |      |______ |______ |______
-      __|__ |_____ |______ ______| ______|
+     _____        _______ _______ _______
+       |   |      |______ |______ |______
+     __|__ |_____ |______ ______| ______|
 
-     usage: iless [option option=parameter ...] source [destination]
+    usage: iless [option option=parameter ...] source [destination]
 
-     If source is set to `-` (dash or hyphen-minus), input is read from stdin.
+    If source is set to `-` (dash or hyphen-minus), input is read from stdin.
 
-     options:
-        -h, --help               Print help (this message) and exit.
-        -s, --silent             Suppress output of error messages.
-        -x, --compress           Compress output by removing the whitespace.
-        -a, --append             Append the generated CSS to the target file?
-        --no-ie-compat           Disable IE compatibility checks.
-        --source-map             Outputs an inline sourcemap to the generated CSS (or output to filename.map).
-        --source-map-url         The complete URL and filename of the source map to put to the map.
-        --source-map-base-path   Sets sourcemap base path, defaults to current working directory.
-        -v, --version            Print version number and exit.
-        --dump-line-numbers      Outputs filename and line numbers. TYPE can be either 'comments', which will
-                                 output the debug info within comments, 'mediaquery' that will output the
-                                 information within a fake media query which is compatible with the SASS
-                                 format, and 'all' which will do both.
+    options:
+       -h, --help               Print help (this message) and exit.
+       -s, --silent             Suppress output of error messages.
+       --no-color               Disable colorized output.
+       -x, --compress           Compress output by removing the whitespace.
+       -a, --append             Append the generated CSS to the target file?
+       --no-ie-compat           Disable IE compatibility checks.
+       --source-map             Outputs an inline sourcemap to the generated CSS (or output to filename.map).
+       --source-map-url         The complete URL and filename of the source map to put to the map.
+       --source-map-base-path   Sets sourcemap base path, defaults to current working directory.
+       -v, --version            Print version number and exit.
+       --dump-line-numbers      Outputs filename and line numbers. TYPE can be either 'comments', which will
+                                output the debug info within comments, 'mediaquery' that will output the
+                                information within a fake media query which is compatible with the SASS
+                                format, and 'all' which will do both.
 
 ## Issues
 
