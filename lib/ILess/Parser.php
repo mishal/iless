@@ -19,7 +19,7 @@ class ILess_Parser extends ILess_Parser_Core
      * Parser version
      *
      */
-    const VERSION = '0.9.0-dev';
+    const VERSION = '1.6.3';
 
     /**
      * Array of output filters
