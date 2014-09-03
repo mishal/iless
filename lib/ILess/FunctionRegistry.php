@@ -108,6 +108,7 @@ class ILess_FunctionRegistry
         'pi' => true,
         'pow' => true,
         'red' => true,
+        'replace' => true,
         'rgb' => true,
         'rgba' => true,
         'round' => true,
@@ -402,6 +403,26 @@ class ILess_FunctionRegistry
             }
         }
         $string = str_replace('%%', '%', $string);
+
+        return new ILess_Node_Quoted('"' . $string . '"', $string);
+    }
+
+    /**
+     * Replaces a string or regexp pattern within a string.
+     *
+     * @param object $string
+     * @param object $pattern
+     * @param object $replacement
+     * @param $flags
+     * @return ILess_Node_Quoted
+     */
+    public function replace(ILess_Node $string, ILess_Node $pattern, ILess_Node $replacement, ILess_Node $flags = null)
+    {
+        $flags  = $flags ? $flags->value : '';
+        $limit = strpos($flags, 'g') === false ? 1 : -1;
+        $flags = str_replace('g', '', $flags);
+
+        $string = preg_replace('/' . $pattern->value . '/' . $flags, $replacement->value, $string->value);
 
         return new ILess_Node_Quoted('"' . $string . '"', $string);
     }
