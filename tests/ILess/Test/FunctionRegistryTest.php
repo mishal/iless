@@ -140,7 +140,7 @@ class ILess_Test_FunctionRegistryTest extends ILess_Test_TestCase
         $this->assertInstanceOf('ILess_Node_Quoted', $result);
         $this->assertEquals($expected, $result->value);
     }
-
+    
     public function getDataForTemplateTest()
     {
         return array(
@@ -152,6 +152,51 @@ class ILess_Test_FunctionRegistryTest extends ILess_Test_TestCase
                 ),
                 'repetitions: 3 file: "directory/file.less"'
             ));
+    }
+
+    /**
+     * @covers       ILess_Function::replace
+     * @dataProvider getDataForReplaceTest
+     */
+    public function testReplace($string, $pattern, $replacement, $flags, $expected)
+    {
+        $result = $this->registry->replace($string, $pattern, $replacement, $flags, $expected);
+        
+        $this->assertEquals($result, $expected);
+    }
+
+    public function getDataForReplaceTest()
+    {
+        return array(
+            array(
+                new ILess_Node_Anonymous('Hello, Mars?'),
+                new ILess_Node_Anonymous('Mars\?'),
+                new ILess_Node_Anonymous('Earth!'),
+                null,
+                new ILess_Node_Quoted('"Hello, Earth!"', 'Hello, Earth!')
+            ),
+            array(
+                new ILess_Node_Anonymous('One + one = 4'),
+                new ILess_Node_Anonymous('one'),
+                new ILess_Node_Anonymous('2'),
+                new ILess_Node_Anonymous('gi'),
+                new ILess_Node_Quoted('"2 + 2 = 4"', '2 + 2 = 4')
+            ),
+            array(
+                new ILess_Node_Anonymous('This is a string.'),
+                new ILess_Node_Anonymous('(string)\.$'),
+                new ILess_Node_Anonymous('new $1.'),
+                null,
+                new ILess_Node_Quoted('"This is a new string."', 'This is a new string.')
+            ),
+            array(
+                new ILess_Node_Anonymous('bar-1'),
+                new ILess_Node_Anonymous('1'),
+                new ILess_Node_Anonymous('2'),
+                null,
+                new ILess_Node_Quoted('"bar-2"', 'bar-2')
+            )
+        );
     }
 
     /**
