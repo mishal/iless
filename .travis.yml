@@ -1,4 +1,10 @@
 language: php
+before_script:
+  - locale -a
+before_install:
+  - sudo apt-get update
+  - sudo cp ./.travis/sv /var/lib/locales/supported.d/sv
+  - sudo dpkg-reconfigure -f noninteractive locales
 php:
   - "5.5"
   - "5.4"

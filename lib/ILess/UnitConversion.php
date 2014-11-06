@@ -55,7 +55,6 @@ class ILess_UnitConversion
     /**
      * Setups conversions with given precision.
      *
-     * @param array $precision
      */
     public static function setup()
     {
@@ -64,7 +63,7 @@ class ILess_UnitConversion
         }
 
         self::$angle = array(
-            'rad' => ILess_Math::divide(1, ILess_Math::multiply('2', M_PI)), // 1/(2*M_PI)
+            'rad' => ILess_Math::divide(1, ILess_Math::multiply('2', str_replace(',', '.', M_PI))), // 1/(2*M_PI)
             'deg' => ILess_Math::divide(1, 360), // 1/360
             'grad' => ILess_Math::divide(1, 400), // 1/400
             'turn' => '1'
@@ -83,7 +82,7 @@ class ILess_UnitConversion
     }
 
     /**
-     * Retores the state so the setup can be called again
+     * Restores the state so the setup can be called again
      *
      */
     public static function restore()
