@@ -78,7 +78,7 @@ class ILess_Variable
         }
 
         // Color
-        if (ILess_Color::isNamedColor($value) || $value === 'transparent' || strpos($value, '#') === 0) {
+        if (ILess_Color::isNamedColor($value) || strtolower($value) === 'transparent' || strpos($value, '#') === 0) {
             $value = new ILess_Node_Color(new ILess_Color($value));
         } // Quoted string
         elseif (preg_match(self::QUOTED_REGEXP, $value, $matches)) {

@@ -252,6 +252,10 @@ class ILess_Color
                 foreach (str_split($rgb, 1) as $c) {
                     $this->rgb[] = hexdec($c . $c);
                 }
+            } elseif(strtolower($rgb) == 'transparent') {
+                $this->rgb = array(255, 255, 255);
+                $this->isTransparentKeyword = true;
+                $alpha = 0;
             } else {
                 throw new InvalidArgumentException('Argument must be a color keyword or 3/6 digit hex e.g. #FFF.');
             }
