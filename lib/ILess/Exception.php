@@ -302,7 +302,7 @@ class ILess_Exception extends Exception
         return sprintf('<a href="%s" class="file-edit">%s</a>', htmlspecialchars(strtr(self::$fileEditUrlFormat, array(
             // allow more formats
             '%f' => $path,
-            '%file' => $file,
+            '%file' => $path,
             '%line' => $line,
             '%l' => $line
         ))), $path);
