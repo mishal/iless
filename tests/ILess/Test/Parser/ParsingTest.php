@@ -60,7 +60,19 @@ class ILess_Test_Parser_ParsingTest extends ILess_Test_TestCase
         if (is_readable($diffFile = str_replace('/less/', '/diff/', $lessFile . '.php'))) {
             $diff = include $diffFile;
             $actualDiff = array_diff(explode("\n", $compiled), explode("\n", $preCompiled));
-            $this->assertEquals($diff, $actualDiff);
+            foreach ($diff as $lineNum => $change) {
+                if ($change[0] == '#') {
+                    if (preg_match($change, @$actualDiff[$lineNum])) {
+                        unset($actualDiff[$lineNum]);
+                    }
+                } else
+                {
+                    if (@$actualDiff[$lineNum] == $change) {
+                        unset($actualDiff[$lineNum]);
+                    }
+                }
+            }
+            $this->assertEquals($actualDiff, array());
         } else {
             $this->assertEquals($preCompiled, $compiled);
         }
