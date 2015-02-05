@@ -261,14 +261,14 @@ class ILess_Math
     }
 
     /**
-     * Substract one arbitrary precision number from another
+     * Subtract one arbitrary precision number from another
      *
      * @param string $left_operand The left operand, as a string.
      * @param string $right_operand The right operand, as a string.
      * @param integer $precision This optional parameter is used to set the number of digits after the decimal place in the result.
      * @return string Returns the result as a string.
      */
-    public static function substract($left_operand, $right_operand, $precision = null)
+    public static function subtract($left_operand, $right_operand, $precision = null)
     {
         return is_null($precision) ? bcsub($left_operand, $right_operand) : bcsub($left_operand, $right_operand, $precision);
     }
@@ -357,7 +357,7 @@ class ILess_Math
             return self::add($value, '0.' . str_repeat('0', $precision) . '5', $precision);
         }
 
-        return self::substract($value, '0.' . str_repeat('0', $precision) . '5', $precision);
+        return self::subtract($value, '0.' . str_repeat('0', $precision) . '5', $precision);
     }
 
     /**
@@ -420,7 +420,7 @@ class ILess_Math
         if (!self::isNegative($value)) {
             $value = self::add($value, '1', 0);
         } else {
-            $value = self::substract($value, '0', 0);
+            $value = self::subtract($value, '0', 0);
         }
 
         return self::clean(self::divide($value, $multiplier, $precision));
@@ -447,7 +447,7 @@ class ILess_Math
         if (!self::isNegative($number)) {
             $number = self::add($number, '0', 0);
         } else {
-            $number = self::substract($number, '1', 0);
+            $number = self::subtract($number, '1', 0);
         }
 
         return self::clean(self::divide($number, $multiplier, $precision));
@@ -510,7 +510,7 @@ class ILess_Math
             case '+':
                 return self::clean(self::add($a, $b));
             case '-':
-                return self::clean(self::substract($a, $b));
+                return self::clean(self::subtract($a, $b));
             case '*':
                 return self::clean(self::multiply($a, $b));
             case '/':

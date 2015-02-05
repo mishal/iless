@@ -1399,17 +1399,17 @@ class ILess_FunctionRegistry
     public function screen(ILess_Node_Color $color1, ILess_Node_Color $color2)
     {
         /*
-        $rs1 = ILess_Math::substract('255', $color1->getRed(true));
-        $rs2 = ILess_Math::substract('255', $color2->getRed(true));
-        $r = ILess_Math::substract('255', ILess_Math::divide(ILess_Math::multiply($rs1, $rs2), '255'));
+        $rs1 = ILess_Math::subtract('255', $color1->getRed(true));
+        $rs2 = ILess_Math::subtract('255', $color2->getRed(true));
+        $r = ILess_Math::subtract('255', ILess_Math::divide(ILess_Math::multiply($rs1, $rs2), '255'));
 
-        $rs1 = ILess_Math::substract('255', $color1->getGreen(true));
-        $rs2 = ILess_Math::substract('255', $color2->getGreen(true));
-        $g = ILess_Math::substract('255', ILess_Math::divide(ILess_Math::multiply($rs1, $rs2), '255'));
+        $rs1 = ILess_Math::subtract('255', $color1->getGreen(true));
+        $rs2 = ILess_Math::subtract('255', $color2->getGreen(true));
+        $g = ILess_Math::subtract('255', ILess_Math::divide(ILess_Math::multiply($rs1, $rs2), '255'));
 
-        $rs1 = ILess_Math::substract('255', $color1->getBlue(true));
-        $rs2 = ILess_Math::substract('255', $color2->getBlue(true));
-        $b = ILess_Math::substract('255', ILess_Math::divide(ILess_Math::multiply($rs1, $rs2), '255'));
+        $rs1 = ILess_Math::subtract('255', $color1->getBlue(true));
+        $rs2 = ILess_Math::subtract('255', $color2->getBlue(true));
+        $b = ILess_Math::subtract('255', ILess_Math::divide(ILess_Math::multiply($rs1, $rs2), '255'));
         */
 
         // Formula: Result Color = 255 - [((255 - Top Color)*(255 - Bottom Color))/255]
