@@ -208,7 +208,7 @@ I know that [God loves to you](http://bible.com/37/1jn.4.9-10.ceb) (is written i
 
 If you did the steps above with your whole heart you are now a **[new creation](http://bible.com/37/2co.5.17.ceb)**. You belong to God's family and you have now an **eternal life**. You have been redeemed from the eternal punishment - from the outer darkness where is weeping and gnashing of teeth.
 
-**Read the Bible**, and ask God to speak with you and to lead you to a (*true*) [Church](http://www.ibethel.org/). There is a lot of so called Churches around, but they to do not teach nor live the Bible. Note: I do not have any connections with Bethel Church.
+**Read the Bible**, and ask God to speak with you and to lead you to a (*true*) Church. There is a lot of so called Churches around, but they to do not teach nor live the Bible.
 
 ## Credits
 
