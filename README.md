@@ -26,6 +26,9 @@ To use ILess in your project you can:
 To run ILess you need:
 
  * `PHP >= 5.2`
+
+For full compatibility with the official LESS implementation you need:
+
  * `bcmath` extension installed
 
 ## Feature Highlights

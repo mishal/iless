@@ -9,8 +9,7 @@
     {"name": "ILess contributors", "homepage": "https://github.com/mishal/iless/wiki/Contributors"}
   ],
   "require": {
-    "php": ">=5.2.0",
-    "ext-bcmath": "*"
+    "php": ">=5.2.0"
   },
   "autoload": {
     "psr-0": { "ILess": "lib/" }

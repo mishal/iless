@@ -50,6 +50,10 @@ class ILess_Math
             return;
         }
 
+        if (!function_exists('bcscale')) {
+            return;
+        }
+
         if ($defaultPrecision) {
             self::$defaultPrecision = (int)$defaultPrecision;
         }
@@ -73,6 +77,10 @@ class ILess_Math
      */
     public static function restore()
     {
+        if (!function_exists('bcscale')) {
+            return;
+        }
+
         if (self::$oldPrecision !== null
             && function_exists('ini_set')
         ) {
@@ -103,6 +111,10 @@ class ILess_Math
      */
     public static function add($left_operand, $right_operand, $precision = null)
     {
+        if (!function_exists('bcadd')) {
+            return strval(floatval($left_operand) + floatval($right_operand));
+        }
+
         return is_null($precision) ? bcadd($left_operand, $right_operand) : bcadd($left_operand, $right_operand, $precision);
     }
 
@@ -116,6 +128,17 @@ class ILess_Math
      */
     public static function compare($left_operand, $right_operand, $precision = null)
     {
+        if (!function_exists('bccomp')) {
+            $ret = floatval($left_operand) - floatval($right_operand);
+            if ($ret < 0) {
+                return -1;
+            }
+            if ($ret > 0) {
+                return 1;
+            }
+            return 0;
+        }
+
         return is_null($precision) ? bccomp($left_operand, $right_operand) : bccomp($left_operand, $right_operand, $precision);
     }
 
@@ -188,6 +211,10 @@ class ILess_Math
      */
     public static function sqrt($operand, $precision = null)
     {
+        if (!function_exists('bcsqrt')) {
+            return strval(sqrt(floatval($operand)));
+        }
+
         return self::clean(is_null($precision) ? bcsqrt($operand) : bcsqrt($operand, $precision));
     }
 
@@ -201,6 +228,10 @@ class ILess_Math
      */
     public static function divide($left_operand, $right_operand, $precision = null)
     {
+        if (!function_exists('bcdiv')) {
+            return strval(floatval($left_operand) / floatval($right_operand));
+        }
+
         return is_null($precision) ? bcdiv($left_operand, $right_operand) : bcdiv($left_operand, $right_operand, $precision);
     }
 
@@ -231,6 +262,12 @@ class ILess_Math
      */
     public static function modulus($left_operand, $modulus)
     {
+        if (!function_exists('bcmod')) {
+            $ret = strval(floatval($left_operand) % floatval($modulus));
+            if ($ret == '0') return NULL;
+            return $ret;
+        }
+
         return bcmod($left_operand, $modulus);
     }
 
@@ -244,6 +281,10 @@ class ILess_Math
      */
     public static function multiply($left_operand, $right_operand, $precision = null)
     {
+        if (!function_exists('bcmul')) {
+            return strval(floatval($left_operand) * floatval($right_operand));
+        }
+
         return is_null($precision) ? bcmul($left_operand, $right_operand) : bcmul($left_operand, $right_operand, $precision);
     }
 
@@ -257,6 +298,10 @@ class ILess_Math
      */
     public static function power($left_operand, $right_operand, $precision = null)
     {
+        if (!function_exists('bcpow')) {
+            return strval(pow(floatval($left_operand), floatval($right_operand)));
+        }
+
         return is_null($precision) ? bcpow($left_operand, $right_operand) : bcpow($left_operand, $right_operand, $precision);
     }
 
@@ -270,6 +315,10 @@ class ILess_Math
      */
     public static function substract($left_operand, $right_operand, $precision = null)
     {
+        if (!function_exists('bcsub')) {
+            return strval(floatval($left_operand) - floatval($right_operand));
+        }
+
         return is_null($precision) ? bcsub($left_operand, $right_operand) : bcsub($left_operand, $right_operand, $precision);
     }
 
