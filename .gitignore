@@ -9,3 +9,4 @@ Thumbs.db
 /nbproject
 /examples/cache/*
 /index.php
+phpunit.xml
