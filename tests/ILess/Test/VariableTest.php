@@ -34,6 +34,8 @@ class ILess_Test_VariableTest extends ILess_Test_TestCase
             array('foobar', '12px', new ILess_Node_Rule('@foobar', new ILess_Node_Dimension('12', new ILess_Node_DimensionUnit('px')))),
             array('myurl', '"http://example.com/image.jpg"', new ILess_Node_Rule('@myurl', new ILess_Node_Quoted(
                 '"http://example.com/image.jpg"', 'http://example.com/image.jpg'))),
+            array('rgb', 'rgb(46, 120, 176)', new ILess_Node_Rule('@rgb', new ILess_Node_Color(array(46, 120, 176)))),
+            array('rgba', 'rgba(46, 120, 176, 0.5)', new ILess_Node_Rule('@rgba', new ILess_Node_Color(array(46, 120, 176), 0.5)))
         );
     }
 

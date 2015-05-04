@@ -27,6 +27,11 @@ class ILess_Variable
     const QUOTED_REGEXP = '/^"((?:[^"\\\\\r\n]|\\\\.)*)"|\'((?:[^\'\\\\\r\n]|\\\\.)*)\'$/';
 
     /**
+     * RGBA detection regexp
+     */
+    const RGBA_COLOR_REGEXP = '/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/';
+
+    /**
      * Important flag
      *
      * @var boolean
@@ -80,7 +85,11 @@ class ILess_Variable
         // Color
         if (ILess_Color::isNamedColor($value) || strtolower($value) === 'transparent' || strpos($value, '#') === 0) {
             $value = new ILess_Node_Color(new ILess_Color($value));
-        } // Quoted string
+        } elseif (preg_match(self::RGBA_COLOR_REGEXP, $value, $matches)) { // RGB(A) colors
+            $value = new ILess_Node_Color(new ILess_Color(array(
+                $matches[1], $matches[2], $matches[3]
+            ), isset($matches[4]) ? $matches[4] : 1));
+        }  // Quoted string
         elseif (preg_match(self::QUOTED_REGEXP, $value, $matches)) {
             $value = new ILess_Node_Quoted($matches[0], $matches[0][0] == '"' ? $matches[1] : $matches[2]);
         } // URL
