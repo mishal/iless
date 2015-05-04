@@ -51,6 +51,13 @@ class ILess_Node_Quoted extends ILess_Node implements ILess_Node_ComparableInter
     public $index = 0;
 
     /**
+     * The operator
+     *
+     * @var string
+     */
+    public $operator;
+
+    /**
      * Constructor
      *
      * @param string $quotedString Whole string with quotes
