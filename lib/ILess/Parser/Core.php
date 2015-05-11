@@ -485,13 +485,12 @@ class ILess_Parser_Core
     protected function toCSS(ILess_Node_Ruleset $ruleset, array $variables)
     {
         $this->setupMathAndLocale();
+        $this->prepareVariables($this->env, $variables);
 
         // precompilation visitors
         foreach ($this->getPreCompileVisitors() as $visitor) {
             $visitor->run($ruleset);
         }
-
-        $this->prepareVariables($this->env, $variables);
 
         // compile the ruleset
         $compiled = $ruleset->compile($this->env);

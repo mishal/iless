@@ -30,4 +30,22 @@ class ILess_Test_Issues_050Test extends ILess_Test_TestCase
         $css = $parser->getCSS();
     }
 
+    public function testIssueWithApiVariables()
+    {
+        $parser = new ILess_Parser(array(
+            'compress' => false
+        ));
+
+        $parser->parseString('
+@import "../../../bootstrap3/less/@{swatch}/variables.less";
+');
+        $parser->setVariables(array(
+            'swatch' => 'foobar'
+        ));
+
+        $this->setExpectedException('ILess_Exception_Import', '/bootstrap3/less/foobar/variables.less');
+
+        $css = $parser->getCSS();
+    }
+
 }
