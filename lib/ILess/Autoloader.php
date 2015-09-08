@@ -7,13 +7,16 @@
  * file that was distributed with this source code.
  */
 
+namespace ILess;
+
+use ILess\Exception\Exception;
+
 /**
- * Autoloader
+ * PS4 autoloader
  *
  * @package ILess
- * @subpackage autoload
  */
-class ILess_Autoloader
+class Autoloader
 {
     /**
      * Registered flag
@@ -41,10 +44,10 @@ class ILess_Autoloader
             return;
         }
 
-        self::$libDir = dirname(dirname(__FILE__));
+        self::$libDir = dirname(__DIR__).'/ILess';
 
-        if (false === spl_autoload_register(array('ILess_Autoloader', 'loadClass'))) {
-            throw new Exception('Unable to register ILess_Autoloader::loadClass as an autoloading method.');
+        if (false === spl_autoload_register(array('ILess\Autoloader', 'loadClass'))) {
+            throw new Exception('Unable to register ILess\Autoloader::loadClass as an autoloading method.');
         }
 
         self::$registered = true;
@@ -57,7 +60,7 @@ class ILess_Autoloader
      */
     public static function unregister()
     {
-        spl_autoload_unregister(array('ILess_Autoloader', 'loadClass'));
+        spl_autoload_unregister(array('ILess\Autoloader', 'loadClass'));
         self::$registered = false;
     }
 
@@ -65,17 +68,29 @@ class ILess_Autoloader
      * Loads the class
      *
      * @param string $className The class to load
+     * @return null|true
      */
-    public static function loadClass($className)
+    public static function loadClass($class)
     {
-        // handle only package classes
-        if (strpos($className, 'ILess_') !== 0) {
-            return;
+        // project-specific namespace prefix
+        $prefix = 'ILess\\';
+
+        // does the class use the namespace prefix?
+        $len = strlen($prefix);
+        if (strncmp($prefix, $class, $len) !== 0) {
+            // no, move to the next registered autoloader
+            return null;
         }
 
-        $fileName = self::$libDir . '/' . str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
-        if (file_exists($fileName)) {
-            require $fileName;
+        // get the relative class name
+        $relativeClass = substr($class, $len);
+        // replace the namespace prefix with the base directory, replace namespace
+        // separators with directory separators in the relative class name, append
+        // with .php
+        $file = self::$libDir.'/'.str_replace('\\', '/', $relativeClass).'.php';
+        // if the file exists, require it
+        if (file_exists($file)) {
+            require $file;
 
             return true;
         }

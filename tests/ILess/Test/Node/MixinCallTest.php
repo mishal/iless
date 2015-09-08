@@ -5,22 +5,26 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\ElementNode;
+use ILess\Node\MixinCallNode;
 
 /**
  * MixinCall node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_MixinCall
+ * @covers Node_MixinCall
+ * @group node
  */
-class ILess_Test_Node_MixinCallTest extends ILess_Test_TestCase
+class Test_Node_MixinCallTest extends Test_TestCase
 {
     /**
      * @covers __constructor
      */
     public function testConstructor()
     {
-        $mc = new ILess_Node_MixinCall(array(new ILess_Node_Element('', 'foobar')));
+        $mc = new MixinCallNode(array(new ElementNode('', 'foobar')));
     }
 
     /**
@@ -28,7 +32,7 @@ class ILess_Test_Node_MixinCallTest extends ILess_Test_TestCase
      */
     public function testGetType()
     {
-        $mc = new ILess_Node_MixinCall(array(new ILess_Node_Element('', 'foobar')));
+        $mc = new MixinCallNode(array(new ElementNode('', 'foobar')));
         $this->assertEquals('MixinCall', $mc->getType());
     }
 
@@ -37,10 +41,10 @@ class ILess_Test_Node_MixinCallTest extends ILess_Test_TestCase
      */
     public function testCompile()
     {
-        $this->setExpectedException('ILess_Exception_Compiler');
+        $this->setExpectedException('ILess\Exception\CompilerException');
 
-        $env = new ILess_Environment();
-        $mc = new ILess_Node_MixinCall(array(new ILess_Node_Element('', 'foobar')));
+        $env = new Context();
+        $mc = new MixinCallNode(array(new ElementNode('', 'foobar')));
 
         // throws an exception
         $result = $mc->compile($env);

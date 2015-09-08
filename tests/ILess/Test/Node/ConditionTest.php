@@ -5,22 +5,26 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\AnonymousNode;
+use ILess\Node\ConditionNode;
+use ILess\Node\DimensionNode;
 
 /**
  * Condition node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_Condition
+ * @covers Node_Condition
  */
-class ILess_Test_Node_ConditionTest extends ILess_Test_TestCase
+class Test_Node_ConditionTest extends Test_TestCase
 {
     /**
      * @covers __constructor
      */
     public function testConstructor()
     {
-        $c = new ILess_Node_Condition('>', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(4));
+        $c = new ConditionNode('>', new AnonymousNode(5), new AnonymousNode(4));
     }
 
     /**
@@ -28,7 +32,7 @@ class ILess_Test_Node_ConditionTest extends ILess_Test_TestCase
      */
     public function testGetType()
     {
-        $a = new ILess_Node_Condition('>', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(4));
+        $a = new ConditionNode('>', new AnonymousNode(5), new AnonymousNode(4));
         $this->assertEquals('Condition', $a->getType());
     }
 
@@ -37,50 +41,50 @@ class ILess_Test_Node_ConditionTest extends ILess_Test_TestCase
      */
     public function testCompile()
     {
-        $env = new ILess_Environment();
-
-        // equal
-        $c = new ILess_Node_Condition('=', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(5));
-        $result = $c->compile($env);
-        $this->assertTrue($result);
+        $env = new Context();
 
         // equal - false condition
-        $c = new ILess_Node_Condition('=', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(4));
+        $c = new ConditionNode('=', new AnonymousNode(5), new AnonymousNode(4));
         $result = $c->compile($env);
         $this->assertFalse($result);
 
+        // equal
+        $c = new ConditionNode('=', new AnonymousNode(5), new AnonymousNode(5));
+        $result = $c->compile($env);
+        $this->assertTrue($result);
+
         // greater than
-        $c = new ILess_Node_Condition('>', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(4));
+        $c = new ConditionNode('>', new DimensionNode(5), new DimensionNode(4));
         $result = $c->compile($env);
         $this->assertTrue($result);
 
         // lower than
-        $c = new ILess_Node_Condition('<', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(4));
+        $c = new ConditionNode('<', new DimensionNode(5), new DimensionNode(4));
         $result = $c->compile($env);
         $this->assertFalse($result);
 
         // lower or equal than
-        $c = new ILess_Node_Condition('<=', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(5));
+        $c = new ConditionNode('<=', new DimensionNode(5), new DimensionNode(5));
         $result = $c->compile($env);
         $this->assertTrue($result);
 
         // lower or equal than -> operator modified
-        $c = new ILess_Node_Condition('=<', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(5));
+        $c = new ConditionNode('=<', new DimensionNode(5), new DimensionNode(5));
         $result = $c->compile($env);
         $this->assertTrue($result);
 
         // greater or equal than
-        $c = new ILess_Node_Condition('>=', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(5));
+        $c = new ConditionNode('>=', new DimensionNode(5), new DimensionNode(5));
         $result = $c->compile($env);
         $this->assertTrue($result);
 
         // greater or equal than -> operator modified
-        $c = new ILess_Node_Condition('=>', new ILess_Node_Anonymous(6), new ILess_Node_Anonymous(5));
+        $c = new ConditionNode('=>', new DimensionNode(6), new DimensionNode(5));
         $result = $c->compile($env);
         $this->assertTrue($result);
 
         // greater or equal than -> false condition
-        $c = new ILess_Node_Condition('=>', new ILess_Node_Anonymous(5), new ILess_Node_Anonymous(7));
+        $c = new ConditionNode('=>', new DimensionNode(5), new DimensionNode(7));
         $result = $c->compile($env);
         $this->assertFalse($result);
     }

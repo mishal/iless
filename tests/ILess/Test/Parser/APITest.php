@@ -6,15 +6,18 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Cache\FileSystemCache;
+use ILess\Parser;
 
 /**
  * Parser API tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Parser
+ * @covers Parser
+ * @group parser
  */
-class ILess_Test_ParserAPITest extends ILess_Test_TestCase
+class Test_ParserAPITest extends Test_TestCase
 {
 
     /**
@@ -22,13 +25,13 @@ class ILess_Test_ParserAPITest extends ILess_Test_TestCase
      */
     public function testGetCache()
     {
-        $parser = new ILess_Parser();
-        $this->assertInstanceOf('ILess_CacheInterface', $parser->getCache());
+        $parser = new Parser();
+        $this->assertInstanceOf('ILess\Cache\CacheInterface', $parser->getCache());
 
-        $parser = new ILess_Parser(array(), new ILess_Cache_FileSystem(array(
+        $parser = new Parser(array(), new FileSystemCache(array(
             'cache_dir' => sys_get_temp_dir()
         )));
-        $this->assertInstanceOf('ILess_CacheInterface', $parser->getCache());
+        $this->assertInstanceOf('ILess\Cache\CacheInterface', $parser->getCache());
     }
 
 }

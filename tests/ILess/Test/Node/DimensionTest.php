@@ -5,22 +5,27 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\DimensionNode;
+use ILess\Node\UnitNode;
+use ILess\Output\StandardOutput;
 
 /**
  * Dimension node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_Dimension
+ * @covers Node_Dimension
+ * @group node
  */
-class ILess_Test_Node_DimensionTest extends ILess_Test_TestCase
+class Test_Node_DimensionTest extends Test_TestCase
 {
     /**
      * @covers __constructor
      */
     public function testConstructor()
     {
-        $d = new ILess_Node_Dimension('15');
+        $d = new DimensionNode('15');
     }
 
     /**
@@ -28,7 +33,7 @@ class ILess_Test_Node_DimensionTest extends ILess_Test_TestCase
      */
     public function testGetType()
     {
-        $d = new ILess_Node_Dimension('15');
+        $d = new DimensionNode('15');
         $this->assertEquals('Dimension', $d->getType());
     }
 
@@ -37,10 +42,10 @@ class ILess_Test_Node_DimensionTest extends ILess_Test_TestCase
      */
     public function testToColor()
     {
-        $c = new ILess_Node_Dimension('>', new ILess_Node_DimensionUnit());
+        $c = new DimensionNode('>', new UnitNode());
         $color = $c->toColor();
-        // FIXME: Should the color verify that this is not valid color?!
-        $this->assertInstanceOf('ILess_Node_Color', $color);
+
+        $this->assertInstanceOf('ILess\Node\ColorNode', $color);
     }
 
     /**
@@ -48,11 +53,11 @@ class ILess_Test_Node_DimensionTest extends ILess_Test_TestCase
      */
     public function testGenerateCss()
     {
-        $env = new ILess_Environment();
+        $env = new Context();
         $env->strictUnits = true;
 
-        $output = new ILess_Output();
-        $d = new ILess_Node_Dimension('15', 'px');
+        $output = new StandardOutput();
+        $d = new DimensionNode('15', 'px');
 
         $d->generateCss($env, $output);
 

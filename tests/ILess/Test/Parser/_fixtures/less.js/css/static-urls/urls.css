@@ -31,6 +31,7 @@
   width: 100px;
   height: 100px;
   background: url('assets/logo.png');
+  background: url("#inline-svg");
 }
 @font-face {
   font-family: xecret;
@@ -38,4 +39,8 @@
 }
 #secret {
   font-family: xecret, sans-serif;
+}
+#imported-relative-path {
+  background-image: url(../data/image.jpg);
+  border-image: url('../data/image.jpg');
 }

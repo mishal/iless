@@ -49,7 +49,7 @@ Read [more information on formatting](http://git-scm.com/book/ch7-1.html#Formatt
 
 For more information how to create a pull request check the official manual on [Github's help](https://help.github.com/articles/using-pull-requests).
 
-## Usefull links
+## Useful links
 
  * [PSR-0 guide](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md)
  * [PSR-1 guide](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md)

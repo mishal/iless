@@ -7,13 +7,19 @@
  * file that was distributed with this source code.
  */
 
+namespace ILess;
+
+use ILess\Exception\Exception;
+use ILess\Node\RulesetNode;
+use ILess\Util;
+
 /**
  * Import
  *
  * @package ILess
- * @subpackage import
+ * @subpackage Import
  */
-class ILess_ImportedFile
+final class ImportedFile
 {
     /**
      * The absolute path or URL
@@ -32,7 +38,7 @@ class ILess_ImportedFile
     /**
      * The ruleset
      *
-     * @var ILess_Node_Ruleset
+     * @var RulesetNode
      */
     protected $ruleset;
 
@@ -60,15 +66,15 @@ class ILess_ImportedFile
     public function __construct($path, $content, $lastModified)
     {
         $this->path = $path;
-        $this->content = ILess_Util::normalizeLineFeeds($content);
+        $this->content = Util::normalizeLineFeeds($content);
         $this->lastModified = $lastModified;
     }
 
     /**
      * Sets the ruleset
      *
-     * @param string|ILess_Node_Ruleset|null $ruleset
-     * @return ILess_ImportedFile
+     * @param string|RulesetNode|null $ruleset
+     * @return ImportedFile
      */
     public function setRuleset($ruleset)
     {
@@ -80,7 +86,7 @@ class ILess_ImportedFile
     /**
      * Returns the ruleset
      *
-     * @return ILess_Node_Ruleset|string|null
+     * @return RulesetNode|string|null
      */
     public function getRuleset()
     {
@@ -90,10 +96,10 @@ class ILess_ImportedFile
     /**
      * Sets an error
      *
-     * @param Exception $error
-     * @return ILess_ImportedFile
+     * @param \Exception $error
+     * @return ImportedFile
      */
-    public function setError(Exception $error)
+    public function setError(\Exception $error)
     {
         $this->error = $error;
 
@@ -103,7 +109,7 @@ class ILess_ImportedFile
     /**
      * Returns the error
      *
-     * @return Exception
+     * @return \Exception
      */
     public function getError()
     {

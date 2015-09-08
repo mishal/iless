@@ -7,63 +7,90 @@
  * file that was distributed with this source code.
  */
 
+namespace ILess\Parser;
+
+use ILess\Color;
+use ILess\Context;
+use ILess\DebugInfo;
+use ILess\Exception\CompilerException;
+use ILess\Exception\ParserException;
+use ILess\Node;
+use ILess\Node\AlphaNode;
+use ILess\Node\AnonymousNode;
+use ILess\Node\AssignmentNode;
+use ILess\Node\AttributeNode;
+use ILess\Node\CallNode;
+use ILess\Node\ColorNode;
+use ILess\Node\CombinatorNode;
+use ILess\Node\CommentNode;
+use ILess\Node\ConditionNode;
+use ILess\Node\DetachedRulesetNode;
+use ILess\Node\DimensionNode;
+use ILess\Node\DirectiveNode;
+use ILess\Node\ElementNode;
+use ILess\Node\ExpressionNode;
+use ILess\Node\ExtendNode;
+use ILess\Node\ImportNode;
+use ILess\Node\JavascriptNode;
+use ILess\Node\KeywordNode;
+use ILess\Node\MediaNode;
+use ILess\Node\MixinCallNode;
+use ILess\Node\MixinDefinitionNode;
+use ILess\Node\NegativeNode;
+use ILess\Node\VariableNode;
+use ILess\Node\ValueNode;
+use ILess\Node\UrlNode;
+use ILess\Node\UnicodeDescriptorNode;
+use ILess\Node\SelectorNode;
+use ILess\Node\RulesetNode;
+use ILess\Node\RuleNode;
+use ILess\Node\QuotedNode;
+use ILess\Node\ParenNode;
+use ILess\Node\OperationNode;
+use ILess\ImportedFile;
+use ILess\Importer;
+use ILess\Visitor\Visitor;
+use InvalidArgumentException;
+use ILess\Math;
+use ILess\Node\RulesetCallNode;
+use ILess\SourceMap\Generator;
+use ILess\Util;
+use ILess\Variable;
+use ILess\Visitor\ImportVisitor;
+use ILess\Visitor\JoinSelectorVisitor;
+use ILess\Visitor\ProcessExtendsVisitor;
+use ILess\Visitor\ToCSSVisitor;
+
 /**
  * Parser core
  *
- * @package ILess
- * @subpackage parser
+ * @package ILess\Parser
  */
-class ILess_Parser_Core
+class Core
 {
     /**
-     * The environment
-     *
-     * @var ILess_Environment
+     * Parser version
      */
-    protected $env;
+    const VERSION = '2.0.0';
+
+    /**
+     * Less.js compatibility version
+     */
+    const LESS_JS_VERSION = '2.5.x';
+
+    /**
+     * The context
+     *
+     * @var Context
+     */
+    protected $context;
 
     /**
      * The importer
      *
-     * @var ILess_Importer
+     * @var Importer
      */
     protected $importer;
-
-    /**
-     * The string to be parsed
-     *
-     * @var string
-     */
-    protected $input = '';
-
-    /**
-     * The length of the string to be parsed
-     *
-     * @var integer
-     */
-    protected $length = 0;
-
-    /**
-     * The current position in the input
-     *
-     * @var integer
-     */
-    protected $position = 0;
-
-    /**
-     * The furthest index the parser has gone to
-     *
-     * @var integer
-     */
-    protected $furthestPosition = 0;
-
-    /**
-     * The saved position
-     *
-     * @var integer
-     * @see save(), restore()
-     */
-    private $savedPosition = 0;
 
     /**
      * Array of variables
@@ -80,62 +107,80 @@ class ILess_Parser_Core
     protected $rules = array();
 
     /**
+     * @var ParserInput
+     */
+    protected $input;
+
+    /**
      * Constructor
      *
-     * @param ILess_Environment $env The environment
-     * @param ILess_Importer $importer The importer
+     * @param Context $context The context
+     * @param Importer $importer The importer
      */
-    public function __construct(ILess_Environment $env, ILess_Importer $importer)
+    public function __construct(Context $context, Importer $importer)
     {
-        $this->env = $env;
+        $this->context = $context;
         $this->importer = $importer;
+        $this->input = new ParserInput();
     }
 
     /**
      * Parse a Less string from a given file
      *
-     * @throws ILess_Exception_Parser
-     * @param string|ILess_ImportedFile $fil The file to parse (Will be loaded via the importers)
+     * @throws ParserException
+     * @param string|ImportedFile $file The file to parse (Will be loaded via the importer)
      * @param boolean $returnRuleset Indicates whether the parsed rules should be wrapped in a ruleset.
-     * @return mixed If $returnRuleset is true, ILess_Parser_Core, ILess_Node_Ruleset otherwise
+     * @return mixed If $returnRuleset is true, ILess\Parser\Core, ILess\ILess\Node\RulesetNode otherwise
      */
     public function parseFile($file, $returnRuleset = false)
     {
         // save the previous information
-        $previousFileInfo = $this->env->currentFileInfo;
+        $previousFileInfo = $this->context->currentFileInfo;
 
-        if (!($file instanceof ILess_ImportedFile)) {
-            $this->env->setCurrentFile($file);
+        if (!($file instanceof ImportedFile)) {
+
+            $this->context->setCurrentFile($file);
 
             if ($previousFileInfo) {
-                $this->env->currentFileInfo->reference = $previousFileInfo->reference;
+                $this->context->currentFileInfo->reference = $previousFileInfo->reference;
             }
 
             // try to load it via importer
-            list(, $file) = $this->importer->import($file, $this->env->currentFileInfo);
-            $this->env->setCurrentFile($file->getPath());
+            list(, $file) = $this->importer->import($file, true, $this->context->currentFileInfo);
+
+            /* @var $file ImportedFile */
+            $this->context->setCurrentFile($file->getPath());
+            $this->context->currentFileInfo->importedFile = $file;
+
+            $ruleset = $file->getRuleset();
 
         } else {
-            $this->env->setCurrentFile($file->getPath());
+
+            $this->context->setCurrentFile($file->getPath());
 
             if ($previousFileInfo) {
-                $this->env->currentFileInfo->reference = $previousFileInfo->reference;
+                $this->context->currentFileInfo->reference = $previousFileInfo->reference;
+            }
+
+            $this->context->currentFileInfo->importedFile = $file;
+
+            $ruleset = $file->getRuleset();
+            if (!$ruleset) {
+                $file->setRuleset(
+                    ($ruleset = new RulesetNode(array(), $this->parse($file->getContent())))
+                );
             }
         }
 
-        $this->env->currentFileInfo->importedFile = $file;
-
-        $rules = $this->parse($file->getContent());
-
         if ($previousFileInfo) {
-            $this->env->currentFileInfo = $previousFileInfo;
+            $this->context->currentFileInfo = $previousFileInfo;
         }
 
         if ($returnRuleset) {
-            return new ILess_Node_Ruleset(array(), $rules);
+            return $ruleset;
         }
 
-        $this->rules = array_merge($this->rules, $rules);
+        $this->rules = array_merge($this->rules, $ruleset->rules);
 
         return $this;
     }
@@ -145,30 +190,39 @@ class ILess_Parser_Core
      *
      * @param string $string The string to parse
      * @param string $filename The filename for reference (will be visible in the source map)
-     * @return ILess_Parser_Core
+     * @param bool $returnRuleset Return the ruleset?
+     * @return $this
      */
-    public function parseString($string, $filename = '__string_to_parse__')
+    public function parseString($string, $filename = '__string_to_parse__', $returnRuleset = false)
     {
-        $string = ILess_Util::normalizeString((string)$string);
+        $string = Util::normalizeString((string)$string);
 
         // we need unique key
         $key = sprintf('%s[__%s__]', $filename, md5($string));
 
         // create a dummy information, since we are not parsing a real file,
-        // but a string comming from outside
-        $this->env->setCurrentFile($filename);
-        $importedFile = new ILess_ImportedFile($key, $string, time());
+        // but a string coming from outside
+        $this->context->setCurrentFile($filename);
+        $importedFile = new ImportedFile($key, $string, time());
 
         // save information, so the exceptions can handle errors in the string
         // and source map is generated for the string
-        $this->env->currentFileInfo->importedFile = $importedFile;
-        $this->importer->setImportedFile($key, $importedFile, $key, $this->env->currentFileInfo);
+        $this->context->currentFileInfo->importedFile = $importedFile;
+        $this->importer->setImportedFile($key, $importedFile, $key, $this->context->currentFileInfo);
 
-        if ($this->env->sourceMap) {
-            $this->env->setFileContent($key, $string);
+        if ($this->context->sourceMap) {
+            $this->context->setFileContent($key, $string);
         }
 
-        $this->rules = array_merge($this->rules, $this->parse($string));
+        $importedFile->setRuleset(
+            ($ruleset = new RulesetNode(array(), $this->parse($string)))
+        );
+
+        if ($returnRuleset) {
+            return $ruleset;
+        }
+
+        $this->rules = array_merge($this->rules, $ruleset->rules);
 
         return $this;
     }
@@ -177,7 +231,7 @@ class ILess_Parser_Core
      * Adds variables
      *
      * @param array $variables Array of variables
-     * @return ILess_Parser_Core
+     * @return $this
      */
     public function addVariables(array $variables)
     {
@@ -189,7 +243,7 @@ class ILess_Parser_Core
     /**
      * Clears all assigned variables
      *
-     * @return ILess_Parser_Core
+     * @return $this
      */
     public function clearVariables()
     {
@@ -202,7 +256,7 @@ class ILess_Parser_Core
      * Sets variables
      *
      * @param array $variables
-     * @return ILess_Parser_Core
+     * @return $this
      */
     public function setVariables(array $variables)
     {
@@ -216,7 +270,7 @@ class ILess_Parser_Core
      *
      * @param string|array $variable The variable name(s) to unset as string or an array
      * @see setVariables, addVariables
-     * @return ILess_Parser_Core
+     * @return $this
      */
     public function unsetVariable($variable)
     {
@@ -227,8 +281,8 @@ class ILess_Parser_Core
         foreach ($variable as $name) {
             if (isset($this->variables[$name])) {
                 unset($this->variables[$name]);
-            } elseif (isset($this->variables['!' . $name])) {
-                unset($this->variables['!' . $name]);
+            } elseif (isset($this->variables['!'.$name])) {
+                unset($this->variables['!'.$name]);
             }
         }
 
@@ -240,196 +294,53 @@ class ILess_Parser_Core
      *
      * @param string $string The string to parse
      * @return array
-     * @throws ILess_Exception_Parser If there was an error in parsing the string
+     * @throws ParserException If there was an error in parsing the string
      */
     protected function parse($string)
     {
-        $this->setStringToBeParsed($string);
-        $this->preParse();
+        $string = Util::normalizeString($string);
+
+        $this->input = new ParserInput();
+        $this->input->start($string);
         $rules = $this->parsePrimary();
 
-        // has the whole string been parsed?
-        if ($this->furthestPosition < $this->length - 1) {
-            throw new ILess_Exception_Parser('Unrecognised input.', $this->furthestPosition, $this->env->currentFileInfo);
+        $endInfo = $this->input->end();
+        $error = null;
+
+        if (!$endInfo->isFinished) {
+            $message = $endInfo->furthestPossibleErrorMessage;
+            if (!$message) {
+                $message = 'Unrecognised input';
+                if ($endInfo->furthestChar === '}') {
+                    $message .= '. Possibly missing opening \'{\'';
+                } elseif ($endInfo->furthestChar === ')') {
+                    $message .= '. Possibly missing opening \'(\'';
+                } elseif ($endInfo->furthestReachedEnd) {
+                    $message .= '. Possibly missing something';
+                }
+            }
+            $error = new ParserException($message, $endInfo->furthest, $this->context->currentFileInfo);
+        }
+
+        if ($error) {
+            throw $error;
         }
 
         return $rules;
     }
 
     /**
-     * Validates the string.
-     *
-     * @return true
-     * @throws ILess_Exception_Parser If the string is not parsable
-     */
-    protected function preParse()
-    {
-        // FIXME: what about utf8?
-        $level = $parenLevel = 0;
-        $lastOpening = $lastClosing = $lastOpeningParen = $lastMultiComment = $lastMultiCommentEndBrace = $matched = null;
-        $length = strlen($this->input);
-
-        for ($parserCurrentIndex = 0; $parserCurrentIndex < $length; $parserCurrentIndex++) {
-
-            // FIXME: what about utf8?
-            $cc = ord($this->input[$parserCurrentIndex]);
-            if ((($cc >= 97) && ($cc <= 122)) || ($cc < 34)) {
-                // a-z or whitespace
-                continue;
-            }
-
-            switch ($cc) {
-                case 40: // (
-                    $parenLevel++;
-                    continue;
-                case 41: // )
-                    $parenLevel--;
-                    continue;
-                case 59:
-                    continue;
-                case 123: // {
-                    $level++;
-                    $lastOpening = $parserCurrentIndex;
-                    continue;
-                case 125: // }
-                    $level--;
-                    $lastClosing = $parserCurrentIndex;
-                    continue;
-                case 92: // \
-                    if ($parserCurrentIndex < $length - 1) {
-                        $parserCurrentIndex++;
-                        continue;
-                    }
-                    throw new ILess_Exception_Parser('Unescaped `\\`.', $parserCurrentIndex, $this->env->currentFileInfo);
-                case 34:
-                case 39:
-                case 96:  // ", ' and `
-                    $matched = 0;
-                    $currentChunkStartIndex = $parserCurrentIndex;
-                    for ($parserCurrentIndex = $parserCurrentIndex + 1; $parserCurrentIndex < $length; $parserCurrentIndex++) {
-
-                        $cc2 = ord($this->input[$parserCurrentIndex]);
-                        if ($cc2 > 96) {
-                            continue;
-                        }
-                        if ($cc2 == $cc) {
-                            $matched = 1;
-                            break;
-                        }
-                        if ($cc2 == 92) { // \
-                            if ($parserCurrentIndex == $length - 1) {
-                                throw new ILess_Exception_Parser('Unescaped `\\`.', $parserCurrentIndex, $this->env->currentFileInfo);
-                            }
-                            $parserCurrentIndex++;
-                        }
-                    }
-                    if ($matched) {
-                        continue;
-                    }
-
-                    throw new ILess_Exception_Parser(sprintf('Unmatched `%s`.', chr($cc)), $currentChunkStartIndex, $this->env->currentFileInfo);
-                case 47: // /, check for comment
-                    if ($parenLevel || ($parserCurrentIndex == $length - 1)) {
-                        continue;
-                    }
-                    $cc2 = ord($this->input[$parserCurrentIndex + 1]);
-                    if ($cc2 == 47) {
-                        // //, find lnfeed
-                        for ($parserCurrentIndex = $parserCurrentIndex + 2; $parserCurrentIndex < $length; $parserCurrentIndex++) {
-                            $cc2 = ord($this->input[$parserCurrentIndex]);
-                            if (($cc2 <= 13) && (($cc2 == 10) || ($cc2 == 13))) {
-                                break;
-                            }
-                        }
-                    } elseif ($cc2 == 42) {
-                        // /*, find */
-                        $lastMultiComment = $currentChunkStartIndex = $parserCurrentIndex;
-                        for ($parserCurrentIndex = $parserCurrentIndex + 2; $parserCurrentIndex < $length - 1; $parserCurrentIndex++) {
-                            $cc2 = ord($this->input[$parserCurrentIndex]);
-                            if ($cc2 == 125) {
-                                $lastMultiCommentEndBrace = $parserCurrentIndex;
-                            }
-                            if ($cc2 != 42) {
-                                continue;
-                            }
-                            if (ord($this->input[($parserCurrentIndex + 1)]) == 47) {
-                                break;
-                            }
-                        }
-                        if ($parserCurrentIndex == $length - 1) {
-                            throw new ILess_Exception_Parser('Missing closing `*/`.', $currentChunkStartIndex, $this->env->currentFileInfo);
-                        }
-                    }
-                    continue;
-
-                case 42: // *, check for unmatched */
-                    if (($parserCurrentIndex < $length - 1) && (ord($this->input[$parserCurrentIndex + 1]) == 47)) {
-                        throw new ILess_Exception_Parser('Unmatched `/*`', $parserCurrentIndex, $this->env->currentFileInfo);
-                    }
-                    continue;
-            }
-        }
-
-        if ($level !== 0) {
-            if($level > 0)
-            {
-                if (($lastMultiComment > $lastOpening) && ($lastMultiCommentEndBrace > $lastMultiComment)) {
-                    throw new ILess_Exception_Parser('Missing closing `}` or `*/`.', $lastOpening, $this->env->currentFileInfo);
-                } else {
-                    throw new ILess_Exception_Parser('Missing closing `}`', $lastOpening, $this->env->currentFileInfo);
-                }
-            }
-
-            throw new ILess_Exception_Parser('Missing opening `{`', $lastClosing, $this->env->currentFileInfo);
-
-        } else if ($parenLevel !== 0) {
-
-            if ($parenLevel > 0) {
-                throw new ILess_Exception_Parser('Missing closing `)`.', $parserCurrentIndex, $this->env->currentFileInfo);
-            } else {
-                throw new ILess_Exception_Parser('Missing opening `(`.', $parserCurrentIndex, $this->env->currentFileInfo);
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Setup the math precision
-     *
-     * @return void
-     */
-    private function setupMathAndLocale()
-    {
-        ILess_Math::setup($this->env->precision);
-        ILess_UnitConversion::setup();
-    }
-
-    /**
-     * Restores the math precision
-     *
-     * @return void
-     */
-    private function restoreMathAndLocale()
-    {
-        ILess_Math::restore();
-        ILess_UnitConversion::restore();
-    }
-
-    /**
      * Resets the parser
      *
      * @param boolean $variables Reset also assigned variables via the API?
-     * @return ILess_Parser_Core
+     * @return $this
      */
     public function reset($variables = true)
     {
-        $this->setStringToBeParsed(null);
         $this->rules = array();
 
-        if ($variables)
-        {
-            $this->variables = array();
+        if ($variables) {
+            $this->clearVariables();
         }
 
         return $this;
@@ -443,7 +354,7 @@ class ILess_Parser_Core
      */
     protected function generateCacheKey($filename)
     {
-        return ILess_Util::generateCacheKey($filename);
+        return Util::generateCacheKey($filename);
     }
 
     /**
@@ -463,14 +374,14 @@ class ILess_Parser_Core
     /**
      * Returns root ruleset
      *
-     * @return ILess_Node_Ruleset
-     * @todo Make private
+     * @return RulesetNode
      */
-    public function getRootRuleset()
+    protected function getRootRuleset()
     {
-        $root = new ILess_Node_Ruleset(array(), $this->rules);
+        $root = new RulesetNode(array(), $this->rules);
         $root->root = true;
         $root->firstRoot = true;
+        $root->allowImports = true;
 
         return $root;
     }
@@ -478,43 +389,72 @@ class ILess_Parser_Core
     /**
      * Converts the ruleset to CSS
      *
-     * @param ILess_Node_Ruleset $ruleset
+     * @param RulesetNode $ruleset
      * @param array $variables
      * @return string The generated CSS code
      */
-    protected function toCSS(ILess_Node_Ruleset $ruleset, array $variables)
+    protected function toCSS(RulesetNode $ruleset, array $variables)
     {
-        $this->setupMathAndLocale();
-        $this->prepareVariables($this->env, $variables);
+        $precision = ini_set('precision', 16);
+        $locale = setlocale(LC_NUMERIC, 0);
+        setlocale(LC_NUMERIC, 'C');
 
-        // precompilation visitors
-        foreach ($this->getPreCompileVisitors() as $visitor) {
-            $visitor->run($ruleset);
+        if (extension_loaded('xdebug')) {
+            $level = ini_set('xdebug.max_nesting_level', PHP_INT_MAX);
         }
 
-        // compile the ruleset
-        $compiled = $ruleset->compile($this->env);
+        $e = $css = null;
+        try {
+            // pre compilation visitors
+            foreach ($this->getPreCompileVisitors() as $visitor) {
+                /* @var $visitor Visitor */
+                $visitor->run($ruleset);
+            }
 
-        // post compilation visitors
-        foreach ($this->getPostCompileVisitors() as $visitor) {
-            $visitor->run($compiled);
+            $this->prepareVariables($this->context, $variables);
+
+            // compile the ruleset
+            $compiled = $ruleset->compile($this->context);
+
+            // post compilation visitors
+            foreach ($this->getPostCompileVisitors() as $visitor) {
+                /* @var $visitor Visitor */
+                $visitor->run($compiled);
+            }
+
+            $context = $this->getContext();
+            $context->numPrecision = 8; // less.js compatibility
+
+            if ($context->sourceMap) {
+                $generator = new Generator(
+                    $compiled,
+                    $this->context->getContentsMap(), $this->context->sourceMapOptions
+                );
+                // will also save file
+                $css = $generator->generateCSS($this->context);
+            } else {
+                $css = $compiled->toCSS($this->context);
+            }
+
+            if ($this->context->compress) {
+                $css = preg_replace('/(^(\s)+)|((\s)+$)/', '', $css);
+            }
+
+        } catch (\Exception $e) {
+
         }
 
-        if ($this->getEnvironment()->sourceMap) {
-            $generator = new ILess_SourceMap_Generator($compiled,
-                $this->env->getContentsMap(), $this->env->sourceMapOptions);
-            // will also save file
-            // FIXME: should happen somewhere else?
-            $css = $generator->generateCSS($this->env);
-        } else {
-            $css = $compiled->toCSS($this->env);
+        // restore
+        setlocale(LC_NUMERIC, $locale);
+        ini_set('precision', $precision);
+
+        if (extension_loaded('xdebug')) {
+            ini_set('xdebug.max_nesting_level', $level);
         }
 
-        if ($this->env->compress) {
-            $css = preg_replace('/(^(\s)+)|((\s)+$)/', '', $css);
+        if ($e) {
+            throw $e;
         }
-
-        $this->restoreMathAndLocale();
 
         return $css;
     }
@@ -522,28 +462,28 @@ class ILess_Parser_Core
     /**
      * Prepare variable to be used as nodes
      *
-     * @param ILess_Environment $env
+     * @param Context $context
      * @param array $variables
      */
-    protected function prepareVariables(ILess_Environment $env, array $variables)
+    protected function prepareVariables(Context $context, array $variables)
     {
         // FIXME: flag to mark variables as prepared!
         $prepared = array();
         foreach ($variables as $name => $value) {
             // user provided node, no need to process it further
-            if ($value instanceof ILess_Node) {
+            if ($value instanceof Node) {
                 $prepared[] = $value;
                 continue;
             }
             // this is not an "real" variable
-            if (!$value instanceof ILess_Variable) {
-                $value = ILess_Variable::create($name, $value);
+            if (!$value instanceof Variable) {
+                $value = Variable::create($name, $value);
             }
             $prepared[] = $value->toNode();
         }
 
         if (count($prepared)) {
-            $env->customVariables = new ILess_Node_Ruleset(array(), $prepared);
+            $context->customVariables = new RulesetNode(array(), $prepared);
         }
     }
 
@@ -555,9 +495,9 @@ class ILess_Parser_Core
     protected function getPreCompileVisitors()
     {
         $preCompileVisitors = array();
-        // only if process is allowed
-        if ($this->env->processImports) {
-            $preCompileVisitors[] = new ILess_Visitor_Import($this->getEnvironment(), $this->getImporter());
+
+        if ($this->context->processImports) {
+            $preCompileVisitors[] = new ImportVisitor($this->getContext(), $this->getImporter());
         }
 
         // FIXME: allow plugins to hook here
@@ -572,9 +512,9 @@ class ILess_Parser_Core
     protected function getPostCompileVisitors()
     {
         $postCompileVisitors = array(
-            new ILess_Visitor_JoinSelector(),
-            new ILess_Visitor_ProcessExtend(),
-            new ILess_Visitor_ToCSS($this->getEnvironment())
+            new JoinSelectorVisitor(),
+            new ProcessExtendsVisitor(),
+            new ToCSSVisitor($this->getContext()),
         );
 
         // FIXME: allow plugins to hook here
@@ -582,47 +522,54 @@ class ILess_Parser_Core
     }
 
     /**
-     * Sets the string to be parsed.
-     *
-     * @param string $string The string to be parsed
-     * @return self
-     */
-    protected function setStringToBeParsed($string)
-    {
-        // reset the position
-        $this->position = $this->savedPosition = $this->furthestPosition = 0;
-        $this->input = ILess_Util::normalizeString($string);
-        // FIXME: What about UTF-8?
-        $this->length = strlen($this->input);
-
-        return $this;
-    }
-
-    /**
-     * Parses a primary nodes
-     *
      * @return array
      */
     protected function parsePrimary()
     {
-        $this->skipWhitespace(0);
         $root = array();
+        while (true) {
+            while (true) {
+                $node = $this->parseComment();
+                if (!$node) {
+                    break;
+                }
+                $root[] = $node;
+            }
 
-        while (($node = $this->matchFuncs(array(
-                'parseExtendRule',
-                'parseMixinDefinition',
-                'parseRule',
-                'parseRuleset',
-                'parseMixinCall',
-                'parseComment',
-                'parseDirective'))
-            ) || $this->skipSemicolons()) {
+            if ($this->input->finished) {
+                break;
+            }
+
+            if ($this->input->peek('}')) {
+                break;
+            }
+
+            $node = $this->parseExtendRule();
             if ($node) {
-                // we need to take care of arrays
-                if (is_array($node)) {
-                    $root = array_merge($root, $node);
-                } else {
-                    $root[] = $node;
+                $root = array_merge($root, $node);
+                continue;
+            }
+
+            $node = $this->matchFuncs(
+                array(
+                    'parseMixinDefinition',
+                    'parseRule',
+                    'parseRuleset',
+                    'parseMixinCall',
+                    'parseRulesetCall',
+                    'parseDirective',
+                )
+            );
+
+            if ($node) {
+                $root[] = $node;
+            } else {
+                $foundSemiColon = false;
+                while ($this->input->char(';')) {
+                    $foundSemiColon = true;
+                }
+                if (!$foundSemiColon) {
+                    break;
                 }
             }
         }
@@ -631,19 +578,52 @@ class ILess_Parser_Core
     }
 
     /**
+     * comments are collected by the main parsing mechanism and then assigned to nodes
+     * where the current structure allows it
+     *
+     * @return CommentNode|null
+     */
+    protected function parseComment()
+    {
+        if (count($this->input->commentStore)) {
+            $comment = array_shift($this->input->commentStore);
+
+            return new CommentNode(
+                $comment['text'],
+                isset($comment['isLineComment']) ? $comment['isLineComment'] : false,
+                $comment['index'],
+                $this->context->currentFileInfo
+            );
+        }
+    }
+
+    // The variable part of a variable definition. Used in the `rule` parser
+    //
+    // @fink();
+    //
+    protected function parseRulesetCall()
+    {
+        if ($this->input->currentChar() === '@' && ($name = $this->input->re('/\\G(@[\w-]+)\s*\(\s*\)\s*;/'))) {
+            return new RulesetCallNode($name[1]);
+        }
+    }
+
+    /**
      * Parses a mixin definition
      *
-     * @return ILess_Node_MixinDefinition|null
+     * @return MixinDefinitionNode|null
      */
     protected function parseMixinDefinition()
     {
-        if ((!$this->peekChar('.') && !$this->peekChar('#')) || $this->peekReg('/\\G[^{]*\}/')) {
-            return;
+        if (($this->input->currentChar() !== '.' && $this->input->currentChar() !== '#') ||
+            $this->input->peekReg('/\\G^[^{]*\}/')
+        ) {
+            return null;
         }
 
-        $this->save();
+        $this->input->save();
 
-        if ($match = $this->matchReg('/\\G([#.](?:[\w-]|\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+)\s*\(/')) {
+        if ($match = $this->input->re('/\\G([#.](?:[\w-]|\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+)\s*\(/')) {
             $cond = null;
             $name = $match[1];
             $argInfo = $this->parseMixinArgs(false);
@@ -651,26 +631,33 @@ class ILess_Parser_Core
             $variadic = $argInfo['variadic'];
 
             // .mixincall("@{a}");
-            // looks a bit like a mixin definition.. so we have to be nice and restore
-            if (!$this->matchChar(')')) {
-                $this->furthestPosition = $this->position;
-                $this->restore();
+            // looks a bit like a mixin definition..
+            // also
+            // .mixincall(@a: {rule: set;});
+            // so we have to be nice and restore
+            if (!$this->input->char(')')) {
+                $this->input->restore("Missing closing ')'");
+
+                return null;
             }
 
-            $this->parseComments();
+            $this->input->commentStore = array();
 
             // Guard
-            if ($this->matchString('when')) {
+            if ($this->input->str('when')) {
                 $cond = $this->expect('parseConditions', 'Expected conditions');
             }
 
             $ruleset = $this->parseBlock();
-
             if (is_array($ruleset)) {
-                return new ILess_Node_MixinDefinition($name, $params, $ruleset, $cond, $variadic);
+                $this->input->forget();
+
+                return new MixinDefinitionNode($name, $params, $ruleset, $cond, $variadic);
             } else {
-                $this->restore();
+                $this->input->restore();
             }
+        } else {
+            $this->input->forget();
         }
     }
 
@@ -685,88 +672,283 @@ class ILess_Parser_Core
      * namespaced, but we only support the child and descendant
      * selector for now.
      *
-     * @return ILess_Node_MixinCall
+     * @return MixinCallNode|null
      */
     protected function parseMixinCall()
     {
-        $elements = array();
-        $index = $this->position;
+        $s = $this->input->currentChar();
         $important = false;
-        $args = null;
+        $index = $this->input->i;
         $c = null;
+        $args = array();
 
-        if (!$this->peekChar('.') && !$this->peekChar('#')) {
-            return;
+        if ($s !== '.' && $s !== '#') {
+            return null;
         }
 
-        $this->save(); // stop us absorbing part of an invalid selector
+        $this->input->save(); // stop us absorbing part of an invalid selector
 
-        while ($e = $this->matchReg('/\\G[#.](?:[\w-]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/')) {
-            $elements[] = new ILess_Node_Element($c, $e, $this->position, $this->env->currentFileInfo);
-            $c = $this->matchChar('>');
+        $elements = array();
+        while (true) {
+            $elemIndex = $this->input->i;
+            $e = $this->input->re('/\\G[#.](?:[\w-]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/');
+            if (!$e) {
+                break;
+            }
+            $elements[] = new ElementNode($c, $e, $elemIndex, $this->context->currentFileInfo);
+            $c = $this->input->char('>');
         }
 
-        if ($this->matchChar('(')) {
-            $returned = $this->parseMixinArgs(true);
-            $args = $returned['args'];
-            $this->expect(')');
+        if ($elements) {
+            if ($this->input->char('(')) {
+                $args = $this->parseMixinArgs(true);
+                $args = $args['args'];
+                $this->expect(')');
+            }
+
+            if ($this->parseImportant()) {
+                $important = true;
+            }
+
+            if ($this->parseEnd()) {
+                $this->input->forget();
+
+                return new MixinCallNode($elements, $args, $index, $this->context->currentFileInfo, $important);
+            }
         }
 
-        if (!$args) {
-            $args = array();
+        $this->input->restore();
+    }
+
+    /**
+     * Parses mixin arguments
+     *
+     * @param boolean $isCall The definition or function call?
+     * @return array
+     * @throws CompilerException If there is an error the definition of arguments
+     */
+    protected function parseMixinArgs($isCall)
+    {
+        $expressions = array();
+        $argsSemiColon = array();
+        $isSemiColonSeparated = null;
+        $argsComma = array();
+        $expressionContainsNamed = null;
+        $name = null;
+        $expand = null;
+        $returner = array('args' => null, 'variadic' => false);
+
+        $this->input->save();
+
+        while (true) {
+            if ($isCall) {
+                $arg = $this->matchFuncs(array('parseDetachedRuleset', 'parseExpression'));
+            } else {
+                $this->input->commentStore = array();
+                if ($this->input->str('...')) {
+                    $returner['variadic'] = true;
+                    if ($this->input->char(";") && !$isSemiColonSeparated) {
+                        $isSemiColonSeparated = true;
+                    }
+
+                    if ($isSemiColonSeparated) {
+                        $argsSemiColon[] = array('variadic' => true);
+                    } else {
+                        $argsComma[] = array('variadic' => true);
+                    }
+                    break;
+                }
+                $arg = $this->matchFuncs(
+                    array('parseEntitiesVariable', 'parseEntitiesLiteral', 'parseEntitiesKeyword')
+                );
+            }
+
+            if (!$arg) {
+                break;
+            }
+
+            $nameLoop = null;
+            if ($arg instanceof ExpressionNode) {
+                $arg->throwAwayComments();
+            }
+
+            $value = $arg;
+            $val = null;
+
+            if ($isCall) {
+                // ILess\Variable
+                if (count($arg->value) == 1) {
+                    $val = $arg->value[0];
+                }
+            } else {
+                $val = $arg;
+            }
+
+            if ($val instanceof VariableNode) {
+                if ($this->input->char(':')) {
+                    if (count($expressions) > 0) {
+                        if ($isSemiColonSeparated) {
+                            throw new CompilerException(
+                                'Cannot mix ; and , as delimiter types',
+                                $this->input->i,
+                                $this->context->currentFileInfo
+                            );
+                        }
+                        $expressionContainsNamed = true;
+                    }
+
+                    $value = $this->matchFuncs(array('parseDetachedRuleset', 'parseExpression'));
+                    if (!$value) {
+                        if ($isCall) {
+                            throw new CompilerException(
+                                'Could not understand value for named argument',
+                                $this->input->i,
+                                $this->context->currentFileInfo
+                            );
+                        } else {
+                            $this->input->restore();
+                            $returner['args'] = array();
+
+                            return $returner;
+                        }
+                    }
+
+                    $nameLoop = ($name = $val->name);
+
+                } elseif ($this->input->str('...')) {
+                    if (!$isCall) {
+                        $returner['variadic'] = true;
+
+                        if ($this->input->char(";") && !$isSemiColonSeparated) {
+                            $isSemiColonSeparated = true;
+                        }
+
+                        if ($isSemiColonSeparated) {
+                            $argsSemiColon[] = array('name' => $arg->name, 'variadic' => true);
+                        } else {
+                            $argsComma[] = array('name' => $arg->name, 'variadic' => true);
+                        }
+                        break;
+                    } else {
+                        $expand = true;
+                    }
+                } elseif (!$isCall) {
+                    $name = $nameLoop = $val->name;
+                    $value = null;
+                }
+            }
+
+            if ($value) {
+                $expressions[] = $value;
+            }
+
+            $argsComma[] = array('name' => $nameLoop, 'value' => $value, 'expand' => $expand);
+
+            if ($this->input->char(',')) {
+                continue;
+            }
+
+            if ($this->input->char(';') || $isSemiColonSeparated) {
+
+                if ($expressionContainsNamed) {
+                    throw new CompilerException(
+                        'Cannot mix ; and , as delimiter types',
+                        $this->input->i,
+                        $this->context->currentFileInfo
+                    );
+                }
+
+                $isSemiColonSeparated = true;
+                if (count($expressions) > 1) {
+                    $value = new ValueNode($expressions);
+                }
+                $argsSemiColon[] = array('name' => $name, 'value' => $value, 'expand' => $expand);
+                $name = null;
+                $expressions = array();
+                $expressionContainsNamed = false;
+            }
         }
 
-        if ($this->parseImportant()) {
-            $important = true;
-        }
+        $this->input->forget();
+        $returner['args'] = ($isSemiColonSeparated ? $argsSemiColon : $argsComma);
 
-        if (count($elements) > 0 && ($this->matchChar(';') || $this->peekChar('}'))) {
-            return new ILess_Node_MixinCall($elements, $args, $index, $this->env->currentFileInfo, $important);
-        }
-
-        $this->restore();
+        return $returner;
     }
 
     /**
      * Parses a rule
      *
      * @param boolean $tryAnonymous
-     * @return ILess_Node_Rule
+     * @return RuleNode|null
      */
     protected function parseRule($tryAnonymous = false)
     {
-        $merge = false;
-        $start = $this->position;
-        $this->save();
+        $merge = null;
+        $startOfRule = $this->input->i;
+        $value = null;
+        $merge = null;
+        $important = null;
+        $c = $this->input->currentChar();
 
-        if (isset($this->input[$this->position])) {
-            $c = $this->input[$this->position];
-            if ($c === '.' || $c === '#' || $c === '&') {
-                return;
-            }
+        if ($c === '.' || $c === '#' || $c === '&' || $c === ':') {
+            return null;
         }
 
+        $this->input->save();
+
         if ($name = $this->matchFuncs(array('parseVariable', 'parseRuleProperty'))) {
-            // prefer to try to parse first if its a variable or we are compressing
-            // but always fallback on the other one
-            if (!$tryAnonymous && ($this->env->compress || ($name[0] === '@'))) {
-                $value = $this->matchFuncs(array('parseValue', 'parseAnonymousValue'));
-            } else {
-                $value = $this->matchFuncs(array('parseAnonymousValue', 'parseValue'));
+
+            $isVariable = is_string($name);
+            if ($isVariable) {
+                $value = $this->parseDetachedRuleset();
             }
 
-            $important = $this->parseImportant();
+            $this->input->commentStore = array();
 
-            if (substr($name, -1) === '+') {
-                $merge = true;
-                $name = substr($name, 0, -1);
+            if (!$value) {
+
+                if (is_array($name) && count($name) > 1) {
+                    $tmp = array_pop($name);
+                    $merge = !$isVariable && $tmp->value ? $tmp->value : false;
+                }
+
+                $tryValueFirst = !$tryAnonymous && ($this->context->compress || $isVariable);
+
+                if ($tryValueFirst) {
+                    $value = $this->parseValue();
+                }
+
+                if (!$value) {
+                    $value = $this->parseAnonymousValue();
+                    if ($value) {
+                        $this->input->forget();
+
+                        return new RuleNode(
+                            $name,
+                            $value,
+                            false,
+                            $merge,
+                            $startOfRule,
+                            $this->context->currentFileInfo
+                        );
+                    }
+                }
+
+                if (!$tryValueFirst && !$value) {
+                    $value = $this->parseValue();
+                }
+
+                $important = $this->parseImportant();
             }
 
             if ($value && $this->parseEnd()) {
-                return new ILess_Node_Rule($name, $value, $important, $merge, $start, $this->env->currentFileInfo);
+                $this->input->forget();
+
+                return new RuleNode(
+                    $name, $value, $important, $merge, $startOfRule, $this->context->currentFileInfo
+                );
             } else {
-                $this->furthestPosition = $this->position;
-                $this->restore();
+                $this->input->restore();
                 if ($value && !$tryAnonymous) {
                     return $this->parseRule(true);
                 }
@@ -777,67 +959,79 @@ class ILess_Parser_Core
     /**
      * Parses an anonymous value
      *
-     * @return ILess_Node_Anonymous|null
+     * @return AnonymousNode|null
      */
     protected function parseAnonymousValue()
     {
-        if (preg_match('/\\G([^@+\/\'"*`(;{}-]*);/', $this->input, $match, 0, $this->position)) {
-            $this->position += strlen($match[0]) - 1;
-
-            return new ILess_Node_Anonymous($match[1]);
+        if ($match = $this->input->re('/\\G([^@+\/\'"*`(;{}-]*);/')) {
+            return new AnonymousNode($match[1]);
         }
     }
 
     /**
      * Parses a ruleset like: `div, .class, body > p {...}`
      *
-     * @return ILess_Node_Ruleset|null
-     * @throws ILess_Exception_Parser
+     * @return RulesetNode|null
+     * @throws ParserException
      */
     protected function parseRuleset()
     {
         $selectors = array();
-        $start = $this->position;
+
+        $this->input->save();
 
         $debugInfo = null;
-        // debugging
-        if ($this->env->dumpLineNumbers) {
-            $debugInfo = $this->getDebugInfo($this->position, $this->input, $this->env);
+        if ($this->context->dumpLineNumbers) {
+            $debugInfo = $this->getDebugInfo($this->input->i);
         }
 
-        while ($s = $this->parseLessSelector()) {
+        while (true) {
+            $s = $this->parseLessSelector();
+            if (!$s) {
+                break;
+            }
             $selectors[] = $s;
-            $this->parseComments();
-            if (!$this->matchChar(',')) {
+            $this->input->commentStore = array();
+            if ($s->condition && count($selectors) > 1) {
+                throw new ParserException(
+                    'Guards are only currently allowed on a single selector.',
+                    $this->input->i,
+                    $this->context->currentFileInfo
+                );
+            }
+
+            if (!$this->input->char(',')) {
                 break;
             }
 
             if ($s->condition) {
-                throw new ILess_Exception_Compiler('Guards are only currently allowed on a single selector.', $this->position, $this->env->currentFileInfo);
+                throw new ParserException(
+                    'Guards are only currently allowed on a single selector.',
+                    $this->input->i,
+                    $this->context->currentFileInfo
+                );
             }
 
-            $this->parseComments();
+            $this->input->commentStore = array();
         }
 
-        if (count($selectors) > 0 && (is_array($rules = $this->parseBlock()))) {
-            $ruleset = new ILess_Node_Ruleset($selectors, $rules, $this->env->strictImports);
+        if ($selectors && is_array($rules = $this->parseBlock())) {
+            $this->input->forget();
+            $ruleset = new RulesetNode($selectors, $rules, $this->context->strictImports);
             if ($debugInfo) {
                 $ruleset->debugInfo = $debugInfo;
             }
 
             return $ruleset;
         } else {
-            $this->furthestPosition = $this->position;
-            // Backtrack
-            $this->position = $start;
+            $this->input->restore();
         }
     }
 
     /**
-     * Parses a selector wich extensions (the ability to extend and guard)
+     * Parses a selector with less extensions e.g. the ability to extend and guard
      *
-     * @return ILess_Node_Selector
-     * @see parseSelector()
+     * @return SelectorNode|null
      */
     protected function parseLessSelector()
     {
@@ -848,31 +1042,41 @@ class ILess_Parser_Core
      * Parses a CSS selector.
      *
      * @param boolean $isLess Is this a less sector? (ie. has ability to extend and guard)
-     * @return ILess_Node_Selector
-     * @throws ILess_Exception_Parser
+     * @return SelectorNode|null
+     * @throws ParserException
      */
     protected function parseSelector($isLess = false)
     {
         $elements = array();
         $extendList = array();
+        $allExtends = array();
         $condition = null;
         $when = false;
-        $extend = false;
+        $e = null;
         $c = null;
+        $index = $this->input->i;
 
-        while (($isLess && ($extend = $this->parseExtend()))
-            || ($isLess && ($when = $this->matchString('when'))) || ($e = $this->parseElement())) {
+        while (($isLess && ($extendList = $this->parseExtend()))
+            || ($isLess && ($when = $this->input->str('when'))) || ($e = $this->parseElement())) {
             if ($when) {
                 $condition = $this->expect('parseConditions', 'Expected condition');
             } elseif ($condition) {
-                throw new ILess_Exception_Parser('CSS guard can only be used at the end of selector.', $this->position, $this->env->currentFileInfo);
-            } elseif ($extend) {
-                $extendList = array_merge($extendList, $extend);
+                throw new ParserException(
+                    'CSS guard can only be used at the end of selector.',
+                    $index,
+                    $this->context->currentFileInfo
+                );
+            } elseif ($extendList) {
+                $allExtends = array_merge($allExtends, $extendList);
             } else {
-                if (count($extendList)) {
-                    throw new ILess_Exception_Compiler('Extend can only be used at the end of selector.', $this->position, $this->env->currentFileInfo);
+                if ($allExtends) {
+                    throw new ParserException(
+                        'Extend can only be used at the end of selector.',
+                        $this->input->i,
+                        $this->context->currentFileInfo
+                    );
                 }
-                $c = $this->input[$this->position];
+                $c = $this->input->currentChar();
                 $elements[] = $e;
                 $e = null;
             }
@@ -882,12 +1086,16 @@ class ILess_Parser_Core
             }
         }
 
-        if (count($elements)) {
-            return new ILess_Node_Selector($elements, $extendList, $condition, $this->position, $this->env->currentFileInfo);
+        if ($elements) {
+            return new SelectorNode($elements, $allExtends, $condition, $index, $this->context->currentFileInfo);
         }
 
-        if (count($extendList)) {
-            throw new ILess_Exception_Compiler('Extend must be used to extend a selector, it cannot be used on its own.', $this->position, $this->env->currentFileInfo);
+        if ($allExtends) {
+            throw new ParserException(
+                'Extend must be used to extend a selector, it cannot be used on its own',
+                $this->input->i,
+                $this->context->currentFileInfo
+            );
         }
     }
 
@@ -895,24 +1103,22 @@ class ILess_Parser_Core
      * Parses extend
      *
      * @param boolean $isRule Is is a rule?
-     * @return ILess_Node_Extend|null
+     * @return ExtendNode|null
+     * @throws CompilerException
      */
     protected function parseExtend($isRule = false)
     {
-        $index = $this->position;
         $extendList = array();
+        $index = $this->input->i;
 
-        if (!$this->matchString($isRule ? '&:extend(' : ':extend(')) {
-            return;
+        if (!$this->input->str($isRule ? '&:extend(' : ':extend(')) {
+            return null;
         }
+
         do {
             $option = null;
             $elements = array();
-            while (true) {
-                $option = $this->matchReg('/\\G(all)(?=\s*(\)|,))/');
-                if ($option) {
-                    break;
-                }
+            while (!($option = $this->input->re('/\\G(all)(?=\s*(\)|,))/'))) {
                 $e = $this->parseElement();
                 if (!$e) {
                     break;
@@ -924,8 +1130,17 @@ class ILess_Parser_Core
                 $option = $option[1];
             }
 
-            $extendList[] = new ILess_Node_Extend(new ILess_Node_Selector($elements), $option, $index);
-        } while ($this->matchChar(','));
+            if (!$elements) {
+                throw new CompilerException(
+                    'Missing target selector for :extend()',
+                    $index,
+                    $this->context->currentFileInfo
+                );
+            }
+
+            $extendList[] = new ExtendNode(new SelectorNode($elements), $option, $index);
+
+        } while ($this->input->char(','));
 
         $this->expect('/\\G\)/');
 
@@ -939,7 +1154,7 @@ class ILess_Parser_Core
     /**
      * Parses extend rule
      *
-     * @return ILess_Node_Extend
+     * @return ExtendNode|null
      */
     protected function parseExtendRule()
     {
@@ -957,35 +1172,45 @@ class ILess_Parser_Core
      * Elements are the building blocks for selectors,
      * they are made out of a `combinator` and an element name, such as a tag a class, or `*`.
      *
-     * @return ILess_Node_Element|null
+     * @return ElementNode|null
      */
     protected function parseElement()
     {
+        $index = $this->input->i;
+
         $c = $this->parseCombinator();
 
-        $e = $this->match(array(
-            '/\\G(?:\d+\.\d+|\d+)%/',
-            //'/\\G(?:[.#]?|:*)(?:[\w-]|[^\x00-\x9f]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/',
-            // http://stackoverflow.com/questions/3665962/regular-expression-error-no-ending-delimiter
-            '/\\G(?:[.#]?|:*)(?:[\w-]|[^\\x{00}-\\x{9f}]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/',
-            '*',
-            '&',
-            'parseAttribute',
-            '/\\G\([^()@]+\)/',
-            '/\\G[\.#](?=@)/',
-            'parseEntitiesVariableCurly'
-        ));
+        $e = $this->match(
+            array(
+                '/\\G^(?:\d+\.\d+|\d+)%/',
+                // http://stackoverflow.com/questions/3665962/regular-expression-error-no-ending-delimiter
+                '/\\G^(?:[.#]?|:*)(?:[\w-]|[^\\x{00}-\\x{9f}]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/',
+                '*',
+                '&',
+                'parseAttribute',
+                '/\\G^\([^&()@]+\)/',
+                '/\\G^[\.#:](?=@)/',
+                'parseEntitiesVariableCurly',
+            )
+        );
 
         if (!$e) {
-            if ($this->matchChar('(')) {
-                if (($v = $this->parseSelector()) && $this->matchChar(')')) {
-                    $e = new ILess_Node_Paren($v);
+
+            $this->input->save();
+            if ($this->input->char('(')) {
+                if (($v = $this->parseSelector()) && $this->input->char(')')) {
+                    $e = new ParenNode($v);
+                    $this->input->forget();
+                } else {
+                    $this->input->restore("Missing closing ')'");
                 }
+            } else {
+                $this->input->forget();
             }
         }
 
         if ($e) {
-            return new ILess_Node_Element($c, $e, $this->position, $this->env->currentFileInfo);
+            return new ElementNode($c, $e, $index, $this->context->currentFileInfo);
         }
     }
 
@@ -997,53 +1222,72 @@ class ILess_Parser_Core
      * as it's an empty space. We have to check the previous character
      * in the input, to see if it's a ` ` character.
      *
-     * @return ILess_Node_Combinator|null
+     * @return CombinatorNode|null
      */
     protected function parseCombinator()
     {
-        $c = isset($this->input[$this->position]) ? $this->input[$this->position] : '';
-        if ($c === '>' || $c === '+' || $c === '~' || $c === '|') {
-            $this->position++;
-            while ($this->isWhitespace()) {
-                $this->position++;
+        $c = $this->input->currentChar();
+
+        if ($c === '/') {
+            $this->input->save();
+            $slashedCombinator = $this->input->re('/\\G^\/[a-z]+\//i');
+            if ($slashedCombinator) {
+                $this->input->forget();
+
+                return new CombinatorNode($slashedCombinator);
+            }
+            $this->input->restore();
+        }
+
+        if ($c === '>' || $c === '+' || $c === '~' || $c === '|' || $c === '^') {
+            $this->input->i++;
+            if ($c === '^' && $this->input->currentChar() === '^') {
+                $c = '^^';
+                $this->input->i++;
+            }
+            while ($this->input->isWhitespace()) {
+                $this->input->i++;
             }
 
-            return new ILess_Node_Combinator($c);
-        } elseif ($this->position > 0 && (preg_match('/\s/', $this->input[$this->position - 1]))) {
-            return new ILess_Node_Combinator(' ');
+            return new CombinatorNode($c);
+        } elseif ($this->input->isWhiteSpace(-1)) {
+            return new CombinatorNode(' ');
         } else {
-            return new ILess_Node_Combinator();
+            return new CombinatorNode();
         }
     }
 
     /**
      * Parses an attribute
      *
-     * @return ILess_Node_Attribute|null
+     * @return AttributeNode|null
      */
     protected function parseAttribute()
     {
-        if (!$this->matchChar('[')) {
-            return;
+        if (!$this->input->char('[')) {
+            return null;
         }
 
-        if (!($key = $this->parseEntitiesVariableCurly())) {
+        $key = $this->parseEntitiesVariableCurly();
+        if (!$key) {
             $key = $this->expect('/\\G(?:[_A-Za-z0-9-\*]*\|)?(?:[_A-Za-z0-9-]|\\\\.)+/');
         }
 
         $val = null;
-        if (($op = $this->matchReg('/\\G[|~*$^]?=/'))) {
-            $val = $this->match(array(
-                'parseEntitiesQuoted',
-                '/\\G[0-9]+%/',
-                '/\\G[\w-]+/',
-                'parseEntitiesVariableCurly'
-            ));
+        if (($op = $this->input->re('/\\G[|~*$^]?=/'))) {
+            $val = $this->match(
+                array(
+                    'parseEntitiesQuoted',
+                    '/\\G[0-9]+%/',
+                    '/\\G[\w-]+/',
+                    'parseEntitiesVariableCurly',
+                )
+            );
         }
 
         $this->expect(']');
 
-        return new ILess_Node_Attribute($key, $op, $val);
+        return new AttributeNode($key, $op, $val);
     }
 
     /**
@@ -1051,46 +1295,36 @@ class ILess_Parser_Core
      *
      * `font-family: Baskerville, Georgia, serif;`
      *
-     * @return ILess_Node_Value|null
+     * @return ValueNode|null
      */
     protected function parseValue()
     {
+        $e = null;
         $expressions = array();
-        while ($e = $this->parseExpression()) {
-            $expressions[] = $e;
-            if (!$this->matchChar(',')) {
-                break;
+        do {
+            $e = $this->parseExpression();
+            if ($e) {
+                $expressions[] = $e;
+                if (!$this->input->char(',')) {
+                    break;
+                }
             }
-        }
+        } while ($e);
+
         if (count($expressions) > 0) {
-            return new ILess_Node_Value($expressions);
+            return new ValueNode($expressions);
         }
     }
 
     /**
      * Parses the `!important` keyword
      *
-     * @return boolean
+     * @return string|null
      */
     protected function parseImportant()
     {
-        if ($this->peekChar('!')) {
-            return $this->matchReg('/\\G! *important/');
-        }
-    }
-
-    /**
-     * Parses a variable entity using the protective `{}` like: `@{variable}`
-     *
-     * @return ILess_Node_Variable|null
-     */
-    protected function parseEntitiesVariableCurly()
-    {
-        $index = $this->position;
-        if ($this->length > ($this->position + 1) && $this->input[$this->position] === '@' &&
-            ($curly = $this->matchReg('/\\G@\{([\w-]+)\}/'))
-        ) {
-            return new ILess_Node_Variable('@' . $curly[1], $index, $this->env->currentFileInfo);
+        if ($this->input->currentChar() === '!') {
+            return $this->input->re('/\\G! *important/');
         }
     }
 
@@ -1101,154 +1335,117 @@ class ILess_Parser_Core
      */
     protected function parseVariable()
     {
-        if ($this->peekChar('@') && ($name = $this->matchReg('/\\G(@[\w-]+)\s*:/'))) {
+        if ($this->input->currentChar() == '@' && ($name = $this->input->re('/\\G(@[\w-]+)\s*:/'))) {
             return $name[1];
+        }
+    }
+
+    /**
+     * Parses a variable entity using the protective `{}` like: `@{variable}`
+     *
+     * @return VariableNode|null
+     */
+    protected function parseEntitiesVariableCurly()
+    {
+        $index = $this->input->i;
+        if ($this->input->currentChar() === '@' && ($curly = $this->input->re('/\\G@\{([\w-]+)\}/'))) {
+            return new VariableNode('@'.$curly[1], $index, $this->context->currentFileInfo);
         }
     }
 
     /**
      * Parses rule property
      *
-     * @return string
+     * @return array
      */
     protected function parseRuleProperty()
     {
-        if ($name = $this->matchReg('/\\G(\*?-?[_a-zA-Z0-9-]+)\s*(\+?)\s*:/')) {
-            return $name[1] . (isset($name[2]) ? $name[2] : '');
+        $this->input->save();
+        $index = array();
+        $name = array();
+
+        $simpleProperty = $this->input->re('/\\G([_a-zA-Z0-9-]+)\s*:/');
+        if ($simpleProperty) {
+            $name = new KeywordNode($simpleProperty[1]);
+            $this->input->forget();
+
+            return array($name);
         }
-    }
 
-    /**
-     * Parses mixin arguments
-     *
-     * @param boolean $isCall The definition or function call?
-     * @return array
-     * @throws ILess_Exception_Parser If there is an error the definition of arguments
-     */
-    protected function parseMixinArgs($isCall)
-    {
-        $expressions = array();
-        $argsSemiColon = array();
-        $isSemiColonSeperated = null;
-        $argsComma = array();
-        $expressionContainsNamed = null;
-        $name = null;
-        $returner = array('args' => null, 'variadic' => false);
-        while (true) {
-            if ($isCall) {
-                $arg = $this->parseExpression();
-            } else {
-                $this->parseComments();
-                if ($this->input[$this->position] === '.' && $this->matchReg('/\\G\.{3}/')) {
-                    $returner['variadic'] = true;
-                    if ($this->matchChar(";") && !$isSemiColonSeperated) {
-                        $isSemiColonSeperated = true;
-                    }
+        // In PHP 5.3 we cannot use $this in the closure
+        $input = $this->input;
+        $match = function ($re) use (&$index, &$name, $input) {
+            $i = $input->i;
+            $chunk = $input->re($re);
+            if ($chunk) {
+                $index[] = $i;
+                $name[] = $chunk[1];
 
-                    if ($isSemiColonSeperated) {
-                        $argsSemiColon[] = array('variadic' => true);
-                    } else {
-                        $argsComma[] = array('variadic' => true);
-                    }
-                    break;
-                }
-                $arg = $this->matchFuncs(array('parseEntitiesVariable', 'parseEntitiesLiteral', 'parseEntitiesKeyword'));
+                return count($name);
             }
+        };
 
-            if (!$arg) {
+        $match('/\\G(\*?)/');
+
+        while (true) {
+            if (!$match('/\\G((?:[\w-]+)|(?:@\{[\w-]+\}))/')) {
                 break;
             }
-
-            $nameLoop = null;
-            if ($arg instanceof ILess_Node_Expression) {
-                $arg->throwAwayComments();
-            }
-
-            $value = $arg;
-            $val = null;
-
-            if ($isCall) {
-                // Variable
-                if (count($arg->value) == 1) {
-                    $val = $arg->value[0];
-                }
-            } else {
-                $val = $arg;
-            }
-
-            if ($val instanceof ILess_Node_Variable) {
-                if ($this->matchChar(':')) {
-                    if (count($expressions) > 0) {
-                        if ($isSemiColonSeperated) {
-                            throw new ILess_Exception_Compiler('Cannot mix ; and , as delimiter types', $this->position, $this->env->currentFileInfo);
-                        }
-                        $expressionContainsNamed = true;
-                    }
-                    $value = $this->expect('parseExpression');
-                    $nameLoop = ($name = $val->name);
-                } elseif (!$isCall && $this->matchReg('/\\G\.{3}/')) {
-                    $returner['variadic'] = true;
-                    if ($this->matchChar(";") && !$isSemiColonSeperated) {
-                        $isSemiColonSeperated = true;
-                    }
-                    if ($isSemiColonSeperated) {
-                        $argsSemiColon[] = array('name' => $arg->name, 'variadic' => true);
-                    } else {
-                        $argsComma[] = array('name' => $arg->name, 'variadic' => true);
-                    }
-                    break;
-                } elseif (!$isCall) {
-                    $name = $nameLoop = $val->name;
-                    $value = null;
-                }
-            }
-
-            if ($value) {
-                $expressions[] = $value;
-            }
-
-            $argsComma[] = array('name' => $nameLoop, 'value' => $value);
-
-            if ($this->matchChar(',')) {
-                continue;
-            }
-
-            if ($this->matchChar(';') || $isSemiColonSeperated) {
-                if ($expressionContainsNamed) {
-                    throw new ILess_Exception_Compiler('Cannot mix ; and , as delimiter types', $this->position, $this->env->currentFileInfo);
-                }
-
-                $isSemiColonSeperated = true;
-                if (count($expressions) > 1) {
-                    $value = new ILess_Node_Value($expressions);
-                }
-                $argsSemiColon[] = array('name' => $name, 'value' => $value);
-                $name = null;
-                $expressions = array();
-                $expressionContainsNamed = false;
-            }
         }
-        $returner['args'] = ($isSemiColonSeperated ? $argsSemiColon : $argsComma);
 
-        return $returner;
+        if (count($name) > 1 && $match('/\\G((?:\+_|\+)?)\s*:/')) {
+            $this->input->forget();
+
+            // at last, we have the complete match now. move forward,
+            // convert name particles to tree objects and return:
+            if ($name[0] === '') {
+                array_shift($name);
+                array_shift($index);
+            }
+
+            for ($k = 0; $k < count($name); $k++) {
+                $s = $name[$k];
+                // intentionally @, the name can be an empty string
+                $name[$k] = @$s[0] !== '@' ?
+                    new KeywordNode($s) :
+                    new VariableNode('@'.substr($s, 2, -1), $index[$k], $this->context->currentFileInfo);
+            }
+
+            return $name;
+        }
+
+        $this->input->restore();
     }
+
 
     /**
      * Parses an addition operation
      *
-     * @return ILess_Node_Operation|null
+     * @return OperationNode|null
      */
     protected function parseAddition()
     {
         $operation = false;
         if ($m = $this->parseMultiplication()) {
-            $isSpaced = $this->isWhitespace(-1);
-            while (($op = ($op = $this->matchReg('/\\G[-+]\s+/')) ? $op : (!$isSpaced ? ($this->match(array('+', '-'))) : false))
-                && ($a = $this->parseMultiplication())) {
+            $isSpaced = $this->input->isWhitespace(-1);
+            while (true) {
+                $op = ($op = $this->input->re('/\\G[-+]\s+/')) ? $op : (!$isSpaced ? ($this->match(
+                    array('+', '-')
+                )) : false);
+                if (!$op) {
+                    break;
+                }
+
+                $a = $this->parseMultiplication();
+                if (!$a) {
+                    break;
+                }
+
                 $m->parensInOp = true;
                 $a->parensInOp = true;
-                $operation = new ILess_Node_Operation($op, array($operation ? $operation : $m, $a), $isSpaced);
-                $isSpaced = $this->isWhitespace(-1);
+
+                $operation = new OperationNode($op, array($operation ? $operation : $m, $a), $isSpaced);
+                $isSpaced = $this->input->isWhitespace(-1);
             }
 
             return $operation ? $operation : $m;
@@ -1258,23 +1455,42 @@ class ILess_Parser_Core
     /**
      * Parses multiplication operation
      *
-     * @return ILess_Node_Operation|null
+     * @return OperationNode|null
      */
     protected function parseMultiplication()
     {
-        $operation = false;
+        $operation = null;
 
         if ($m = $this->parseOperand()) {
-            $isSpaced = $this->isWhitespace(-1);
-            while (!$this->peekReg('/\\G\/[*\/]/') && ($op = $this->match(array('/', '*')))) {
-                if ($a = $this->parseOperand()) {
-                    $m->parensInOp = true;
-                    $a->parensInOp = true;
-                    $operation = new ILess_Node_Operation($op, array($operation ? $operation : $m, $a), $isSpaced);
-                    $isSpaced = $this->isWhitespace(-1);
-                } else {
+            $isSpaced = $this->input->isWhitespace(-1);
+            while (true) {
+                if ($this->input->peek('/\\G\/[*\/]/')) {
                     break;
                 }
+
+                $this->input->save();
+
+                $op = $this->match(array('/', '*'));
+
+                if (!$op) {
+                    $this->input->forget();
+                    break;
+                }
+
+                $a = $this->parseOperand();
+
+                if (!$a) {
+                    $this->input->restore();
+                    break;
+                }
+
+                $this->input->forget();
+
+                $m->parensInOp = true;
+                $a->parensInOp = true;
+
+                $operation = new OperationNode($op, array($operation ? $operation : $m, $a), $isSpaced);
+                $isSpaced = $this->input->isWhitespace(-1);
             }
 
             return ($operation ? $operation : $m);
@@ -1284,15 +1500,23 @@ class ILess_Parser_Core
     /**
      * Parses the conditions
      *
-     * @return ILess_Node_Condition|null
+     * @return ConditionNode|null
      */
     protected function parseConditions()
     {
-        $index = $this->position;
+        $index = $this->input->i;
         $condition = null;
         if ($a = $this->parseCondition()) {
-            while ($this->peekReg('/\\G,\s*(not\s*)?\(/') && $this->matchChar(',') && ($b = $this->parseCondition())) {
-                $condition = new ILess_Node_Condition('or', $condition ? $condition : $a, $b, $index);
+            while (true) {
+                if (!$this->input->peekReg('/\\G,\s*(not\s*)?\(/') || !$this->input->char(',')) {
+                    break;
+                }
+                $b = $this->parseCondition();
+                if (!$b) {
+                    break;
+                }
+
+                $condition = new ConditionNode('or', $condition ? $condition : $a, $b, $index);
             }
 
             return $condition ? $condition : $a;
@@ -1302,77 +1526,114 @@ class ILess_Parser_Core
     /**
      * Parses condition
      *
-     * @return ILess_Node_Condition|null
-     * @throws ILess_Exception_Parser
+     * @return ConditionNode|null
+     * @throws ParserException
      */
     protected function parseCondition()
     {
-        $index = $this->position;
+        $index = $this->input->i;
         $negate = false;
 
-        if ($this->matchString('not')) {
+        if ($this->input->str('not')) {
             $negate = true;
         }
 
         $this->expect('(');
         if ($a = ($this->matchFuncs(array('parseAddition', 'parseEntitiesKeyword', 'parseEntitiesQuoted')))) {
-            if ($op = $this->matchReg('/\\G(?:>=|<=|=<|[<=>])/')) {
-                if ($b = ($this->matchFuncs(array('parseAddition', 'parseEntitiesKeyword', 'parseEntitiesQuoted')))) {
-                    $c = new ILess_Node_Condition($op, $a, $b, $index, $negate);
+            $op = null;
+            if ($this->input->char('>')) {
+                if ($this->input->char('=')) {
+                    $op = '>=';
                 } else {
-                    throw new ILess_Exception_Parser('Unexpected expression', $this->position, $this->env->currentFileInfo);
+                    $op = '>';
+                }
+            } elseif ($this->input->char('<')) {
+                if ($this->input->char('=')) {
+                    $op = '<=';
+                } else {
+                    $op = '<';
+                }
+            } elseif ($this->input->char('=')) {
+                if ($this->input->char('>')) {
+                    $op = '=>';
+                } elseif ($this->input->char('<')) {
+                    $op = '=<';
+                } else {
+                    $op = '=';
+                }
+            }
+
+            $c = null;
+            if ($op) {
+                $b = $this->matchFuncs(array('parseAddition', 'parseEntitiesKeyword', 'parseEntitiesQuoted'));
+                if ($b) {
+                    $c = new ConditionNode($op, $a, $b, $index, $negate);
+                } else {
+                    throw new ParserException('Unexpected expression', $index, $this->context->currentFileInfo);
                 }
             } else {
-                $c = new ILess_Node_Condition('=', $a, new ILess_Node_Keyword('true'), $index, $negate);
+                $c = new ConditionNode('=', $a, new KeywordNode('true'), $index, $negate);
             }
+
             $this->expect(')');
 
-            return $this->matchString('and') ? new ILess_Node_Condition('and', $c, $this->parseCondition()) : $c;
+            return $this->input->str('and') ? new ConditionNode('and', $c, $this->parseCondition()) : $c;
         }
     }
 
     /**
      * Parses a sub-expression
      *
-     * @return ILess_Node_Expression|null
+     * @return ExpressionNode|null
      */
     protected function parseSubExpression()
     {
-        if ($this->matchChar('(')) {
-            if ($a = $this->parseAddition()) {
-                $e = new ILess_Node_Expression(array($a));
-                $this->expect(')');
+        $this->input->save();
+
+        if ($this->input->char('(')) {
+            $a = $this->parseAddition();
+            if ($a && $this->input->char(')')) {
+                $this->input->forget();
+                $e = new ExpressionNode(array($a));
                 $e->parens = true;
 
                 return $e;
             }
+
+            $this->input->restore("Expected ')'");
+
+            return null;
         }
+
+        $this->input->restore();
     }
 
     /**
      * Parses an operand. An operand is anything that can be part of an operation,
      * such as a color, or a variable
      *
-     * @return ILess_Node_Negative|null
+     * @return NegativeNode|null
      */
     protected function parseOperand()
     {
         $negate = false;
-        if ($this->peekChar('@', 1) || $this->peekChar('(', 1)) {
-            $negate = $this->matchChar('-');
+        if ($this->input->peekReg('/\\G^-[@\(]/')) {
+            $negate = $this->input->char('-');
         }
 
-        $o = $this->matchFuncs(array(
-            'parseSubExpression',
-            'parseEntitiesDimension',
-            'parseEntitiesColor',
-            'parseEntitiesVariable',
-            'parseEntitiesCall'
-        ));
+        $o = $this->matchFuncs(
+            array(
+                'parseSubExpression',
+                'parseEntitiesDimension',
+                'parseEntitiesColor',
+                'parseEntitiesVariable',
+                'parseEntitiesCall',
+            )
+        );
 
         if ($negate) {
             $o->parensInOp = true;
-            $o = new ILess_Node_Negative($o);
+            $o = new NegativeNode($o);
         }
 
         return $o;
@@ -1382,32 +1643,36 @@ class ILess_Parser_Core
      * Parses a block. The `block` rule is used by `ruleset` and `mixin definition`.
      * It's a wrapper around the `primary` rule, with added `{}`.
      *
-     * @return ILess_Node
+     * @return array
      */
     protected function parseBlock()
     {
-        if ($this->matchChar('{') && (is_array($content = $this->parsePrimary())) && $this->matchChar('}')) {
+        if ($this->input->char('{') && (is_array($content = $this->parsePrimary())) && $this->input->char('}')) {
             return $content;
         }
     }
 
     /**
-     * Parses comments. We create a comment node for CSS comments but keep the
-     * Less comments `//` silent, by just skipping over them.
-     *
-     * @return ILess_Node_Comment|null
+     * @return Node|RulesetNode|null
      */
-    protected function parseComment()
+    protected function parseBlockRuleset()
     {
-        if (!$this->peekChar('/')) {
-            return;
+        $block = $this->parseBlock();
+        if (null !== $block) {
+            $block = new RulesetNode(array(), $block);
         }
 
-        if ($this->peekChar('/', 1)) {
-            return new ILess_Node_Comment($this->matchReg('/\G\/\/.*/'), true, $this->position, $this->env->currentFileInfo);
-        } //elseif($comment = $this->matchReg('/\G\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?/'))
-        elseif ($comment = $this->matchReg('/\\G\/\*(?s).*?\*+\/\n?/')) {
-            return new ILess_Node_Comment($comment, false, $this->position, $this->env->currentFileInfo);
+        return $block;
+    }
+
+    /**
+     * @return DetachedRulesetNode|null
+     */
+    protected function parseDetachedRuleset()
+    {
+        $blockRuleset = $this->parseBlockRuleset();
+        if ($blockRuleset) {
+            return new DetachedRulesetNode($blockRuleset);
         }
     }
 
@@ -1433,40 +1698,46 @@ class ILess_Parser_Core
      * @charset "utf-8";
      * </pre>
      *
-     * @return ILess_Node_Directive|null
+     * @return DirectiveNode|null
+     * @throws ParserException
      */
     protected function parseDirective()
     {
-        $hasBlock = false;
+        $hasBlock = true;
         $hasIdentifier = false;
         $hasExpression = false;
+        $isRooted = true;
+        $rules = null;
+        $hasUnknown = null;
+        $index = $this->input->i;
 
-        if (!$this->peekChar('@')) {
-            return;
+        if ($this->input->currentChar() !== '@') {
+            return null;
         }
 
-        $value = $this->matchFuncs(array('parseImport', 'parseMedia'));
+        $value = $this->matchFuncs(array('parseImport', 'parsePlugin', 'parseMedia'));
+
         if ($value) {
             return $value;
         }
 
-        $this->save();
-        $name = $this->matchReg('/\\G@[a-z-]+/');
+        $this->input->save();
+
+        $name = $this->input->re('/\\G@[a-z-]+/');
 
         if (!$name) {
-            return;
+            return null;
         }
 
         $nonVendorSpecificName = $name;
         $pos = strpos($name, '-', 2);
         if ($name[1] == '-' && $pos > 0) {
-            $nonVendorSpecificName = '@' . substr($name, $pos + 1);
+            $nonVendorSpecificName = '@'.substr($name, $pos + 1);
         }
 
         switch ($nonVendorSpecificName) {
+            /*
             case '@font-face':
-                $hasBlock = true;
-                break;
             case '@viewport':
             case '@top-left':
             case '@top-left-corner':
@@ -1485,119 +1756,158 @@ class ILess_Parser_Core
             case '@right-middle':
             case '@right-bottom':
                 $hasBlock = true;
+                $isRooted = true;
                 break;
-            case '@host':
-            case '@page':
-            case '@document':
-            case '@supports':
-            case '@keyframes':
-                $hasBlock = true;
+            */
+            case "@counter-style":
                 $hasIdentifier = true;
+                $hasBlock = true;
+                break;
+            case "@charset":
+                $hasIdentifier = true;
+                $hasBlock = false;
                 break;
             case '@namespace':
                 $hasExpression = true;
+                $hasBlock = false;
                 break;
+            case "@keyframes":
+                $hasIdentifier = true;
+                break;
+            case "@host":
+            case "@page":
+                $hasUnknown = true;
+                break;
+            case "@document":
+            case "@supports":
+                $hasUnknown = true;
+                $isRooted = false;
+                break;
+
         }
 
+        $this->input->commentStore = array();
+
         if ($hasIdentifier) {
-            $identifier = $this->matchReg('/\\G[^{]+/');
-            if ($identifier) {
-                $name .= ' ' . trim($identifier);
+            $value = $this->parseEntity();
+            if (!$value) {
+                throw new ParserException(sprintf('Expected %s identifier', $name));
+            }
+        } elseif ($hasExpression) {
+            $value = $this->parseExpression();
+            if (!$value) {
+                throw new ParserException(sprintf('Expected %s expression', $name));
+            }
+        } elseif ($hasUnknown) {
+            $value = $this->input->re('/\\G^[^{;]+/');
+            $value = trim((string)$value);
+            if ($value) {
+                $value = new AnonymousNode($value);
             }
         }
 
         if ($hasBlock) {
-            if ($rules = $this->parseBlock()) {
-                return new ILess_Node_Directive($name, $rules, $this->position, $this->env->currentFileInfo);
-            }
-        } else {
-            if (($value = $hasExpression ? $this->parseExpression() : $this->parseEntity()) && $this->matchChar(';')) {
-                $directive = new ILess_Node_Directive($name, $value, $this->position, $this->env->currentFileInfo);
-                if ($this->env->dumpLineNumbers) {
-                    $directive->debugInfo = $this->getDebugInfo($this->position, $this->input, $this->env);
-                }
-
-                return $directive;
-            }
+            $rules = $this->parseBlockRuleset();
         }
 
-        $this->restore();
+        if ($rules || (!$hasBlock && $value && $this->input->char(';'))) {
+            $this->input->forget();
+
+            return new DirectiveNode(
+                $name, $value, $rules, $index, $this->context->currentFileInfo,
+                $this->context->dumpLineNumbers ? $this->getDebugInfo($index) : null,
+                false, $isRooted
+            );
+        }
+
+        $this->input->restore('Directive options not recognised');
     }
 
     /**
      * Entities are the smallest recognized token, and can be found inside a rule's value.
      *
-     * @return ILess_Node
+     * @return Node|null
      */
     protected function parseEntity()
     {
-        return $this->matchFuncs(array(
-            'parseEntitiesLiteral',
-            'parseEntitiesVariable',
-            'parseEntitiesUrl',
-            'parseEntitiesCall',
-            'parseEntitiesKeyword',
-            'parseEntitiesJavascript',
-            'parseComment'
-        ));
+        return $this->matchFuncs(
+            array(
+                'parseComment',
+                'parseEntitiesLiteral',
+                'parseEntitiesVariable',
+                'parseEntitiesUrl',
+                'parseEntitiesCall',
+                'parseEntitiesKeyword',
+                'parseEntitiesJavascript',
+            )
+        );
     }
 
     /**
      * Parse entities literal
      *
-     * @return ILess_Node|null
+     * @return Node|null
      */
     protected function parseEntitiesLiteral()
     {
-        return $this->matchFuncs(array(
-            'parseEntitiesDimension',
-            'parseEntitiesColor',
-            'parseEntitiesQuoted',
-            'parseUnicodeDescriptor'
-        ));
+        return $this->matchFuncs(
+            array(
+                'parseEntitiesDimension',
+                'parseEntitiesColor',
+                'parseEntitiesQuoted',
+                'parseUnicodeDescriptor',
+            )
+        );
     }
 
     /**
      * Parses an entity variable
      *
-     * @return ILess_Node_Variable|null
+     * @return VariableNode|null
      */
     protected function parseEntitiesVariable()
     {
-        $index = $this->position;
-        if ($this->peekChar('@') && ($name = $this->matchReg('/\\G@@?[\w-]+/'))) {
-            return new ILess_Node_Variable($name, $index, $this->env->currentFileInfo);
+        $index = $this->input->i;
+        if ($this->input->currentChar() === '@' && ($name = $this->input->re('/\\G^@@?[\w-]+/'))) {
+            return new VariableNode($name, $index, $this->context->currentFileInfo);
         }
     }
 
     /**
      * Parse entities dimension (a number and a unit like 0.5em, 95%)
      *
-     * @return ILess_Node_Dimension|null
+     * @return DimensionNode|null
      */
     protected function parseEntitiesDimension()
     {
-        $c = @ord($this->input[$this->position]);
-
-        // Is the first char of the dimension 0-9, '.', '+' or '-'
-        if (($c > 57 || $c < 43) || $c === 47 || $c == 44) {
-            return;
+        if ($this->input->peekNotNumeric()) {
+            return null;
         }
 
-        if ($value = $this->matchReg('/\\G([+-]?\d*\.?\d+)(%|[a-z]+)?/')) {
-            return new ILess_Node_Dimension($value[1], isset($value[2]) ? $value[2] : null);
+        if ($value = $this->input->re('/\\G^([+-]?\d*\.?\d+)(%|[a-z]+)?/i')) {
+            return new DimensionNode($value[1], isset($value[2]) ? $value[2] : null);
         }
     }
 
     /**
      * Parses a hexadecimal color.
      *
-     * @return ILess_Node_Color
+     * @return ColorNode
+     * @throws ParserException
      */
     protected function parseEntitiesColor()
     {
-        if ($this->peekChar('#') && ($rgb = $this->matchReg('/\\G#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})/'))) {
-            return new ILess_Node_Color($rgb[1]);
+        // we are more tolerate here than in less.js, which can use regexp input property
+        // to get the regular expression input, the regexp includes A-z but the color hex code is only A-F
+        if ($this->input->currentChar() === '#' && ($rgb = $this->input->re('/\\G#([A-Za-z0-9]{6}|[A-Za-z0-9]{3})/'))) {
+            $colorCandidate = $rgb[1];
+            // verify if candidate consists only of allowed HEX characters
+            if (!preg_match('/^[A-Fa-f0-9]+$/', $colorCandidate)) {
+                throw new ParserException('Invalid HEX color code', $this->input->i,
+                    $this->context->currentFileInfo);
+            }
+
+            return new ColorNode($colorCandidate);
         }
     }
 
@@ -1605,59 +1915,68 @@ class ILess_Parser_Core
      * Parses a string, which supports escaping " and '
      * "milky way" 'he\'s the one!'
      *
-     * @return ILess_Node_Quoted|null
+     * @return QuotedNode|null
      */
     protected function parseEntitiesQuoted()
     {
-        $j = 0;
-        $e = false;
-        $index = $this->position;
+        $isEscaped = false;
+        $index = $this->input->i;
 
-        if ($this->peekChar('~')) {
-            $j++;
-            $e = true; // Escaped strings
+        $this->input->save();
+
+        if ($this->input->char('~')) {
+            $isEscaped = true;
         }
 
-        if (!$this->peekChar('"', $j) && !$this->peekChar("'", $j)) {
-            return;
+        $str = $this->input->quoted();
+
+        if (!$str) {
+            $this->input->restore();
+
+            return null;
         }
 
-        if ($e) {
-            $this->matchChar('~');
-        }
+        $this->input->forget();
 
-        if ($str = $this->matchReg('/\\G"((?:[^"\\\\\r\n]|\\\\.)*)"|\'((?:[^\'\\\\\r\n]|\\\\.)*)\'/')) {
-            $result = $str[0][0] == '"' ? $str[1] : $str[2];
-
-            return new ILess_Node_Quoted($str[0], $result, $e, $index, $this->env->currentFileInfo);
-        }
+        return new QuotedNode(
+            $str[0],
+            substr($str, 1, strlen($str) - 2),
+            $isEscaped,
+            $index,
+            $this->context->currentFileInfo
+        );
     }
 
     /**
      * Parses an unicode descriptor, as is used in unicode-range U+0?? or U+00A1-00A9
      *
-     * @return ILess_Node_UnicodeDescriptor|null
+     * @return UnicodeDescriptorNode|null
      */
     protected function parseUnicodeDescriptor()
     {
-        if ($ud = $this->matchReg('/\\G(U\+[0-9a-fA-F?]+)(\-[0-9a-fA-F?]+)?/')) {
-            return new ILess_Node_UnicodeDescriptor($ud[0]);
+        if ($ud = $this->input->re('/\\G(U\+[0-9a-fA-F?]+)(\-[0-9a-fA-F?]+)?/')) {
+            return new UnicodeDescriptorNode($ud[0]);
         }
     }
 
     /**
      * A catch-all word, such as: `black border-collapse`
      *
-     * @return ILess_Node_Color|ILess_Node_Keyword
+     * @return ColorNode|KeywordNode|null
      */
     protected function parseEntitiesKeyword()
     {
-        if ($k = $this->matchReg('/\\G[_A-Za-z-][_A-Za-z0-9-]*/')) {
+        $k = $this->input->char('%');
+        if (!$k) {
+            $k = $this->input->re('/\\G[_A-Za-z-][_A-Za-z0-9-]*/');
+        }
+
+        if ($k) {
             // detected named color and "transparent" keyword
-            if ($color = ILess_Color::fromKeyword($k)) {
-                return new ILess_Node_Color($color);
+            if ($color = Color::fromKeyword($k)) {
+                return new ColorNode($color);
             } else {
-                return new ILess_Node_Keyword($k);
+                return new KeywordNode($k);
             }
         }
     }
@@ -1665,68 +1984,86 @@ class ILess_Parser_Core
     /**
      * Parses url() tokens
      *
-     * @return ILess_Node_Url|null
+     * @return UrlNode|null
      */
     protected function parseEntitiesUrl()
     {
-        if ($this->input[$this->position] !== 'u' || !$this->matchReg('/\\Gurl\(/')) {
-            return;
+        $index = $this->input->i;
+        $this->input->autoCommentAbsorb = false;
+
+        if (!$this->input->str('url(')) {
+            $this->input->autoCommentAbsorb = true;
+
+            return null;
         }
 
-        $value = $this->match(array(
-            'parseEntitiesQuoted',
-            'parseEntitiesVariable',
-            '/\\G(?:(?:\\\\[\(\)\'"])|[^\(\)\'"])+/',
-        ));
+        $value = $this->match(
+            array(
+                'parseEntitiesQuoted',
+                'parseEntitiesVariable',
+                '/\\G(?:(?:\\\\[\(\)\'"])|[^\(\)\'"])+/',
+            )
+        );
 
-        if (!$value) {
-            $value = '';
-        }
+        $this->input->autoCommentAbsorb = true;
 
         $this->expect(')');
 
-        return new ILess_Node_Url((isset($value->value) || $value instanceof ILess_Node_Variable) ? $value : new ILess_Node_Anonymous($value), $this->env->currentFileInfo);
+        return new UrlNode(
+            (isset($value->value) || $value instanceof VariableNode) ? $value : new AnonymousNode(
+                (string)$value
+            ),
+            $index,
+            $this->context->currentFileInfo
+        );
     }
 
     /**
      * Parses a function call
      *
-     * @return ILess_Node_Call|null
+     * @return CallNode|null
      */
     protected function parseEntitiesCall()
     {
-        $index = $this->position;
+        if ($this->input->peekReg('/\\G^url\(/i')) {
+            return null;
+        }
 
-        if (!preg_match('/\\G([\w-]+|%|progid:[\w\.]+)\(/', $this->input, $name, 0, $this->position)) {
-            return;
+        $index = $this->input->i;
+
+        $this->input->save();
+
+        $name = $this->input->re('/\\G([\w-]+|%|progid:[\w\.]+)\(/');
+
+        if (!$name) {
+            $this->input->forget();
+
+            return null;
         }
 
         $name = $name[1];
         $nameLC = strtolower($name);
 
-        if ($nameLC === 'url') {
-            return null;
-        } else {
-            $this->position += strlen($name);
-        }
-
         if ($nameLC === 'alpha') {
-            if ($alpha = $this->parseAlpha()) {
+            $alpha = $this->parseAlpha();
+            if ($alpha) {
+                $this->input->forget();
+
                 return $alpha;
             }
         }
 
-        // Parse the '(' and consume whitespace.
-        $this->matchChar('(');
         $args = $this->parseEntitiesArguments();
 
-        if (!$this->matchChar(')')) {
-            return;
+        if (!$this->input->char(')')) {
+            $this->input->restore("Could not parse call arguments or missing ')'");
+
+            return null;
         }
 
-        if ($name) {
-            return new ILess_Node_Call($name, $args, $index, $this->env->currentFileInfo);
-        }
+        $this->input->forget();
+
+        return new CallNode($name, $args, $index, $this->context->currentFileInfo);
     }
 
     /**
@@ -1737,9 +2074,14 @@ class ILess_Parser_Core
     protected function parseEntitiesArguments()
     {
         $args = array();
-        while ($arg = $this->matchFuncs(array('parseEntitiesAssignment', 'parseExpression'))) {
+
+        while (true) {
+            $arg = $this->matchFuncs(array('parseEntitiesAssignment', 'parseExpression'));
+            if (!$arg) {
+                break;
+            }
             $args[] = $arg;
-            if (!$this->matchChar(',')) {
+            if (!$this->input->char(',')) {
                 break;
             }
         }
@@ -1752,12 +2094,31 @@ class ILess_Parser_Core
      * They are present in ie filter properties as shown below.
      * filter: progid:DXImageTransform.Microsoft.Alpha( *opacity=50* )
      *
-     * @return ILess_Node_Assignment|null
+     * @return AssignmentNode|null
      */
     protected function parseEntitiesAssignment()
     {
-        if (($key = $this->matchReg('/\\G\w+(?=\s?=)/')) && $this->matchChar('=') && ($value = $this->parseEntity())) {
-            return new ILess_Node_Assignment($key, $value);
+        $this->input->save();
+        $key = $this->input->re('/\\G\w+(?=\s?=)/i');
+        if (!$key) {
+            $this->input->restore();
+
+            return null;
+        }
+
+        if (!$this->input->char('=')) {
+            $this->input->restore();
+
+            return null;
+        }
+
+        $value = $this->parseEntity();
+        if ($value) {
+            $this->input->forget();
+
+            return new AssignmentNode($key, $value);
+        } else {
+            $this->input->restore();
         }
     }
 
@@ -1765,100 +2126,134 @@ class ILess_Parser_Core
      * Parses an expression. Expressions either represent mathematical operations,
      * or white-space delimited entities like: `1px solid black`, `@var * 2`
      *
-     * @return ILess_Node_Expression|null
+     * @return ExpressionNode|null
      */
     protected function parseExpression()
     {
         $entities = array();
-        while ($e = $this->matchFuncs(array('parseAddition', 'parseEntity'))) {
-            $entities[] = $e;
-            // operations do not allow keyword "/" dimension (e.g. small/20px) so we support that here
-            if (!$this->peekReg('/\\G\/[\/*]/') && ($delim = $this->matchChar('/'))) {
-                $entities[] = new ILess_Node_Anonymous($delim);
+        $e = null;
+        do {
+            $e = $this->parseComment();
+            if ($e) {
+                $entities[] = $e;
+                continue;
             }
-        }
+
+            $e = $this->matchFuncs(array('parseAddition', 'parseEntity'));
+            if ($e) {
+                $entities[] = $e;
+                // operations do not allow keyword "/" dimension (e.g. small/20px) so we support that here
+                if (!$this->input->peekReg('/\\G\/[\/*]/')) {
+                    $delim = $this->input->char('/');
+                    if ($delim) {
+                        $entities[] = new AnonymousNode($delim);
+                    }
+                }
+            }
+        } while ($e);
+
         if (count($entities) > 0) {
-            return new ILess_Node_Expression($entities);
+            return new ExpressionNode($entities);
         }
     }
 
     /**
      * Parses IE's alpha function `alpha(opacity=88)`
      *
-     * @return ILess_Node_Alpha|null
+     * @return AlphaNode|null
      */
     protected function parseAlpha()
     {
-        if (!$this->matchString('(opacity=')) {
-            return;
+        if (!$this->input->re('/\\G^opacity=/i')) {
+            return null;
         }
 
-        $value = $this->matchReg('/\\G[0-9]+/');
+        $value = $this->input->re('/\\G^\d+/');
         if ($value === null) {
             $value = $this->parseEntitiesVariable();
+            if (!$value) {
+                throw new ParserException('Could not parse alpha', $this->input->i, $this->context->currentFileInfo);
+            }
         }
 
-        if ($value !== null) {
-            $this->expect(')');
+        $this->expect(')');
 
-            return new ILess_Node_Alpha($value);
-        }
+        return new AlphaNode($value);
     }
 
     /**
      * Parses a javascript code
      *
-     * @return ILess_Node_Javascript|null
+     * @return JavascriptNode|null
      */
     protected function parseEntitiesJavascript()
     {
-        $e = false;
-        $offset = 0;
-        if ($this->peekChar('~')) {
-            $e = true;
-            $offset++;
+        $index = $this->input->i;
+
+        $this->input->save();
+
+        $escape = $this->input->char('~');
+        $jsQuote = $this->input->char('`');
+
+        if (!$jsQuote) {
+            $this->input->restore();
+
+            return null;
         }
-        if (!$this->peekChar('`', $offset)) {
-            return;
-        }
-        if ($e) {
-            $this->matchChar('~');
-        }
-        if ($str = $this->matchReg('/\\G`([^`]*)`/')) {
-            return new ILess_Node_Javascript($str[1], $this->position, $e);
+
+        if ($js = $this->input->re('/\\G^[^`]*`/')) {
+            $this->input->forget();
+
+            return new JavascriptNode(
+                substr($js, 0, strlen($js) - 1),
+                (bool)$escape,
+                $index,
+                $this->context->currentFileInfo
+            );
+        } else {
+            $this->input->restore('Invalid javascript definition');
         }
     }
 
     /**
      * Parses a @import directive
      *
-     * @return ILess_Node_Import|null
+     * @return ImportNode|null
+     * @throws ParserException
      */
     protected function parseImport()
     {
-        $this->save();
+        $index = $this->input->i;
+        $dir = $this->input->re('/\\G^@import?\s+/');
 
-        $dir = $this->matchString('@import');
-        $options = array();
         if ($dir) {
             $options = $this->parseImportOptions();
             if (!$options) {
                 $options = array();
             }
-        }
 
-        if ($dir && ($path = $this->matchFuncs(array('parseEntitiesQuoted', 'parseEntitiesUrl')))) {
-            $features = $this->parseMediaFeatures();
-            if ($this->matchChar(';')) {
-                if ($features) {
-                    $features = new ILess_Node_Value($features);
+            if (($path = $this->matchFuncs(array('parseEntitiesQuoted', 'parseEntitiesUrl')))) {
+                $features = $this->parseMediaFeatures();
+
+                if (!$this->input->char(';')) {
+                    $this->input->i = $index;
+                    throw new ParserException(
+                        'Missing semi-colon or unrecognised media features on import',
+                        $index,
+                        $this->context->currentFileInfo
+                    );
                 }
 
-                return new ILess_Node_Import($path, $features, $options, $this->savedPosition, $this->env->currentFileInfo);
+                if ($features) {
+                    $features = new ValueNode($features);
+                }
+
+                return new ImportNode($path, $features, $options, $index, $this->context->currentFileInfo);
+            } else {
+                $this->input->i = $index;
+                throw new ParserException('Malformed import statement', $index, $this->context->currentFileInfo);
             }
         }
-
-        $this->restore();
     }
 
     /**
@@ -1868,11 +2263,13 @@ class ILess_Parser_Core
      */
     protected function parseImportOptions()
     {
-        $options = array();
         // list of options, surrounded by parens
-        if (!$this->matchChar('(')) {
+        if (!$this->input->char('(')) {
             return null;
         }
+
+        $options = array();
+
         do {
             if ($o = $this->parseImportOption()) {
                 $optionName = $o;
@@ -1888,11 +2285,12 @@ class ILess_Parser_Core
                         break;
                 }
                 $options[$optionName] = $value;
-                if (!$this->matchChar(',')) {
+                if (!$this->input->char(',')) {
                     break;
                 }
             }
         } while ($o);
+
         $this->expect(')');
 
         return $options;
@@ -1901,11 +2299,11 @@ class ILess_Parser_Core
     /**
      * Parses import option
      *
-     * @return string
+     * @return string|null
      */
     protected function parseImportOption()
     {
-        if (($opt = $this->matchReg('/\\G(less|css|multiple|once|inline|reference)/'))) {
+        if (($opt = $this->input->re('/\\G(less|css|multiple|once|inline|reference|optional)/'))) {
             return $opt[1];
         }
     }
@@ -1913,26 +2311,39 @@ class ILess_Parser_Core
     /**
      * Parses media block
      *
-     * @return ILess_Node_Media|null
+     * @return MediaNode|null
      */
     protected function parseMedia()
     {
         $debugInfo = null;
-        if ($this->env->dumpLineNumbers) {
-            $debugInfo = $this->getDebugInfo($this->position, $this->input, $this->env);
+        if ($this->context->dumpLineNumbers) {
+            $debugInfo = $this->getDebugInfo($this->input->i);
         }
 
-        if ($this->matchReg('/\\G@media/')) {
+        $this->input->save();
+
+        if ($this->input->str('@media')) {
             $features = $this->parseMediaFeatures();
-            if ($rules = $this->parseBlock()) {
-                $media = new ILess_Node_Media($rules, $features, $this->position, $this->env->currentFileInfo);
-                if ($debugInfo) {
-                    $media->debugInfo = $debugInfo;
-                }
+            $rules = $this->parseBlock();
 
-                return $media;
+            if (null === $rules) {
+                $this->input->restore('Media definitions require block statements after any features');
+
+                return null;
             }
+
+            $this->input->forget();
+
+            $media = new MediaNode($rules, $features, $this->input->i, $this->context->currentFileInfo);
+
+            if ($debugInfo) {
+                $media->debugInfo = $debugInfo;
+            }
+
+            return $media;
         }
+
+        $this->input->restore();
     }
 
     /**
@@ -1946,12 +2357,12 @@ class ILess_Parser_Core
         do {
             if ($e = $this->parseMediaFeature()) {
                 $features[] = $e;
-                if (!$this->matchChar(',')) {
+                if (!$this->input->char(',')) {
                     break;
                 }
             } elseif ($e = $this->parseEntitiesVariable()) {
                 $features[] = $e;
-                if (!$this->matchChar(',')) {
+                if (!$this->input->char(',')) {
                     break;
                 }
             }
@@ -1964,79 +2375,113 @@ class ILess_Parser_Core
     /**
      * Parses single media feature
      *
-     * @return null|ILess_Node_Expression
+     * @return ExpressionNode|null
      */
     protected function parseMediaFeature()
     {
         $nodes = array();
+        $this->input->save();
+
         do {
             if ($e = $this->matchFuncs(array('parseEntitiesKeyword', 'parseEntitiesVariable'))) {
                 $nodes[] = $e;
-            } elseif ($this->matchChar('(')) {
+            } elseif ($this->input->char('(')) {
                 $p = $this->parseProperty();
                 $e = $this->parseValue();
-                if ($this->matchChar(')')) {
+                if ($this->input->char(')')) {
                     if ($p && $e) {
-                        $nodes[] = new ILess_Node_Paren(new ILess_Node_Rule($p, $e, null, null, $this->position, $this->env->currentFileInfo, true));
+                        $nodes[] = new ParenNode(
+                            new RuleNode($p, $e, null, null, $this->input->i, $this->context->currentFileInfo, true)
+                        );
                     } elseif ($e) {
-                        $nodes[] = new ILess_Node_Paren($e);
+                        $nodes[] = new ParenNode($e);
                     } else {
+                        $this->input->restore('Badly formed media feature definition');
+
                         return null;
                     }
                 } else {
+                    $this->input->restore("Missing closing ')'");
+
                     return null;
                 }
             }
         } while ($e);
 
+        $this->input->forget();
+
         if ($nodes) {
-            return new ILess_Node_Expression($nodes);
+            return new ExpressionNode($nodes);
+        }
+    }
+
+    /**
+     * A @plugin directive, used to import compiler extensions dynamically. `@plugin "lib"`;
+     *
+     * @return ImportNode|null
+     * @throws ParserException
+     */
+    protected function parsePlugin()
+    {
+        $index = $this->input->i;
+        $dir = $this->input->re('/\\G^@plugin?\s+/');
+        if ($dir) {
+            $options = array('plugin' => true);
+            if (($path = $this->matchFuncs(array('parseEntitiesQuoted', 'parseEntitiesUrl')))) {
+                if (!$this->input->char(';')) {
+                    $this->input->i = $index;
+                    throw new ParserException('Missing semi-colon on plugin');
+                }
+
+                return new ImportNode($path, null, $options, $index, $this->context->currentFileInfo);
+            } else {
+                $this->input->i = $index;
+                throw new ParserException('Malformed plugin statement');
+            }
         }
     }
 
     /**
      * Parses the property
      *
-     * @return string
+     * @return string|null
      */
     protected function parseProperty()
     {
-        if ($name = $this->matchReg('/\\G(\*?-?[_a-zA-Z0-9-]+)\s*:/')) {
+        if ($name = $this->input->re('/\\G(\*?-?[_a-zA-Z0-9-]+)\s*:/')) {
             return $name[1];
         }
     }
 
     /**
-     * Parses a rule terminator. Note that we use `peekChar()` to check for '}',
-     * because the `block` rule will be expecting it, but we still need to make sure
-     * it's there, if ';' was ommitted.
+     * Parses a rule terminator
      *
      * @return string
      */
     protected function parseEnd()
     {
-        return ($end = $this->matchChar(';')) ? $end : $this->peekChar('}');
+        return ($end = $this->input->char(';')) ? $end : $this->input->peek('}');
     }
 
     /**
-     * Returns the environment
+     * Returns the context
      *
-     * @return ILess_Environment
+     * @return Context
      */
-    public function getEnvironment()
+    public function getContext()
     {
-        return $this->env;
+        return $this->context;
     }
 
     /**
      * Set the current parser environment
      *
-     * @param ILess_Environment $env
-     * @return self
+     * @param Context $context
+     * @return $this
      */
-    public function setEnvironment(ILess_Environment $env)
+    public function setContext(Context $context)
     {
-        $this->env = $env;
+        $this->context = $context;
 
         return $this;
     }
@@ -2044,7 +2489,7 @@ class ILess_Parser_Core
     /**
      * Returns the importer
      *
-     * @return ILess_Importer
+     * @return Importer
      */
     public function getImporter()
     {
@@ -2054,39 +2499,14 @@ class ILess_Parser_Core
     /**
      * Set the importer
      *
-     * @param ILess_Importer $importer
-     * @return self
+     * @param Importer $importer
+     * @return $this
      */
-    public function setImporter(ILess_Importer $importer)
+    public function setImporter(Importer $importer)
     {
         $this->importer = $importer;
 
         return $this;
-    }
-
-    /**
-     * Peeks a character in the given offset
-     *
-     * @param string $token The token to look
-     * @param integer $offset The offset
-     * @return boolean
-     */
-    protected function peekChar($tok, $offset = 0)
-    {
-        $offset += $this->position;
-
-        return ($offset < $this->length) && ($this->input[$offset] === $tok);
-    }
-
-    /**
-     * Peeks a regular expresion. Does not move the position of the parser.
-     *
-     * @param string $regexp The regular expression
-     * @return boolean
-     */
-    protected function peekReg($regexp)
-    {
-        return preg_match($regexp, $this->input, $match, 0, $this->position);
     }
 
     /**
@@ -2103,15 +2523,15 @@ class ILess_Parser_Core
 
         foreach ($token as $t) {
             if (strlen($t) === 1) {
-                $match = $this->matchChar($t);
+                $match = $this->input->char($t);
             } elseif ($t[0] !== '/') {
                 // Non-terminal, match using a function call
                 $match = $this->$t();
             } else {
-                $match = $this->matchReg($t);
+                $match = $this->input->re($t);
             }
 
-            if ($match) {
+            if (null !== $match) {
                 return $match;
             }
         }
@@ -2121,9 +2541,9 @@ class ILess_Parser_Core
      * Matches given functions. Returns the result of the first which returns
      * any non null value.
      *
-     * @param array The array of functions to call
+     * @param array $functions The array of functions to call
      * @throws InvalidArgumentException If the function does not exist
-     * @return ILess_Node
+     * @return Node|mixed
      */
     protected function matchFuncs(array $functions)
     {
@@ -2131,9 +2551,7 @@ class ILess_Parser_Core
             if (!method_exists($this, $func)) {
                 throw new InvalidArgumentException(sprintf('The function "%s" does not exist.', $func));
             }
-
             $match = $this->$func();
-
             if ($match !== null) {
                 return $match;
             }
@@ -2141,149 +2559,43 @@ class ILess_Parser_Core
     }
 
     /**
-     * Matches a regular expression from the current start point
-     *
-     * @param string $regexp The regular expression
-     * @return string The matched string
-     */
-    protected function matchReg($regexp)
-    {
-        if (preg_match($regexp, $this->input, $match, 0, $this->position)) {
-            $this->skipWhitespace(strlen($match[0]));
-
-            return count($match) === 1 ? $match[0] : $match;
-        }
-    }
-
-    /**
-     * Matches a single character in the input
-     *
-     * @param string $char
-     * @return string
-     */
-    protected function matchChar($char)
-    {
-        if (($this->position < $this->length) && ($this->input[$this->position] === $char)) {
-            $this->skipWhitespace(1);
-
-            return $char;
-        }
-    }
-
-    /**
-     * Matches a string
-     *
-     * @param string $string The string to match
-     * @return string|null
-     */
-    protected function matchString($string)
-    {
-        $len = strlen($string);
-        if (($this->length >= ($this->position + $len))
-            && substr_compare($this->input, $string, $this->position, $len, true) === 0
-        ) {
-            $this->skipWhitespace($len);
-
-            return $string;
-        }
-    }
-
-    /**
      * Expects a string to be present at the current position
      *
-     * @param string $token The single character, regular expression
+     * @param string $token The single character
      * @param string $message The error message for the exception
-     * @return string
-     * @throws ILess_Exception_Parser If the expected token does not match
+     * @return Node|null
+     * @throws ParserException If the expected token does not match
      */
     protected function expect($token, $message = null)
     {
         $result = $this->match($token);
         if (!$result) {
-            throw new ILess_Exception_Compiler(
+            throw new ParserException(
                 $message ? $message :
-                    sprintf('Expected \'%s\' got \'%s\'', $token, $this->input[$this->position]),
-                    $this->position, $this->env->currentFileInfo);
-        } else {
-            return $result;
+                    sprintf(
+                        'Expected \'%s\' got \'%s\' at index %s',
+                        $token,
+                        $this->input->currentChar(),
+                        $this->input->i
+                    ),
+                $this->input->i, $this->context->currentFileInfo
+            );
         }
-    }
 
-    /**
-     * Skips whitespace
-     *
-     * @param integer $length The length to skip
-     */
-    protected function skipWhitespace($length)
-    {
-        $this->position += $length;
-        $this->position += strspn($this->input, "\n\r\t ", $this->position);
-    }
-
-    /**
-     * Is the character at the offset a whitespace character?
-     *
-     * @param integer $offset
-     * @return boolean
-     */
-    protected function isWhitespace($offset = 0)
-    {
-        return ctype_space($this->input[$this->position + $offset]);
-    }
-
-    /**
-     * Skip semicolons ";"
-     *
-     * @return boolean
-     */
-    protected function skipSemicolons()
-    {
-        $length = strspn($this->input, ';', $this->position);
-
-        if ($length) {
-            $this->skipWhitespace($length);
-
-            return true;
-        }
-    }
-
-    /**
-     * Saves current position
-     *
-     * @return ILess_Parser
-     */
-    protected function save()
-    {
-        $this->savedPosition = $this->position;
-
-        return $this;
-    }
-
-    /**
-     * Restores the position
-     *
-     * @return ILess_Parser
-     */
-    protected function restore()
-    {
-        $this->position = $this->savedPosition;
-
-        return $this;
+        return $result;
     }
 
     /**
      * Returns the debug information
      *
      * @param integer $index The index
-     * @param string $input The input
-     * @param ILess_Environment $env The environment
-     * @return ILess_DebugInfo
+     * @return \ILess\DebugInfo
      */
-    protected function getDebugInfo($index, $input, ILess_Environment $env)
+    protected function getDebugInfo($index)
     {
-        list($lineNumber) = ILess_Util::getLocation($input, $index);
+        list($lineNumber) = Util::getLocation($this->input->getInput(), $index);
 
-        return new ILess_DebugInfo($env->currentFileInfo->filename, $lineNumber);
+        return new DebugInfo($this->context->currentFileInfo->filename, $lineNumber);
     }
 
 }

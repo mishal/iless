@@ -62,22 +62,41 @@
 */
 
 .selector /* .with */, .lots, /* of */ .comments {
-  color: grey, /* blue */ orange;
+  color/* survive */ /* me too */: grey, /* blue */ orange;
   -webkit-border-radius: 2px /* webkit only */;
   -moz-border-radius: (2px * 4) /* moz only with operation */;
 }
 
 .mixin_def_with_colors(@a: white, // in
        @b: 1px //put in @b - causes problems! --->
-	   ) // the
-	   when (@a = white) {
-	.test {
-	    color: @b;
-	}
+       ) // the
+       when (@a = white) {
+    .test {
+        color: @b;
+    }
 }
 .mixin_def_with_colors();
+
+// .s when
+//R/2
+
+.sr-only-focusable {
+  clip: auto;
+}
+
+@-webkit-keyframes /* Safari */ hover /* and Chrome */ {
+  0% {
+    color: red;
+  }
+}
 
 #last { color: blue }
 //
 
 /*  *//* { *//*  *//*  *//*  */#div { color:#A33; }/* } */
+
+// line immediatly followed
+/*by block */
+@string_w_comment: ~"/* // Not commented out // */";
+#output-block { comment: @string_w_comment; }
+/*comment on last line*/

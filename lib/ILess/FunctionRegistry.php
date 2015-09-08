@@ -7,26 +7,48 @@
  * file that was distributed with this source code.
  */
 
+namespace ILess;
+
+use Exception;
+use ILess\Exception\CompilerException;
+use ILess\Exception\FunctionException;
+use ILess\Exception\IOException;
+use ILess\Node;
+use ILess\Node\AnonymousNode;
+use ILess\Node\ColorNode;
+use ILess\Node\CommentNode;
+use ILess\Node\DimensionNode;
+use ILess\Node\ExpressionNode;
+use ILess\Node\KeywordNode;
+use ILess\Node\UrlNode;
+use ILess\Node\UnitNode;
+use ILess\Node\ToColorConvertibleInterface;
+use ILess\Node\QuotedNode;
+use ILess\Node\OperationNode;
+use ILess\Util;
+use ILess\Util\Mime;
+use InvalidArgumentException;
+use RuntimeException;
+
 /**
- * Builtin functions
+ * Function registry
  *
  * @package ILess
- * @subpackage function
  * @see http://lesscss.org/#reference
  */
-class ILess_FunctionRegistry
+class FunctionRegistry
 {
     /**
-     * Maximum allowed size of data uri for IE8 in kB
+     * Maximum allowed size of data uri for IE8
      */
-    const IE8_DATA_URI_MAX_KB = 32;
+    const IE8_DATA_URI_MAX = 32768;
 
     /**
      * Less environment
      *
-     * @var ILess_Environment
+     * @var Context
      */
-    protected $env;
+    protected $context;
 
     /**
      * Array of function aliases
@@ -36,8 +58,23 @@ class ILess_FunctionRegistry
     protected $aliases = array(
         '%' => 'template',
         'data-uri' => 'dataUri',
-        'svg-gradient' => 'svggradient'
+        'get-unit' => 'getunit',
+        'svg-gradient' => 'svggradient',
+        'default' => 'defaultFunc',
+        'image-size' => 'imageSize',
+        'image-width' => 'imageWidth',
+        'image-height' => 'imageHeight',
     );
+
+    /**
+     * @var FileInfo
+     */
+    protected $currentFileInfo;
+
+    /**
+     * @var FunctionRegistry
+     */
+    private $parent;
 
     /**
      * Array of callable functions
@@ -92,10 +129,12 @@ class ILess_FunctionRegistry
         'isstring' => true,
         'isunit' => true,
         'isurl' => true,
+        'isruleset' => true,
         'length' => true,
         'lighten' => true,
         'lightness' => true,
         'luma' => true,
+        'luminance' => true,
         'max' => true,
         'min' => true,
         'mix' => true,
@@ -124,20 +163,37 @@ class ILess_FunctionRegistry
         'tan' => true,
         'template' => true,
         'tint' => true,
-        'unit' => true
+        'unit' => true,
+        'getunit' => true,
+        'defaultFunc' => true,
+        'imageSize' => true,
+        'imageWidth' => true,
+        'imageHeight' => true,
     );
 
     /**
      * Constructor
      *
      * @param array $aliases Array of function aliases in the format array(alias => function)
-     * @param ILess_Environment $env The environment
+     * @param Context $context The context
      */
-    public function __construct($aliases = array(), ILess_Environment $env = null)
+    public function __construct($aliases = array(), Context $context = null)
     {
-        $this->env = $env;
+        $this->context = $context;
         $this->addAliases($aliases);
     }
+
+    /**
+     * @param FileInfo $file
+     * @return $this
+     */
+    public function setCurrentFile(FileInfo $file)
+    {
+        $this->currentFileInfo = $file;
+
+        return $this;
+    }
+
 
     /**
      * Adds a function to the functions
@@ -145,13 +201,15 @@ class ILess_FunctionRegistry
      * @param string $functionName
      * @param callable $callable
      * @param string|array $aliases The array of aliases
-     * @return ILess_FunctionRegistry
+     * @return FunctionRegistry
      * @throws InvalidArgumentException If the callable is not valid
      */
     public function addFunction($functionName, $callable, $aliases = array())
     {
-        if (!is_callable($callable, false, $callableName)) {
-            throw new InvalidArgumentException(sprintf('The callable "%s" for function "%s" is not valid.', $callableName, $functionName));
+        if (!is_callable($callable, null, $callableName)) {
+            throw new InvalidArgumentException(
+                sprintf('The callable "%s" for function "%s" is not valid.', $callableName, $functionName)
+            );
         }
 
         // all functions are case insensitive
@@ -174,20 +232,85 @@ class ILess_FunctionRegistry
      * Adds functions
      *
      * <pre>
+     * $registry->addFunctions(array('name' => function() {}));
      * $registry->addFunctions(array(array('name' => 'load', 'callable' => 'load'));
      * $registry->addFunctions(array(array('name' => 'load', 'callable' => 'load', 'alias' => 'l'));
      * </pre>
      *
-     * @param array $functions Array of functions in format (''
-     * @return ILess_FunctionRegistry
+     * @param array $functions Array of functions
+     * @return FunctionRegistry
      */
     public function addFunctions(array $functions)
     {
-        foreach ($functions as $function) {
-            $this->addFunction($function['name'], $function['callable'], isset($function['alias']) ? $function['alias'] : array());
+        foreach ($functions as $key => $function) {
+            if (is_numeric($key)) {
+                $this->addFunction(
+                    $function['name'],
+                    $function['callable'],
+                    isset($function['alias']) ? $function['alias'] : array()
+                );
+            } else {
+                // alternative syntax without aliases
+                $this->addFunction($key, $function);
+            }
         }
 
         return $this;
+    }
+
+    /**
+     * Sets the parent registry
+     *
+     * @param FunctionRegistry $parent
+     * @return $this
+     */
+    public function setParent(FunctionRegistry $parent)
+    {
+        // verify
+        if ($parent === $this) {
+            throw new RuntimeException('Invalid parent registry. The parent is the same object.');
+        }
+
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+
+    /**
+     * Loads a plugin from given path
+     *
+     * @param string $path
+     * @return $this
+     * @throws RuntimeException
+     */
+    public function loadPlugin($path)
+    {
+        if (!is_readable($path)) {
+            throw new RuntimeException(
+                sprintf('The plugin cannot be loaded. The given file "%s" does not exist or is not readable', $path)
+            );
+        }
+
+        // FIXME: what about security?
+        // FIXME: php syntax check?
+        require $path;
+
+        return $this;
+    }
+
+    /**
+     * Clones the registry and setups the parent
+     *
+     * @return FunctionRegistry
+     */
+    public function inherit()
+    {
+        $new = clone $this;
+
+        $new->setParent($this);
+
+        return $new;
     }
 
     /**
@@ -198,6 +321,19 @@ class ILess_FunctionRegistry
     public function getFunctions()
     {
         return array_keys($this->functions);
+    }
+
+    /**
+     * Does the function exist?
+     *
+     * @param string $name
+     * @return bool
+     */
+    public function hasFunction($name)
+    {
+        $name = strtolower($name);
+
+        return isset($this->functions[$name]) || isset($this->aliases[$name]);
     }
 
     /**
@@ -216,13 +352,15 @@ class ILess_FunctionRegistry
      *
      * @param string $alias The alias name
      * @param string $function The function name
-     * @return ILess_FunctionRegistry
+     * @return FunctionRegistry
      */
     public function addAlias($alias, $function)
     {
         $functionLower = strtolower($function);
         if (!isset($this->functions[$functionLower])) {
-            throw new InvalidArgumentException(sprintf('Invalid alias "%s" for "%s" given. The "%s" does not exist.', $alias, $function));
+            throw new InvalidArgumentException(
+                sprintf('Invalid alias "%s" for "%s" given. The "%s" does not exist.', $alias, $function)
+            );
         }
         $this->aliases[strtolower($alias)] = $functionLower;
 
@@ -233,7 +371,7 @@ class ILess_FunctionRegistry
      * Adds aliases
      *
      * @param array $aliases
-     * @return ILess_FunctionRegistry
+     * @return FunctionRegistry
      */
     public function addAliases(array $aliases)
     {
@@ -245,23 +383,23 @@ class ILess_FunctionRegistry
     }
 
     /**
-     * Sets the environment
+     * Sets The context
      *
-     * @param ILess_Environment $env
+     * @param Context $context
      */
-    public function setEnvironment(ILess_Environment $env)
+    public function setEnvironment(Context $context)
     {
-        $this->env = $env;
+        $this->context = $context;
     }
 
     /**
-     * Returns the environment instance
+     * Returns the context instance
      *
      * @return mixed
      */
-    public function getEnvironment()
+    public function getContext()
     {
-        return $this->env;
+        return $this->context;
     }
 
     /**
@@ -270,7 +408,7 @@ class ILess_FunctionRegistry
      * @param string $methodName
      * @param array $arguments
      * @return mixed
-     * @throws ILess_Exception_Function If the method does not exist
+     * @throws FunctionException If the method does not exist
      */
     public function call($methodName, $arguments = array())
     {
@@ -281,6 +419,8 @@ class ILess_FunctionRegistry
         }
 
         if (isset($this->functions[$methodName])) {
+            $arguments = $this->prepareArguments($arguments);
+
             if ($this->functions[$methodName] === true) {
                 // built in function
                 return call_user_func_array(array($this, $methodName), $arguments);
@@ -291,7 +431,60 @@ class ILess_FunctionRegistry
 
                 return call_user_func_array($this->functions[$methodName], $arguments);
             }
+
+        } else {
+            if ($this->parent) {
+                return $this->parent->call($methodName, $arguments);
+            }
         }
+    }
+
+    /**
+     * Prepares the arguments before function calls.
+     * This does the same as in less.js's functionCaller object
+     *
+     * @param array $arguments
+     * @return array
+     */
+    protected function prepareArguments(array $arguments)
+    {
+        $return = array_filter(
+            $arguments,
+            function ($item) {
+                if ($item instanceof CommentNode) {
+                    return false;
+                }
+
+                return true;
+            }
+        );
+
+        $return = array_map(
+            function (&$item) {
+                if ($item instanceof ExpressionNode) {
+                    $subNodes = array_filter(
+                        $item->value,
+                        function ($i) {
+                            if ($i instanceof CommentNode) {
+                                return false;
+                            }
+
+                            return true;
+                        }
+                    );
+                    if (count($subNodes) === 1) {
+                        return $subNodes[0];
+                    } else {
+                        return new ExpressionNode($subNodes);
+                    }
+                }
+
+                return $item;
+            },
+            $return
+        );
+
+        return $return;
     }
 
     /**
@@ -300,12 +493,12 @@ class ILess_FunctionRegistry
      * * Following characters are exceptions and not encoded: `,, /, ?, @, &, +, ', ~, ! $`
      * * Most common encoded characters are: `<space>`, #, ^, (, ), {, }, |, :, >, <, ;, ], [ =`
      *
-     * @param ILess_Node $string A string to escape
-     * @return ILess_Node_Anonymous Escaped string content without quotes.
+     * @param Node $string A string to escape
+     * @return AnonymousNode Escaped string content without quotes.
      */
-    public function escape(ILess_Node $string)
+    public function escape(Node $string)
     {
-        return new ILess_Node_Anonymous(urlencode((string)$string));
+        return new AnonymousNode(urlencode((string)$string));
     }
 
     /**
@@ -314,67 +507,78 @@ class ILess_FunctionRegistry
      * or uses proprietary syntax which LESS doesn't recognize.
      *
      * @param string $string A string to escape
-     * @return ILess_Node_Anonymous Content without quotes.
+     * @return AnonymousNode Content without quotes.
      */
-    public function e(ILess_Node $string)
+    public function e(Node $string)
     {
-        return new ILess_Node_Anonymous(str_replace(array('~"', '"'), '', (string)$string));
+        return new AnonymousNode(str_replace(array('~"', '"'), '', (string)$string));
     }
 
     /**
      * Returns the number of items
      *
-     * @param ILess_Node $values
-     * @return ILess_Node_Dimension
+     * @param Node $values
+     * @return DimensionNode
      */
-    public function length(ILess_Node $values)
+    public function length(Node $values)
     {
-        return new ILess_Node_Dimension(is_array($values->value) ? count($values->value) : 1);
+        return new DimensionNode(is_array($values->value) ? count($values->value) : 1);
     }
 
     /**
      * Min
      *
-     * @return ILess_Node_Dimension
+     * @return DimensionNode
      */
     public function min()
     {
-        // php 5.2 compat, func_get_args() can't be used as a function parameter
-        $args = func_get_args();
-        return $this->doMinmax(true, $args);
+        return $this->doMinmax(true, func_get_args());
     }
 
     /**
      * Max
      *
-     * @return ILess_Node_Dimension
+     * @return DimensionNode
      */
     public function max()
     {
-        // php 5.2 compat, func_get_args() can't be used as a function parameter
-        $args = func_get_args();
-        return $this->doMinmax(false, $args);
+        return $this->doMinmax(false, func_get_args());
     }
 
     /**
      * Extract
      *
-     * @param ILess_Node $values
-     * @param ILess_Node $index
-     * @return null|ILess_Node
+     * @param Node $node
+     * @param Node $index
+     * @return null|Node
      */
-    public function extract(ILess_Node $values, ILess_Node $index)
+    public function extract(Node $node, Node $index)
     {
         $index = (int)$index->value - 1; // (1-based index)
+        $values = $this->getItemsFromNode($node);
+        if (isset($values[$index])) {
+            return $values[$index];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param Node $node
+     * @return array
+     */
+    private function getItemsFromNode(Node $node)
+    {
         // handle non-array values as an array of length 1
         // return 'undefined' if index is invalid
-        if (is_array($values->value)) {
-            if (isset($values->value[$index])) {
-                return $values->value[$index];
-            }
-        } elseif ($index === 0) {
-            return $values;
+        if (is_array($node->value)) {
+            $items = $node->value;
+        } else {
+            $items = array($node);
         }
+
+        // reset array keys!
+        return array_values($items);
     }
 
     /**
@@ -384,47 +588,82 @@ class ILess_FunctionRegistry
      * Remaining arguments contain expressions to replace placeholders.
      * If you need to print the percentage symbol, escape it by another percentage %%.*
      *
-     * @param object $string
-     * @param $value1
-     * @param $value2
-     * @return ILess_Node_Quoted
+     * @param Node $string
+     * @return QuotedNode
      */
-    public function template(ILess_Node $string /* , $value1, $value2, ... */)
+    public function template(Node $string /* , $value1, $value2, ... */)
     {
         $args = func_get_args();
         array_shift($args);
-        $string = $string->value;
+
+        $result = $string->value;
         foreach ($args as $arg) {
-            if (preg_match('/%[sda]/i', $string, $token)) {
+            if (preg_match('/%[sda]/i', $result, $token)) {
                 $token = $token[0];
-                $value = stristr($token, 's') ? $arg->value : $arg->toCSS($this->env);
-                $value = preg_match('/[A-Z]$/', $token) ? urlencode($value) : $value;
-                $string = preg_replace('/%[sda]/i', $value, $string, 1);
+
+                if ($arg instanceof QuotedNode && stristr($token, 's')) {
+                    $value = $arg->value;
+                } else {
+                    $value = $arg->toCSS($this->context);
+                }
+
+                $value = preg_match('/[A-Z]$/', $token) ? Util::encodeURIComponent($value) : $value;
+                $result = preg_replace('/%[sda]/i', $value, $result, 1);
             }
         }
-        $string = str_replace('%%', '%', $string);
+        $result = str_replace('%%', '%', $result);
 
-        return new ILess_Node_Quoted('"' . $string . '"', $string);
+        return new QuotedNode(
+            isset($string->quote) ? $string->quote : '',
+            $result,
+            isset($string->escaped) ? $string->escaped : true
+        );
     }
 
     /**
      * Replaces a string or regexp pattern within a string.
      *
-     * @param object $string
-     * @param object $pattern
-     * @param object $replacement
-     * @param $flags
-     * @return ILess_Node_Quoted
+     * @param Node $string The string to search and replace in.
+     * @param Node $pattern A string or regular expression pattern to search for.
+     * @param Node $replacement The string to replace the matched pattern with.
+     * @param Node $flags (Optional) regular expression flags.
+     * @return QuotedNode
+     * @see http://lesscss.org/functions/#string-functions-replace
      */
-    public function replace(ILess_Node $string, ILess_Node $pattern, ILess_Node $replacement, ILess_Node $flags = null)
+    public function replace(Node $string, Node $pattern, Node $replacement, Node $flags = null)
     {
-        $flags  = $flags ? $flags->value : '';
-        $limit = strpos($flags, 'g') === false ? 1 : -1;
-        $flags = str_replace('g', '', $flags);
+        $result = $string->value;
 
-        $string = preg_replace('/' . $pattern->value . '/' . $flags, $replacement->value, $string->value);
+        if ($replacement instanceof QuotedNode) {
+            $replacement = $replacement->value;
+        } else {
+            $replacement = $replacement->toCSS($this->context);
+        }
 
-        return new ILess_Node_Quoted('"' . $string . '"', $string);
+        $limit = 1;
+        // we have some flags
+        if ($flags) {
+            $flags = $flags->value;
+            // global replacement
+            $global = strpos($flags, 'g') !== false;
+            // strip js php non compatible flags
+            $flags = str_replace('g', '', $flags);
+            if ($global) {
+                $limit = -1;
+            }
+        } else {
+            $flags = '';
+        }
+
+        // we cannot use preg_quote here, since the expression is already quoted in less.js
+        $regexp = str_replace('/', '\\/', $pattern->value);
+        $result = preg_replace('/'.$regexp.'/'.$flags, $replacement, $result, $limit);
+
+        return new QuotedNode(
+            isset($string->quote) ? $string->quote : '',
+            $result,
+            isset($string->escaped) ? $string->escaped : true
+        );
     }
 
     /**
@@ -432,10 +671,12 @@ class ILess_FunctionRegistry
      * and the resource is too large, or if you use the function in the browser.
      * If the mime is not given then node uses the mime package to determine the correct mime type.
      *
-     * @param string $mimeType A mime type string
-     * @param string $url The URL of the file to inline.
+     * @param Node $mimeType A mime type string
+     * @param Node $url The URL of the file to inline.
+     * @return UrlNode
+     * @throws IOException
      */
-    public function dataUri(ILess_Node $mimeType, ILess_Node $filePath = null)
+    public function dataUri(Node $mimeType, Node $filePath = null)
     {
         if (func_num_args() < 2) {
             $path = $mimeType->value;
@@ -445,69 +686,74 @@ class ILess_FunctionRegistry
             $mime = $mimeType->value;
         }
 
-        $path = ILess_Util::sanitizePath($path);
-
-        if (ILess_Util::isPathRelative($path)) {
-            if ($this->env->relativeUrls) {
-                $path = $this->env->currentFileInfo->currentDirectory . $path;
-            } else {
-                $path = $this->env->currentFileInfo->entryPath . $path;
-            }
-            $path = ILess_Util::normalizePath($path);
-        }
+        $path = $this->getFilePath($path);
+        list($fragment, $path) = Util::getFragmentAndPath($path);
 
         if ($mime === false) {
-            $mime = ILess_Mime::lookup($path);
-            // use base 64 unless it's an ASCII or UTF-8 format
-            $charset = ILess_Mime::charsetsLookup($mime);
-            $useBase64 = !in_array($charset, array('US-ASCII', 'UTF-8'));
+            $mime = Mime::lookup($path);
+            if ($mime === 'image/svg+xml') {
+                $useBase64 = false;
+            } else {
+                // use base 64 unless it's an ASCII or UTF-8 format
+                $charset = Mime::charsetsLookup($mime);
+                $useBase64 = !in_array($charset, array('US-ASCII', 'UTF-8'));
+            }
             if ($useBase64) {
                 $mime .= ';base64';
             }
         } else {
-            $useBase64 = preg_match('/;base64$/', $mime);
+            $useBase64 = (bool)preg_match('/;base64$/', $mime);
         }
 
-        $buffer = false;
-        if (is_readable($path)) {
-            $buffer = file_get_contents($path);
+        // the file was not found
+        // FIXME: warn
+        if (!is_readable($path)) {
+            $url = new UrlNode(
+                ($filePath ? $filePath : $mimeType),
+                0, // FIXME: we don't have access to current index here!
+                $this->context->currentFileInfo
+            );
+
+            return $url->compile($this->context);
         }
+
+        $buffer = file_get_contents($path);
+        $buffer = $useBase64 ? base64_encode($buffer) : Util::encodeURIComponent($buffer);
+
+        $uri = "data:".$mime.','.$buffer.$fragment;
 
         // IE8 cannot handle a data-uri larger than 32KB. If this is exceeded
-        // and the --ieCompat option is enabled, return a normal url() instead.
-        if ($this->env->ieCompat && $buffer !== false) {
-            $fileSizeInKB = round(strlen($buffer) / 1024);
-            if ($fileSizeInKB >= self::IE8_DATA_URI_MAX_KB) {
-                $url = new ILess_Node_Url(($filePath ? $filePath : $mimeType), $this->env->currentFileInfo);
+        // and the ieCompat option is enabled, return normal url() instead.
+        if ($this->context->ieCompat) {
+            if (strlen($uri) >= self::IE8_DATA_URI_MAX) {
+                // FIXME: warn that we cannot use data uri here
+                // FIXME: we don't have access to current index here!
+                $url = new UrlNode(($filePath ? $filePath : $mimeType));
 
-                return $url->compile($this->env);
+                return $url->compile($this->context);
             }
         }
 
-        if ($buffer !== false) {
-            $buffer = $useBase64 ? base64_encode($buffer) : rawurlencode($buffer);
-            $path = "'data:" . $mime . ',' . $buffer . "'";
-        }
-
-        return new ILess_Node_Url(new ILess_Node_Anonymous($path));
+        // FIXME: we don't have any information about current index here!
+        return new UrlNode(new QuotedNode('"'.$uri.'"', $uri, false));
     }
 
     /**
      * Rounds up to an integer
      *
-     * @param mixed $number
-     * @return ILess_Node_Dimension
+     * @param Node $number
+     * @return DimensionNode
      */
     public function ceil($number)
     {
-        return new ILess_Node_Dimension(ceil($this->number($number)), $number->unit);
+        return new DimensionNode(ceil($this->number($number)), $number->unit);
     }
 
     /**
      * Rounds down to an integer
      *
-     * @param mixed $number
-     * @return mixed
+     * @param Node $number
+     * @return Node
      */
     public function floor($number)
     {
@@ -517,32 +763,33 @@ class ILess_FunctionRegistry
     /**
      * Converts to a %, e.g. 0.5 -> 50%
      *
-     * @param ILess_Node $number
+     * @param Node $number
+     * @return DimensionNode
      */
-    public function percentage(ILess_Node $number)
+    public function percentage(Node $number)
     {
-        return new ILess_Node_Dimension($number->value * 100, '%');
+        return new DimensionNode($number->value * 100, '%');
     }
 
     /**
      * Rounds a number to a number of places
      *
-     * @param string|ILess_Node $number The number to round
+     * @param string|Node $number The number to round
      * @param integer $places The precision
-     * @return ILess_Node_Dimension
+     * @return DimensionNode
      */
-    public function round($number, ILess_Node_Dimension $places = null)
+    public function round($number, DimensionNode $places = null)
     {
-        if ($number instanceof ILess_Node_Dimension) {
+        if ($number instanceof DimensionNode) {
             $unit = $number->unit;
             $number = $number->value;
         } else {
             $unit = null;
         }
 
-        $rounded = ILess_Math::round($number, $places ? $places->value : 0);
+        $rounded = round(floatval($number), $places ? $places->value : 0);
 
-        return new ILess_Node_Dimension($rounded, $unit);
+        return new DimensionNode($rounded, $unit);
     }
 
     /**
@@ -601,7 +848,7 @@ class ILess_FunctionRegistry
     }
 
     /**
-     * Arccosine - inverse of cosine function
+     * Arc cosine - inverse of cosine function
      *
      * @param string $number
      * @return mixed
@@ -623,7 +870,7 @@ class ILess_FunctionRegistry
     }
 
     /**
-     * Arctangent - inverse of tangent function
+     * Arc tangent - inverse of tangent function
      *
      * @param mixed $number
      * @return mixed
@@ -634,15 +881,15 @@ class ILess_FunctionRegistry
     }
 
     /**
-     * Does the math using ILess_Math
+     * Does the math using Math
      *
      * @param string $func The math function like sqrt, floor...
-     * @param ILess_Node_Dimension|integer $number The number
-     * @param ILess_Node_DimensionUnit|string $unit The unit
-     * @param mixed $argument1 Argument for the mathematical function
-     * @param mixed $argument2 Argument for the mathematical function
+     * @param DimensionNode|integer $number The number
+     * @param UnitNode|string $unit The unit
+     * @param mixed ...$argument1 Argument for the mathematical function
+     * @param mixed ...$argument2 Argument for the mathematical function
      * @return mixed
-     * @throws ILess_Exception_Compiler
+     * @throws CompilerException
      */
     protected function doMath($func, $number, $unit = null /*, $arguments...*/)
     {
@@ -657,78 +904,83 @@ class ILess_FunctionRegistry
             }
         }
 
-        if ($number instanceof ILess_Node_Dimension) {
+        if ($number instanceof DimensionNode) {
+
             if ($unit === null) {
                 $unit = $number->unit;
             } else {
                 $number = $number->unify();
             }
-            $number = $number->value;
+            $number = floatval($number->value);
+
             array_unshift($arguments, $number);
-            // We have to deal this with ILess_Math to be precious
-            return new ILess_Node_Dimension(call_user_func_array(array('ILess_Math', $func), $arguments), $unit);
+
+            return new DimensionNode(call_user_func_array($func, $arguments), $unit);
+
         } elseif (is_numeric($number)) {
             array_unshift($arguments, $number);
 
-            return call_user_func_array(array('ILess_Math', $func), $arguments);
+            return call_user_func_array($func, $arguments);
         }
 
-        throw new ILess_Exception_Compiler('The math functions take numbers as parameters');
+        throw new CompilerException('The math functions take numbers as parameters');
     }
 
     /**
      * Returns pi
      *
-     * @return ILess_Node_Dimension
+     * @return DimensionNode
      */
     public function pi()
     {
-        return new ILess_Node_Dimension(pi());
+        return new DimensionNode(M_PI);
     }
 
     /**
      * First argument raised to the power of the second argument
      *
-     * @param string $number
-     * @param string $exponent
-     * @return string
+     * @param Node $number
+     * @param Node $exponent
+     * @throws CompilerException
+     * @return DimensionNode
      */
     public function pow($number, $exponent)
     {
         if (is_numeric($number) && is_numeric($exponent)) {
-            $number = new ILess_Node_Dimension($number);
-            $exponent = new ILess_Node_Dimension($exponent);
-        } elseif (!($number instanceof ILess_Node_Dimension)
-            || !($exponent instanceof ILess_Node_Dimension)
+            $number = new DimensionNode($number);
+            $exponent = new DimensionNode($exponent);
+        } elseif (!($number instanceof DimensionNode)
+            || !($exponent instanceof DimensionNode)
         ) {
-            throw new ILess_Exception_Compiler('Arguments must be numbers.');
+            throw new CompilerException('Arguments must be numbers.');
         }
 
-        return new ILess_Node_Dimension(ILess_Math::power($number->value, $exponent->value), $number->unit);
+        return new DimensionNode(pow($number->value, $exponent->value), $number->unit);
     }
 
     /**
      * First argument modulus second argument
      *
-     * @param ILess_Node_Dimension $number1
-     * @param ILess_Node_Dimension $number2
-     * @return ILess_Node_Dimension
+     * @param DimensionNode $number1
+     * @param DimensionNode $number2
+     * @return DimensionNode
      */
-    public function mod(ILess_Node_Dimension $number1, ILess_Node_Dimension $number2)
+    public function mod(DimensionNode $number1, DimensionNode $number2)
     {
-        return new ILess_Node_Dimension($number1->value % $number2->value, $number1->unit);
+        return new DimensionNode($number1->value % $number2->value, $number1->unit);
     }
 
     /**
      * Converts between number types
      *
-     * @param ILess_Node_Dimension $number
-     * @param string $units
+     * @param DimensionNode $number
+     * @param Node $units
+     * @return DimensionNode|null
      */
-    public function convert(ILess_Node $number, $units)
+    public function convert(Node $number, Node $units)
     {
-        if (!$number instanceof ILess_Node_Dimension) {
-            return;
+        if (!$number instanceof DimensionNode) {
+            return null;
         }
 
         return $number->convertTo($units->value);
@@ -737,38 +989,83 @@ class ILess_FunctionRegistry
     /**
      * Changes number units without converting it
      *
-     * @param ILess_Node $number The dimension
-     * @param ILess_Node $unit The unit
+     * @param Node $number The dimension
+     * @param Node $unit The unit
+     * @throws CompilerException
+     * @return DimensionNode
      */
-    public function unit(ILess_Node $number, ILess_Node $unit = null)
+    public function unit(Node $number, Node $unit = null)
     {
-        if (!$number instanceof ILess_Node_Dimension) {
-            throw new ILess_Exception_Compiler(sprintf('The first argument to unit must be a number%s',
-                ($number instanceof ILess_Node_Operation ? '. Have you forgotten parenthesis?' : '.')));
+        if (!$number instanceof DimensionNode) {
+            throw new CompilerException(
+                sprintf(
+                    'The first argument to unit must be a number%s',
+                    ($number instanceof OperationNode ? '. Have you forgotten parenthesis?' : '.')
+                )
+            );
         }
 
-        return new ILess_Node_Dimension($number->value, $unit ? $unit->toCSS($this->env) : '');
+        if ($unit) {
+            if ($unit instanceof KeywordNode) {
+                $unit = $unit->value;
+            } else {
+                $unit = $unit->toCSS($this->context);
+            }
+        } else {
+            $unit = '';
+        }
+
+        return new DimensionNode($number->value, $unit);
+    }
+
+    /**
+     * Returns units of a number.
+     *
+     * @param DimensionNode $node
+     * @return AnonymousNode
+     * @see http://lesscss.org/functions/#misc-functions-get-unit
+     */
+    public function getunit(DimensionNode $node)
+    {
+        return new AnonymousNode($node->unit);
     }
 
     /**
      * Converts string or escaped value into color
      *
-     * @param string $string
+     * @param Node $string
+     * @throws CompilerException
+     * @returns ColorNode
      */
-    public function color(ILess_Node $string)
+    public function color(Node $string)
     {
-        if ($string instanceof ILess_Node_Quoted) {
-            return new ILess_Node_Color(substr($string->value, 1));
+        if ($string instanceof QuotedNode &&
+            preg_match('/^#([a-f0-9]{6}|[a-f0-9]{3})$/i', $string->value)
+        ) {
+            return new ColorNode(substr($string->value, 1));
         }
-        throw new ILess_Exception_CompilerException('Argument must be a string');
+
+        if ($string instanceof ColorNode) {
+            // remove keyword, so the color is not output as `plum` but in hex code
+            $string->value->keyword = null;
+
+            return $string;
+        } else {
+            if (Color::isNamedColor($string->value)) {
+                return new ColorNode(Color::color($string->value));
+            }
+        }
+
+        throw new CompilerException('Argument must be a color keyword or 3/6 digit hex e.g. #FFF');
     }
 
     /**
      * Converts to a color
      *
-     * @param string $red The red component of a color
-     * @param string $green The green component of a color
-     * @param string $blue The blue component of a color
+     * @param Node|int $red The red component of a color
+     * @param Node|int $green The green component of a color
+     * @param Node|int $blue The blue component of a color
+     * @return ColorNode
      */
     public function rgb($red, $green, $blue)
     {
@@ -778,30 +1075,30 @@ class ILess_FunctionRegistry
     /**
      * Converts to a color
      *
-     * @param string $red The red component of a color
-     * @param string $green The green component of a color
-     * @param string $blue The blue component of a color
-     * @param string $alpha The alpha channel
-     * @return ILess_Node_Color
+     * @param Node $red The red component of a color
+     * @param Node $green The green component of a color
+     * @param Node $blue The blue component of a color
+     * @param Node|float $alpha The alpha channel
+     * @return ColorNode
      */
     public function rgba($red, $green, $blue, $alpha)
     {
         $rgb = array_map(array($this, 'scaled'), array($red, $green, $blue));
 
-        return new ILess_Node_Color($rgb, $this->number($alpha));
+        return new ColorNode($rgb, $this->number($alpha));
     }
 
     /**
      * Scales the number to percentage
      *
-     * @param ILess_Node_Dimension $n The number
+     * @param DimensionNode $n The number
      * @param integer $size
      * @return float
      */
-    public function scaled($n, $size = 255)
+    protected function scaled($n, $size = 255)
     {
-        if ($n instanceof ILess_Node_Dimension && $n->unit->is('%')) {
-            return ILess_Math::multiply($n->value, ILess_Math::divide($size, '100'));
+        if ($n instanceof DimensionNode && $n->unit->is('%')) {
+            return $n->value * $size / 100;
         } else {
             return $this->number($n);
         }
@@ -810,42 +1107,45 @@ class ILess_FunctionRegistry
     /**
      * Converts the $number to "real" number
      *
-     * @param ILess_Node_Dimension|integer|float $number
-     * @return double
+     * @param DimensionNode|integer|float $number
+     * @return float
      * @throws InvalidArgumentException
      */
     public function number($number)
     {
-        if ($number instanceof ILess_Node_Dimension) {
-            return $number->unit->is('%') ? ILess_Math::clean(ILess_Math::divide($number->value, '100')) : $number->value;
+        if ($number instanceof DimensionNode) {
+            return $number->unit->is('%') ? $number->value / 100 : $number->value;
         } elseif (is_numeric($number)) {
             return $number;
         } else {
-            throw new InvalidArgumentException(sprintf('Color functions take numbers as parameters. "%s" given.', gettype($number)));
+            throw new InvalidArgumentException(
+                sprintf('Color functions take numbers as parameters. "%s" given.', gettype($number))
+            );
         }
     }
 
     /**
      * Creates a `#AARRGGBB`
      *
-     * @param ILess_Color $color The color
-     * @return ILess_Node_Anonymous
+     * @param Color $color The color
+     * @return AnonymousNode
      */
-    public function argb(ILess_Node $color)
+    public function argb(Node $color)
     {
-        if (!$color instanceof ILess_Node_Color) {
+        if (!$color instanceof ColorNode) {
             return $color;
         }
 
-        return new ILess_Node_Anonymous($color->toARGB());
+        return new AnonymousNode($color->toARGB());
     }
 
     /**
      * Creates a color
      *
-     * @param ILess_Node_Dimension $hue The hue
-     * @param ILess_Node_Dimension $saturation The saturation
-     * @param ILess_Node_Dimension $lightness The lightness
+     * @param Node $hue The hue
+     * @param Node $saturation The saturation
+     * @param Node $lightness The lightness
+     * @return ColorNode
      */
     public function hsl($hue, $saturation, $lightness)
     {
@@ -859,7 +1159,7 @@ class ILess_FunctionRegistry
      * @param mixed $saturation
      * @param mixed $lightness
      * @param mixed $alpha
-     * @return ILess_Node_Color
+     * @return ColorNode
      */
     public function hsla($hue, $saturation, $lightness, $alpha)
     {
@@ -875,7 +1175,8 @@ class ILess_FunctionRegistry
             $this->hslaHue($hue + 1 / 3, $m1, $m2) * 255,
             $this->hslaHue($hue, $m1, $m2) * 255,
             $this->hslaHue($hue - 1 / 3, $m1, $m2) * 255,
-            $alpha);
+            $alpha
+        );
     }
 
     /**
@@ -930,10 +1231,12 @@ class ILess_FunctionRegistry
         $i = floor(($hue / 60) % 6);
         $f = ($hue / 60) - $i;
 
-        $vs = array($value,
+        $vs = array(
+            $value,
             $value * (1 - $saturation),
             $value * (1 - $f * $saturation),
-            $value * (1 - (1 - $f) * $saturation));
+            $value * (1 - (1 - $f) * $saturation),
+        );
 
         $perm = array(
             array(0, 3, 1),
@@ -941,22 +1244,24 @@ class ILess_FunctionRegistry
             array(1, 0, 3),
             array(1, 2, 0),
             array(3, 1, 0),
-            array(0, 1, 2)
+            array(0, 1, 2),
         );
 
-        return $this->rgba($vs[$perm[$i][0]] * 255,
+        return $this->rgba(
+            $vs[$perm[$i][0]] * 255,
             $vs[$perm[$i][1]] * 255,
             $vs[$perm[$i][2]] * 255,
-            $alpha);
+            $alpha
+        );
     }
 
     /**
      * Returns the `hue` channel of the $color in the HSL space
      *
-     * @param ILess_Node_Color $color
-     * @return ILess_Node_Dimension
+     * @param ColorNode $color
+     * @return DimensionNode
      */
-    public function hue(ILess_Node_Color $color)
+    public function hue(ColorNode $color)
     {
         return $color->getHue();
     }
@@ -964,10 +1269,10 @@ class ILess_FunctionRegistry
     /**
      * Returns the `saturation` channel of the $color in the HSL space
      *
-     * @param ILess_Node_Color $color
-     * @return ILess_Node_Dimension
+     * @param ColorNode $color
+     * @return DimensionNode
      */
-    public function saturation(ILess_Node_Color $color)
+    public function saturation(ColorNode $color)
     {
         return $color->getSaturation();
     }
@@ -975,10 +1280,10 @@ class ILess_FunctionRegistry
     /**
      * Returns the 'lightness' channel of @color in the HSL space
      *
-     * @param ILess_Node_Color $color
-     * @return ILess_Node_Dimension
+     * @param ColorNode $color
+     * @return DimensionNode
      */
-    public function lightness(ILess_Node_Color $color)
+    public function lightness(ColorNode $color)
     {
         return $color->getLightness();
     }
@@ -986,58 +1291,58 @@ class ILess_FunctionRegistry
     /**
      * Returns the `hue` channel of @color in the HSV space
      *
-     * @param ILess_Node_Color $color
+     * @param ColorNode $color
      * @return string
      */
-    public function hsvhue(ILess_Node $color)
+    public function hsvhue(Node $color)
     {
-        if (!$color instanceof ILess_Node_Color) {
+        if (!$color instanceof ColorNode) {
             return $color;
         }
         $hsv = $color->toHSV();
 
-        return new ILess_Node_Dimension(ILess_Math::round($hsv['h']));
+        return new DimensionNode(Math::round($hsv['h']));
     }
 
     /**
      * Returns the `saturation` channel of @color in the HSV space
      *
-     * @param ILess_Node_Color $color
+     * @param ColorNode $color
      * @return string
      */
-    public function hsvsaturation(ILess_Node $color)
+    public function hsvsaturation(Node $color)
     {
-        if (!$color instanceof ILess_Node_Color) {
+        if (!$color instanceof ColorNode) {
             return $color;
         }
         $hsv = $color->toHSV();
 
-        return new ILess_Node_Dimension(ILess_Math::round($hsv['s'] * 100), '%');
+        return new DimensionNode(Math::round($hsv['s'] * 100), '%');
     }
 
     /**
      * Returns the 'value' channel of @color in the HSV space
      *
-     * @param ILess_Node_Color $color
+     * @param ColorNode $color
      * @return string
      */
-    public function hsvvalue(ILess_Node $color)
+    public function hsvvalue(Node $color)
     {
-        if (!$color instanceof ILess_Node_Color) {
+        if (!$color instanceof ColorNode) {
             return $color;
         }
         $hsv = $color->toHSV();
 
-        return new ILess_Node_Dimension(ILess_Math::round($hsv['v'] * 100), '%');
+        return new DimensionNode(Math::round($hsv['v'] * 100), '%');
     }
 
     /**
      * Returns the 'red' channel of @color
      *
-     * @param ILess_Node_Color $color
+     * @param ColorNode $color
      * @return string
      */
-    public function red(ILess_Node_Color $color)
+    public function red(ColorNode $color)
     {
         return $color->getRed();
     }
@@ -1045,10 +1350,10 @@ class ILess_FunctionRegistry
     /**
      * Returns the 'green' channel of @color
      *
-     * @param ILess_Node_Color $color
+     * @param ColorNode $color
      * @return string
      */
-    public function green(ILess_Node_Color $color)
+    public function green(ColorNode $color)
     {
         return $color->getGreen();
     }
@@ -1056,10 +1361,10 @@ class ILess_FunctionRegistry
     /**
      * Returns the 'blue' channel of @color
      *
-     * @param ILess_Node_Color $color
-     * @return ILess_Node_Dimension
+     * @param ColorNode $color
+     * @return DimensionNode
      */
-    public function blue(ILess_Node_Color $color)
+    public function blue(ColorNode $color)
     {
         return $color->getBlue();
     }
@@ -1067,12 +1372,12 @@ class ILess_FunctionRegistry
     /**
      * Returns the 'alpha' channel of the $color
      *
-     * @param ILess_Node_Color $color The color
-     * @return ILess_Node_Dimension
+     * @param ColorNode $color The color
+     * @return DimensionNode
      */
-    public function alpha(ILess_Node $color)
+    public function alpha(Node $color)
     {
-        if (!$color instanceof ILess_Node_Color) {
+        if (!$color instanceof ColorNode) {
             return $color;
         }
 
@@ -1082,146 +1387,191 @@ class ILess_FunctionRegistry
     /**
      * Returns the 'luma' value (perceptual brightness) of the $color
      *
-     * @param ILess_Node_Color $color
-     * @return ILess_Node_Dimension
+     * @param ColorNode $color
+     * @return DimensionNode
      */
-    public function luma(ILess_Node_Color $color)
+    public function luma(ColorNode $color)
     {
         return $color->getLuma();
     }
 
     /**
+     * Returns the luminance of the color
+     *
+     * @param ColorNode $color
+     * @return DimensionNode
+     */
+    public function luminance(ColorNode $color)
+    {
+        return $color->getLuminance();
+    }
+
+    /**
      * Return a color 10% points *more* saturated
      *
-     * @param ILess_Node_Color $color
-     * @param ILess_Node The percentage
-     * @return string
+     * @param ColorNode $color
+     * @param Node $percentage The percentage
+     * @param Node $method The color method
+     * @throws InvalidArgumentException
+     * @return ColorNode*
      */
-    public function saturate(ILess_Node $color, ILess_Node $percentage = null)
+    public function saturate(Node $color, Node $percentage = null, Node $method = null)
     {
-        if (!$color instanceof ILess_Node_Color) {
-            if ($color instanceof ILess_Node_Dimension
-                || !ILess_Node::methodExists($color, 'toColor')
-            ) {
-                return null;
-            }
-            $color = $color->toColor();
+        // filter: saturate(3.2);
+        // should be kept as is, so check for color
+        if ($color instanceof DimensionNode) {
+            return null;
         }
 
-        $percentage = $percentage ? $percentage->value : 10;
-        $saturation = $this->clamp($color->getSaturation(true) + $percentage / 100);
+        $color = $this->getColorNode($color, 'Cannot saturate the color');
 
-        return $this->hsla($color->getHue(true), $saturation, $color->getLightness(true), $color->getAlpha());
+        $hsl = $color->toHSL();
+        $percentage = $percentage ? $percentage->value / 100 : 10;
+
+        // relative
+        if ($method && $method->value === 'relative') {
+            $hsl['s'] += $hsl['s'] * $percentage;
+        } else {
+            $hsl['s'] += $percentage;
+        }
+
+        return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $color->getAlpha());
     }
 
     /**
      * Return a color 10% points *less* saturated
      *
-     * @param ILess_Node_Color $color
-     * @return string
+     * @param ColorNode $color
+     * @param Node $percentage The percentage
+     * @param Node $method The color method
+     * @throws InvalidArgumentException
+     * @return ColorNode
      */
-    public function desaturate(ILess_Node_Color $color, ILess_Node $percentage = null)
+    public function desaturate(ColorNode $color, Node $percentage = null, Node $method = null)
     {
-        $percentage = $percentage ? $percentage->value : 10;
-        $saturation = $this->clamp($color->getSaturation(true) - $percentage / 100);
+        $color = $this->getColorNode($color, 'Cannot desaturate the color');
 
-        return $this->hsla($color->getHue(true), $saturation, $color->getLightness(true), $color->getAlpha(true));
+        $hsl = $color->toHSL();
+        $percentage = $percentage ? $percentage->value / 100 : 10;
+
+        // relative
+        if ($method && $method->value === 'relative') {
+            $hsl['s'] -= $hsl['s'] * $percentage;
+        } else {
+            $hsl['s'] -= $percentage;
+        }
+
+        return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $color->getAlpha());
     }
 
     /**
      * Return a color 10% points *lighter*
      *
-     * @param ILess_Node_Color|string $color
-     * @param ILess_Node $percentage The percentage (Default to 10%)
-     * @return string
+     * @param Node $color
+     * @param Node $percentage The percentage (Default to 10%)
+     * @param Node $method The color method
+     * @throws InvalidArgumentException
+     * @return ColorNode
      */
-    public function lighten(ILess_Node $color, ILess_Node $percentage = null)
+    public function lighten(Node $color, Node $percentage = null, Node $method = null)
     {
-        // this is a keyword
-        if ($color instanceof ILess_Node_Keyword && ILess_Color::isNamedColor($color->value)) {
-            $color = new ILess_Node_Color(ILess_Color::color($color->value));
-        }
-
-        if (!$color instanceof ILess_Node_Color) {
-            throw new InvalidArgumentException('Cannot lighten the color');
-        }
-
+        $color = $this->getColorNode($color, 'Cannot lighten the color');
+        $hsl = $color->toHSL();
         $percentage = $percentage ? $percentage->value / 100 : 10;
-        $lightness = $this->clamp($color->getLightness(true) + $percentage);
 
-        return $this->hsla($color->getHue(true), $color->getSaturation(true), $lightness, $color->getAlpha());
+        // relative
+        if ($method && $method->value === 'relative') {
+            $hsl['l'] += $hsl['l'] * $percentage;
+        } else {
+            $hsl['l'] += $percentage;
+        }
+
+        return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $color->getAlpha());
     }
 
     /**
      * Return a color 10% points *darker*
      *
-     * @param ILess_Node $color
-     * @param ILess_Node
-     * @return string
-     * @throws InvalidArgumentException If the node is invalid
+     * @param Node $color
+     * @param DimensionNode $percentage The percentage (Default to 10%)
+     * @param Node $method The method
+     * @return ColorNode
+     * @throws InvalidArgumentException
      */
-    public function darken(ILess_Node $color, ILess_Node_Dimension $percentage = null)
+    public function darken(Node $color, DimensionNode $percentage = null, Node $method = null)
     {
-        // this is a keyword
-        if ($color instanceof ILess_Node_Keyword && ILess_Color::isNamedColor($color->value)) {
-            $color = new ILess_Node_Color(ILess_Color::color($color->value));
-        }
-
-        if (!$color instanceof ILess_Node_Color) {
-            throw new InvalidArgumentException('Cannot darken the color. Invalid color given.');
-        }
-
+        $color = $this->getColorNode($color, 'Cannot darken the color');
+        $hsl = $color->toHSL();
         $percentage = $percentage ? $percentage->value / 100 : 10;
-        $lightness = $this->clamp($color->getLightness(true) - $percentage);
 
-        return $this->hsla($color->getHue(true), $color->getSaturation(true), $lightness, $color->getAlpha(true));
+        // relative
+        if ($method && $method->value === 'relative') {
+            $hsl['l'] -= $hsl['l'] * $percentage;
+        } else {
+            $hsl['l'] -= $percentage;
+        }
+
+        return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $color->getAlpha());
     }
 
     /**
      * Return a color 10% points *less* transparent
      *
-     * @param ILess_Node_Color $color
-     * @return ILess_Node_Color
+     * @param ColorNode $color
+     * @param DimensionNode $percentage The percentage (Default to 10%)
+     * @param Node $method The method
+     * @return ColorNode
+     * @throws InvalidArgumentException
      */
-    public function fadein(ILess_Node_Color $color, ILess_Node_Dimension $percentage = null)
+    public function fadein(ColorNode $color, DimensionNode $percentage = null, Node $method = null)
     {
-        $alpha = $color->getAlpha(true);
-        if ($percentage && $percentage->unit->is('%')) {
-            $alpha += $percentage->value / 100;
+        $color = $this->getColorNode($color, 'Cannot fade in the color');
+        $hsl = $color->toHSL();
+        $percentage = $percentage ? $percentage->value / 100 : 10;
+
+        // relative
+        if ($method && $method->value === 'relative') {
+            $hsl['a'] += $hsl['a'] * $percentage;
         } else {
-            $alpha += $percentage ? $percentage->value : 10;
+            $hsl['a'] += $percentage;
         }
 
-        return $this->hsla($color->getHue(true), $color->getSaturation(true), $color->getLightness(true), $this->clamp($alpha));
+        return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
     }
 
     /**
      * Return a color 10% points *more* transparent
      *
-     * @param ILess_Node_Color $color
-     * @param ILess_Node_Dimension $percentage
-     * @return string
+     * @param ColorNode $color
+     * @param DimensionNode $percentage The percentage (Default to 10%)
+     * @param Node $method The method
+     * @return ColorNode
+     * @throws InvalidArgumentException
      */
-    public function fadeout(ILess_Node_Color $color, ILess_Node_Dimension $percentage = null)
+    public function fadeout(ColorNode $color, DimensionNode $percentage = null, Node $method = null)
     {
-        $alpha = $color->getAlpha(true);
-        if ($percentage && $percentage->unit->is('%')) {
-            $alpha -= $percentage->value / 100;
+        $color = $this->getColorNode($color, 'Cannot fade in the color');
+        $hsl = $color->toHSL();
+        $percentage = $percentage ? $percentage->value / 100 : 10;
+
+        // relative
+        if ($method && $method->value === 'relative') {
+            $hsl['a'] -= $hsl['a'] * $percentage;
         } else {
-            $alpha -= $percentage ? $percentage->value : 10;
+            $hsl['a'] -= $percentage;
         }
 
-        return $this->hsla($color->getHue(true), $color->getSaturation(true), $color->getLightness(true), $this->clamp($alpha));
+        return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
     }
 
     /**
      * Return $color with 50% transparency
      *
-     * @param ILess_Node_Color $color
-     * @param ILess_Node_Dimension $percentage
+     * @param ColorNode $color
+     * @param DimensionNode $percentage
      * @return string
      */
-    public function fade(ILess_Node_Color $color, ILess_Node_Dimension $percentage = null)
+    public function fade(ColorNode $color, DimensionNode $percentage = null)
     {
         $hsl = $color->toHSL();
 
@@ -1239,11 +1589,11 @@ class ILess_FunctionRegistry
     /**
      * Return a color with a 10 degree larger in hue
      *
-     * @param ILess_Node_Color $color
-     * @param ILess_Node_Dimension $degrees
-     * @return ILess_Node_Color
+     * @param ColorNode $color
+     * @param DimensionNode $degrees
+     * @return ColorNode
      */
-    public function spin(ILess_Node_Color $color, ILess_Node_Dimension $degrees = null)
+    public function spin(ColorNode $color, DimensionNode $degrees = null)
     {
         $degrees = $degrees ? $degrees->value : 10;
         $hue = (string)fmod($color->getHue(true) + $degrees, 360);
@@ -1255,23 +1605,23 @@ class ILess_FunctionRegistry
     /**
      * Return a mix of $color1 and $color2 with given $weightPercentage (defaults to 50%)
      *
-     * @param ILess_Node $color1
-     * @param ILess_Node $color2
-     * @param ILess_Node_Dimension $weightPercentage
-     * @return ILess_Node_Color
+     * @param Node $color1
+     * @param Node $color2
+     * @param DimensionNode $weightPercentage
+     * @return ColorNode
      * @link http://sass-lang.com
      * @copyright 2006-2009 Hampton Catlin, Nathan Weizenbaum, and Chris Eppstein
      */
-    public function mix(ILess_Node $color1, ILess_Node $color2, ILess_Node_Dimension $weightPercentage = null)
+    public function mix(Node $color1, Node $color2, DimensionNode $weightPercentage = null)
     {
-        if (!$color1 instanceof ILess_Node_Color) {
+        if (!$color1 instanceof ColorNode) {
             return $color1;
-        } elseif (!$color2 instanceof ILess_Node_Color) {
+        } elseif (!$color2 instanceof ColorNode) {
             return $color1;
         }
 
         if (!$weightPercentage) {
-            $weightPercentage = new ILess_Node_Dimension('50', '%');
+            $weightPercentage = new DimensionNode(50);
         }
 
         $p = $weightPercentage->value / 100.0;
@@ -1284,22 +1634,24 @@ class ILess_FunctionRegistry
         $color1Rgb = $color1->getRGB();
         $color2Rgb = $color2->getRGB();
 
-        $rgb = array($color1Rgb[0] * $w1 + $color2Rgb[0] * $w2,
+        $rgb = array(
+            $color1Rgb[0] * $w1 + $color2Rgb[0] * $w2,
             $color1Rgb[1] * $w1 + $color2Rgb[1] * $w2,
-            $color1Rgb[2] * $w1 + $color2Rgb[2] * $w2);
+            $color1Rgb[2] * $w1 + $color2Rgb[2] * $w2,
+        );
 
         $alpha = $color1->getAlpha(true) * $p + $color2->getAlpha(true) * (1 - $p);
 
-        return new ILess_Node_Color($rgb, $alpha);
+        return new ColorNode($rgb, $alpha);
     }
 
     /**
      * Return a color mixed 10% with white
      *
-     * @param ILess_Node $color
+     * @param Node $color
      * @return string
      */
-    public function tint(ILess_Node $color, ILess_Node $percentage = null)
+    public function tint(Node $color, Node $percentage = null)
     {
         return $this->mix($this->rgb(255, 255, 255), $color, $percentage);
     }
@@ -1307,11 +1659,11 @@ class ILess_FunctionRegistry
     /**
      * Return a color mixed 10% with black
      *
-     * @param ILess_Node $color
-     * @param ILess_Node $percentage
+     * @param Node $color
+     * @param Node $percentage
      * @return string
      */
-    public function shade(ILess_Node $color, ILess_Node $percentage = null)
+    public function shade(Node $color, Node $percentage = null)
     {
         return $this->mix($this->rgb(0, 0, 0), $color, $percentage);
     }
@@ -1319,31 +1671,37 @@ class ILess_FunctionRegistry
     /**
      * Returns a grey, 100% desaturated color
      *
-     * @param ILess_Node_Color $color
+     * @param ColorNode $color
      * @return string
      */
-    public function greyscale(ILess_Node_Color $color)
+    public function greyscale(ColorNode $color)
     {
-        return $this->desaturate($color, new ILess_Node_Dimension(100));
+        return $this->desaturate($color, new DimensionNode(100));
     }
 
     /**
      * Return @darkColor if @color is > 43% luma otherwise return @lightColor, see notes
      *
-     * @param ILess_Node_Color $color
-     * @return string
+     * @param Node $color
+     * @param ColorNode|null $darkColor
+     * @param ColorNode|null $lightColor
+     * @param DimensionNode|null $thresholdPercentage
+     * @return ColorNode
      */
-    public function contrast(ILess_Node $color, ILess_Node_Color $darkColor = null,
-                             ILess_Node_Color $lightColor = null, ILess_Node_Dimension $thresholdPercentage = null)
-    {
+    public function contrast(
+        Node $color,
+        ColorNode $darkColor = null,
+        ColorNode $lightColor = null,
+        DimensionNode $thresholdPercentage = null
+    ) {
         // ping pong back
         // filter: contrast(3.2);
         // should be kept as is, so check for color
-        if (!$color instanceof ILess_Node_Color) {
-            if ($color instanceof ILess_Node_Dimension ||
-                !ILess_Node::methodExists($color, 'toColor')
+        if (!$color instanceof ColorNode) {
+            if ($color instanceof DimensionNode ||
+                !$color instanceof ToColorConvertibleInterface
             ) {
-                return;
+                return null;
             }
             $color = $color->toColor();
         }
@@ -1379,210 +1737,158 @@ class ILess_FunctionRegistry
     /**
      * Multiplies the $color1 with $color2
      *
-     * @param ILess_Node_Color $color1 The first color
-     * @param ILess_Node_Color $color2 The second color
+     * @param ColorNode $color1 The first color
+     * @param ColorNode $color2 The second color
+     * @return ColorNode
      */
-    public function multiply(ILess_Node_Color $color1, ILess_Node_Color $color2)
+    public function multiply(ColorNode $color1, ColorNode $color2)
     {
-        $r = $color1->getRed(true) * $color2->getRed(true) / 255;
-        $g = $color1->getGreen(true) * $color2->getGreen(true) / 255;
-        $b = $color1->getBlue(true) * $color2->getBlue(true) / 255;
-
-        return $this->rgb($r, $g, $b);
+        return $this->colorBlend(array($this, 'colorBlendMultiply'), $color1->getColor(), $color2->getColor());
     }
 
     /**
+     * Screen
      *
-     * @param ILess_Node_Color $color1 The first color
-     * @param ILess_Node_Color $color2 The second color
+     * @param ColorNode $color1 The first color
+     * @param ColorNode $color2 The second color
+     * @return ColorNode
      */
-    public function screen(ILess_Node_Color $color1, ILess_Node_Color $color2)
+    public function screen(ColorNode $color1, ColorNode $color2)
     {
-        /*
-        $rs1 = ILess_Math::substract('255', $color1->getRed(true));
-        $rs2 = ILess_Math::substract('255', $color2->getRed(true));
-        $r = ILess_Math::substract('255', ILess_Math::divide(ILess_Math::multiply($rs1, $rs2), '255'));
-
-        $rs1 = ILess_Math::substract('255', $color1->getGreen(true));
-        $rs2 = ILess_Math::substract('255', $color2->getGreen(true));
-        $g = ILess_Math::substract('255', ILess_Math::divide(ILess_Math::multiply($rs1, $rs2), '255'));
-
-        $rs1 = ILess_Math::substract('255', $color1->getBlue(true));
-        $rs2 = ILess_Math::substract('255', $color2->getBlue(true));
-        $b = ILess_Math::substract('255', ILess_Math::divide(ILess_Math::multiply($rs1, $rs2), '255'));
-        */
-
-        // Formula: Result Color = 255 - [((255 - Top Color)*(255 - Bottom Color))/255]
-
-        // $b = 255 - (255 - $color1->getBlue(true)) * (255 - $color2->getBlue(true)) / 255;
-        $r = 255 - ((255 - $color1->getRed(true)) * (255 - $color2->getRed(true)) / 255);
-        $g = 255 - (255 - $color1->getGreen(true)) * (255 - $color2->getGreen(true)) / 255;
-        $b = 255 - (255 - $color1->getBlue(true)) * (255 - $color2->getBlue(true)) / 255;
-
-        return $this->rgb($r, $g, $b);
+        return $this->colorBlend(array($this, 'colorBlendScreen'), $color1->getColor(), $color2->getColor());
     }
 
     /**
+     * Combines the effects of both multiply and screen. Conditionally make light channels lighter
+     * and dark channels darker. Note: The results of the conditions are determined by the
+     * first color parameter.
      *
-     * @param ILess_Node_Color $color1 The first color
-     * @param ILess_Node_Color $color2 The second color
+     * @param ColorNode $color1 A base color object. Also the determinant color to make the result lighter or darker.
+     * @param ColorNode $color2 A color object to overlay.
+     * @return ColorNode
+     * @see http://lesscss.org/functions/#color-blending-overlay
      */
-    public function overlay(ILess_Node_Color $color1, ILess_Node_Color $color2)
+    public function overlay(ColorNode $color1, ColorNode $color2)
     {
-        $color1Rgb = $color1->getRGB();
-        $color2Rgb = $color2->getRGB();
-
-        $r = $color1Rgb[0] < 128 ? 2 * $color1Rgb[0] * $color2Rgb[0] / 255 : 255 - 2 * (255 - $color1Rgb[0]) * (255 - $color2Rgb[0]) / 255;
-        $g = $color1Rgb[1] < 128 ? 2 * $color1Rgb[1] * $color2Rgb[1] / 255 : 255 - 2 * (255 - $color1Rgb[1]) * (255 - $color2Rgb[1]) / 255;
-        $b = $color1Rgb[2] < 128 ? 2 * $color1Rgb[2] * $color2Rgb[2] / 255 : 255 - 2 * (255 - $color1Rgb[2]) * (255 - $color2Rgb[2]) / 255;
-
-        return $this->rgb($r, $g, $b);
+        return $this->colorBlend(array($this, 'colorBlendOverlay'), $color1->getColor(), $color2->getColor());
     }
 
     /**
+     * Softlight - Similar to overlay but avoids pure black resulting in pure black,
+     * and pure white resulting in pure white.
      *
-     * @param ILess_Node_Color $color1 The first color
-     * @param ILess_Node_Color $color2 The second color
+     * @param ColorNode $color1 The first color
+     * @param ColorNode $color2 The second color
+     * @return ColorNode
+     * @see http://lesscss.org/functions/#color-blending-softlight
      */
-    public function softlight(ILess_Node_Color $color1, ILess_Node_Color $color2)
+    public function softlight(ColorNode $color1, ColorNode $color2)
     {
-        $color1Rgb = $color1->getRGB();
-        $color2Rgb = $color2->getRGB();
-
-        $t = $color2Rgb[0] * $color1Rgb[0] / 255;
-        $r = $t + $color1Rgb[0] * (255 - (255 - $color1Rgb[0]) * (255 - $color2Rgb[0]) / 255 - $t) / 255;
-        $t = $color2Rgb[1] * $color1Rgb[1] / 255;
-        $g = $t + $color1Rgb[1] * (255 - (255 - $color1Rgb[1]) * (255 - $color2Rgb[1]) / 255 - $t) / 255;
-        $t = $color2Rgb[2] * $color1Rgb[2] / 255;
-        $b = $t + $color1Rgb[2] * (255 - (255 - $color1Rgb[2]) * (255 - $color2Rgb[2]) / 255 - $t) / 255;
-
-        return $this->rgb($r, $g, $b);
+        return $this->colorBlend(array($this, 'colorBlendSoftlight'), $color1->getColor(), $color2->getColor());
     }
 
     /**
      * Hardlight filter
      *
-     * @param ILess_Node_Color $color1 The first color
-     * @param ILess_Node_Color $color2 The second color
+     * @param ColorNode $color1 The first color
+     * @param ColorNode $color2 The second color
+     * @return ColorNode
      */
-    public function hardlight(ILess_Node_Color $color1, ILess_Node_Color $color2)
+    public function hardlight(ColorNode $color1, ColorNode $color2)
     {
-        $color1Rgb = $color1->getRGB();
-        $color2Rgb = $color2->getRGB();
-
-        $r = $color2Rgb[0] < 128 ? 2 * $color2Rgb[0] * $color1Rgb[0] / 255 : 255 - 2 * (255 - $color2Rgb[0]) * (255 - $color1Rgb[0]) / 255;
-        $g = $color2Rgb[1] < 128 ? 2 * $color2Rgb[1] * $color1Rgb[1] / 255 : 255 - 2 * (255 - $color2Rgb[1]) * (255 - $color1Rgb[1]) / 255;
-        $b = $color2Rgb[2] < 128 ? 2 * $color2Rgb[2] * $color1Rgb[2] / 255 : 255 - 2 * (255 - $color2Rgb[2]) * (255 - $color1Rgb[2]) / 255;
-
-        return $this->rgb($r, $g, $b);
+        return $this->colorBlend(array($this, 'colorBlendHardlight'), $color1->getColor(), $color2->getColor());
     }
 
     /**
+     * Difference
      *
-     * @param ILess_Node_Color $color1 The first color
-     * @param ILess_Node_Color $color2 The second color
+     * @param ColorNode $color1 The first color
+     * @param ColorNode $color2 The second color
+     * @return ColorNode
      */
-    public function difference(ILess_Node_Color $color1, ILess_Node_Color $color2)
+    public function difference(ColorNode $color1, ColorNode $color2)
     {
-        $color1Rgb = $color1->getRGB();
-        $color2Rgb = $color2->getRGB();
-        $r = abs($color1Rgb[0] - $color2Rgb[0]);
-        $g = abs($color1Rgb[1] - $color2Rgb[1]);
-        $b = abs($color1Rgb[2] - $color2Rgb[2]);
-
-        return $this->rgb($r, $g, $b);
+        return $this->colorBlend(array($this, 'colorBlendDifference'), $color1->getColor(), $color2->getColor());
     }
 
     /**
+     * Exclusion
      *
-     * @param ILess_Node_Color $color1 The first color
-     * @param ILess_Node_Color $color2 The second color
+     * @param ColorNode $color1 The first color
+     * @param ColorNode $color2 The second color
+     * @return ColorNode
      */
-    public function exclusion(ILess_Node_Color $color1, ILess_Node_Color $color2)
+    public function exclusion(ColorNode $color1, ColorNode $color2)
     {
-        $color1Rgb = $color1->getRGB();
-        $color2Rgb = $color2->getRGB();
-        $r = $color1Rgb[0] + $color2Rgb[0] * (255 - $color1Rgb[0] - $color1Rgb[0]) / 255;
-        $g = $color1Rgb[1] + $color2Rgb[1] * (255 - $color1Rgb[1] - $color1Rgb[1]) / 255;
-        $b = $color1Rgb[2] + $color2Rgb[2] * (255 - $color1Rgb[2] - $color1Rgb[2]) / 255;
-
-        return $this->rgb($r, $g, $b);
+        return $this->colorBlend(array($this, 'colorBlendExclusion'), $color1->getColor(), $color2->getColor());
     }
 
     /**
+     * Average
      *
-     * @param ILess_Node_Color $color1 The first color
-     * @param ILess_Node_Color $color2 The second color
+     * @param ColorNode $color1 The first color
+     * @param ColorNode $color2 The second color
+     * @return ColorNode
      */
-    public function average(ILess_Node_Color $color1, ILess_Node_Color $color2)
+    public function average(ColorNode $color1, ColorNode $color2)
     {
-        $color1Rgb = $color1->getRGB();
-        $color2Rgb = $color2->getRGB();
-        $r = ($color1Rgb[0] + $color2Rgb[0]) / 2;
-        $g = ($color1Rgb[1] + $color2Rgb[1]) / 2;
-        $b = ($color1Rgb[2] + $color2Rgb[2]) / 2;
-
-        return $this->rgb($r, $g, $b);
+        return $this->colorBlend(array($this, 'colorBlendAverage'), $color1->getColor(), $color2->getColor());
     }
 
     /**
+     * Negation
      *
-     * @param ILess_Node_Color $color1 The first color
-     * @param ILess_Node_Color $color2 The second color
+     * @param ColorNode $color1 The first color
+     * @param ColorNode $color2 The second color
+     * @return ColorNode
      */
-    public function negation(ILess_Node_Color $color1, ILess_Node_Color $color2)
+    public function negation(ColorNode $color1, ColorNode $color2)
     {
-        $color1Rgb = $color1->getRGB();
-        $color2Rgb = $color2->getRGB();
-        $r = 255 - abs(255 - $color2Rgb[0] - $color1Rgb[0]);
-        $g = 255 - abs(255 - $color2Rgb[1] - $color1Rgb[1]);
-        $b = 255 - abs(255 - $color2Rgb[2] - $color1Rgb[2]);
-
-        return $this->rgb($r, $g, $b);
+        return $this->colorBlend(array($this, 'colorBlendNegation'), $color1->getColor(), $color2->getColor());
     }
 
     /**
      * Returns true if passed a color, including keyword colors
      *
-     * @param ILess_Node $colorOrAnything
-     * @return ILess_Node_Keyword
+     * @param Node $colorOrAnything
+     * @return KeywordNode
      */
-    public function iscolor(ILess_Node $colorOrAnything)
+    public function iscolor(Node $colorOrAnything)
     {
-        return $this->isA($colorOrAnything, 'ILess_Node_Color');
+        return $this->isA($colorOrAnything, 'ILess\Node\ColorNode');
     }
 
     /**
      * Returns true if a number of any unit
      *
-     * @param ILess_Node $numberOrAnything
-     * @return ILess_Node_Keyword
+     * @param Node $numberOrAnything
+     * @return KeywordNode
      */
-    public function isnumber(ILess_Node $numberOrAnything)
+    public function isnumber(Node $numberOrAnything)
     {
-        return $this->isA($numberOrAnything, 'ILess_Node_Dimension');
+        return $this->isA($numberOrAnything, 'ILess\Node\DimensionNode');
     }
 
     /**
      * Returns true if it is passed a string
      *
-     * @param ILess_Node $stringOrAnything
-     * @return ILess_Node_Keyword
+     * @param Node $stringOrAnything
+     * @return KeywordNode
      */
-    public function isstring(ILess_Node $stringOrAnything)
+    public function isstring(Node $stringOrAnything)
     {
-        return $this->isA($stringOrAnything, 'ILess_Node_Quoted');
+        return $this->isA($stringOrAnything, 'ILess\Node\QuotedNode');
     }
 
     /**
      * Returns true if it is passed keyword
      *
-     * @param ILess_Node $numberOrAnything
-     * @return ILess_Node_Keyword
+     * @param Node $numberOrAnything
+     * @return KeywordNode
      */
-    public function iskeyword(ILess_Node $keywordOrAnything)
+    public function iskeyword(Node $keywordOrAnything)
     {
-        return $this->isA($keywordOrAnything, 'ILess_Node_Keyword');
+        return $this->isA($keywordOrAnything, 'ILess\Node\KeywordNode');
     }
 
     /**
@@ -1591,94 +1897,121 @@ class ILess_FunctionRegistry
      * @param mixed $urlOrAnything
      * @return boolean
      */
-    public function isurl(ILess_Node $urlOrAnything)
+    public function isurl(Node $urlOrAnything)
     {
-        return $this->isA($urlOrAnything, 'ILess_Node_Url');
+        return $this->isA($urlOrAnything, 'ILess\Node\UrlNode');
     }
 
     /**
      * Returns true if it is a number and a px
      *
-     * @param ILess_Node $urlOrAnything The node to check
-     * @return ILess_Node_Keyword
+     * @param Node $urlOrAnything The node to check
+     * @return KeywordNode
      */
-    public function ispixel(ILess_Node $pixelOrAnything)
+    public function ispixel(Node $pixelOrAnything)
     {
-        if ($this->isA($pixelOrAnything, 'ILess_Node_Dimension') && $pixelOrAnything->unit->is('px')) {
-            return new ILess_Node_Keyword('true');
+        if ($this->isA($pixelOrAnything, 'ILess\Node\DimensionNode') && $pixelOrAnything->unit->is('px')) {
+            return new KeywordNode('true');
         }
 
-        return new ILess_Node_Keyword('false');
+        return new KeywordNode('false');
     }
 
     /**
      * Returns true if it is a number and a %
      *
-     * @param ILess_Node $percentageOrAnything
-     * @return ILess_Node_Keyword
+     * @param Node $percentageOrAnything
+     * @return KeywordNode
      */
-    public function ispercentage(ILess_Node $percentageOrAnything)
+    public function ispercentage(Node $percentageOrAnything)
     {
-        if ($this->isA($percentageOrAnything, 'ILess_Node_Dimension') && $percentageOrAnything->unit->is('%')) {
-            return new ILess_Node_Keyword('true');
+        if ($this->isA($percentageOrAnything, 'ILess\Node\DimensionNode') && $percentageOrAnything->unit->is('%')) {
+            return new KeywordNode('true');
         }
 
-        return new ILess_Node_Keyword('false');
+        return new KeywordNode('false');
     }
 
     /**
      * Returns true if it is a number and an em
      *
-     * @param ILess_Node $emOrAnything
-     * @return ILess_Node_Keyword
+     * @param Node $emOrAnything
+     * @return KeywordNode
      */
-    public function isem(ILess_Node $emOrAnything)
+    public function isem(Node $emOrAnything)
     {
-        if ($this->isA($emOrAnything, 'ILess_Node_Dimension') && $emOrAnything->unit->is('em')) {
-            return new ILess_Node_Keyword('true');
+        if ($this->isA($emOrAnything, 'ILess\Node\DimensionNode') && $emOrAnything->unit->is('em')) {
+            return new KeywordNode('true');
         }
 
-        return new ILess_Node_Keyword('false');
+        return new KeywordNode('false');
     }
 
     /**
      * returns if a parameter is a number and is in a particular unit
      *
-     * @param ILess_Node $node
-     * @param ILess_Node $unit The unit to check
+     * @param Node $node
+     * @param Node $unit The unit to check
      * @return boolean
      */
-    public function isunit(ILess_Node $node, ILess_Node $unit = null)
+    public function isunit(Node $node, Node $unit = null)
     {
-        if ($this->isA($node, 'ILess_Node_Dimension')
+        if ($this->isA($node, 'ILess\Node\DimensionNode')
             && $node->unit->is((property_exists($unit, 'value') ? $unit->value : $unit))
         ) {
-            return new ILess_Node_Keyword('true');
+            return new KeywordNode('true');
         }
 
-        return new ILess_Node_Keyword('false');
+        return new KeywordNode('false');
+    }
+
+    /**
+     * Returns true if the node is detached ruleset
+     *
+     * @param Node $node
+     * @return boolean
+     */
+    public function isruleset(Node $node)
+    {
+        return $this->isA($node, 'ILess\Node\DetachedRulesetNode');
     }
 
     /**
      * Creates a SVG gradient
      *
-     * @param ILess_Node $direction
-     * @return ILess_Node_Url
-     * @throws ILess_Exception_Compiler If the arguments are invalid
+     * @param Node $direction
+     * @param Node ...$stop1
+     * @return UrlNode
+     * @throws CompilerException If the arguments are invalid
      */
-    public function svggradient(ILess_Node $direction /*  $stop1, $stop2, ... */)
+    public function svggradient(Node $direction /*  $stop1, $stop2, ... */)
     {
-        if (func_num_args() < 3) {
-            throw new ILess_Exception_Compiler('svg-gradient expects direction, start_color [start_position], [color position,]..., end_color [end_position]');
+        $numArgs = func_num_args();
+        $arguments = func_get_args();
+
+        if ($numArgs === 2) {
+            // a list of colors
+            if (is_array($arguments[1]->value) && count($arguments[1]->value) < 2) {
+                throw new CompilerException(
+                    'svg-gradient expects direction, start_color [start_position], [color position,]..., end_color [end_position]'
+                );
+            }
+            $stops = $arguments[1]->value;
+        } elseif ($numArgs < 3) {
+            throw new CompilerException(
+                'svg-gradient expects direction, start_color [start_position], [color position,]..., end_color [end_position]'
+            );
+        } else {
+            $stops = array_slice($arguments, 1);
         }
 
-        $arguments = func_get_args();
-        $stops = array_slice($arguments, 1);
         $gradientType = 'linear';
         $rectangleDimension = 'x="0" y="0" width="1" height="1"';
-        $useBase64 = true;
-        $renderEnv = new ILess_Environment();
+        $renderEnv = new Context(array(
+            'compress' => false,
+        ));
         $directionValue = $direction->toCSS($renderEnv);
+
         switch ($directionValue) {
             case 'to bottom':
                 $gradientDirectionSvg = 'x1="0%" y1="0%" x2="0%" y2="100%"';
@@ -1699,17 +2032,17 @@ class ILess_FunctionRegistry
                 $rectangleDimension = 'x="-50" y="-50" width="101" height="101"';
                 break;
             default:
-                throw new ILess_Exception_Compiler("svg-gradient direction must be 'to bottom', 'to right', 'to bottom right', 'to top right' or 'ellipse at center'");
+                throw new CompilerException(
+                    "svg-gradient direction must be 'to bottom', 'to right', 'to bottom right', 'to top right' or 'ellipse at center'"
+                );
         }
 
-        $returner = '<?xml version="1.0" ?>' .
-            '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" viewBox="0 0 1 1" preserveAspectRatio="none">' .
-            '<' . $gradientType . 'Gradient id="gradient" gradientUnits="userSpaceOnUse" ' . $gradientDirectionSvg . '>';
+        $returner = '<?xml version="1.0" ?>'.
+            '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" viewBox="0 0 1 1" preserveAspectRatio="none">'.
+            '<'.$gradientType.'Gradient id="gradient" gradientUnits="userSpaceOnUse" '.$gradientDirectionSvg.'>';
 
         for ($i = 0; $i < count($stops); $i++) {
-            if (ILess_Node::propertyExists($stops[$i], 'value')
-                && $stops[$i]->value
-            ) {
+            if ($stops[$i] instanceof ExpressionNode) {
                 $color = $stops[$i]->value[0];
                 $position = $stops[$i]->value[1];
             } else {
@@ -1717,11 +2050,13 @@ class ILess_FunctionRegistry
                 $position = null;
             }
 
-            if (!($color instanceof ILess_Node_Color)
+            if (!($color instanceof ColorNode)
                 || (!(($i === 0 || $i + 1 === count($stops)) && $position === null)
-                    && !($position instanceof ILess_Node_Dimension))
+                    && !($position instanceof DimensionNode))
             ) {
-                throw new ILess_Exception_Compiler('svg-gradient expects direction, start_color [start_position], [color position,]..., end_color [end_position]');
+                throw new CompilerException(
+                    'svg-gradient expects direction, start_color [start_position], [color position,]..., end_color [end_position] or direction, color list'
+                );
             }
 
             if ($position) {
@@ -1732,52 +2067,198 @@ class ILess_FunctionRegistry
                 $positionValue = '100%';
             }
 
+            $colorValue = $color->getColor()->toRGB();
+
             $alpha = $color->getAlpha(true);
-            $returner .= '<stop offset="' . $positionValue . '" stop-color="' .
-                $color->getColor()->toString($this->env->compress, false) . '"' .
-                ($alpha < 1 ? ' stop-opacity="' . $alpha . '"' : '') . '/>';
+            $returner .= '<stop offset="'.$positionValue.'" stop-color="'.
+                $colorValue.'"'.
+                ($alpha < 1 ? ' stop-opacity="'.$alpha.'"' : '').'/>';
         }
 
-        $returner .= '</' . $gradientType . 'Gradient><rect ' . $rectangleDimension . ' fill="url(#gradient)" /></svg>';
+        $returner .= '</'.$gradientType.'Gradient><rect '.$rectangleDimension.' fill="url(#gradient)" /></svg>';
 
-        if ($useBase64) {
-            $returner = base64_encode($returner);
+        $returner = Util::encodeURIComponent($returner);
+        $returner = 'data:image/svg+xml,'.$returner;
+
+        return new UrlNode(new QuotedNode("'".$returner."'", $returner, false));
+    }
+
+    /**
+     * Default function
+     *
+     * @return KeywordNode|null
+     * @throws Exception
+     */
+    public function defaultFunc()
+    {
+        return DefaultFunc::compile();
+    }
+
+    /**
+     * Returns the image size
+     *
+     * @param Node $node The path node
+     * @return ExpressionNode
+     * @throws IOException
+     */
+    public function imageSize(Node $node)
+    {
+        $size = $this->getImageSize($node);
+
+        return new ExpressionNode(
+            array(
+                new DimensionNode($size['width'], 'px'),
+                new DimensionNode($size['height'], 'px'),
+            )
+        );
+    }
+
+    /**
+     * Returns the image width
+     *
+     * @param Node $node The path node
+     * @return DimensionNode
+     * @throws IOException
+     */
+    public function imageWidth(Node $node)
+    {
+        $size = $this->getImageSize($node);
+
+        return new DimensionNode($size['width'], 'px');
+    }
+
+    /**
+     * Returns the image height
+     *
+     * @param Node $node The path node
+     * @return DimensionNode
+     * @throws IOException
+     */
+    public function imageHeight(Node $node)
+    {
+        $size = $this->getImageSize($node);
+
+        return new DimensionNode($size['height'], 'px');
+    }
+
+    /**
+     * Returns the width and height of the image
+     *
+     * @param Node $path
+     * @throws IOException
+     * @return array
+     */
+    protected function getImageSize(Node $path)
+    {
+        $filePath = $path->value;
+
+        $fragmentStart = strpos($filePath, '#');
+        // $fragment = '';
+        if ($fragmentStart !== false) {
+            // $fragment = substr($filePath, $fragmentStart);
+            $filePath = substr($filePath, 0, $fragmentStart);
         }
 
-        $returner = "'data:image/svg+xml" . ($useBase64 ? ";base64" : "") . "," . $returner . "'";
+        $filePath = $this->getFilePath($filePath);
 
-        return new ILess_Node_Url(new ILess_Node_Anonymous($returner));
+        if (!is_readable($filePath)) {
+            throw new IOException(sprintf('The file "%s" is does not exist or is not readable', $filePath));
+        }
+
+        $size = @getimagesize($filePath);
+
+        if ($size === false) {
+            throw new IOException(
+                sprintf('The file "%s" dimension could not be read. It is an image?', $filePath)
+            );
+        }
+
+        return array(
+            'width' => $size[0],
+            'height' => $size[1],
+        );
+    }
+
+    /**
+     * Returns the file path, takes care about relative urls
+     *
+     * @param string $path
+     * @return mixed|string
+     */
+    protected function getFilePath($path)
+    {
+        $path = Util::sanitizePath($path);
+
+        if (Util::isPathRelative($path) && $this->currentFileInfo) {
+            if ($this->context->relativeUrls) {
+                $path = $this->currentFileInfo->currentDirectory.$path;
+            } else {
+                $path = $this->currentFileInfo->entryPath.$path;
+            }
+            $path = Util::normalizePath($path);
+        }
+
+        return $path;
     }
 
     protected function doMinmax($isMin, $args)
     {
         switch (count($args)) {
             case 0:
-                throw new ILess_Exception_Compiler('One or more arguments required.');
-            case 1:
-                return $args[0];
+                throw new CompilerException('One or more arguments required.');
         }
 
         $order = array(); // elems only contains original argument values.
         $values = array(); // key is the unit.toString() for unified tree.Dimension values,
-        // value is the index into the order array.
+        $unitClone = $unitStatic = $j = null;
 
-        for ($i = 0, $count = count($args); $i < $count; $i++) {
+        // value is the index into the order array.
+        for ($i = 0; $i < count($args); $i++) {
             $current = $args[$i];
-            if (!($current instanceof ILess_Node_Dimension)) {
-                $order[] = $current;
+            if (!($current instanceof DimensionNode)) {
+                if (is_array($args[$i])) {
+                    $args[] = $args[$i]->value;
+                }
                 continue;
             }
-            $currentUnified = $current->unify();
-            $unit = $currentUnified->unit->toString();
-            if (!isset($values[$unit])) {
+
+            if ($current->unit->toString() === '' && $unitClone !== null) {
+                $dim = new DimensionNode($current->value, $unitClone);
+                $currentUnified = $dim->unify();
+            } else {
+                $currentUnified = $current->unify();
+            }
+
+            $unit = $currentUnified->unit->toString() === '' && $unitStatic !== null ? $unitStatic : $currentUnified->unit->toString();
+            // $unitStatic = $unit !== '' && $unitStatic === null || $unit !== '' && $order[0]->unify()->unit->toString() === '' ? $unit : $unitStatic;
+
+            if ($unit !== '' && !$unitStatic || $unit !== '' && $order[0]->unify()->unit->toString() === '') {
+                $unitStatic = $unit;
+            }
+
+            $unitClone = $unit !== '' && $unitClone === null ? $current->unit->toString() : $unitClone;
+
+            if (isset($values['']) && $unit !== '' && $unit === $unitStatic) {
+                $j = $values[''];
+            } elseif (isset($values[$unit])) {
+                $j = $values[$unit];
+            } else {
+                if ($unitStatic !== null && $unit !== $unitStatic) {
+                    throw new RuntimeException(sprintf('Incompatible types "%s" and "%s" given', $unitStatic, $unit));
+                }
+
                 $values[$unit] = count($order);
                 $order[] = $current;
                 continue;
             }
 
-            $j = $values[$unit];
-            $referenceUnified = $order[$j]->unify();
+            if ($order[$j]->unit->toString() === '' && $unitClone !== null) {
+                $dim = new DimensionNode($order[$j]->value, $unitClone);
+                $referenceUnified = $dim->unify();
+            } else {
+                $referenceUnified = $order[$j]->unify();
+            }
+
             if (($isMin && $currentUnified->value < $referenceUnified->value) ||
                 (!$isMin && $currentUnified->value > $referenceUnified->value)
             ) {
@@ -1785,33 +2266,33 @@ class ILess_FunctionRegistry
             }
         }
 
-        if (count($order) == 1) {
+        if (count($order) === 1) {
             return $order[0];
         }
 
         foreach ($order as $k => $a) {
-            $order[$k] = $a->toCSS($this->env);
+            $order[$k] = $a->toCSS($this->context);
         }
 
-        $args = implode(($this->env->compress ? ',' : ', '), $order);
+        $args = implode(($this->context->compress ? ',' : ', '), $order);
 
-        return new ILess_Node_Anonymous(($isMin ? 'min' : 'max') . '(' . $args . ')');
+        return new AnonymousNode(($isMin ? 'min' : 'max').'('.$args.')');
     }
 
     /**
      * Checks if the given object is of this class or has this class as one of its parents.
      *
-     * @param ILess_Node $node
+     * @param Node $node
      * @param string $className The className to check
-     * @return ILess_Node_Keyword
+     * @return KeywordNode
      */
-    protected function isA(ILess_Node $node, $className)
+    protected function isA(Node $node, $className)
     {
         if (is_a($node, $className)) {
-            return new ILess_Node_Keyword('true');
+            return new KeywordNode('true');
         }
 
-        return new ILess_Node_Keyword('false');
+        return new KeywordNode('false');
     }
 
     /**
@@ -1825,4 +2306,118 @@ class ILess_FunctionRegistry
         return min(1, max(0, $value));
     }
 
+    /**
+     * Convert the given node to color node
+     *
+     * @param Node $node The node
+     * @param null $exceptionMessage ILess\Exception\Exception message if the node could not be converted to color node
+     * @return ColorNode
+     * @throws InvalidArgumentException If the node could not be converted to color
+     */
+    protected function getColorNode(Node $node, $exceptionMessage = null)
+    {
+        if ($node instanceof ColorNode) {
+            return $node;
+        }
+
+        // this is a keyword
+        if ($node instanceof KeywordNode && Color::isNamedColor($node->value)) {
+            $node = new ColorNode(Color::color($node->value));
+        } elseif ($node instanceof ToColorConvertibleInterface) {
+            $node = $node->toColor();
+        }
+
+        if (!$node instanceof ColorNode) {
+            throw new InvalidArgumentException($exceptionMessage ? $exceptionMessage : 'Cannot convert node to color');
+        }
+
+        return $node;
+    }
+
+    /**
+     * Color blending
+     *
+     * @param callable $mode
+     * @param Color $color1
+     * @param Color $color2
+     * @return ColorNode
+     */
+    protected function colorBlend(callable $mode, Color $color1, Color $color2)
+    {
+        $ab = $color1->getAlpha();    // backdrop
+        $as = $color2->getAlpha();    // source
+        $r = array();            // result
+
+        $ar = $as + $ab * (1 - $as);
+        $rgb1 = $color1->rgb;
+        $rgb2 = $color2->rgb;
+        for ($i = 0; $i < 3; $i++) {
+            $cb = $rgb1[$i] / 255;
+            $cs = $rgb2[$i] / 255;
+            $cr = call_user_func($mode, $cb, $cs);
+            if ($ar) {
+                $cr = ($as * $cs + $ab * ($cb - $as * ($cb + $cs - $cr))) / $ar;
+            }
+            $r[$i] = $cr * 255;
+        }
+
+        return new ColorNode($r, $ar);
+    }
+
+    private function colorBlendMultiply($cb, $cs)
+    {
+        return $cb * $cs;
+    }
+
+    private function colorBlendScreen($cb, $cs)
+    {
+        return $cb + $cs - $cb * $cs;
+    }
+
+    private function colorBlendOverlay($cb, $cs)
+    {
+        $cb *= 2;
+
+        return ($cb <= 1)
+            ? $this->colorBlendMultiply($cb, $cs)
+            : $this->colorBlendScreen($cb - 1, $cs);
+    }
+
+    private function colorBlendSoftlight($cb, $cs)
+    {
+        $d = 1;
+        $e = $cb;
+        if ($cs > 0.5) {
+            $e = 1;
+            $d = ($cb > 0.25) ? sqrt($cb)
+                : ((16 * $cb - 12) * $cb + 4) * $cb;
+        }
+
+        return $cb - (1 - 2 * $cs) * $e * ($d - $cb);
+    }
+
+    private function colorBlendHardlight($cb, $cs)
+    {
+        return $this->colorBlendOverlay($cs, $cb);
+    }
+
+    private function colorBlendDifference($cb, $cs)
+    {
+        return abs($cb - $cs);
+    }
+
+    private function colorBlendExclusion($cb, $cs)
+    {
+        return $cb + $cs - 2 * $cb * $cs;
+    }
+
+    private function colorBlendAverage($cb, $cs)
+    {
+        return ($cb + $cs) / 2;
+    }
+
+    private function colorBlendNegation($cb, $cs)
+    {
+        return 1 - abs($cb + $cs - 1);
+    }
 }

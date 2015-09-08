@@ -7,17 +7,19 @@
  * file that was distributed with this source code.
  */
 
+use ILess\Parser;
+
 /**
  * Issue #52 test
  *
  * @package ILess
  * @subpackage test
  */
-class ILess_Test_Issues_052Test extends ILess_Test_TestCase
+class ILess_Test_Issues_052Test extends Test_TestCase
 {
     public function testIssue()
     {
-        $parser = new ILess_Parser(array(
+        $parser = new Parser(array(
             'compress' => false
         ));
 

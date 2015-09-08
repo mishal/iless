@@ -6,23 +6,28 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\ElementNode;
+use ILess\Node\SelectorNode;
+use ILess\Output\StandardOutput;
 
 /**
  * Selector node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_Selector
+ * @covers Node_Selector
+ * @group node
  */
-class ILess_Test_Node_SelectorTest extends ILess_Test_TestCase
+class Test_Node_SelectorTest extends Test_TestCase
 {
     /**
      * @covers __constructor
      */
     public function testConstructor()
     {
-        $s = new ILess_Node_Selector(array(
-            new ILess_Node_Element(' ', 'foobar')
+        $s = new SelectorNode(array(
+            new ElementNode(' ', 'foobar')
         ), array());
     }
 
@@ -31,8 +36,8 @@ class ILess_Test_Node_SelectorTest extends ILess_Test_TestCase
      */
     public function testGetType()
     {
-        $s = new ILess_Node_Selector(array(
-            new ILess_Node_Element(' ', 'foobar')
+        $s = new SelectorNode(array(
+            new ElementNode(' ', 'foobar')
         ), array());
         $this->assertEquals('Selector', $s->getType());
     }
@@ -42,11 +47,11 @@ class ILess_Test_Node_SelectorTest extends ILess_Test_TestCase
      */
     public function testGenerateCss()
     {
-        $env = new ILess_Environment();
-        $output = new ILess_Output();
+        $env = new Context();
+        $output = new StandardOutput();
 
-        $s = new ILess_Node_Selector(array(
-            new ILess_Node_Element(' ', 'foobar')
+        $s = new SelectorNode(array(
+            new ElementNode('', 'foobar')
         ), array());
 
         $s->generateCss($env, $output);

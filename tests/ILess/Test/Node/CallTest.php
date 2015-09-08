@@ -5,22 +5,27 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\AnonymousNode;
+use ILess\Node\CallNode;
+use ILess\Output\StandardOutput;
 
 /**
  * Call node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_Call
+ * @covers Node_Call
+ * @group node
  */
-class ILess_Test_Node_CallTest extends ILess_Test_TestCase
+class Test_Node_CallTest extends Test_TestCase
 {
     /**
      * @covers getType
      */
     public function testGetType()
     {
-        $a = new ILess_Node_Call('foo', array(), 0);
+        $a = new CallNode('foo', array(), 0);
         $this->assertEquals('Call', $a->getType());
     }
 
@@ -29,21 +34,21 @@ class ILess_Test_Node_CallTest extends ILess_Test_TestCase
      */
     public function testGenerateCSS()
     {
-        $env = new ILess_Environment();
+        $env = new Context();
 
-        $a = new ILess_Node_Call('foo', array(), 0);
-        $output = new ILess_Output();
+        $a = new CallNode('foo', array(), 0);
+        $output = new StandardOutput();
 
         $a->generateCss($env, $output);
         $this->assertEquals($output->toString(), 'foo()');
 
         // a bit complicated
-        $a = new ILess_Node_Call('foo', array(
-            new ILess_Node_Anonymous('arg1'),
-            new ILess_Node_Anonymous('arg2'),
+        $a = new CallNode('foo', array(
+            new AnonymousNode('arg1'),
+            new AnonymousNode('arg2'),
         ), 0);
 
-        $output = new ILess_Output();
+        $output = new StandardOutput();
         $a->generateCss($env, $output);
         $this->assertEquals($output->toString(), 'foo(arg1, arg2)');
     }

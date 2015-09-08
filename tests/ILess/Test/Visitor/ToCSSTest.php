@@ -5,15 +5,18 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Visitor\ToCSSVisitor;
 
 /**
- * Visitor_ToCSS tests
+ * ILess\ILess\Visitor\Visitor\ToCSSVisitor tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Visitor_ToCSS
+ * @covers Visitor_ToCSS
+ * @group visitor
  */
-class ILess_Test_Visitor_ToCSSTest extends ILess_Test_TestCase
+class Test_Visitor_ToCSSTest extends Test_TestCase
 {
 
     /**
@@ -21,7 +24,7 @@ class ILess_Test_Visitor_ToCSSTest extends ILess_Test_TestCase
      */
     public function testVisit()
     {
-        $v = new ILess_Visitor_ToCSS(new ILess_Environment());
+        $v = new ToCSSVisitor(new Context());
         $this->assertTrue($v->isReplacing());
     }
 

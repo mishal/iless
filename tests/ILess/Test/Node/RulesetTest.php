@@ -6,23 +6,34 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\ColorNode;
+use ILess\Node\ElementNode;
+use ILess\Node\KeywordNode;
+use ILess\Node\SelectorNode;
+use ILess\Node\RulesetNode;
+use ILess\Node\RuleNode;
+use ILess\Output\StandardOutput;
+use ILess\Visitor\JoinSelectorVisitor;
+use ILess\Visitor\VisitorArguments;
 
 /**
  * Ruleset node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_Ruleset
+ * @covers Node_Ruleset
+ * @group node
  */
-class ILess_Test_Node_RulesetTest extends ILess_Test_TestCase
+class Test_Node_RulesetTest extends Test_TestCase
 {
     /**
      * @covers __constructor
      */
     public function testConstructor()
     {
-        $r = new ILess_Node_Ruleset(array(
-            new ILess_Node_Element('div', 'foobar')
+        $r = new RulesetNode(array(
+            new ElementNode('div', 'foobar')
         ), array());
     }
 
@@ -31,8 +42,8 @@ class ILess_Test_Node_RulesetTest extends ILess_Test_TestCase
      */
     public function testGetType()
     {
-        $r = new ILess_Node_Ruleset(array(
-            new ILess_Node_Element(' ', 'foobar')
+        $r = new RulesetNode(array(
+            new ElementNode(' ', 'foobar')
         ), array());
         $this->assertEquals('Ruleset', $r->getType());
     }
@@ -42,32 +53,34 @@ class ILess_Test_Node_RulesetTest extends ILess_Test_TestCase
      */
     public function testGenerateCss()
     {
-        $env = new ILess_Environment();
-        $output = new ILess_Output();
+        $env = new Context();
+        $output = new StandardOutput();
 
-        $r = new ILess_Node_Ruleset(array(
-            new ILess_Node_Selector(array(new ILess_Node_Element('', 'div'))),
+        $r = new RulesetNode(array(
+            new SelectorNode(array(new ElementNode('', 'div'))),
         ), array(
-            new ILess_Node_Rule('color', new ILess_Node_Color('#fff')),
-            new ILess_Node_Rule('font-weight', new ILess_Node_Keyword('bold')),
+            new RuleNode('color', new ColorNode('#fff')),
+            new RuleNode('font-weight', new KeywordNode('bold')),
         ));
 
-        // $r->debugInfo = new ILess_DebugInfo('foo', 1);
-
-        $args = new ILess_Visitor_Arguments(array(
+        $args = new VisitorArguments(array(
             'visitDeeper' => true
         ));
-        $visitor = new ILess_Visitor_JoinSelector();
+
+        $visitor = new JoinSelectorVisitor();
         $visitor->visitRuleset($r, $args);
 
-        $n = new ILess_Node_Rule('font-weight', new ILess_Node_Keyword('bold'));
+        $n = new RuleNode('font-weight', new KeywordNode('bold'));
         $n->generateCss($env, $output);
 
         $this->assertEquals('font-weight: bold;', $output->toString());
 
-        $output = new ILess_Output();
+        $output = new StandardOutput();
         $r->generateCss($env, $output);
-        $this->assertEquals("div {\n  color: #ffffff;\n  font-weight: bold;\n}", $output->toString());
+
+        $expected = "div {\n  color: #ffffff;\n  font-weight: bold;\n}";
+
+        $this->assertEquals($expected, $output->toString());
     }
 
 }

@@ -5,22 +5,26 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\AttributeNode;
+use ILess\Output\StandardOutput;
 
 /**
  * Attribute node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_Attribute
+ * @covers Node_Attribute
+ * @group node
  */
-class ILess_Test_Node_AttributeTest extends ILess_Test_TestCase
+class Test_Node_AttributeTest extends Test_TestCase
 {
     /**
      * @covers __constructor
      */
     public function testConstructor()
     {
-        $d = new ILess_Node_Attribute('foo', '=', 'bar');
+        $d = new AttributeNode('foo', '=', 'bar');
     }
 
     /**
@@ -28,7 +32,7 @@ class ILess_Test_Node_AttributeTest extends ILess_Test_TestCase
      */
     public function testGetType()
     {
-        $d = new ILess_Node_Attribute('foo', '=', 'bar');
+        $d = new AttributeNode('foo', '=', 'bar');
         $this->assertEquals('Attribute', $d->getType());
     }
 
@@ -37,10 +41,10 @@ class ILess_Test_Node_AttributeTest extends ILess_Test_TestCase
      */
     public function testGenerateCss()
     {
-        $env = new ILess_Environment();
-        $output = new ILess_Output();
+        $env = new Context();
+        $output = new StandardOutput();
 
-        $d = new ILess_Node_Attribute('foo', '=', 'bar');
+        $d = new AttributeNode('foo', '=', 'bar');
         $d->generateCss($env, $output);
         $this->assertEquals('[foo=bar]', $output->toString());
     }

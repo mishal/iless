@@ -1,20 +1,28 @@
 .eval {
-  js: /*Sorry, unable to do javascript evaluation in PHP... With men it is impossible, but not with God: for with God all things are possible. Mark 10:27*/;
-  title: /*Sorry, unable to do javascript evaluation in PHP... With men it is impossible, but not with God: for with God all things are possible. Mark 10:27*/;
-  ternary: /*Sorry, unable to do javascript evaluation in PHP... With men it is impossible, but not with God: for with God all things are possible. Mark 10:27*/;
-  multiline: /*Sorry, unable to do javascript evaluation in PHP... With men it is impossible, but not with God: for with God all things are possible. Mark 10:27*/;
+  js: 42;
+  js: 2;
+  js: "hello world";
+  js: 1, 2, 3;
+  title: "string";
+  ternary: true;
+  multiline: 2;
 }
 .scope {
-  var: /*Sorry, unable to do javascript evaluation in PHP... With men it is impossible, but not with God: for with God all things are possible. Mark 10:27*/;
-  escaped: /*Sorry, unable to do javascript evaluation in PHP... With men it is impossible, but not with God: for with God all things are possible. Mark 10:27*/;
+  var: 42;
+  escaped: 7px;
 }
 .vars {
-  width: /*Sorry, unable to do javascript evaluation in PHP... With men it is impossible, but not with God: for with God all things are possible. Mark 10:27*/;
+  width: 8;
 }
 .escape-interpol {
-  width: /*Sorry, unable to do javascript evaluation in PHP... With men it is impossible, but not with God: for with God all things are possible. Mark 10:27*/;
+  width: hello world;
 }
 .arrays {
-  ary: /*Sorry, unable to do javascript evaluation in PHP... With men it is impossible, but not with God: for with God all things are possible. Mark 10:27*/;
-  ary1: /*Sorry, unable to do javascript evaluation in PHP... With men it is impossible, but not with God: for with God all things are possible. Mark 10:27*/;
+  ary: "1, 2, 3";
+  ary1: "1, 2, 3";
+}
+.test-tran {
+  1: opacity 0.3s ease-in 0.3s, max-height 0.6s linear, margin-bottom 0.4s linear;
+  2: [opacity 0.3s ease-in 0.3s, max-height 0.6s linear, margin-bottom 0.4s linear];
+  3: opacity 0.3s ease-in 0.3s, max-height 0.6s linear, margin-bottom 0.4s linear;
 }

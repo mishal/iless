@@ -6,22 +6,27 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\AnonymousNode;
+use ILess\Node\OperationNode;
+use ILess\Output\StandardOutput;
 
 /**
  * Operation node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_Operation
+ * @covers Node_Operation
+ * @group node
  */
-class ILess_Test_Node_OperationTest extends ILess_Test_TestCase
+class Test_Node_OperationTest extends Test_TestCase
 {
     /**
      * @covers __constructor
      */
     public function testConstructor()
     {
-        $o = new ILess_Node_Operation('+', array(new ILess_Node_Anonymous('10'), new ILess_Node_Anonymous('15')));
+        $o = new OperationNode('+', array(new AnonymousNode('10'), new AnonymousNode('15')));
     }
 
     /**
@@ -29,7 +34,7 @@ class ILess_Test_Node_OperationTest extends ILess_Test_TestCase
      */
     public function testGetType()
     {
-        $o = new ILess_Node_Operation('+', array(new ILess_Node_Anonymous('10'), new ILess_Node_Anonymous('15')));
+        $o = new OperationNode('+', array(new AnonymousNode('10'), new AnonymousNode('15')));
         $this->assertEquals('Operation', $o->getType());
     }
 
@@ -38,10 +43,10 @@ class ILess_Test_Node_OperationTest extends ILess_Test_TestCase
      */
     public function testGenerateCss()
     {
-        $env = new ILess_Environment();
-        $output = new ILess_Output();
+        $env = new Context();
+        $output = new StandardOutput();
 
-        $o = new ILess_Node_Operation('+', array(new ILess_Node_Anonymous('10'), new ILess_Node_Anonymous('15')));
+        $o = new OperationNode('+', array(new AnonymousNode('10'), new AnonymousNode('15')));
         $o->generateCss($env, $output);
         $this->assertEquals('10+15', $output->toString());
     }

@@ -1,6 +1,6 @@
 body {
-  color: #000000;
-  border: 13px solid #ff0000;
+  color: black;
+  border: 13px solid red;
   background-image: url("http://example.com/image.jpg");
 }
 #header {

@@ -5,15 +5,17 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Math;
 
 /**
  * Math tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Math
+ * @covers Math
+ * @group util
  */
-class ILess_Test_MathTest extends ILess_Test_TestCase
+class Test_MathTest extends Test_TestCase
 {
     /**
      * @covers       toFixed
@@ -21,7 +23,7 @@ class ILess_Test_MathTest extends ILess_Test_TestCase
      */
     public function testToFixed($test, $decimals, $expected)
     {
-        $this->assertEquals($expected, ILess_Math::toFixed($test, $decimals));
+        $this->assertEquals($expected, Math::toFixed($test, $decimals));
     }
 
     public function getDataForToFixedTest()
@@ -41,7 +43,7 @@ class ILess_Test_MathTest extends ILess_Test_TestCase
      */
     public function testRound($value, $precision, $expected)
     {
-        $this->assertEquals($expected, ILess_Math::round($value, $precision), sprintf('Rounding of "%s" with precision "%s" works', $value, $precision));
+        $this->assertEquals($expected, Math::round($value, $precision), sprintf('Rounding of "%s" with precision "%s" works', $value, $precision));
     }
 
     public function getDataForRoundTest()

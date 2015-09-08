@@ -5,15 +5,17 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Visitor\JoinSelectorVisitor;
 
 /**
- * Visitor_JoinSelector tests
+ * ILess\ILess\Visitor\Visitor\JoinSelectorVisitor tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Visitor_JoinSelector
+ * @covers Visitor_JoinSelector
+ * @group visitor
  */
-class ILess_Test_Visitor_JoinSelectorTest extends ILess_Test_TestCase
+class Test_Visitor_JoinSelectorTest extends Test_TestCase
 {
 
     /**
@@ -21,7 +23,7 @@ class ILess_Test_Visitor_JoinSelectorTest extends ILess_Test_TestCase
      */
     public function testVisit()
     {
-        $v = new ILess_Visitor_JoinSelector();
+        $v = new JoinSelectorVisitor();
         $this->assertFalse($v->isReplacing());
     }
 

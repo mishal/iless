@@ -123,3 +123,32 @@ h1 { color: green; }
 ::distributed(input::placeholder) {
   color: #b3b3b3;
 }
+.shadow ^ .dom,
+body ^^ .shadow {
+  display: done;
+}
+
+:host(.sel .a),
+:host-context(.sel .b),
+.sel /deep/ .b,
+::content .sel {
+  type: shadow-dom;
+}
+/deep/ b {
+ c: 'd';
+ &[e]{
+   f: 'g';
+ }
+}
+
+#issue2066 {
+  background: url('/images/icon-team.svg') 0 0 / contain;
+}
+@counter-style triangle {
+  system: cyclic;
+  symbols: ‣;
+  suffix: " ";
+}
+@-ms-viewport{
+//width: auto !important;
+}

@@ -6,20 +6,23 @@
  * file that was distributed with this source code.
  */
 
+namespace ILess\Node;
+
+use ILess\Visitor\Visitor;
+
 /**
- * Node visitable interface
+ * Visitable interface
  *
- * @package ILess
- * @subpackage node
+ * @package ILess\Node
  */
-interface ILess_Node_VisitableInterface
+interface VisitableInterface
 {
     /**
      * Accepts a visit by a visitor
      *
-     * @param ILess_Visitor $visitor
+     * @param Visitor $visitor
      * @return void
      */
-    public function accept(ILess_Visitor $visitor);
+    public function accept(Visitor $visitor);
 
 }

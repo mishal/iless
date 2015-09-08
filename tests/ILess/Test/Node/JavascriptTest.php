@@ -6,22 +6,25 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\JavascriptNode;
 
 /**
  * Javascript node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_Javascript
+ * @covers Node_Javascript
+ * @group node
  */
-class ILess_Test_Node_JavascriptTest extends ILess_Test_TestCase
+class Test_Node_JavascriptTest extends Test_TestCase
 {
     /**
      * @covers __constructor
      */
     public function testConstructor()
     {
-        $d = new ILess_Node_Javascript('"hello".toUpperCase() + \'!\'');
+        $d = new JavascriptNode('"hello".toUpperCase() + \'!\'');
     }
 
     /**
@@ -29,16 +32,16 @@ class ILess_Test_Node_JavascriptTest extends ILess_Test_TestCase
      */
     public function testGetType()
     {
-        $d = new ILess_Node_Javascript('"hello".toUpperCase() + \'!\'');
+        $d = new JavascriptNode('"hello".toUpperCase() + \'!\'');
         $this->assertEquals('Javascript', $d->getType());
     }
 
     public function testCompile()
     {
-        $env = new ILess_Environment();
-        $d = new ILess_Node_Javascript('"hello".toUpperCase() + \'!\'');
+        $env = new Context();
+        $d = new JavascriptNode('"hello".toUpperCase() + \'!\'');
         $result = $d->compile($env);
-        $this->assertInstanceOf('ILess_Node_Javascript', $result);
+        $this->assertInstanceOf('ILess\Node\JavascriptNode', $result);
     }
 
 }

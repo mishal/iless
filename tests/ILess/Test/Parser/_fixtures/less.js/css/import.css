@@ -1,9 +1,11 @@
+@charset "UTF-8";
+/** comment at the top**/
 @import url(http://fonts.googleapis.com/css?family=Open+Sans);
 @import url(/absolute/something.css) screen and (color) and (max-width: 600px);
 @import url("//ha.com/file.css") (min-width: 100px);
 #import-test {
   height: 10px;
-  color: #ff0000;
+  color: red;
   width: 10px;
   height: 30%;
 }
@@ -13,11 +15,17 @@
   }
 }
 #import {
-  color: #ff0000;
+  color: red;
 }
 .mixin {
   height: 10px;
-  color: #ff0000;
+  color: red;
+}
+.test-f {
+  height: 10px;
+}
+.deep-import-url {
+  color: red;
 }
 @media screen and (max-width: 601px) {
   #css {
@@ -32,5 +40,10 @@
 @media screen and (max-width: 603px) {
   #css {
     color: yellow;
+  }
+}
+@media print {
+  body {
+    width: 100%;
   }
 }

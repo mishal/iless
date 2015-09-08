@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-class ILess_Test_TestCase extends PHPUnit_Framework_TestCase
+class Test_TestCase extends PHPUnit_Framework_TestCase
 {
     protected function prepareDataForProvider($values, $expected)
     {

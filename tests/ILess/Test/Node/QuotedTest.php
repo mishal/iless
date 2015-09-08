@@ -6,22 +6,26 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\QuotedNode;
+use ILess\Output\StandardOutput;
 
 /**
  * Quoted node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_Quoted
+ * @covers Node_Quoted
+ * @group node
  */
-class ILess_Test_Node_QuotedTest extends ILess_Test_TestCase
+class Test_Node_QuotedTest extends Test_TestCase
 {
     /**
      * @covers __constructor
      */
     public function testConstructor()
     {
-        $q = new ILess_Node_Quoted('"foobar"', 'foobar');
+        $q = new QuotedNode('"foobar"', 'foobar');
     }
 
     /**
@@ -29,7 +33,7 @@ class ILess_Test_Node_QuotedTest extends ILess_Test_TestCase
      */
     public function testGetType()
     {
-        $q = new ILess_Node_Quoted('"foobar"', 'foobar');
+        $q = new QuotedNode('"foobar"', 'foobar');
         $this->assertEquals('Quoted', $q->getType());
     }
 
@@ -38,10 +42,10 @@ class ILess_Test_Node_QuotedTest extends ILess_Test_TestCase
      */
     public function testGenerateCss()
     {
-        $env = new ILess_Environment();
-        $output = new ILess_Output();
+        $env = new Context();
+        $output = new StandardOutput();
 
-        $q = new ILess_Node_Quoted('"foobar"', 'foobar');
+        $q = new QuotedNode('"foobar"', 'foobar');
         $q->generateCss($env, $output);
         $this->assertEquals('"foobar"', $output->toString());
     }

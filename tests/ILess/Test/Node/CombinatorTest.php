@@ -11,9 +11,10 @@
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_Combinator
+ * @covers Node_Combinator
+ * @group node
  */
-class ILess_Test_Node_CombinatorTest extends ILess_Test_TestCase
+class Test_Node_CombinatorTest extends Test_TestCase
 {
     /**
      * @covers __constructor
@@ -21,7 +22,7 @@ class ILess_Test_Node_CombinatorTest extends ILess_Test_TestCase
     public function testConstructor()
     {
         // FIXME: why is this empty? Missing tests!
-        //$c = new ILess_Node_Combinator('a');
+        //$c = new ILess\ILess\Node\CombinatorNode('a');
     }
 
 }

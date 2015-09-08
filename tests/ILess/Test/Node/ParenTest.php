@@ -6,22 +6,27 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\AnonymousNode;
+use ILess\Node\ParenNode;
+use ILess\Output\StandardOutput;
 
 /**
  * Paren node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_Paren
+ * @covers Node_Paren
+ * @group node
  */
-class ILess_Test_Node_ParenTest extends ILess_Test_TestCase
+class Test_Node_ParenTest extends Test_TestCase
 {
     /**
      * @covers __constructor
      */
     public function testConstructor()
     {
-        $p = new ILess_Node_Paren(new ILess_Node_Anonymous('foobar'));
+        $p = new ParenNode(new AnonymousNode('foobar'));
     }
 
     /**
@@ -29,7 +34,7 @@ class ILess_Test_Node_ParenTest extends ILess_Test_TestCase
      */
     public function testGetType()
     {
-        $p = new ILess_Node_Paren(new ILess_Node_Anonymous('foobar'));
+        $p = new ParenNode(new AnonymousNode('foobar'));
         $this->assertEquals('Paren', $p->getType());
     }
 
@@ -38,10 +43,10 @@ class ILess_Test_Node_ParenTest extends ILess_Test_TestCase
      */
     public function testGenerateCss()
     {
-        $env = new ILess_Environment();
-        $output = new ILess_Output();
+        $env = new Context();
+        $output = new StandardOutput();
 
-        $p = new ILess_Node_Paren(new ILess_Node_Anonymous('foobar'));
+        $p = new ParenNode(new AnonymousNode('foobar'));
         $p->generateCss($env, $output);
         $this->assertEquals('(foobar)', $output->toString());
     }

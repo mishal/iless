@@ -7,7 +7,9 @@
  * file that was distributed with this source code.
  */
 
-class ILess_Test_CLI extends ILess_CLI
+use ILess\CLI;
+
+class Test_CLI extends CLI
 {
     public function parseArguments($args)
     {
@@ -21,20 +23,20 @@ class ILess_Test_CLI extends ILess_CLI
 }
 
 /**
- * CLI
+ * ILess\CLI
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_CLI
+ * @covers CLI
  */
-class ILess_CLITest extends ILess_Test_TestCase
+class CLITest extends Test_TestCase
 {
     /**
      * @covers isValid
      */
     public function testIsValid()
     {
-        $cli = new ILess_CLI(array());
+        $cli = new CLI(array());
         $this->assertEquals(false, $cli->isValid());
     }
 
@@ -43,7 +45,7 @@ class ILess_CLITest extends ILess_Test_TestCase
      */
     public function testGetScriptName()
     {
-        $cli = new ILess_CLI(array(
+        $cli = new CLI(array(
             'foobar.php', 'arg1', 'arg2', 'arg3'
         ));
         $this->assertEquals($cli->getScriptName(), 'foobar.php');
@@ -55,7 +57,7 @@ class ILess_CLITest extends ILess_Test_TestCase
      */
     public function testParseArguments($arguments, $expected)
     {
-        $cli = new ILess_Test_CLI(array(
+        $cli = new Test_CLI(array(
             'foobar.php', 'arg1', 'arg2', 'arg3'
         ));
         $this->assertSame($expected, $cli->parseArguments($arguments));
@@ -91,7 +93,7 @@ class ILess_CLITest extends ILess_Test_TestCase
      */
     public function testIsSilent($arguments, $expected)
     {
-        $cli = new ILess_Test_CLI($arguments);
+        $cli = new Test_CLI($arguments);
         $this->assertSame($expected, $cli->isSilent());
     }
 
@@ -126,7 +128,7 @@ class ILess_CLITest extends ILess_Test_TestCase
      */
     public function testGetUsage()
     {
-        $cli = new ILess_Test_CLI(array('foobar.php'));
+        $cli = new Test_CLI(array('foobar.php'));
         $this->assertContains('usage: foobar.php', $cli->getUsage());
     }
 

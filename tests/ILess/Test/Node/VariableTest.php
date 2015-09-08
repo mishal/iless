@@ -6,23 +6,29 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\AnonymousNode;
+use ILess\Node\VariableNode;
+use ILess\Node\ValueNode;
+use ILess\Output\StandardOutput;
 
 /**
- * Variable node tests
+ * ILess\Variable node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_Variable
+ * @covers Node_Variable
+ * @group node
  */
-class ILess_Test_Node_VariableTest extends ILess_Test_TestCase
+class Test_Node_VariableTest extends Test_TestCase
 {
     /**
      * @covers __constructor
      */
     public function testConstructor()
     {
-        $v = new ILess_Node_Variable('foo', array(
-            new ILess_Node_Anonymous('foobar')
+        $v = new VariableNode('foo', array(
+            new AnonymousNode('foobar')
         ));
     }
 
@@ -31,8 +37,8 @@ class ILess_Test_Node_VariableTest extends ILess_Test_TestCase
      */
     public function testGetType()
     {
-        $v = new ILess_Node_Value(array(
-            new ILess_Node_Anonymous('foobar')
+        $v = new ValueNode(array(
+            new AnonymousNode('foobar')
         ));
         $this->assertEquals('Value', $v->getType());
     }
@@ -42,11 +48,11 @@ class ILess_Test_Node_VariableTest extends ILess_Test_TestCase
      */
     public function testGenerateCss()
     {
-        $env = new ILess_Environment();
-        $output = new ILess_Output();
+        $env = new Context();
+        $output = new StandardOutput();
 
-        $v = new ILess_Node_Value(array(
-            new ILess_Node_Anonymous('foobar')
+        $v = new ValueNode(array(
+            new AnonymousNode('foobar')
         ));
 
         $v->generateCss($env, $output);

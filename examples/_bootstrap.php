@@ -1,4 +1,6 @@
 <?php
 
+use ILess\Autoloader;
+
 require_once '../lib/ILess/Autoloader.php';
-ILess_Autoloader::register();
+Autoloader::register();

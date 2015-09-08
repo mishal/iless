@@ -1,23 +1,40 @@
 {
   "name": "mishal/iless",
   "type": "library",
-  "description": "Less parser and compiler written for Php",
-  "keywords": ["less", "lesscss", "php", "parser", "compiler", "processor"],
+  "description": "Less.js port to PHP",
+  "keywords": [
+    "less",
+    "lesscss",
+    "css",
+    "parser",
+    "compiler",
+    "less.js"
+  ],
   "license": "MIT",
   "homepage": "http://github.com/mishal/iless",
   "authors": [
-    {"name": "ILess contributors", "homepage": "https://github.com/mishal/iless/wiki/Contributors"}
+    {
+      "name": "ILess contributors",
+      "homepage": "https://github.com/mishal/iless/wiki/Contributors"
+    }
   ],
   "require": {
-    "php": ">=5.2.0",
-    "ext-bcmath": "*"
+    "php": ">=5.4.0"
   },
+  "require-dev": {
+  },
+  "bin": [
+    "bin/iless"
+  ],
   "autoload": {
-    "psr-0": { "ILess": "lib/" }
+    "psr-4": {
+      "ILess\\": "lib/ILess"
+    }
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "1.7-dev"
+      "dev-master": "2.0.x-dev",
+      "dev-develop": "2.1.x-dev"
     }
   }
 }

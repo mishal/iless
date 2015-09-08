@@ -5,22 +5,26 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\CommentNode;
+use ILess\Output\StandardOutput;
 
 /**
  * Comment node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_Comment
+ * @covers Node_Comment
+ * @group node
  */
-class ILess_Test_Node_CommentTest extends ILess_Test_TestCase
+class Test_Node_CommentTest extends Test_TestCase
 {
     /**
      * @covers getType
      */
     public function testGetType()
     {
-        $a = new ILess_Node_Comment('my comment');
+        $a = new CommentNode('my comment');
         $this->assertEquals('Comment', $a->getType());
     }
 
@@ -29,13 +33,29 @@ class ILess_Test_Node_CommentTest extends ILess_Test_TestCase
      */
     public function testGenerateCSS()
     {
-        $env = new ILess_Environment();
+        $env = new Context();
 
-        $a = new ILess_Node_Comment('my comment');
-        $output = new ILess_Output();
+        $a = new CommentNode('my comment');
+        $output = new StandardOutput();
 
         $a->generateCss($env, $output);
         $this->assertEquals($output->toString(), 'my comment');
+    }
+
+    public function testIsSilent()
+    {
+        $env = new Context();
+        $a = new CommentNode('// This is a comment', true);
+        $b = new CommentNode('/* This is a comment */');
+        $c = new CommentNode('/*! This is a comment */');
+
+        $this->assertTrue($a->isSilent($env));
+        $this->assertFalse($b->isSilent($env));
+
+        // when compression is used
+        $env->compress = true;
+        $this->assertTrue($b->isSilent($env));
+        $this->assertFalse($c->isSilent($env));
     }
 
 }

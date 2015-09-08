@@ -6,22 +6,25 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\KeywordNode;
 
 /**
  * Keyword node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_Keyword
+ * @covers Node_Keyword
+ * @group node
  */
-class ILess_Test_Node_KeywordTest extends ILess_Test_TestCase
+class Test_Node_KeywordTest extends Test_TestCase
 {
     /**
      * @covers __constructor
      */
     public function testConstructor()
     {
-        $d = new ILess_Node_Keyword('black');
+        $d = new KeywordNode('black');
     }
 
     /**
@@ -29,16 +32,16 @@ class ILess_Test_Node_KeywordTest extends ILess_Test_TestCase
      */
     public function testGetType()
     {
-        $d = new ILess_Node_Keyword('black');
+        $d = new KeywordNode('black');
         $this->assertEquals('Keyword', $d->getType());
     }
 
     public function testCompile()
     {
-        $env = new ILess_Environment();
-        $d = new ILess_Node_Keyword('black');
+        $env = new Context();
+        $d = new KeywordNode('black');
         $result = $d->compile($env);
-        $this->assertInstanceOf('ILess_Node_Keyword', $result);
+        $this->assertInstanceOf('ILess\Node\KeywordNode', $result);
     }
 
 }

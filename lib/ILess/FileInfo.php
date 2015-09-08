@@ -7,13 +7,14 @@
  * file that was distributed with this source code.
  */
 
+namespace ILess;
+
 /**
  * File information
  *
  * @package ILess
- * @subpackage parser
  */
-class ILess_FileInfo
+final class FileInfo
 {
     /**
      * Full resolved filename of current file
@@ -60,14 +61,14 @@ class ILess_FileInfo
     /**
      * The imported file
      *
-     * @var ILess_ImportedFile
+     * @var ImportedFile
      */
     public $importedFile;
 
     /**
      * Constructor
      *
-     * @param string $path
+     * @param array $info
      */
     public function __construct(array $info = array())
     {

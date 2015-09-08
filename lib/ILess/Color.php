@@ -7,169 +7,17 @@
  * file that was distributed with this source code.
  */
 
+namespace ILess;
+
+use InvalidArgumentException;
+
 /**
  * Color utility class
  *
- * @package ILess
- * @subpackage color
+ * @package ILess\Color
  */
-class ILess_Color
+final class Color
 {
-    /**
-     * Array of named colors
-     *
-     * @var array
-     */
-    public static $colors = array(
-        'aliceblue' => '#f0f8ff',
-        'antiquewhite' => '#faebd7',
-        'aqua' => '#00ffff',
-        'aquamarine' => '#7fffd4',
-        'azure' => '#f0ffff',
-        'beige' => '#f5f5dc',
-        'bisque' => '#ffe4c4',
-        'black' => '#000000',
-        'blanchedalmond' => '#ffebcd',
-        'blue' => '#0000ff',
-        'blueviolet' => '#8a2be2',
-        'brown' => '#a52a2a',
-        'burlywood' => '#deb887',
-        'cadetblue' => '#5f9ea0',
-        'chartreuse' => '#7fff00',
-        'chocolate' => '#d2691e',
-        'coral' => '#ff7f50',
-        'cornflowerblue' => '#6495ed',
-        'cornsilk' => '#fff8dc',
-        'crimson' => '#dc143c',
-        'cyan' => '#00ffff',
-        'darkblue' => '#00008b',
-        'darkcyan' => '#008b8b',
-        'darkgoldenrod' => '#b8860b',
-        'darkgray' => '#a9a9a9',
-        'darkgrey' => '#a9a9a9',
-        'darkgreen' => '#006400',
-        'darkkhaki' => '#bdb76b',
-        'darkmagenta' => '#8b008b',
-        'darkolivegreen' => '#556b2f',
-        'darkorange' => '#ff8c00',
-        'darkorchid' => '#9932cc',
-        'darkred' => '#8b0000',
-        'darksalmon' => '#e9967a',
-        'darkseagreen' => '#8fbc8f',
-        'darkslateblue' => '#483d8b',
-        'darkslategray' => '#2f4f4f',
-        'darkslategrey' => '#2f4f4f',
-        'darkturquoise' => '#00ced1',
-        'darkviolet' => '#9400d3',
-        'deeppink' => '#ff1493',
-        'deepskyblue' => '#00bfff',
-        'dimgray' => '#696969',
-        'dimgrey' => '#696969',
-        'dodgerblue' => '#1e90ff',
-        'firebrick' => '#b22222',
-        'floralwhite' => '#fffaf0',
-        'forestgreen' => '#228b22',
-        'fuchsia' => '#ff00ff',
-        'gainsboro' => '#dcdcdc',
-        'ghostwhite' => '#f8f8ff',
-        'gold' => '#ffd700',
-        'goldenrod' => '#daa520',
-        'gray' => '#808080',
-        'grey' => '#808080',
-        'green' => '#008000',
-        'greenyellow' => '#adff2f',
-        'honeydew' => '#f0fff0',
-        'hotpink' => '#ff69b4',
-        'indianred' => '#cd5c5c',
-        'indigo' => '#4b0082',
-        'ivory' => '#fffff0',
-        'khaki' => '#f0e68c',
-        'lavender' => '#e6e6fa',
-        'lavenderblush' => '#fff0f5',
-        'lawngreen' => '#7cfc00',
-        'lemonchiffon' => '#fffacd',
-        'lightblue' => '#add8e6',
-        'lightcoral' => '#f08080',
-        'lightcyan' => '#e0ffff',
-        'lightgoldenrodyellow' => '#fafad2',
-        'lightgray' => '#d3d3d3',
-        'lightgrey' => '#d3d3d3',
-        'lightgreen' => '#90ee90',
-        'lightpink' => '#ffb6c1',
-        'lightsalmon' => '#ffa07a',
-        'lightseagreen' => '#20b2aa',
-        'lightskyblue' => '#87cefa',
-        'lightslategray' => '#778899',
-        'lightslategrey' => '#778899',
-        'lightsteelblue' => '#b0c4de',
-        'lightyellow' => '#ffffe0',
-        'lime' => '#00ff00',
-        'limegreen' => '#32cd32',
-        'linen' => '#faf0e6',
-        'magenta' => '#ff00ff',
-        'maroon' => '#800000',
-        'mediumaquamarine' => '#66cdaa',
-        'mediumblue' => '#0000cd',
-        'mediumorchid' => '#ba55d3',
-        'mediumpurple' => '#9370d8',
-        'mediumseagreen' => '#3cb371',
-        'mediumslateblue' => '#7b68ee',
-        'mediumspringgreen' => '#00fa9a',
-        'mediumturquoise' => '#48d1cc',
-        'mediumvioletred' => '#c71585',
-        'midnightblue' => '#191970',
-        'mintcream' => '#f5fffa',
-        'mistyrose' => '#ffe4e1',
-        'moccasin' => '#ffe4b5',
-        'navajowhite' => '#ffdead',
-        'navy' => '#000080',
-        'oldlace' => '#fdf5e6',
-        'olive' => '#808000',
-        'olivedrab' => '#6b8e23',
-        'orange' => '#ffa500',
-        'orangered' => '#ff4500',
-        'orchid' => '#da70d6',
-        'palegoldenrod' => '#eee8aa',
-        'palegreen' => '#98fb98',
-        'paleturquoise' => '#afeeee',
-        'palevioletred' => '#d87093',
-        'papayawhip' => '#ffefd5',
-        'peachpuff' => '#ffdab9',
-        'peru' => '#cd853f',
-        'pink' => '#ffc0cb',
-        'plum' => '#dda0dd',
-        'powderblue' => '#b0e0e6',
-        'purple' => '#800080',
-        'red' => '#ff0000',
-        'rosybrown' => '#bc8f8f',
-        'royalblue' => '#4169e1',
-        'saddlebrown' => '#8b4513',
-        'salmon' => '#fa8072',
-        'sandybrown' => '#f4a460',
-        'seagreen' => '#2e8b57',
-        'seashell' => '#fff5ee',
-        'sienna' => '#a0522d',
-        'silver' => '#c0c0c0',
-        'skyblue' => '#87ceeb',
-        'slateblue' => '#6a5acd',
-        'slategray' => '#708090',
-        'slategrey' => '#708090',
-        'snow' => '#fffafa',
-        'springgreen' => '#00ff7f',
-        'steelblue' => '#4682b4',
-        'tan' => '#d2b48c',
-        'teal' => '#008080',
-        'thistle' => '#d8bfd8',
-        'tomato' => '#ff6347',
-        'turquoise' => '#40e0d0',
-        'violet' => '#ee82ee',
-        'wheat' => '#f5deb3',
-        'white' => '#ffffff',
-        'whitesmoke' => '#f5f5f5',
-        'yellow' => '#ffff00',
-        'yellowgreen' => '#9acd32'
-    );
-
     /**
      * HSL and HSV cache
      *
@@ -183,6 +31,13 @@ class ILess_Color
      * @var string
      */
     protected $luma;
+
+    /**
+     * Luminance cache
+     *
+     * @var string
+     */
+    protected $luminance;
 
     /**
      * The rgb channels
@@ -210,7 +65,7 @@ class ILess_Color
      *
      * @var boolean
      */
-    protected $keyword = false;
+    public $keyword = false;
 
     /**
      * Transparent keyword?
@@ -228,17 +83,14 @@ class ILess_Color
     public function __construct($rgb = array(255, 255, 255), $alpha = 1)
     {
         if (is_array($rgb)) {
-            // clean the components
-            foreach ($rgb as &$i) {
-                $i = ILess_Math::clean($i);
-            }
             $this->rgb = $rgb;
         } // string
         else {
+
             // this is a named color
-            if (isset(self::$colors[$rgb])) {
+            if ($color = self::color($rgb)) {
                 $this->keyword = $rgb;
-                $rgb = self::$colors[$rgb];
+                $rgb = $color;
             }
 
             // strip #
@@ -250,9 +102,9 @@ class ILess_Color
             } elseif (strlen($rgb) == 3) {
                 $this->short = true;
                 foreach (str_split($rgb, 1) as $c) {
-                    $this->rgb[] = hexdec($c . $c);
+                    $this->rgb[] = hexdec($c.$c);
                 }
-            } elseif(strtolower($rgb) == 'transparent') {
+            } elseif (strtolower($rgb) == 'transparent') {
                 $this->rgb = array(255, 255, 255);
                 $this->isTransparentKeyword = true;
                 $alpha = 0;
@@ -262,7 +114,7 @@ class ILess_Color
         }
 
         // limit alpha channel
-        $this->alpha = is_numeric($alpha) ? ILess_Math::clean(min($alpha, 1)) : 1;
+        $this->alpha = is_numeric($alpha) ? $alpha : 1;
     }
 
     /**
@@ -274,7 +126,8 @@ class ILess_Color
     {
         $components = array();
         foreach ($this->rgb as $i) {
-            $i = ILess_Math::round($i);
+
+            $i = Math::round($i);
             if ($i > 255) {
                 $i = 255;
             } elseif ($i < 0) {
@@ -286,21 +139,26 @@ class ILess_Color
         return $components;
     }
 
+    protected function clamp($value, $max)
+    {
+        return min(max($value, 0), $max);
+    }
+
     /**
      * Creates new color from the keyword
      *
      * @param string $keyword
-     * @return ILess_Color
+     * @return Color
      */
     public static function fromKeyword($keyword)
     {
         $color = null;
         // is this named color?
         if (self::isNamedColor($keyword)) {
-            $color = new ILess_Color(substr(ILess_Color::color($keyword), 1));
+            $color = new Color(substr(Color::color($keyword), 1));
             $color->keyword = $keyword;
         } elseif ($keyword === 'transparent') {
-            $color = new ILess_Color(array(255, 255, 255), 0);
+            $color = new Color(array(255, 255, 255), 0);
             $color->isTransparentKeyword = true;
         }
 
@@ -395,14 +253,34 @@ class ILess_Color
             return $this->luma;
         }
 
-        // Y = 0.2126 R + 0.7152 G + 0.0722 B
-        $r = ILess_Math::multiply('0.2126', ILess_Math::divide($this->rgb[0], 255));
-        $g = ILess_Math::multiply('0.7152', ILess_Math::divide($this->rgb[1], 255));
-        $b = ILess_Math::multiply('0.0722', ILess_Math::divide($this->rgb[2], 255));
+        $r = $this->rgb[0] / 255;
+        $g = $this->rgb[1] / 255;
+        $b = $this->rgb[2] / 255;
 
-        $this->luma = ILess_Math::add(ILess_Math::add($r, $g), $b);
+        $r = ($r <= 0.03928) ? $r / 12.92 : pow((($r + 0.055) / 1.055), 2.4);
+        $g = ($g <= 0.03928) ? $g / 12.92 : pow((($g + 0.055) / 1.055), 2.4);
+        $b = ($b <= 0.03928) ? $b / 12.92 : pow((($b + 0.055) / 1.055), 2.4);
+
+        $this->luma = 0.2126 * $r + 0.7152 * $g + 0.0722 * $b;
 
         return $this->luma;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function getLuminance()
+    {
+        if ($this->luminance !== null) {
+            return $this->luminance;
+        }
+
+        $this->luminance = (0.2126 * $this->rgb[0] / 255) +
+            (0.7152 * $this->rgb[1] / 255) +
+            (0.0722 * $this->rgb[2] / 255);
+
+        return $this->luminance;
     }
 
     /**
@@ -419,6 +297,7 @@ class ILess_Color
         $r = $this->rgb[0] / 255;
         $g = $this->rgb[1] / 255;
         $b = $this->rgb[2] / 255;
+        $a = $this->alpha;
 
         $max = max($r, $g, $b);
         $min = min($r, $g, $b);
@@ -444,7 +323,7 @@ class ILess_Color
             $h /= 6;
         }
 
-        $this->hsl = array('h' => $h * 360, 's' => $s, 'l' => $l);
+        $this->hsl = array('h' => $h * 360, 's' => $s, 'l' => $l, 'a' => $a);
 
         return $this->hsl;
     }
@@ -505,17 +384,36 @@ class ILess_Color
     public function toARGB()
     {
         $argb = array_merge(
-            array(ILess_Math::clean(ILess_Math::round($this->alpha * 256))),
-            $this->rgb);
+            array($this->alpha * 255),
+            $this->rgb
+        );
 
         $result = '';
         foreach ($argb as $i) {
-            $i = ILess_Math::round($i);
-            $i = dechex($i > 255 ? 255 : ($i < 0 ? 0 : $i));
+            $i = dechex($this->clamp(Math::round($i), 255));
             $result .= str_pad($i, 2, '0', STR_PAD_LEFT);
         }
 
-        return '#' . $result;
+        return '#'.$result;
+    }
+
+    private function toHex($rgb)
+    {
+        $parts = array_map(
+            function ($c) {
+                $c = $this->clamp(round($c), 255);
+
+                return ($c < 16 ? '0' : '').dechex($c);
+            },
+            $rgb
+        );
+
+        return '#'.join('', $parts);
+    }
+
+    public function toRGB()
+    {
+        return $this->toHex($this->rgb);
     }
 
     /**
@@ -531,30 +429,44 @@ class ILess_Color
             return 'transparent';
         }
 
-        // no transparency
-        if ($this->alpha == 1) {
-            // FIXME: prevent keywords?
-            // if($this->keyword)
-            // {
-            // return $this->keyword;
-            // }
-            $color = array();
-            foreach ($this->getFixedRgb() as $i) {
-                $color[] = str_pad(dechex($i), 2, '0', STR_PAD_LEFT);
-            }
-            $color = join('', $color);
-            // convert color to short format
-            if ($canShorten && $color[0] === $color[1] && $color[2] === $color[3] && $color[4] === $color[5]) {
-                $color = $color[0] . $color[2] . $color[4];
-            }
+        $alpha = Math::toFixed($this->alpha + 2e-16, 8);
 
-            $color = sprintf('#%s', $color);
-        } else {
+        if ($alpha < 1) {
             $fixedRGB = $this->getFixedRGB();
-            $color = sprintf('rgba(%s)', join($compress ? ',' : ', ', array(
-                $fixedRGB[0], $fixedRGB[1], $fixedRGB[2], $this->alpha
-            )));
+
+            return sprintf(
+                'rgba(%s)',
+                join(
+                    $compress ? ',' : ', ',
+                    array(
+                        $fixedRGB[0],
+                        $fixedRGB[1],
+                        $fixedRGB[2],
+                        Math::clean($this->clamp($alpha, 1)),
+                    )
+                )
+            );
         }
+
+        // prevent named colors
+        if ($this->keyword) {
+            return $this->keyword;
+        }
+
+        $color = array();
+        foreach ($this->getFixedRgb() as $i) {
+            $color[] = str_pad(dechex(Math::round($i)), 2, '0', STR_PAD_LEFT);
+        }
+
+        $color = join('', $color);
+
+        // convert color to short format
+        if ($canShorten && $color[0] === $color[1] && $color[2] === $color[3] && $color[4] === $color[5]) {
+            $color = $color[0].$color[2].$color[4];
+        }
+
+        $color = '#'.$color;
+
 
         return $color;
     }
@@ -577,18 +489,18 @@ class ILess_Color
      */
     public static function isNamedColor($color)
     {
-        return isset(self::$colors[$color]);
+        return isset(NamedColors::$colors[$color]);
     }
 
     /**
-     * Returns the color hex representation
+     * Returns the color hex representation or false
      *
-     * @param $color Color name
-     * @return mixed
+     * @param string $color Color name
+     * @return string|false
      */
     public static function color($color)
     {
-        return self::isNamedColor($color) ? self::$colors[$color] : false;
+        return self::isNamedColor($color) ? NamedColors::$colors[$color] : false;
     }
 
 }

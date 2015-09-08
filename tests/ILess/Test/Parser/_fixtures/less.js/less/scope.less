@@ -37,7 +37,7 @@
     @local-will-be-made-global: green;
     .scope {
       scoped-val: @local-will-be-made-global;
-	}
+    }
   }
 }
 
@@ -76,4 +76,29 @@
   @subScopeOnly: 'inside';
   //use the mixin
   .mixinNoParam();
+}
+#parentSelectorScope {
+  @col: white;
+  & {
+    @col: black;
+  }
+  prop: @col;
+  & {
+    @col: black;
+  }
+}
+.test-empty-mixin() {
+}
+#parentSelectorScopeMixins {
+  & {
+    .test-empty-mixin() {
+      should: never seee 1;
+    }
+  }
+  .test-empty-mixin();
+  & {
+    .test-empty-mixin() {
+      should: never seee 2;
+    }
+  }
 }

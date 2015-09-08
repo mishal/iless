@@ -5,22 +5,26 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\AnonymousNode;
+use ILess\Output\StandardOutput;
 
 /**
  * Anonymous node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_Anonymous
+ * @covers Node_Anonymous
+ * @group node
  */
-class ILess_Test_Node_AnonymousTest extends ILess_Test_TestCase
+class Test_Node_AnonymousTest extends Test_TestCase
 {
     /**
      * @covers getType
      */
     public function testGetType()
     {
-        $a = new ILess_Node_Anonymous('foobar');
+        $a = new AnonymousNode('foobar');
         $this->assertEquals('Anonymous', $a->getType());
     }
 
@@ -29,12 +33,21 @@ class ILess_Test_Node_AnonymousTest extends ILess_Test_TestCase
      */
     public function testGenerateCSS()
     {
-        $a = new ILess_Node_Anonymous('50');
-        $output = new ILess_Output();
-        $env = new ILess_Environment();
+        $a = new AnonymousNode('50');
+        $output = new StandardOutput();
+        $env = new Context();
 
         $a->generateCss($env, $output);
         $this->assertEquals($output->toString(), '50');
+    }
+
+    public function testIsRulesetLike()
+    {
+        $a = new AnonymousNode('50');
+        $this->assertFalse($a->isRulesetLike());
+
+        $a = new AnonymousNode('50', 0, null, false, true);
+        $this->assertTrue($a->isRulesetLike());
     }
 
 }

@@ -6,32 +6,36 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Cache\NoCache;
+use ILess\Context;
+use ILess\Importer;
+use ILess\Importer\FileSystemImporter;
 
 /**
- * Importer tests
+ * ILess\Importer tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Importer
+ * @covers Importer
  */
-class ILess_Test_ImporterTest extends ILess_Test_TestCase
+class Test_ImporterTest extends Test_TestCase
 {
     /**
      * @covers registerImporter
      */
     public function testRegisterImporter()
     {
-        $env = new ILess_Environment();
-        $i = new ILess_Importer($env, array(), new ILess_Cache_None());
+        $env = new Context();
+        $i = new Importer($env, array(), new NoCache());
 
-        $r = $i->registerImporter(new ILess_Importer_FileSystem(), 'file_system');
-        $i->registerImporter(new ILess_Importer_FileSystem(), 'disc');
+        $r = $i->registerImporter(new FileSystemImporter(), 'file_system');
+        $i->registerImporter(new FileSystemImporter(), 'disc');
 
         // fluent interface
-        $this->assertInstanceOf('ILess_Importer', $r);
-        $this->assertInstanceOf('ILess_Importer_FileSystem', $i->getImporter('file_system'));
+        $this->assertInstanceOf('ILess\Importer', $r);
+        $this->assertInstanceOf('ILess\Importer\FileSystemImporter', $i->getImporter('file_system'));
 
-        $this->assertInstanceOf('ILess_Importer_FileSystem', $i->getImporter('disc'));
+        $this->assertInstanceOf('ILess\Importer\FileSystemImporter', $i->getImporter('disc'));
     }
 
     /**
@@ -39,9 +43,9 @@ class ILess_Test_ImporterTest extends ILess_Test_TestCase
      */
     public function testGetImporters()
     {
-        $env = new ILess_Environment();
-        $importer = new ILess_Importer_FileSystem();
-        $i = new ILess_Importer($env, array('disc' => $importer), new ILess_Cache_None());
+        $env = new Context();
+        $importer = new FileSystemImporter();
+        $i = new Importer($env, array('disc' => $importer), new NoCache());
 
         $this->assertEquals(array(
             'disc' => $importer

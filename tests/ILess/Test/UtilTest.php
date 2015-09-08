@@ -5,14 +5,17 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Node\AnonymousNode;
+use ILess\Util;
 
 /**
  * Utility tests
  *
  * @package ILess
  * @subpackage test
+ * @group util
  */
-class ILess_Test_UtilTest extends ILess_Test_TestCase
+class Test_UtilTest extends Test_TestCase
 {
     /**
      * @covers       normalizePath
@@ -20,7 +23,7 @@ class ILess_Test_UtilTest extends ILess_Test_TestCase
      */
     public function testNormalizePath($path, $expected)
     {
-        $this->assertEquals(ILess_Util::normalizePath($path), $expected);
+        $this->assertEquals(Util::normalizePath($path), $expected);
     }
 
     public function getDataForNormalizePathTest()
@@ -32,4 +35,23 @@ class ILess_Test_UtilTest extends ILess_Test_TestCase
             array('/a/d/tmp/../foo/test.jpg', '/a/d/foo/test.jpg')
         );
     }
+
+    /**
+     * @covers       compareNodes
+     * @dataProvider getDataForCompareNodes
+     */
+    public function testCompareNodes($expected, $a, $b)
+    {
+        $this->assertSame($expected, Util::compareNodes($a, $b));
+    }
+
+    public function getDataForCompareNodes()
+    {
+        return array(
+            array(
+                null, new AnonymousNode('a'), new AnonymousNode('b')
+            )
+        );
+    }
+
 }

@@ -6,21 +6,23 @@
  * file that was distributed with this source code.
  */
 
+use ILess\Color;
+
 /**
  * Color tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Color
+ * @covers Color
  */
-class ILess_Test_ColorTest extends ILess_Test_TestCase
+class Test_ColorTest extends Test_TestCase
 {
     /**
      * @covers getAlpha
      */
     public function testAlpha()
     {
-        $color = new ILess_Color();
+        $color = new Color();
         $this->assertEquals(1, $color->getAlpha());
     }
 
@@ -29,21 +31,21 @@ class ILess_Test_ColorTest extends ILess_Test_TestCase
      */
     public function testToString()
     {
-        $color = new ILess_Color('#ffeeaa');
+        $color = new Color('#ffeeaa');
         $this->assertEquals('#ffeeaa', $color->toString());
 
         // the format remains the same
-        $color = new ILess_Color('#fea');
+        $color = new Color('#fea');
         $this->assertEquals('#ffeeaa', $color->toString());
 
-        $color = new ILess_Color('#ff0000');
+        $color = new Color('#ff0000');
         $this->assertEquals('#ff0000', $color->toString());
 
         $this->assertEquals(255, $color->getRed());
         $this->assertEquals(0, $color->getGreen());
         $this->assertEquals(0, $color->getBlue());
 
-        $color = new ILess_Color('#f60000');
+        $color = new Color('#f60000');
         $this->assertEquals('#f60000', $color->toString());
 
         $this->assertEquals(246, $color->getRed());

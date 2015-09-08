@@ -48,15 +48,24 @@
 .selector,
 .lots,
 .comments {
-  color: #808080, /* blue */ #ffa500;
+  color: grey, /* blue */ orange;
   -webkit-border-radius: 2px /* webkit only */;
   -moz-border-radius: 8px /* moz only with operation */;
 }
 .test {
   color: 1px;
 }
+.sr-only-focusable {
+  clip: auto;
+}
+@-webkit-keyframes hover {
+  /* and Chrome */
+  0% {
+    color: red;
+  }
+}
 #last {
-  color: #0000ff;
+  color: blue;
 }
 /*  */
 /* { */
@@ -67,3 +76,8 @@
   color: #A33;
 }
 /* } */
+/*by block */
+#output-block {
+  comment: /* // Not commented out // */;
+}
+/*comment on last line*/

@@ -6,14 +6,20 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\SourceMap\Base64VLQ;
 
-class ILess_Test_SourceMap_Base64VLQTest extends ILess_Test_TestCase
+/**
+ * Test_SourceMap_Base64VLQTest
+ *
+ * @group sourceMap
+ */
+class Test_SourceMap_Base64VLQTest extends Test_TestCase
 {
     public $B64STR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
     public function setUp()
     {
-        $this->encoder = new ILess_SourceMap_Base64VLQ();
+        $this->encoder = new Base64VLQ();
     }
 
     /**

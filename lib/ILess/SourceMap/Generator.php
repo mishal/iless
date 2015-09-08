@@ -7,13 +7,22 @@
  * file that was distributed with this source code.
  */
 
+namespace ILess\SourceMap;
+
+use ILess\Configurable;
+use ILess\Context;
+use ILess\Exception\IOException;
+use ILess\Node\RulesetNode;
+use InvalidArgumentException;
+use ILess\Output\MappedOutput;
+use ILess\Util;
+
 /**
  * Source map generator
  *
- * @package ILess
- * @subpackage Output
+ * @package ILess\SourceMap
  */
-class ILess_SourceMap_Generator extends ILess_Configurable
+class Generator extends Configurable
 {
     /**
      * What version of source map does the generator generate?
@@ -39,13 +48,15 @@ class ILess_SourceMap_Generator extends ILess_Configurable
         // output source contents?
         'source_contents' => false,
         // base path for filename normalization
-        'base_path' => ''
+        'base_path' => '',
+        // encode inline map using base64?
+        'inline_encode_base64' => true,
     );
 
     /**
      * The base64 VLQ encoder
      *
-     * @var ILess_SourceMap_Base64VLQ
+     * @var Base64VLQ
      */
     protected $encoder;
 
@@ -59,7 +70,7 @@ class ILess_SourceMap_Generator extends ILess_Configurable
     /**
      * The root node
      *
-     * @var ILess_Node_Ruleset
+     * @var RulesetNode
      */
     protected $root;
 
@@ -80,18 +91,20 @@ class ILess_SourceMap_Generator extends ILess_Configurable
     /**
      * Constructor
      *
-     * @param ILess_Node_Ruleset $root The root node
+     * @param RulesetNode $root The root node
      * @param array $contentsMap Array of file contents map
      * @param array $options Array of options
-     * @param ILess_SourceMap_Base64VLQ $encoder The encoder
+     * @param Base64VLQ $encoder The encoder
      */
-    public function __construct(ILess_Node_Ruleset $root,
-                                array $contentsMap,
-                                $options = array(), ILess_SourceMap_Base64VLQ $encoder = null)
-    {
+    public function __construct(
+        RulesetNode $root,
+        array $contentsMap,
+        $options = array(),
+        Base64VLQ $encoder = null
+    ) {
         $this->root = $root;
         $this->contentsMap = $contentsMap;
-        $this->encoder = $encoder ? $encoder : new ILess_SourceMap_Base64VLQ();
+        $this->encoder = $encoder ? $encoder : new Base64VLQ();
         parent::__construct($options);
     }
 
@@ -111,20 +124,20 @@ class ILess_SourceMap_Generator extends ILess_Configurable
     /**
      * Generates the CSS
      *
-     * @param ILess_Environment $env
+     * @param Context $context
      * @return string
      */
-    public function generateCSS(ILess_Environment $env)
+    public function generateCSS(Context $context)
     {
-        $output = new ILess_Output_Mapped($this->contentsMap, $this);
+        $output = new MappedOutput($this->contentsMap, $this);
 
         // catch the output
-        $this->root->generateCSS($env, $output);
+        $this->root->generateCSS($context, $output);
 
         // prepare sources
         foreach ($this->contentsMap as $filename => $contents) {
             // match md5 hash in square brackets _[#HASH#]_
-            // see ILess_Parser_Core::parseString()
+            // see ILess\Parser\Core::parseString()
             if (preg_match('/(\[__[0-9a-f]{32}__\])+$/', $filename)) {
                 $filename = substr($filename, 0, -38);
             }
@@ -144,13 +157,20 @@ class ILess_SourceMap_Generator extends ILess_Configurable
         }
 
         $sourceMapContent = $this->generateJson();
+
         // write map to a file
         if ($file = $this->getOption('write_to')) {
-            // FIXME: should this happen here?
             $this->saveMap($file, $sourceMapContent);
         } // inline the map
         else {
-            $sourceMapUrl = sprintf('data:application/json,%s', ILess_Util::encodeURIComponent($sourceMapContent));
+            $sourceMap = 'data:application/json;';
+            if ($this->getOption('inline_encode_base64')) {
+                $sourceMap .= 'base64,';
+                $sourceMapContent = base64_encode($sourceMapContent);
+            } else {
+                $sourceMapContent = Util::encodeURIComponent($sourceMapContent);
+            }
+            $sourceMapUrl = $sourceMap.$sourceMapContent;
         }
 
         if ($sourceMapUrl) {
@@ -165,7 +185,7 @@ class ILess_SourceMap_Generator extends ILess_Configurable
      *
      * @param string $file The absolute path to a file
      * @param string $content The content to write
-     * @throws ILess_Exception_IO If the file could not be saved
+     * @throws IOException If the file could not be saved
      * @throws InvalidArgumentException If the directory to write the map to does not exist or is not writable
      */
     protected function saveMap($file, $content)
@@ -173,11 +193,12 @@ class ILess_SourceMap_Generator extends ILess_Configurable
         $dir = dirname($file);
 
         if (!is_dir($dir) || !is_writable($dir)) {
-            throw new InvalidArgumentException(sprintf('The directory "%s" does not exist or is not writable. Cannot save the source map.', $dir));
+            throw new InvalidArgumentException(sprintf('The directory "%s" does not exist or is not writable. Cannot save the source map.',
+                $dir));
         }
 
         if (@file_put_contents($file, $content, LOCK_EX) === false) {
-            throw new ILess_Exception_IO(sprintf('Cannot save the source map to "%s".', $file));
+            throw new IOException(sprintf('Cannot save the source map to "%s".', $file));
         }
 
         return true;
@@ -212,17 +233,21 @@ class ILess_SourceMap_Generator extends ILess_Configurable
      * @param integer $originalLine The line number in original file
      * @param integer $originalColumn The column number in original file
      * @param string $sourceFile The original source file
-     * @return ILess_SourceMap_Generator
+     * @return Generator
      */
-    public function addMapping($generatedLine, $generatedColumn,
-                               $originalLine, $originalColumn, $sourceFile)
-    {
+    public function addMapping(
+        $generatedLine,
+        $generatedColumn,
+        $originalLine,
+        $originalColumn,
+        $sourceFile
+    ) {
         $this->mappings[] = array(
             'generated_line' => $generatedLine,
             'generated_column' => $generatedColumn,
             'original_line' => $originalLine,
             'original_column' => $originalColumn,
-            'source_file' => $sourceFile
+            'source_file' => $sourceFile,
         );
 
         return $this;
@@ -231,7 +256,7 @@ class ILess_SourceMap_Generator extends ILess_Configurable
     /**
      * Clear the mappings
      *
-     * @return ILess_SourceMap_Generator
+     * @return Generator
      */
     public function clear()
     {
@@ -243,10 +268,10 @@ class ILess_SourceMap_Generator extends ILess_Configurable
     /**
      * Sets the encoder
      *
-     * @param ILess_SourceMap_Base64VLQ $encoder
-     * @return ILess_SourceMap_Generator
+     * @param Base64VLQ $encoder
+     * @return Generator
      */
-    public function setEncoder(ILess_SourceMap_Base64VLQ $encoder)
+    public function setEncoder(Base64VLQ $encoder)
     {
         $this->encoder = $encoder;
 
@@ -256,7 +281,7 @@ class ILess_SourceMap_Generator extends ILess_Configurable
     /**
      * Returns the encoder
      *
-     * @return ILess_SourceMap_Base64VLQ
+     * @return Base64VLQ
      */
     public function getEncoder()
     {
@@ -279,7 +304,7 @@ class ILess_SourceMap_Generator extends ILess_Configurable
             // An optional source root, useful for relocating source files on a server or removing repeated values in the 'sources' entry.  This value is prepended to the individual entries in the 'source' field.
             'sourceRoot' => $this->getOption('sourceRoot'),
             // A list of original sources used by the 'mappings' entry.
-            'sources' => array_keys($this->sources)
+            'sources' => array_keys($this->sources),
         );
 
         // A list of symbol names used by the 'mappings' entry.
@@ -294,7 +319,7 @@ class ILess_SourceMap_Generator extends ILess_Configurable
             $sourceMap['sourcesContent'] = $this->getSourcesContent();
         }
 
-        // less.js compat fixes
+        // less.js compatibility fixes
         if (count($sourceMap['sources']) && !($sourceMap['sourceRoot'])) {
             unset($sourceMap['sourceRoot']);
         }
@@ -310,8 +335,9 @@ class ILess_SourceMap_Generator extends ILess_Configurable
     protected function getSourcesContent()
     {
         if (empty($this->sources)) {
-            return;
+            return null;
         }
+
         // FIXME: we should output only those which were used
         return array_values($this->sources);
     }
@@ -366,7 +392,7 @@ class ILess_SourceMap_Generator extends ILess_Configurable
                 $lineMapEncoded[] = $mapEncoded;
             }
 
-            $groupedMapEncoded[] = implode(',', $lineMapEncoded) . ';';
+            $groupedMapEncoded[] = implode(',', $lineMapEncoded).';';
         }
 
         return rtrim(implode($groupedMapEncoded), ';');

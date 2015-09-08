@@ -5,15 +5,17 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Visitor\ExtendFinderVisitor;
 
 /**
- * Visitor_ExtendFinder tests
+ * ILess\ILess\Visitor\Visitor\ExtendFinderVisitor tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Visitor_ExtendFinder
+ * @covers Visitor_ExtendFinder
+ * @group visitor
  */
-class ILess_Test_Visitor_ExtendFinderTest extends ILess_Test_TestCase
+class Test_Visitor_ExtendFinderTest extends Test_TestCase
 {
 
     /**
@@ -21,7 +23,7 @@ class ILess_Test_Visitor_ExtendFinderTest extends ILess_Test_TestCase
      */
     public function testVisit()
     {
-        $v = new ILess_Visitor_ExtendFinder();
+        $v = new ExtendFinderVisitor();
         $this->assertFalse($v->isReplacing());
     }
 

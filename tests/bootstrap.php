@@ -14,6 +14,5 @@
  * @subpackage test
  */
 
+require dirname(__FILE__) . '/../vendor/autoload.php';
 require dirname(__FILE__) . '/ILess/Test/TestCase.php';
-require dirname(__FILE__) . '/../lib/ILess/Autoloader.php';
-ILess_Autoloader::register();

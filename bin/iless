@@ -11,21 +11,23 @@
  * The cli interface to the parser
  *
  * @package ILess
- * @subpackage CLI
+ * @subpackage ILess\CLI
  */
 
 // register the autoloader
-require_once dirname(__FILE__) . '/../lib/ILess/Autoloader.php';
-ILess_Autoloader::register();
+use ILess\Autoloader;
+use ILess\CLI;
+use ILess\Exception\Exception;
+
+require_once dirname(__FILE__).'/../lib/ILess/Autoloader.php';
+Autoloader::register();
 
 try {
-  $cli = new ILess_CLI($argv);
-  $statusCode = $cli->run();
-}
-catch(Exception $e)
-{
-  echo $e;
-  $statusCode = $e->getCode();
+    $cli = new CLI($argv);
+    $statusCode = $cli->run();
+} catch (Exception $e) {
+    echo $e;
+    $statusCode = $e->getCode();
 }
 
 exit(is_numeric($statusCode) ? $statusCode : 0);

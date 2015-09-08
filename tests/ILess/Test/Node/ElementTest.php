@@ -5,22 +5,27 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\AnonymousNode;
+use ILess\Node\ElementNode;
+use ILess\Output\StandardOutput;
 
 /**
  * Element node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_Element
+ * @covers Node_Element
+ * @group node
  */
-class ILess_Test_Node_ElementTest extends ILess_Test_TestCase
+class Test_Node_ElementTest extends Test_TestCase
 {
     /**
      * @covers __constructor
      */
     public function testConstructor()
     {
-        $d = new ILess_Node_Element('>', new ILess_Node_Anonymous('bar'));
+        $d = new ElementNode('>', new AnonymousNode('bar'));
     }
 
     /**
@@ -28,7 +33,7 @@ class ILess_Test_Node_ElementTest extends ILess_Test_TestCase
      */
     public function testGetType()
     {
-        $d = new ILess_Node_Element('>', new ILess_Node_Anonymous('bar'));
+        $d = new ElementNode('>', new AnonymousNode('bar'));
         $this->assertEquals('Element', $d->getType());
     }
 
@@ -37,9 +42,9 @@ class ILess_Test_Node_ElementTest extends ILess_Test_TestCase
      */
     public function testGenerateCss()
     {
-        $env = new ILess_Environment();
-        $output = new ILess_Output();
-        $d = new ILess_Node_Element('>', new ILess_Node_Anonymous('bar'));
+        $env = new Context();
+        $output = new StandardOutput();
+        $d = new ElementNode('>', new AnonymousNode('bar'));
         $d->generateCss($env, $output);
         $this->assertEquals(' > bar', $output->toString());
     }

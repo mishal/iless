@@ -5,22 +5,27 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\AnonymousNode;
+use ILess\Node\ExpressionNode;
+use ILess\Output\StandardOutput;
 
 /**
  * Expression node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_Expression
+ * @covers Node_Expression
+ * @group node
  */
-class ILess_Test_Node_ExpressionTest extends ILess_Test_TestCase
+class Test_Node_ExpressionTest extends Test_TestCase
 {
     /**
      * @covers __constructor
      */
     public function testConstructor()
     {
-        $d = new ILess_Node_Expression(array(new ILess_Node_Anonymous('foobar')));
+        $d = new ExpressionNode(array(new AnonymousNode('foobar')));
     }
 
     /**
@@ -28,7 +33,7 @@ class ILess_Test_Node_ExpressionTest extends ILess_Test_TestCase
      */
     public function testGetType()
     {
-        $d = new ILess_Node_Expression(array(new ILess_Node_Anonymous('foobar')));
+        $d = new ExpressionNode(array(new AnonymousNode('foobar')));
         $this->assertEquals('Expression', $d->getType());
     }
 
@@ -37,9 +42,9 @@ class ILess_Test_Node_ExpressionTest extends ILess_Test_TestCase
      */
     public function testGenerateCss()
     {
-        $env = new ILess_Environment();
-        $output = new ILess_Output();
-        $d = new ILess_Node_Expression(array(new ILess_Node_Anonymous('foobar')));
+        $env = new Context();
+        $output = new StandardOutput();
+        $d = new ExpressionNode(array(new AnonymousNode('foobar')));
         $d->generateCss($env, $output);
         $this->assertEquals('foobar', $output->toString());
     }
@@ -49,10 +54,10 @@ class ILess_Test_Node_ExpressionTest extends ILess_Test_TestCase
      */
     public function testCompile()
     {
-        $env = new ILess_Environment();
-        $d = new ILess_Node_Expression(array(new ILess_Node_Anonymous('foobar')));
+        $env = new Context();
+        $d = new ExpressionNode(array(new AnonymousNode('foobar')));
         $result = $d->compile($env);
-        $this->assertInstanceOf('ILess_Node_Anonymous', $result);
+        $this->assertInstanceOf('ILess\Node\AnonymousNode', $result);
         $this->assertEquals('foobar', $result->toCSS($env));
 
         // FIXME: more tests!

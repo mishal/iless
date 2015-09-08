@@ -7,18 +7,21 @@
  * file that was distributed with this source code.
  */
 
+namespace ILess\Node;
+
+use ILess\Node;
+
 /**
  * Makeable important interface
  *
- * @package ILess
- * @subpackage node
+ * @package ILess\Node
  */
-interface ILess_Node_MakeableImportantInterface
+interface MakeableImportantInterface
 {
     /**
      * Makes the node important
      *
-     * @return ILess_Node
+     * @return Node
      */
     public function makeImportant();
 }

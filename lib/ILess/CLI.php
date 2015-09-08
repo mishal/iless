@@ -7,13 +7,21 @@
  * file that was distributed with this source code.
  */
 
+namespace ILess;
+
+use ILess;
+use ILess\CLI\ANSIColor;
+use ILess\Exception\Exception;
+use ILess\Util;
+use InvalidArgumentException;
+use ILess\Parser;
+
 /**
  * The CLI handler
  *
  * @package ILess
- * @subpackage CLI
  */
-class ILess_CLI extends ILess_Configurable
+class CLI extends Configurable
 {
     /**
      * Maximum line length
@@ -36,7 +44,7 @@ class ILess_CLI extends ILess_Configurable
     protected $defaultOptions = array(
         'silent' => false,
         'append' => false,
-        'no_color' => false
+        'no_color' => false,
     );
 
     /**
@@ -47,18 +55,30 @@ class ILess_CLI extends ILess_Configurable
     protected $validOptions = array(
         // option name => array(description, array of flags)
         'help' => array('Print help (this message) and exit.', array('h')),
+        'version' => array('Print version number and exit.', array('v')),
         'silent' => array('Suppress output of error messages.', array('s')),
         'no_color' => array('Disable colorized output.', array()),
         'compress' => array('Compress output by removing the whitespace.', array('x')),
         'append' => array('Append the generated CSS to the target file?', array('a')),
         'no_ie_compat' => array('Disable IE compatibility checks.', array()),
-        'silent' => array('Suppress output of error messages.', array('s')),
         'source_map' => array('Outputs an inline sourcemap to the generated CSS (or output to filename.map).', array()),
         'source_map_url' => array('The complete url and filename put in the less file.', array()),
         'source_map_base_path' => array('Sets sourcemap base path, defaults to current working directory.', array()),
-        'source_map_url' => array('The complete URL and filename of the source map to put to the map.', array()),
-        'version' => array('Print version number and exit.', array('v')),
-        'dump_line_numbers' => array('Outputs filename and line numbers. TYPE can be either \'comments\', which will output the debug info within comments, \'mediaquery\' that will output the information within a fake media query which is compatible with the SASS format, and \'all\' which will do both.', array())
+        'strict-math' => array('Strict math. Requires brackets.', array('sm')),
+        'strict-units' => array(
+            'Allows mixed units, e.g. 1px+1em or 1px*1px which have units that cannot be represented.',
+            array('su'),
+        ),
+        'root-path' => array(
+            'Sets rootpath for url rewriting in relative imports and urls. Works with or without the relative-urls option.',
+            array('rp'),
+        ),
+        'relative-urls' => array('Re-writes relative urls to the base less file.', array('ru')),
+        'url-args' => array('Adds params into url tokens (e.g. 42, cb=42 or a=1&b=2)', array()),
+        'dump_line_numbers' => array(
+            'Outputs filename and line numbers. TYPE can be either \'comments\', which will output the debug info within comments, \'mediaquery\' that will output the information within a fake media query which is compatible with the SASS format, and \'all\' which will do both.',
+            array(),
+        ),
     );
 
     /**
@@ -95,13 +115,15 @@ class ILess_CLI extends ILess_Configurable
      * @var array
      */
     private $stdAliases = array(
-        '−', '–', '-'
+        '−',
+        '–',
+        '-',
     );
 
     /**
      * Constructor
      *
-     * @param array $cliArguments Array of CLI arguments ($argv array)
+     * @param array $cliArguments Array of ILess\CLI arguments ($argv array)
      * @param string $currentDir Current directory
      */
     public function __construct(array $cliArguments, $currentDir = null)
@@ -113,7 +135,7 @@ class ILess_CLI extends ILess_Configurable
     }
 
     /**
-     * Setups the CLI handler
+     * Setups the ILess\CLI handler
      *
      * @return void
      * @throws InvalidArgumentException If there is an error in the arguments
@@ -225,20 +247,21 @@ class ILess_CLI extends ILess_Configurable
     {
         if (!$this->isValid()) {
             echo $this->getUsage();
+
             // return error
             return 1;
         } elseif ($this->getOption('version')) {
-            echo ILess_Parser::VERSION.PHP_EOL;
+            echo Parser\Core::VERSION.' [compatible with less.js '.Parser\Core::LESS_JS_VERSION.']'.PHP_EOL;
 
-            return;
+            return 0;
         } elseif ($this->getOption('help')) {
             echo $this->getUsage();
 
-            return;
+            return 0;
         }
 
         try {
-            $parser = new ILess_Parser($this->prepareOptionsForTheParser());
+            $parser = new Parser($this->prepareOptionsForTheParser());
 
             $toBeParsed = $this->cliArguments['arguments'][0];
 
@@ -247,7 +270,7 @@ class ILess_CLI extends ILess_Configurable
                 $content = file_get_contents('php://stdin');
                 $parser->parseString($content);
             } else {
-                if (!ILess_Util::isPathAbsolute($toBeParsed)) {
+                if (!Util::isPathAbsolute($toBeParsed)) {
                     $toBeParsed = sprintf('%s/%s', $this->currentDir, $toBeParsed);
                 }
                 $parser->parseFile($toBeParsed);
@@ -256,7 +279,7 @@ class ILess_CLI extends ILess_Configurable
             $toBeSavedTo = null;
             if (isset($this->cliArguments['arguments'][1])) {
                 $toBeSavedTo = $this->cliArguments['arguments'][1];
-                if (!ILess_Util::isPathAbsolute($toBeSavedTo)) {
+                if (!Util::isPathAbsolute($toBeSavedTo)) {
                     $toBeSavedTo = sprintf('%s/%s', $this->currentDir, $toBeSavedTo);
                 }
             }
@@ -337,7 +360,7 @@ class ILess_CLI extends ILess_Configurable
                     break;
             }
 
-            // all is passed, the environment checks if the option is valid
+            // all is passed, The context checks if the option is valid
             $options[$option] = $value;
         }
 
@@ -361,7 +384,7 @@ class ILess_CLI extends ILess_Configurable
     }
 
     /**
-     * Returns the CLI usage
+     * Returns the ILess\CLI usage
      *
      * @return string
      */
@@ -385,7 +408,7 @@ class ILess_CLI extends ILess_Configurable
 
             $options[] = array(
                 $option,
-                $help
+                $help,
             );
         }
 
@@ -393,10 +416,10 @@ class ILess_CLI extends ILess_Configurable
         foreach ($options as $option) {
             list($name, $help) = $option;
             // line will be too long
-            if (strlen($name . $help) + 2 > self::MAX_LINE_LENGTH) {
-                $help = wordwrap($help, self::MAX_LINE_LENGTH, PHP_EOL . str_repeat(' ', $max + 2));
+            if (strlen($name.$help) + 2 > self::MAX_LINE_LENGTH) {
+                $help = wordwrap($help, self::MAX_LINE_LENGTH, PHP_EOL.str_repeat(' ', $max + 2));
             }
-            $optionsFormatted[] = sprintf(' %-' . $max . 's %s', $name, $help);
+            $optionsFormatted[] = sprintf(' %-'.$max.'s %s', $name, $help);
         }
 
         return strtr('
@@ -410,7 +433,7 @@ options:
 {%options}'.PHP_EOL, array(
             '{%signature}' => $this->getSignature(),
             '{%script_name}' => $this->scriptName,
-            '{%options}' => join(PHP_EOL, $optionsFormatted)
+            '{%options}' => join(PHP_EOL, $optionsFormatted),
         ));
     }
 
@@ -440,10 +463,10 @@ SIGNATURE;
         $hasColors = $this->detectColors();
 
         // excerpt?
-        if ($e instanceof ILess_Exception) {
+        if ($e instanceof Exception) {
 
             printf("%s: %s\n", $this->scriptName, $hasColors && !$this->getOption('no_color') ?
-                ILess_ANSIColor::colorize($e->toString(false), 'red') : $e->toString(false));
+                ANSIColor::colorize($e->toString(false), 'red') : $e->toString(false));
 
             if ($excerpt = $e->getExcerpt()) {
                 $hasColors ?
@@ -453,7 +476,8 @@ SIGNATURE;
 
         } else {
             printf("%s: %s\n", $this->scriptName,
-                    $hasColors && !$this->getOption('no_color') ? ILess_ANSIColor::colorize($e->getMessage(), 'red') : $e->getMessage());
+                $hasColors && !$this->getOption('no_color') ? ANSIColor::colorize($e->getMessage(),
+                    'red') : $e->getMessage());
         }
     }
 
@@ -474,8 +498,8 @@ SIGNATURE;
      */
     protected function detectColors()
     {
-        return (getenv('ConEmuANSI') === 'ON' || getenv('ANSICON') !== FALSE ||
-               (defined('STDOUT') && function_exists('posix_isatty') && posix_isatty(STDOUT)));
+        return (getenv('ConEmuANSI') === 'ON' || getenv('ANSICON') !== false ||
+            (defined('STDOUT') && function_exists('posix_isatty') && posix_isatty(STDOUT)));
     }
 
     /**
@@ -489,7 +513,7 @@ SIGNATURE;
     }
 
     /**
-     * Parses the $argv array to a more usefull array
+     * Parses the $argv array to a more useful array
      *
      * @param array $args The $argv array
      * @return array
@@ -500,7 +524,7 @@ SIGNATURE;
         $return = array(
             'arguments' => array(),
             'flags' => array(),
-            'options' => array()
+            'options' => array(),
         );
 
         while ($arg = array_shift($args)) {
@@ -516,12 +540,14 @@ SIGNATURE;
                 }
                 $return['options'][$command] = !empty($value) ? $this->convertValue($value) : true;
             } // Is it a flag or a serial of flags? (prefixed with -)
-            else if (substr($arg, 0, 1) === '-') {
-                for ($i = 1; isset($arg[$i]); $i++) {
-                    $return['flags'][] = $arg[$i];
+            else {
+                if (substr($arg, 0, 1) === '-') {
+                    for ($i = 1; isset($arg[$i]); $i++) {
+                        $return['flags'][] = $arg[$i];
+                    }
+                } else {
+                    $return['arguments'][] = $arg;
                 }
-            } else {
-                $return['arguments'][] = $arg;
             }
         }
 

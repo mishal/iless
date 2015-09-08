@@ -5,22 +5,27 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\AnonymousNode;
+use ILess\Node\DirectiveNode;
+use ILess\Output\StandardOutput;
 
 /**
  * Dimension node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_Directive
+ * @covers Node_Directive
+ * @group node
  */
-class ILess_Test_Node_DirectiveTest extends ILess_Test_TestCase
+class Test_Node_DirectiveTest extends Test_TestCase
 {
     /**
      * @covers __constructor
      */
     public function testConstructor()
     {
-        $d = new ILess_Node_Directive('15', new ILess_Node_Anonymous('bar'));
+        $d = new DirectiveNode('15', new AnonymousNode('bar'));
     }
 
     /**
@@ -28,7 +33,7 @@ class ILess_Test_Node_DirectiveTest extends ILess_Test_TestCase
      */
     public function testGetType()
     {
-        $d = new ILess_Node_Directive('15', new ILess_Node_Anonymous('bar'));
+        $d = new DirectiveNode('15', new AnonymousNode('bar'));
         $this->assertEquals('Directive', $d->getType());
     }
 
@@ -37,10 +42,10 @@ class ILess_Test_Node_DirectiveTest extends ILess_Test_TestCase
      */
     public function testGenerateCss()
     {
-        $env = new ILess_Environment();
-        $output = new ILess_Output();
+        $env = new Context();
+        $output = new StandardOutput();
 
-        $d = new ILess_Node_Directive('15', new ILess_Node_Anonymous('bar'));
+        $d = new DirectiveNode('15', new AnonymousNode('bar'));
 
         $d->generateCss($env, $output);
 
@@ -53,7 +58,7 @@ class ILess_Test_Node_DirectiveTest extends ILess_Test_TestCase
     public function testVariable()
     {
         // FIXME: implement more!
-        $d = new ILess_Node_Directive('15', new ILess_Node_Anonymous('bar'));
+        $d = new DirectiveNode('15', new AnonymousNode('bar'));
         $this->assertEquals(null, $d->variable('foo'));
     }
 

@@ -5,15 +5,17 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Visitor\ProcessExtendsVisitor;
 
 /**
- * Visitor_ProcessExtend tests
+ * ILess\ILess\Visitor\Visitor\ProcessExtendsVisitor tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Visitor_ProcessExtend
+ * @covers Visitor_ProcessExtend
+ * @group visitor
  */
-class ILess_Test_Visitor_ProcessExtendTest extends ILess_Test_TestCase
+class Test_Visitor_ProcessExtendTest extends Test_TestCase
 {
 
     /**
@@ -21,7 +23,7 @@ class ILess_Test_Visitor_ProcessExtendTest extends ILess_Test_TestCase
      */
     public function testConstructor()
     {
-        $v = new ILess_Visitor_ProcessExtend();
+        $v = new ProcessExtendsVisitor();
         $this->assertFalse($v->isReplacing());
     }
 

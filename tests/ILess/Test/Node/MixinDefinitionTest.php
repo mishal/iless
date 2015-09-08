@@ -5,22 +5,24 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Node\MixinDefinitionNode;
 
 /**
  * MixinDefinition node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_MixinDefinition
+ * @covers Node_MixinDefinition
+ * @group node
  */
-class ILess_Test_Node_MixinDefinitionTest extends ILess_Test_TestCase
+class Test_Node_MixinDefinitionTest extends Test_TestCase
 {
     /**
      * @covers __constructor
      */
     public function testConstructor()
     {
-        $md = new ILess_Node_MixinDefinition('foobar');
+        $md = new MixinDefinitionNode('foobar');
     }
 
     /**
@@ -28,7 +30,7 @@ class ILess_Test_Node_MixinDefinitionTest extends ILess_Test_TestCase
      */
     public function testGetType()
     {
-        $md = new ILess_Node_MixinDefinition('foobar');
+        $md = new MixinDefinitionNode('foobar');
         $this->assertEquals('MixinDefinition', $md->getType());
     }
 

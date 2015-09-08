@@ -7,13 +7,20 @@
  * file that was distributed with this source code.
  */
 
+namespace ILess;
+
+use ILess\Node\AnonymousNode;
+use ILess\Node\ComparableInterface;
+use ILess\Node\QuotedNode;
+use LogicException;
+use ILess\Util\StringExcerpt;
+
 /**
  * Utility class
  *
  * @package ILess
- * @subpackage Util
  */
-class ILess_Util
+class Util
 {
     /**
      * Constructor
@@ -71,18 +78,16 @@ class ILess_Util
      */
     public static function getLocation($string, $index, $column = null, $extract = false)
     {
-        // FIXME: what about utf8?
         // we have a part from the beginning to the current index
         $part = substr($string, 0, strlen($string) - strlen(substr($string, $index)));
-        // lets count the linebreaks in the part
+        // lets count the line breaks in the part
         $line = substr_count($part, "\n") + 1;
         $lines = explode("\n", $part);
-		$column = strlen(end($lines)) + 1;
+        $column = strlen(end($lines)) + 1;
 
         $extractContent = null;
         if ($extract) {
-            if (is_numeric($extract))
-            {
+            if (is_numeric($extract)) {
                 $extractContent = self::getExcerpt($string, $line, $column, $extract);
             } else {
                 $extractContent = self::getExcerpt($string, $line, $column);
@@ -99,20 +104,19 @@ class ILess_Util
      * @param integer $currentLine The current line. If -1 is passed, the whole string will be returned
      * @param integer $currentColumn The current column
      * @param integer $limitLines How many lines?
-     * @return ILess_StringExcerpt
+     * @return \ILess\Util\StringExcerpt
      */
     public static function getExcerpt($string, $currentLine, $currentColumn = null, $limitLines = 3)
     {
         $lines = explode("\n", self::normalizeLineFeeds($string));
 
-        if ($limitLines > 0)
-        {
-           $start = $i = max(0, $currentLine - floor($limitLines * 2/3));
-           $lines = array_slice($lines, $start, $limitLines, true);
-           end($lines);
+        if ($limitLines > 0) {
+            $start = $i = max(0, $currentLine - floor($limitLines * 2 / 3));
+            $lines = array_slice($lines, $start, $limitLines, true);
+            end($lines);
         }
 
-        return new ILess_StringExcerpt($lines, $currentLine, $currentColumn);
+        return new StringExcerpt($lines, $currentLine, $currentColumn);
     }
 
     /**
@@ -123,7 +127,7 @@ class ILess_Util
      */
     public static function generateCacheKey($filename)
     {
-        return md5('key of the bottomless pit' . $filename);
+        return md5('key of the bottomless pit'.$filename);
     }
 
     /**
@@ -149,6 +153,24 @@ class ILess_Util
     }
 
     /**
+     * Returns fragment and path components from the path
+     *
+     * @param string $path
+     * @return array fragment, path
+     */
+    public static function getFragmentAndPath($path)
+    {
+        $fragmentStart = strpos($path, '#');
+        $fragment = '';
+        if ($fragmentStart !== false) {
+            $fragment = substr($path, $fragmentStart);
+            $path = substr($path, 0, $fragmentStart);
+        }
+
+        return array($fragment, $path);
+    }
+
+    /**
      * Is the path relative?
      *
      * @param string $path The path
@@ -156,7 +178,7 @@ class ILess_Util
      */
     public static function isPathRelative($path)
     {
-        return !preg_match('/^(?:[a-z-]+:|\/)/', $path);
+        return !preg_match('/^(?:[a-z-]+:|\/|#)/', $path);
     }
 
     /**
@@ -210,7 +232,8 @@ class ILess_Util
     /**
      * Sanitizes a path. Replaces Windows path separator
      *
-     * @param string $path The path to sanizize
+     * @param string $path The path to sanitize
+     * @return string
      */
     public static function sanitizePath($path)
     {
@@ -227,4 +250,85 @@ class ILess_Util
     {
         return self::removeUtf8ByteOrderMark(self::normalizeLineFeeds($string));
     }
+
+    /**
+     * Compares the nodes. Returns:
+     * -1: a < b
+     * 0: a = b
+     * 1: a > b
+     * and *any* other value for a != b (e.g. null, NaN, -2 etc.)
+     *
+     * @param mixed $a
+     * @param mixed $b
+     * @return int
+     */
+    public static function compareNodes($a, $b)
+    {
+        // for "symmetric results" force toCSS-based comparison
+        // of Quoted or Anonymous if either value is one of those
+        if ($a instanceof ComparableInterface &&
+            !($b instanceof QuotedNode || $b instanceof AnonymousNode)
+        ) {
+            return $a->compare($b);
+        } elseif ($b instanceof ComparableInterface) {
+            $result = $b->compare($a);
+
+            return is_int($result) ? -$result : $result;
+        } elseif ($a->getType() !== $b->getType()) {
+            return null;
+        }
+
+        $a = $a->value;
+        $b = $b->value;
+
+        if (!is_array($a)) {
+            return $a === $b ? 0 : null;
+        }
+
+        if (count($a) !== count($b)) {
+            return null;
+        }
+
+        for ($i = 0; $i < count($a); $i++) {
+            if (self::compareNodes($a[$i], $b[$i]) !== 0) {
+                return null;
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * @param $a
+     * @param $b
+     * @return int|null
+     */
+    public static function numericCompare($a, $b)
+    {
+        if ($a < $b) {
+            return -1;
+        } else {
+            if ($a === $b) {
+                return 0;
+            } elseif ($a > $b) {
+                return 1;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Round the value using the `$context->precision` setting
+     *
+     * @param Context $context
+     * @param mixed $value
+     * @return string
+     */
+    public static function round(Context $context, $value)
+    {
+        // add "epsilon" to ensure numbers like 1.000000005 (represented as 1.000000004999....) are properly rounded...
+        return $context->numPrecision === null ? $value : Math::toFixed($value + 2e-16, $context->numPrecision);
+    }
+
 }

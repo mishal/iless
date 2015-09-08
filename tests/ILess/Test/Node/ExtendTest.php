@@ -5,22 +5,27 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\AnonymousNode;
+use ILess\Node\ExtendNode;
+use ILess\Node\SelectorNode;
 
 /**
  * Extend node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_Extend
+ * @covers Node_Extend
+ * @group node
  */
-class ILess_Test_Node_ExtendTest extends ILess_Test_TestCase
+class Test_Node_ExtendTest extends Test_TestCase
 {
     /**
      * @covers __constructor
      */
     public function testConstructor()
     {
-        $d = new ILess_Node_Extend(new ILess_Node_Selector(array(new ILess_Node_Anonymous('foobar'))), 'all');
+        $d = new ExtendNode(new SelectorNode(array(new AnonymousNode('foobar'))), 'all');
     }
 
     /**
@@ -28,7 +33,7 @@ class ILess_Test_Node_ExtendTest extends ILess_Test_TestCase
      */
     public function testGetType()
     {
-        $d = new ILess_Node_Extend(new ILess_Node_Selector(array(new ILess_Node_Anonymous('foobar'))), 'all');
+        $d = new ExtendNode(new SelectorNode(array(new AnonymousNode('foobar'))), 'all');
         $this->assertEquals('Extend', $d->getType());
     }
 
@@ -37,10 +42,10 @@ class ILess_Test_Node_ExtendTest extends ILess_Test_TestCase
      */
     public function testCompile()
     {
-        $env = new ILess_Environment();
-        $d = new ILess_Node_Extend(new ILess_Node_Selector(array(new ILess_Node_Anonymous('foobar'))), 'all');
+        $env = new Context();
+        $d = new ExtendNode(new SelectorNode(array(new AnonymousNode('foobar'))), 'all');
         $result = $d->compile($env);
-        $this->assertInstanceOf('ILess_Node_Extend', $result);
+        $this->assertInstanceOf('ILess\Node\ExtendNode', $result);
     }
 
 }

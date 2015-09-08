@@ -7,25 +7,34 @@
  * file that was distributed with this source code.
  */
 
+namespace ILess;
+
+use ILess\Node\CompilableInterface;
+use ILess\Node\GenerateCSSInterface;
+use ILess\Node\VisitableInterface;
+use ILess\Output\OutputInterface;
+use ILess\Output\StandardOutput;
+use ILess\Visitor\Visitor;
+
 /**
  * Base node
  *
  * @package ILess
- * @subpackage node
  */
-abstract class ILess_Node
+abstract class Node implements VisitableInterface,
+    GenerateCSSInterface, CompilableInterface
 {
     /**
      * The value
      *
-     * @var ILess_Node|string
+     * @var Node|string
      */
     public $value;
 
     /**
-     * Debug information
+     * ILess\Debug information
      *
-     * @var ILess_DebugInfo
+     * @var DebugInfo
      */
     public $debugInfo;
 
@@ -39,9 +48,14 @@ abstract class ILess_Node
     /**
      * Current file info
      *
-     * @var ILess_FileInfo
+     * @var FileInfo
      */
     public $currentFileInfo;
+
+    /**
+     * @var bool
+     */
+    public $compileFirst = false;
 
     /**
      * Constructor
@@ -90,29 +104,30 @@ abstract class ILess_Node
     /**
      * Returns debug information for the node
      *
-     * @param ILess_Environment $env The environment
-     * @param ILess_Node $context The context node
+     * @param Context $context The context
+     * @param Node $node The context node
      * @param string $lineSeparator Line separator
      * @return string
      */
-    public static function getDebugInfo(ILess_Environment $env, ILess_Node $context, $lineSeparator = '')
+    public static function getDebugInfo(Context $context, Node $node, $lineSeparator = '')
     {
         $result = '';
-        if ($context->debugInfo && $env->dumpLineNumbers && !$env->compress) {
-            switch ((string)$env->dumpLineNumbers) {
-                case ILess_DebugInfo::FORMAT_COMMENT;
-                    $result = $context->debugInfo->getAsComment();
+
+        if ($node->debugInfo && $context->dumpLineNumbers && !$context->compress) {
+            switch ((string)$context->dumpLineNumbers) {
+                case DebugInfo::FORMAT_COMMENT;
+                    $result = $node->debugInfo->getAsComment();
                     break;
 
-                case ILess_DebugInfo::FORMAT_MEDIA_QUERY;
-                    $result = $context->debugInfo->getAsMediaQuery();
+                case DebugInfo::FORMAT_MEDIA_QUERY;
+                    $result = $node->debugInfo->getAsMediaQuery();
                     break;
 
-                case ILess_DebugInfo::FORMAT_ALL;
+                case DebugInfo::FORMAT_ALL;
                 case '1':
                     $result = sprintf('%s%s%s',
-                        $context->debugInfo->getAsComment(), $lineSeparator,
-                        $context->debugInfo->getAsMediaQuery()
+                        $node->debugInfo->getAsComment(), $lineSeparator,
+                        $node->debugInfo->getAsMediaQuery()
                     );
                     break;
             }
@@ -124,72 +139,48 @@ abstract class ILess_Node
     /**
      * Outputs the ruleset rules
      *
-     * @param ILess_Environment $env
-     * @param ILess_Output $output
+     * @param Context $context
+     * @param OutputInterface $output
      * @param array $rules
      * @return void
      */
-    public static function outputRuleset(ILess_Environment $env, ILess_Output $output, array $rules)
+    public static function outputRuleset(Context $context, OutputInterface $output, array $rules)
     {
-        $env->tabLevel++;
+        $context->tabLevel++;
+        $rulesCount = count($rules);
 
         // compression
-        if ($env->compress) {
+        if ($context->compress) {
             $output->add('{');
-            foreach ($rules as $rule) {
-                $rule->generateCSS($env, $output);
+            for ($i = 0; $i < $rulesCount; $i++) {
+                $rules[$i]->generateCSS($context, $output);
             }
             $output->add('}');
-            $env->tabLevel--;
+            $context->tabLevel--;
 
             return;
         }
-
-        $tabSetStr = "\n" . str_repeat('  ', $env->tabLevel - 1);
-        $tabRuleStr = $tabSetStr . '  ';
 
         // Non-compressed
-        if (!count($rules)) {
-            $output->add(' {' . $tabSetStr . '}');
+        $tabSetStr = "\n".str_repeat('  ', $context->tabLevel - 1);
+        $tabRuleStr = $tabSetStr.'  ';
 
-            return;
-        }
-
-        $output->add(' {' . $tabRuleStr);
-        $first = true;
-        foreach ($rules as $rule) {
-            if ($first) {
-                $rule->generateCSS($env, $output);
-                $first = false;
-                continue;
+        // Non-compressed
+        if (!$rulesCount) {
+            $output->add(' {'.$tabSetStr.'}');
+        } else {
+            $output->add(' {'.$tabRuleStr);
+            $rules[0]->generateCSS($context, $output);
+            for ($i = 1; $i < $rulesCount; $i++) {
+                $output->add($tabRuleStr);
+                $rules[$i]->generateCSS($context, $output);
             }
 
-            $output->add($tabRuleStr);
-            $rule->generateCSS($env, $output);
+            $output->add($tabSetStr.'}');
         }
 
-        $output->add($tabSetStr . '}');
-        $env->tabLevel--;
+        $context->tabLevel--;
     }
-
-    /**
-     * Generate the CSS and put it in the output container
-     *
-     * @param ILess_Environment $env The environment
-     * @param ILess_Output $output The output
-     * @return void
-     */
-    abstract public function generateCSS(ILess_Environment $env, ILess_Output $output);
-
-    /**
-     * Compiles the node
-     *
-     * @param ILess_Environment $env
-     * @param array $arguments Array of arguments
-     * @param boolean $important Important flag
-     * @return ILess_Node
-     */
-    abstract public function compile(ILess_Environment $env, $arguments = null, $important = null);
 
     /**
      * Convert to string
@@ -212,17 +203,66 @@ abstract class ILess_Node
     }
 
     /**
-     * Compiles the node to CSS
-     *
-     * @param ILess_Environment $env
-     * @return string
+     * @inheritdoc
      */
-    public function toCSS(ILess_Environment $env)
+    public function toCSS(Context $context)
     {
-        $output = new ILess_Output();
-        $this->generateCSS($env, $output);
+        $output = new StandardOutput();
+        $this->generateCSS($context, $output);
 
         return $output->toString();
+    }
+
+    /**
+     * Accepts a visit by a visitor
+     *
+     * @param Visitor $visitor
+     * @return void
+     */
+    public function accept(Visitor $visitor)
+    {
+        $this->value = $visitor->visit($this->value);
+    }
+
+    /**
+     * Generate the CSS and put it in the output container
+     *
+     * @param Context $context The context
+     * @param OutputInterface $output The output
+     * @return void
+     */
+    public function generateCSS(Context $context, OutputInterface $output)
+    {
+        $output->add($this->value);
+    }
+
+    /**
+     * Compiles the node
+     *
+     * @param Context $context The context
+     * @param array|null $arguments Array of arguments
+     * @param boolean|null $important Important flag
+     * @return Node
+     */
+    public function compile(Context $context, $arguments = null, $important = null)
+    {
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRulesetLike()
+    {
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function compileFirst()
+    {
+        return $this->compileFirst;
     }
 
 }

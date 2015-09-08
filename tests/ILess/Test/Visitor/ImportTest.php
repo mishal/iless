@@ -5,15 +5,20 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Cache\NoCache;
+use ILess\Context;
+use ILess\Importer;
+use ILess\Visitor\ImportVisitor;
 
 /**
- * Visitor_Import tests
+ * ILess\ILess\Visitor\Visitor\ImportVisitor tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Visitor_Import
+ * @covers Visitor_Import
+ * @group visitor
  */
-class ILess_Test_Visitor_ImportTest extends ILess_Test_TestCase
+class Test_Visitor_ImportTest extends Test_TestCase
 {
 
     /**
@@ -21,9 +26,9 @@ class ILess_Test_Visitor_ImportTest extends ILess_Test_TestCase
      */
     public function testVisit()
     {
-        $env = new ILess_Environment();
-        $v = new ILess_Visitor_Import($env, new ILess_Importer($env, array(), new ILess_Cache_None()));
-        $this->assertTrue($v->isReplacing());
+        $env = new Context();
+        $v = new ImportVisitor($env, new Importer($env, array(), new NoCache()));
+        $this->assertFalse($v->isReplacing());
     }
 
 }

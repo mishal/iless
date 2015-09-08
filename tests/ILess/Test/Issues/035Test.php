@@ -6,18 +6,20 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Parser;
 
 /**
  * Issue #35 test
  *
  * @package ILess
  * @subpackage test
+ * @group issue
  */
-class ILess_Test_Issues_035Test extends ILess_Test_TestCase
+class Test_Issues_035Test extends Test_TestCase
 {
     public function testIssue()
     {
-        $parser = new ILess_Parser();
+        $parser = new Parser();
 
         $parser->setVariables(array('mycolor' => 'transparent'));
 

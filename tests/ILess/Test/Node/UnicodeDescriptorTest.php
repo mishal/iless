@@ -6,22 +6,26 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\UnicodeDescriptorNode;
+use ILess\Output\StandardOutput;
 
 /**
  * UnicodeDescriptor node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_UnicodeDescriptor
+ * @covers Node_UnicodeDescriptor
+ * @group node
  */
-class ILess_Test_Node_UnicodeDescriptorTest extends ILess_Test_TestCase
+class Test_Node_UnicodeDescriptorTest extends Test_TestCase
 {
     /**
      * @covers __constructor
      */
     public function testConstructor()
     {
-        $d = new ILess_Node_UnicodeDescriptor('foobar');
+        $d = new UnicodeDescriptorNode('foobar');
     }
 
     /**
@@ -29,7 +33,7 @@ class ILess_Test_Node_UnicodeDescriptorTest extends ILess_Test_TestCase
      */
     public function testGetType()
     {
-        $d = new ILess_Node_UnicodeDescriptor('foobar');
+        $d = new UnicodeDescriptorNode('foobar');
         $this->assertEquals('UnicodeDescriptor', $d->getType());
     }
 
@@ -38,10 +42,10 @@ class ILess_Test_Node_UnicodeDescriptorTest extends ILess_Test_TestCase
      */
     public function testGenerateCss()
     {
-        $env = new ILess_Environment();
-        $output = new ILess_Output();
+        $env = new Context();
+        $output = new StandardOutput();
 
-        $d = new ILess_Node_UnicodeDescriptor('foobar');
+        $d = new UnicodeDescriptorNode('foobar');
         $d->generateCss($env, $output);
         $this->assertEquals('foobar', $output->toString());
     }

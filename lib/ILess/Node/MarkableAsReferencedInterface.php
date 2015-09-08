@@ -7,13 +7,14 @@
  * file that was distributed with this source code.
  */
 
+namespace ILess\Node;
+
 /**
  * Makeable important interface
  *
- * @package ILess
- * @subpackage node
+ * @package ILess\Node
  */
-interface ILess_Node_MarkableAsReferencedInterface
+interface MarkableAsReferencedInterface
 {
     /**
      * Marks as referenced

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the ILess
  *
@@ -6,13 +7,22 @@
  * file that was distributed with this source code.
  */
 
+namespace ILess;
+
+use ILess\Node;
+use ILess\Node\AnonymousNode;
+use ILess\Node\ColorNode;
+use ILess\Node\DimensionNode;
+use ILess\Node\ValueNode;
+use ILess\Node\RuleNode;
+use ILess\Node\QuotedNode;
+
 /**
  * Variable represents custom variable passed by the API (not from less string or file)
  *
  * @package ILess
- * @subpackage core
  */
-class ILess_Variable
+class Variable
 {
     /**
      * Dimension detection regexp
@@ -48,7 +58,7 @@ class ILess_Variable
     /**
      * The value
      *
-     * @var ILess_Node
+     * @var Node
      */
     protected $value;
 
@@ -56,10 +66,10 @@ class ILess_Variable
      * Constructor
      *
      * @param string $name The name of the variable
-     * @param ILess_Node $value The value of the variable
+     * @param Node $value The value of the variable
      * @param boolean $important Important?
      */
-    public function __construct($name, ILess_Node $value, $important = false)
+    public function __construct($name, Node $value, $important = false)
     {
         $this->name = ltrim($name, '@');
         $this->value = $value;
@@ -71,7 +81,7 @@ class ILess_Variable
      *
      * @param string $name The name of the variable
      * @param mixed $value The value of the variable
-     * @return ILess_Variable
+     * @return Variable
      */
     public static function create($name, $value)
     {
@@ -83,38 +93,40 @@ class ILess_Variable
         }
 
         // Color
-        if (ILess_Color::isNamedColor($value) || strtolower($value) === 'transparent' || strpos($value, '#') === 0) {
-            $value = new ILess_Node_Color(new ILess_Color($value));
+        if (Color::isNamedColor($value) || strtolower($value) === 'transparent' || strpos($value, '#') === 0) {
+            $value = new ColorNode(new Color($value));
         } elseif (preg_match(self::RGBA_COLOR_REGEXP, $value, $matches)) { // RGB(A) colors
-            $value = new ILess_Node_Color(new ILess_Color(array(
-                $matches[1], $matches[2], $matches[3]
+            $value = new ColorNode(new Color(array(
+                $matches[1],
+                $matches[2],
+                $matches[3],
             ), isset($matches[4]) ? $matches[4] : 1));
-        }  // Quoted string
+        } // Quoted string
         elseif (preg_match(self::QUOTED_REGEXP, $value, $matches)) {
-            $value = new ILess_Node_Quoted($matches[0], $matches[0][0] == '"' ? $matches[1] : $matches[2]);
+            $value = new QuotedNode($matches[0], $matches[0][0] == '"' ? $matches[1] : $matches[2]);
         } // URL
         elseif (strpos($value, 'http://') === 0 || strpos($value, 'https://') === 0) {
-            $value = new ILess_Node_Anonymous($value);
+            $value = new AnonymousNode($value);
         } // Dimension
         elseif (preg_match(self::DIMENSION_REGEXP, $value, $matches)) {
-            $value = new ILess_Node_Dimension($matches[1], isset($matches[2]) ? $matches[2] : null);
+            $value = new DimensionNode($matches[1], isset($matches[2]) ? $matches[2] : null);
         } // everything else
         else {
-            $value = new ILess_Node_Anonymous($value);
+            $value = new AnonymousNode($value);
         }
 
-        return new ILess_Variable($name, $value, $important);
+        return new Variable($name, $value, $important);
     }
 
     /**
      * Converts the variable to the node
      *
-     * @return ILess_Node_Rule
+     * @return RuleNode
      */
     public function toNode()
     {
-        return new ILess_Node_Rule('@' . $this->name, new ILess_Node_Value(array(
-            $this->value
+        return new RuleNode('@'.$this->name, new ValueNode(array(
+            $this->value,
         )), $this->important ? '!important' : '');
     }
 
@@ -131,7 +143,7 @@ class ILess_Variable
     /**
      * Returns the variable value
      *
-     * @return ILess_Node
+     * @return Node
      */
     public function getValue()
     {

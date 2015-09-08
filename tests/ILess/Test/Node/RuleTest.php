@@ -6,15 +6,20 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
+use ILess\Node\AnonymousNode;
+use ILess\Node\RuleNode;
+use ILess\Output\StandardOutput;
 
 /**
  * Rule node tests
  *
  * @package ILess
  * @subpackage test
- * @covers ILess_Node_Rule
+ * @covers Node_Rule
+ * @group node
  */
-class ILess_Test_Node_RuleTest extends ILess_Test_TestCase
+class Test_Node_RuleTest extends Test_TestCase
 {
     /**
      * @covers __constructor
@@ -22,7 +27,7 @@ class ILess_Test_Node_RuleTest extends ILess_Test_TestCase
     public function testConstructor()
     {
         // FIXME: this rule does not make sense!
-        $r = new ILess_Node_Rule('foobar', new ILess_Node_Anonymous('foobar'));
+        $r = new RuleNode('foobar', new AnonymousNode('foobar'));
     }
 
     /**
@@ -30,7 +35,7 @@ class ILess_Test_Node_RuleTest extends ILess_Test_TestCase
      */
     public function testGetType()
     {
-        $r = new ILess_Node_Rule('foobar', new ILess_Node_Anonymous('foobar'));
+        $r = new RuleNode('foobar', new AnonymousNode('foobar'));
         $this->assertEquals('Rule', $r->getType());
     }
 
@@ -39,10 +44,10 @@ class ILess_Test_Node_RuleTest extends ILess_Test_TestCase
      */
     public function testGenerateCss()
     {
-        $env = new ILess_Environment();
-        $output = new ILess_Output();
+        $env = new Context();
+        $output = new StandardOutput();
 
-        $r = new ILess_Node_Rule('foobar', new ILess_Node_Anonymous('yellow'));
+        $r = new RuleNode('foobar', new AnonymousNode('yellow'));
         $r->generateCss($env, $output);
         $this->assertEquals('foobar: yellow;', $output->toString());
     }

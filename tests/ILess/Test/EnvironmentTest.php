@@ -5,6 +5,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Context;
 
 /**
  * Environment tests
@@ -12,16 +13,16 @@
  * @package ILess
  * @subpackage test
  */
-class ILess_Test_EnvironmentTest extends ILess_Test_TestCase
+class Test_EnvironmentTest extends Test_TestCase
 {
     /**
      * @covers createCopy
      */
     public function testNormalizePath()
     {
-        $env = new ILess_Environment();
-        $copy = ILess_Environment::createCopy($env, array(1));
-        $this->assertInstanceOf('ILess_Environment', $copy);
+        $env = new Context();
+        $copy = Context::createCopy($env, array(1));
+        $this->assertInstanceOf('ILess\Context', $copy);
         $this->assertEquals($copy->frames, array(1));
     }
 
@@ -30,7 +31,7 @@ class ILess_Test_EnvironmentTest extends ILess_Test_TestCase
      */
     public function testOptions()
     {
-        $env = new ILess_Environment(array(
+        $env = new Context(array(
             'source_map' => true,
             'strict_units' => 1,
             'tab_level' => 2,
@@ -50,7 +51,7 @@ class ILess_Test_EnvironmentTest extends ILess_Test_TestCase
      */
     public function testInvalidOptions()
     {
-        new ILess_Environment(array(
+        new Context(array(
             'foo' => true,
             'foo_bar' => 1,
         ));

@@ -7,19 +7,22 @@
  * file that was distributed with this source code.
  */
 
+namespace ILess\Node;
+
+use ILess\Node;
+
 /**
  * Node comparable interface
  *
- * @package ILess
- * @subpackage node
+ * @package ILess\Node
  */
-interface ILess_Node_ComparableInterface
+interface ComparableInterface
 {
     /**
-     * Compares with another node
+     * Compares the another node
      *
-     * @param ILess_Node $other The other node
-     * @return integer
+     * @param Node $other
+     * @return int|null
      */
-    public function compare(ILess_Node $other);
+    public function compare(Node $other);
 }

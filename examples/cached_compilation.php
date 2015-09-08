@@ -1,13 +1,16 @@
 <?php
 
+use ILess\Parser;
+use ILess\Cache\FileSystemCache;
+
 require_once '_bootstrap.php';
 
 // create the parser
-$parser = new ILess_Parser(array(), new ILess_Cache_FileSystem(array(
-    'cache_dir' => dirname(__FILE__) . '/cache'
+$parser = new Parser(array(), new FileSystemCache(array(
+    'cache_dir' => dirname(__FILE__).'/cache',
 )));
 
-$file = dirname(__FILE__) . '/less/test.less';
+$file = dirname(__FILE__).'/less/test.less';
 // create your cache key
 $cacheKey = md5($file);
 $importer = $parser->getImporter();
@@ -47,6 +50,6 @@ if ($rebuild) {
 }
 
 header('Content-Type: text/css');
-header('Last-Modified: ' . gmdate('D, d M Y H:i:s ', $cssLastModified) . 'GMT');
+header('Last-Modified: '.gmdate('D, d M Y H:i:s ', $cssLastModified).'GMT');
 
 echo $css;
