@@ -37,7 +37,7 @@
 
 .zz {
   .y {
-    pulled-in: yes;
+    pulled-in: yes /* inline comment survives */;
   }
   /* comment pulled in */
 }
@@ -86,4 +86,13 @@
   }
   @rules1: {property: value;};
   @rules2: {property: value;};
+}
+
+@import (inline, multiple) "invalid-css.less";
+@import "import-inline-invalid-css.less";
+.print-referenced-import-inline() {
+  div {
+    @import (inline, multiple) "invalid-css.less";
+  }
+  @import (inline, multiple) "invalid-css.less";
 }

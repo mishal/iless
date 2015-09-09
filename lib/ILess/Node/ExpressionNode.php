@@ -19,7 +19,7 @@ use ILess\Visitor\Visitor;
  *
  * @package ILess\Node
  */
-class ExpressionNode extends Node
+class ExpressionNode extends Node implements MarkableAsReferencedInterface
 {
     /**
      * Node type
@@ -135,5 +135,20 @@ class ExpressionNode extends Node
             $this->value = $new;
         }
     }
+
+    /**
+     * Marks as referenced
+     *
+     * @return void
+     */
+    public function markReferenced()
+    {
+        foreach ($this->value as $value) {
+            if ($value instanceof MarkableAsReferencedInterface) {
+                $value->markReferenced();
+            }
+        }
+    }
+
 
 }

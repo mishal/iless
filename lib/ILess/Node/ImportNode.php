@@ -204,7 +204,8 @@ class ImportNode extends Node
         if ($this->getOption('inline')) {
             $contents = new AnonymousNode($this->root, 0, new FileInfo(array(
                 'filename' => $this->importedFilename,
-            )), true, true);
+                'reference' => $this->path->currentFileInfo->reference
+            )), true, true, false);
 
             return $this->features ? new MediaNode(array($contents), $this->features->value) : array($contents);
         } elseif ($this->css) {

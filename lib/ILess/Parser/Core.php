@@ -1907,7 +1907,7 @@ class Core
                     $this->context->currentFileInfo);
             }
 
-            return new ColorNode($colorCandidate);
+            return new ColorNode($colorCandidate, null, '#' . $colorCandidate);
         }
     }
 

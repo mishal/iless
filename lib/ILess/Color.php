@@ -68,6 +68,11 @@ final class Color
     public $keyword = false;
 
     /**
+     * @var string
+     */
+    protected $originalForm;
+
+    /**
      * Transparent keyword?
      *
      * @var boolean
@@ -79,8 +84,9 @@ final class Color
      *
      * @param array|string $rgb The RGB components as an array or string definition
      * @param integer $alpha The alpha channel
+     * @param string $originalForm
      */
-    public function __construct($rgb = array(255, 255, 255), $alpha = 1)
+    public function __construct($rgb = array(255, 255, 255), $alpha = 1, $originalForm = null)
     {
         if (is_array($rgb)) {
             $this->rgb = $rgb;
@@ -113,6 +119,7 @@ final class Color
             }
         }
 
+        $this->originalForm = $originalForm;
         // limit alpha channel
         $this->alpha = is_numeric($alpha) ? $alpha : 1;
     }
@@ -427,6 +434,10 @@ final class Color
     {
         if ($this->isTransparentKeyword) {
             return 'transparent';
+        }
+
+        if ($this->originalForm) {
+            return $this->originalForm;
         }
 
         $alpha = Math::toFixed($this->alpha + 2e-16, 8);

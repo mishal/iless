@@ -21,7 +21,7 @@ use ILess\Output\StandardOutput;
  *
  * @package ILess\Node
  */
-class RuleNode extends Node implements MakeableImportantInterface
+class RuleNode extends Node implements MakeableImportantInterface, MarkableAsReferencedInterface
 {
     /**
      * Node type
@@ -199,6 +199,9 @@ class RuleNode extends Node implements MakeableImportantInterface
     public function generateCSS(Context $context, OutputInterface $output)
     {
         $output->add($this->name.($context->compress ? ':' : ': '), $this->currentFileInfo, $this->index);
+        if(is_null($this->value)) {
+            throw new \Exception('this is wrong');
+        }
         try {
             $this->value->generateCSS($context, $output);
         } catch (Exception $e) {
@@ -228,6 +231,31 @@ class RuleNode extends Node implements MakeableImportantInterface
             $this->currentFileInfo,
             $this->inline
         );
+    }
+
+    /**
+     * Marks as referenced
+     *
+     * @return void
+     */
+    public function markReferenced()
+    {
+        if ($this->value) {
+            $this->markReferencedRecursive($this->value);
+        }
+    }
+
+    private function markReferencedRecursive(&$value)
+    {
+        if (!is_array($value)) {
+            if ($value instanceof MarkableAsReferencedInterface) {
+                $value->markReferenced();
+            }
+        } else {
+            foreach ($value as &$v) {
+                $this->markReferencedRecursive($v);
+            }
+        }
     }
 
 }

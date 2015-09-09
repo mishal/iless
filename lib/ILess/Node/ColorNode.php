@@ -31,22 +31,27 @@ class ColorNode extends Node implements ComparableInterface
     protected $type = 'Color';
 
     /**
+     * @var string
+     */
+    protected $originalForm;
+
+    /**
      * Constructor
      *
      * @param string|array $rgb The rgb value
      * @param integer $alpha Alpha channel
+     * @param string $originalForm Original form of the color
      * @throws InvalidArgumentException
      */
-    public function __construct($rgb, $alpha = 1)
+    public function __construct($rgb, $alpha = 1, $originalForm = null)
     {
         if (!$rgb instanceof Color) {
-            $value = new Color($rgb, $alpha);
+            $value = new Color($rgb, $alpha, $originalForm);
         } else {
             $value = $rgb;
         }
 
         /* @var $value \ILess\Color */
-
         parent::__construct($value);
     }
 

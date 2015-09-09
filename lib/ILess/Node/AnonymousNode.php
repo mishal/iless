@@ -19,7 +19,8 @@ use ILess\Output\OutputInterface;
  *
  * @package ILess\Node
  */
-class AnonymousNode extends Node implements ComparableInterface
+class AnonymousNode extends Node implements ComparableInterface,
+    MarkableAsReferencedInterface, ReferencedInterface
 {
     /**
      * Node type
@@ -48,6 +49,13 @@ class AnonymousNode extends Node implements ComparableInterface
     private $rulesetLike = false;
 
     /**
+     * Is referenced?
+     *
+     * @var boolean
+     */
+    public $isReferenced = false;
+
+    /**
      * Constructor
      *
      * @param string|ValueNode $value
@@ -55,19 +63,22 @@ class AnonymousNode extends Node implements ComparableInterface
      * @param string $currentFileInfo
      * @param boolean $mapLines
      * @param boolean $rulesetLike
+     * @param boolean $referenced
      */
     public function __construct(
         $value,
         $index = 0,
         FileInfo $currentFileInfo = null,
         $mapLines = false,
-        $rulesetLike = false
+        $rulesetLike = false,
+        $referenced = false
     ) {
         parent::__construct($value);
         $this->index = $index;
         $this->currentFileInfo = $currentFileInfo;
         $this->mapLines = $mapLines;
         $this->rulesetLike = (boolean)$rulesetLike;
+        $this->isReferenced = $referenced;
     }
 
     /**
@@ -100,7 +111,7 @@ class AnonymousNode extends Node implements ComparableInterface
     public function compile(Context $context, $arguments = null, $important = null)
     {
         return new AnonymousNode($this->value, $this->index, $this->currentFileInfo, $this->mapLines,
-            $this->rulesetLike);
+            $this->rulesetLike, $this->isReferenced);
     }
 
     /**
@@ -122,4 +133,23 @@ class AnonymousNode extends Node implements ComparableInterface
     {
         return $this->rulesetLike;
     }
+
+    /**
+     * @return bool
+     */
+    public function getIsReferenced()
+    {
+        return !$this->currentFileInfo || !$this->currentFileInfo->reference || $this->isReferenced;
+    }
+
+    /**
+     * Marks as referenced
+     *
+     * @return void
+     */
+    public function markReferenced()
+    {
+        $this->isReferenced = true;
+    }
+
 }

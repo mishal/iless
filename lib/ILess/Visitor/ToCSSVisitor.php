@@ -12,6 +12,7 @@ namespace ILess\Visitor;
 use ILess\Context;
 use ILess\Exception\CompilerException;
 use ILess\Node;
+use ILess\Node\AnonymousNode;
 use ILess\Node\CombinatorNode;
 use ILess\Node\CommentNode;
 use ILess\Node\DirectiveNode;
@@ -20,11 +21,11 @@ use ILess\Node\ExtendNode;
 use ILess\Node\ImportNode;
 use ILess\Node\MediaNode;
 use ILess\Node\MixinDefinitionNode;
-use ILess\Node\ValueNode;
-use ILess\Node\SelectorNode;
-use ILess\Node\RulesetNode;
-use ILess\Node\RuleNode;
 use ILess\Node\ReferencedInterface;
+use ILess\Node\RuleNode;
+use ILess\Node\RulesetNode;
+use ILess\Node\SelectorNode;
+use ILess\Node\ValueNode;
 
 /**
  * To CSS visitor
@@ -356,6 +357,23 @@ class ToCSSVisitor extends Visitor
         }
 
         return $rulesets;
+    }
+
+    /**
+     * Visits anonymous node
+     *
+     * @param AnonymousNode $node
+     * @param VisitorArguments $arguments
+     */
+    public function visitAnonymous(AnonymousNode $node, VisitorArguments $arguments)
+    {
+        if (!$node->getIsReferenced()) {
+            return null;
+        }
+
+        $node->accept($this);
+
+        return $node;
     }
 
     /**
