@@ -269,7 +269,7 @@ final class ParserInput
     {
         $tokLength = strlen($tok);
         for ($i = 0; $i < $tokLength; $i++) {
-            if ($this->input[$this->i + $i] !== $tok[$i]) {
+            if (@$this->input[$this->i + $i] !== $tok[$i]) {
                 return false;
             }
         }
