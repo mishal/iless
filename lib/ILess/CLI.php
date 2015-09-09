@@ -326,8 +326,6 @@ class CLI extends Configurable
 
                     if ($basePath = $this->getOption('source_map_base_path')) {
                         $options['source_map_options']['base_path'] = $basePath;
-                    } else {
-                        $options['source_map_options']['base_path'] = $this->currentDir;
                     }
 
                     if ($url = $this->getOption('source_map_url')) {
@@ -341,6 +339,7 @@ class CLI extends Configurable
 
                 // skip options which are processed above or invalid
                 case 'source_map_base_path':
+                case 'source_map_url':
                 case 'silent':
                 case 'no_color':
                 case 'append':
