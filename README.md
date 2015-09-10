@@ -35,15 +35,16 @@ To run ILess you need `PHP >= 5.4.0`
  * Allows to register **custom file importers** (from filesystem, database, ...)
  * Allows to setup **import directories** so search imports for
  * Allows to define **custom LESS functions** with PHP callbacks, supports context aware dynamic functions
+ * Allows to **use plugins** for pre/post processing of the CSS (currently only via API, not from command line)
  * Generates **source maps** (useful for debugging the generated CSS)
  * Generates debugging information with SASS compatible information and/or simple comments
- * Supports output filters
  * Allows caching of the precompiled files and the generated CSS
  * Is **unit tested** using PHPUnit
- * Compiled CSS is 100% equal to CSS compiled with less.js (exception is javascript, which cannot be evaluated using php)
- * Provides command line utility    
+ * Compiled CSS is 100% equal to CSS compiled with less.js (exception is the javascript, which cannot be evaluated using php)
+ * Provides command line utility
  * Has developer friendly exception messages with location of the error and file excerpt (output is colorized when used by command line)
  * Has well documented API, see [the docs](http://doc-iless.rhcloud.com)
+ * Is PHP 7 and HHVM compatible
 
 ## Usage
 
