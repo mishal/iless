@@ -43,7 +43,7 @@ To run ILess you need `PHP >= 5.4.0`
  * Compiled CSS is 100% equal to CSS compiled with less.js (exception is javascript, which cannot be evaluated using php)
  * Provides command line utility    
  * Has developer friendly exception messages with location of the error and file excerpt (output is colorized when used by command line)
- * Has well documented API
+ * Has well documented API, see [the docs](http://doc-iless.rhcloud.com)
 
 ## Usage
 
