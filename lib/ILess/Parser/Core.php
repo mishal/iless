@@ -54,7 +54,6 @@ use ILess\Plugin\PostProcessorInterface;
 use ILess\Plugin\PreProcessorInterface;
 use ILess\PluginManager;
 use ILess\SourceMap\Generator;
-use ILess\StringSource;
 use ILess\Util;
 use ILess\Variable;
 use ILess\Visitor\ImportVisitor;
