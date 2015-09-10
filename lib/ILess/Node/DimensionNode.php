@@ -16,7 +16,7 @@ use ILess\Node;
 use ILess\Output\OutputInterface;
 use ILess\Util\UnitConversion;
 use ILess\Util;
-use ILess\Visitor\Visitor;
+use ILess\Visitor\VisitorInterface;
 
 /**
  * Dimension
@@ -59,7 +59,7 @@ class DimensionNode extends Node implements ComparableInterface, ToColorConverti
     /**
      * @inheritdoc
      */
-    public function accept(Visitor $visitor)
+    public function accept(VisitorInterface $visitor)
     {
         $this->unit = $visitor->visit($this->unit);
     }

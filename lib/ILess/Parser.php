@@ -44,8 +44,8 @@ class Parser extends Core
      *
      * @param array $options Array of options
      * @param CacheInterface $cache The cache implementation
-     * @param Importer $importer The importer
-     * @param array $outputFilters Array of output filters
+     * @param array $importers Array of importers
+     * @param array $outputFilters Array of output filters - deprecated
      */
     public function __construct(
         array $options = array(),
@@ -74,8 +74,10 @@ class Parser extends Core
         }
 
         $this->cache = $cache ? $cache : new NoCache();
+        $this->pluginManager = new PluginManager($this);
 
-        parent::__construct($context, new Importer($context, $importers, $this->cache));
+        parent::__construct($context,
+            new Importer($context, $importers, $this->cache, $manager = new PluginManager($this)), $manager);
     }
 
     /**
@@ -140,6 +142,8 @@ class Parser extends Core
             $this->cache->set($cacheKey, array($css, $importedFiles));
         }
 
+
+
         return $this->filter($css);
     }
 
@@ -148,6 +152,7 @@ class Parser extends Core
      *
      * @param string $output
      * @return string
+     * @deprecated
      */
     protected function filter($output)
     {
@@ -164,6 +169,7 @@ class Parser extends Core
      *
      * @param OutputFilterInterface $filter
      * @return Parser
+     * @deprecated
      */
     public function appendFilter(OutputFilterInterface $filter)
     {
@@ -177,6 +183,7 @@ class Parser extends Core
      *
      * @param OutputFilterInterface $filter
      * @return Parser
+     * @deprecated
      */
     public function prependFilter(OutputFilterInterface $filter)
     {

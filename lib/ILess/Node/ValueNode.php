@@ -12,7 +12,7 @@ namespace ILess\Node;
 use ILess\Context;
 use ILess\Node;
 use ILess\Output\OutputInterface;
-use ILess\Visitor\Visitor;
+use ILess\Visitor\VisitorInterface;
 
 /**
  * Value
@@ -39,11 +39,9 @@ class ValueNode extends Node
     }
 
     /**
-     * Accepts a visit
-     *
-     * @param Visitor $visitor
+     * @inheritdoc
      */
-    public function accept(Visitor $visitor)
+    public function accept(VisitorInterface $visitor)
     {
         $this->value = $visitor->visitArray($this->value);
     }

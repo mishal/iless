@@ -13,7 +13,7 @@ use ILess\Context;
 use ILess\FileInfo;
 use ILess\Node;
 use ILess\Output\OutputInterface;
-use ILess\Visitor\Visitor;
+use ILess\Visitor\VisitorInterface;
 
 /**
  * Selector
@@ -111,11 +111,9 @@ class SelectorNode extends Node implements MarkableAsReferencedInterface, Refere
     }
 
     /**
-     * Accepts a visit
-     *
-     * @param Visitor $visitor
+     * @inheritdoc
      */
-    public function accept(Visitor $visitor)
+    public function accept(VisitorInterface $visitor)
     {
         $this->elements = $visitor->visitArray($this->elements);
         $this->extendList = $visitor->visitArray($this->extendList);

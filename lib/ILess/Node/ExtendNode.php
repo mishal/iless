@@ -11,7 +11,7 @@ namespace ILess\Node;
 
 use ILess\Context;
 use ILess\Node;
-use ILess\Visitor\Visitor;
+use ILess\Visitor\VisitorInterface;
 
 /**
  * Extend
@@ -132,11 +132,9 @@ class ExtendNode extends Node
     public $parentIds = array();
 
     /**
-     * Accepts a visit
-     *
-     * @param Visitor $visitor
+     * @inheritdoc
      */
-    public function accept(Visitor $visitor)
+    public function accept(VisitorInterface $visitor)
     {
         $this->selector = $visitor->visit($this->selector);
     }

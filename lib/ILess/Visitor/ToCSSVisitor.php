@@ -67,14 +67,6 @@ class ToCSSVisitor extends Visitor
     }
 
     /**
-     * @inheritdoc
-     */
-    public function run($root)
-    {
-        return $this->visit($root);
-    }
-
-    /**
      * Returns the context
      *
      * @return Context

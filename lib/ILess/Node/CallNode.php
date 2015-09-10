@@ -15,7 +15,7 @@ use ILess\FileInfo;
 use ILess\FunctionRegistry;
 use ILess\Node;
 use ILess\Output\OutputInterface;
-use ILess\Visitor\Visitor;
+use ILess\Visitor\VisitorInterface;
 
 /**
  * Function call
@@ -71,7 +71,7 @@ class CallNode extends Node
     /**
      * @inheritdoc
      */
-    public function accept(Visitor $visitor)
+    public function accept(VisitorInterface $visitor)
     {
         if ($this->args) {
             $this->args = $visitor->visitArray($this->args);

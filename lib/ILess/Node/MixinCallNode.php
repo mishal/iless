@@ -16,7 +16,7 @@ use ILess\Exception\CompilerException;
 use ILess\Exception\ParserException;
 use ILess\FileInfo;
 use ILess\Node;
-use ILess\Visitor\Visitor;
+use ILess\Visitor\VisitorInterface;
 
 /**
  * Mixin call
@@ -85,11 +85,9 @@ class MixinCallNode extends Node
     }
 
     /**
-     * Accepts a visit
-     *
-     * @param Visitor $visitor
+     * @inheritdoc
      */
-    public function accept(Visitor $visitor)
+    public function accept(VisitorInterface $visitor)
     {
         if ($this->selector) {
             $this->selector = $visitor->visit($this->selector);

@@ -12,7 +12,7 @@ use ILess\Context;
 use ILess\Exception\Exception;
 use ILess\Node;
 use ILess\Output\OutputInterface;
-use ILess\Visitor\Visitor;
+use ILess\Visitor\VisitorInterface;
 
 /**
  * Expression
@@ -54,11 +54,9 @@ class ExpressionNode extends Node implements MarkableAsReferencedInterface
     }
 
     /**
-     * Accepts a visit
-     *
-     * @param Visitor $visitor
+     * @inheritdoc
      */
-    public function accept(Visitor $visitor)
+    public function accept(VisitorInterface $visitor)
     {
         $this->value = $visitor->visitArray($this->value);
     }

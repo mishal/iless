@@ -11,7 +11,7 @@ namespace ILess\Node;
 
 use ILess\Context;
 use ILess\Node;
-use ILess\Visitor\Visitor;
+use ILess\Visitor\VisitorInterface;
 
 /**
  * Detached ruleset
@@ -53,12 +53,9 @@ class DetachedRulesetNode extends Node
     }
 
     /**
-     * Accepts a visit by a visitor
-     *
-     * @param Visitor $visitor
-     * @return void
+     * @inheritdoc
      */
-    public function accept(Visitor $visitor)
+    public function accept(VisitorInterface $visitor)
     {
         $this->ruleset = $visitor->visit($this->ruleset);
     }

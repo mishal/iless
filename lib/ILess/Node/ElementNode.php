@@ -13,7 +13,7 @@ use ILess\Context;
 use ILess\FileInfo;
 use ILess\Node;
 use ILess\Output\OutputInterface;
-use ILess\Visitor\Visitor;
+use ILess\Visitor\VisitorInterface;
 
 /**
  * Element
@@ -68,11 +68,9 @@ class ElementNode extends Node
     }
 
     /**
-     * Accepts a visitor
-     *
-     * @param Visitor $visitor
+     * @inheritdoc
      */
-    public function accept(Visitor $visitor)
+    public function accept(VisitorInterface $visitor)
     {
         $this->combinator = $visitor->visit($this->combinator);
         if (is_object($this->value)) {

@@ -55,15 +55,22 @@ class Importer
     protected $importedFiles = array();
 
     /**
+     * @var PluginManager
+     */
+    protected $pluginManager;
+
+    /**
      * Constructor
      *
      * @param Context $context The context
      * @param array $importers Array of importers
      * @param CacheInterface $cache The cache
+     * @param PluginManager $manager
      */
-    public function __construct(Context $context, array $importers, CacheInterface $cache)
+    public function __construct(Context $context, array $importers, CacheInterface $cache, PluginManager $manager = null)
     {
         $this->context = $context;
+        $this->pluginManager = $manager;
         $this->registerImporters($importers);
         $this->cache = $cache;
     }
@@ -251,7 +258,7 @@ class Importer
         if (isset($this->importedFiles[$key])) {
             $alreadyImported = true;
         } elseif (!$file->getRuleset()) {
-            $parser = new Core($newEnv, $this);
+            $parser = new Core($newEnv, $this, $this->pluginManager);
             try {
                 // we do not parse the root but load the file as is
                 if (isset($importOptions['inline']) && $importOptions['inline']) {

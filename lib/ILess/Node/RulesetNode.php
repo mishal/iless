@@ -14,7 +14,7 @@ use ILess\DefaultFunc;
 use ILess\Exception\ParserException;
 use ILess\Node;
 use ILess\Output\OutputInterface;
-use ILess\Visitor\Visitor;
+use ILess\Visitor\VisitorInterface;
 
 /**
  * Ruleset
@@ -164,11 +164,9 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     }
 
     /**
-     * Accepts a visit
-     *
-     * @param Visitor $visitor
+     * @inheritdoc
      */
-    public function accept(Visitor $visitor)
+    public function accept(VisitorInterface $visitor)
     {
         if ($this->paths) {
             $visitor->visitArray($this->paths, true);

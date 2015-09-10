@@ -13,6 +13,7 @@ namespace ILess\OutputFilter;
  * Output filter interface
  *
  * @package ILess\OutputFilter
+ * @deprecated
  */
 interface OutputFilterInterface
 {

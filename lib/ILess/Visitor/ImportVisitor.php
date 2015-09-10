@@ -62,6 +62,11 @@ class ImportVisitor extends Visitor
     private $importCount = 0;
 
     /**
+     * @var string
+     */
+    protected $type = VisitorInterface::TYPE_PRE_COMPILE;
+
+    /**
      * Constructor
      *
      * @param Context $context The context

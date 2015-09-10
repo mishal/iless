@@ -12,7 +12,7 @@ namespace ILess\Node;
 use ILess\Context;
 use ILess\Node;
 use ILess\Util;
-use ILess\Visitor\Visitor;
+use ILess\Visitor\VisitorInterface;
 
 /**
  * Condition
@@ -83,7 +83,7 @@ class ConditionNode extends Node
     /**
      * @inheritdoc
      */
-    public function accept(Visitor $visitor)
+    public function accept(VisitorInterface $visitor)
     {
         $this->lvalue = $visitor->visit($this->lvalue);
         $this->rvalue = $visitor->visit($this->rvalue);

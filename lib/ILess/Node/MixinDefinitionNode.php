@@ -11,7 +11,7 @@ namespace ILess\Node;
 
 use ILess\Context;
 use ILess\Exception\CompilerException;
-use ILess\Visitor\Visitor;
+use ILess\Visitor\VisitorInterface;
 
 /**
  * MixinDefinition
@@ -143,7 +143,7 @@ class MixinDefinitionNode extends RulesetNode
     /**
      * @inheritdoc
      */
-    public function accept(Visitor $visitor)
+    public function accept(VisitorInterface $visitor)
     {
         if ($this->params) {
             $this->params = $visitor->visitArray($this->params);

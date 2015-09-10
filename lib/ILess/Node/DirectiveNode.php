@@ -14,7 +14,7 @@ use ILess\DebugInfo;
 use ILess\FileInfo;
 use ILess\Node;
 use ILess\Output\OutputInterface;
-use ILess\Visitor\Visitor;
+use ILess\Visitor\VisitorInterface;
 
 /**
  * Directive
@@ -128,7 +128,7 @@ class DirectiveNode extends Node implements
     /**
      * @inheritdoc
      */
-    public function accept(Visitor $visitor)
+    public function accept(VisitorInterface $visitor)
     {
         if ($this->rules) {
             $this->rules = $visitor->visitArray($this->rules);

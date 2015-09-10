@@ -13,7 +13,7 @@ use ILess\Context;
 use ILess\Exception\Exception;
 use ILess\FileInfo;
 use ILess\Output\OutputInterface;
-use ILess\Visitor\Visitor;
+use ILess\Visitor\VisitorInterface;
 
 /**
  * Media
@@ -87,11 +87,9 @@ class MediaNode extends DirectiveNode
     }
 
     /**
-     * Accepts a visit
-     *
-     * @param Visitor $visitor
+     * @inheritdoc
      */
-    public function accept(Visitor $visitor)
+    public function accept(VisitorInterface $visitor)
     {
         if ($this->features) {
             $this->features = $visitor->visit($this->features);

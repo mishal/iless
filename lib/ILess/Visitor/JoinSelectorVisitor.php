@@ -31,14 +31,6 @@ class JoinSelectorVisitor extends Visitor
     protected $contexts = array(array());
 
     /**
-     * @inheritdoc
-     */
-    public function run($root)
-    {
-        return $this->visit($root);
-    }
-
-    /**
      * Visits a rule node
      *
      * @param RuleNode $node The node

@@ -15,6 +15,7 @@ use ILess\Configurable;
  * Output filter base class
  *
  * @package ILess\OutputFilter
+ * @deprecated
  */
 abstract class OutputFilter extends Configurable implements OutputFilterInterface
 {

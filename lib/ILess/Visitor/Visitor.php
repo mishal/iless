@@ -17,7 +17,7 @@ use ILess\Node\VisitableInterface;
  *
  * @package ILess\Visitor
  */
-abstract class Visitor
+abstract class Visitor implements VisitorInterface
 {
     /**
      * Is the visitor replacing?
@@ -32,6 +32,11 @@ abstract class Visitor
      * @var array
      */
     private $methodCache = array();
+
+    /**
+     * @var string
+     */
+    protected $type = VisitorInterface::TYPE_POST_COMPILE;
 
     /**
      * Constructor
@@ -51,8 +56,12 @@ abstract class Visitor
      * Runs the visitor
      *
      * @param ILess\Node|array
+     * @return mixed
      */
-    abstract public function run($root);
+    public function run($root)
+    {
+        return $this->visit($root);
+    }
 
     /**
      * Is the visitor replacing?
@@ -62,6 +71,14 @@ abstract class Visitor
     public function isReplacing()
     {
         return $this->isReplacing;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 
     /**

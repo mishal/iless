@@ -15,6 +15,7 @@ use ILess\Node\VisitableInterface;
 use ILess\Output\OutputInterface;
 use ILess\Output\StandardOutput;
 use ILess\Visitor\Visitor;
+use ILess\Visitor\VisitorInterface;
 
 /**
  * Base node
@@ -214,12 +215,9 @@ abstract class Node implements VisitableInterface,
     }
 
     /**
-     * Accepts a visit by a visitor
-     *
-     * @param Visitor $visitor
-     * @return void
+     * @inheritdoc
      */
-    public function accept(Visitor $visitor)
+    public function accept(VisitorInterface $visitor)
     {
         $this->value = $visitor->visit($this->value);
     }

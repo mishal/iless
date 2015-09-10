@@ -12,7 +12,6 @@ namespace ILess\Node;
 use ILess\Context;
 use ILess\Node;
 use ILess\Output\OutputInterface;
-use ILess\Visitor\Visitor;
 
 /**
  * Alpha
@@ -27,14 +26,6 @@ class AlphaNode extends Node
      * @var string
      */
     protected $type = 'Alpha';
-
-    /**
-     * @inheritdoc
-     */
-    public function accept(Visitor $visitor)
-    {
-        $this->value = $visitor->visit($this->value);
-    }
 
     /**
      * @inheritdoc

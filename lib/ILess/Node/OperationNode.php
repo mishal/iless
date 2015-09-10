@@ -13,7 +13,7 @@ use ILess\Context;
 use ILess\Exception\CompilerException;
 use ILess\Node;
 use ILess\Output\OutputInterface;
-use ILess\Visitor\Visitor;
+use ILess\Visitor\VisitorInterface;
 
 /**
  * Operation node
@@ -74,7 +74,7 @@ class OperationNode extends Node
     /**
      * @inheritdoc
      */
-    public function accept(Visitor $visitor)
+    public function accept(VisitorInterface $visitor)
     {
         $this->operands = $visitor->visit($this->operands);
     }

@@ -14,6 +14,8 @@ use ILess\Context;
 use ILess\DebugInfo;
 use ILess\Exception\CompilerException;
 use ILess\Exception\ParserException;
+use ILess\ImportedFile;
+use ILess\Importer;
 use ILess\Node;
 use ILess\Node\AlphaNode;
 use ILess\Node\AnonymousNode;
@@ -37,29 +39,30 @@ use ILess\Node\MediaNode;
 use ILess\Node\MixinCallNode;
 use ILess\Node\MixinDefinitionNode;
 use ILess\Node\NegativeNode;
-use ILess\Node\VariableNode;
-use ILess\Node\ValueNode;
-use ILess\Node\UrlNode;
-use ILess\Node\UnicodeDescriptorNode;
-use ILess\Node\SelectorNode;
-use ILess\Node\RulesetNode;
-use ILess\Node\RuleNode;
-use ILess\Node\QuotedNode;
-use ILess\Node\ParenNode;
 use ILess\Node\OperationNode;
-use ILess\ImportedFile;
-use ILess\Importer;
-use ILess\Visitor\Visitor;
-use InvalidArgumentException;
-use ILess\Math;
+use ILess\Node\ParenNode;
+use ILess\Node\QuotedNode;
+use ILess\Node\RuleNode;
 use ILess\Node\RulesetCallNode;
+use ILess\Node\RulesetNode;
+use ILess\Node\SelectorNode;
+use ILess\Node\UnicodeDescriptorNode;
+use ILess\Node\UrlNode;
+use ILess\Node\ValueNode;
+use ILess\Node\VariableNode;
+use ILess\Plugin\PostProcessorInterface;
+use ILess\Plugin\PreProcessorInterface;
+use ILess\PluginManager;
 use ILess\SourceMap\Generator;
+use ILess\StringSource;
 use ILess\Util;
 use ILess\Variable;
 use ILess\Visitor\ImportVisitor;
 use ILess\Visitor\JoinSelectorVisitor;
 use ILess\Visitor\ProcessExtendsVisitor;
 use ILess\Visitor\ToCSSVisitor;
+use ILess\Visitor\Visitor;
+use InvalidArgumentException;
 
 /**
  * Parser core
@@ -112,15 +115,22 @@ class Core
     protected $input;
 
     /**
+     * @var PluginManager|null
+     */
+    protected $pluginManager;
+
+    /**
      * Constructor
      *
      * @param Context $context The context
      * @param Importer $importer The importer
+     * @param PluginManager $pluginManager The plugin manager
      */
-    public function __construct(Context $context, Importer $importer)
+    public function __construct(Context $context, Importer $importer, PluginManager $pluginManager = null)
     {
         $this->context = $context;
         $this->importer = $importer;
+        $this->pluginManager = $pluginManager;
         $this->input = new ParserInput();
     }
 
@@ -203,6 +213,7 @@ class Core
         // create a dummy information, since we are not parsing a real file,
         // but a string coming from outside
         $this->context->setCurrentFile($filename);
+
         $importedFile = new ImportedFile($key, $string, time());
 
         // save information, so the exceptions can handle errors in the string
@@ -300,6 +311,18 @@ class Core
     {
         $string = Util::normalizeString($string);
 
+        if ($this->pluginManager) {
+            $preProcessors = $this->pluginManager->getPreProcessors();
+            foreach ($preProcessors as $preProcessor) {
+                /* @var $preProcessor PreProcessorInterface */
+                $string = $preProcessor->process($string, [
+                    'context' => $this->context,
+                    'file_info' => $this->context->currentFileInfo,
+                    'importer' => $this->importer,
+                ]);
+            }
+        }
+
         $this->input = new ParserInput();
         $this->input->start($string);
         $rules = $this->parsePrimary();
@@ -344,6 +367,16 @@ class Core
         }
 
         return $this;
+    }
+
+    /**
+     * Returns the plugin manager
+     *
+     * @return PluginManager|null
+     */
+    public function getPluginManager()
+    {
+        return $this->pluginManager;
     }
 
     /**
@@ -392,6 +425,7 @@ class Core
      * @param RulesetNode $ruleset
      * @param array $variables
      * @return string The generated CSS code
+     * @throws
      */
     protected function toCSS(RulesetNode $ruleset, array $variables)
     {
@@ -433,7 +467,21 @@ class Core
                 // will also save file
                 $css = $generator->generateCSS($this->context);
             } else {
+                $generator = null;
                 $css = $compiled->toCSS($this->context);
+            }
+
+            if ($this->pluginManager) {
+                // post process
+                $postProcessors = $this->pluginManager->getPostProcessors();
+                foreach ($postProcessors as $postProcessor) {
+                    /* @var $postProcessor PostProcessorInterface */
+                    $css = $postProcessor->process($css, [
+                        'context' => $this->context,
+                        'source_map' => $generator,
+                        'importer' => $this->importer,
+                    ]);
+                }
             }
 
             if ($this->context->compress) {
@@ -488,19 +536,25 @@ class Core
     }
 
     /**
-     * Returns array of precompilation visitors
+     * Returns array of pre compilation visitors
      *
      * @return array
      */
     protected function getPreCompileVisitors()
     {
-        $preCompileVisitors = array();
+        $preCompileVisitors = [];
 
         if ($this->context->processImports) {
             $preCompileVisitors[] = new ImportVisitor($this->getContext(), $this->getImporter());
         }
 
-        // FIXME: allow plugins to hook here
+        if ($this->pluginManager) {
+            $preCompileVisitors = array_merge(
+                $preCompileVisitors,
+                $this->pluginManager->getPreCompileVisitors()
+            );
+        }
+
         return $preCompileVisitors;
     }
 
@@ -511,13 +565,21 @@ class Core
      */
     protected function getPostCompileVisitors()
     {
-        $postCompileVisitors = array(
+        // core visitors
+        $postCompileVisitors = [
             new JoinSelectorVisitor(),
-            new ProcessExtendsVisitor(),
-            new ToCSSVisitor($this->getContext()),
-        );
+            new ProcessExtendsVisitor()
+        ];
 
-        // FIXME: allow plugins to hook here
+        if ($this->pluginManager) {
+            $postCompileVisitors = array_merge(
+                $this->pluginManager->getPostCompileVisitors(),
+                $postCompileVisitors
+            );
+        }
+
+        $postCompileVisitors[] = new ToCSSVisitor($this->getContext());
+
         return $postCompileVisitors;
     }
 

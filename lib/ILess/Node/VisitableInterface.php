@@ -8,7 +8,7 @@
 
 namespace ILess\Node;
 
-use ILess\Visitor\Visitor;
+use ILess\Visitor\VisitorInterface;
 
 /**
  * Visitable interface
@@ -20,9 +20,9 @@ interface VisitableInterface
     /**
      * Accepts a visit by a visitor
      *
-     * @param Visitor $visitor
+     * @param VisitorInterface $visitor
      * @return void
      */
-    public function accept(Visitor $visitor);
+    public function accept(VisitorInterface $visitor);
 
 }

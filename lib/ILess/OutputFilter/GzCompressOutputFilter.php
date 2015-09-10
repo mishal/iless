@@ -13,6 +13,7 @@ namespace ILess\OutputFilter;
  * GzCompress filter
  *
  * @package ILess\OutputFilter
+ * @deprecated
  */
 class GzCompressOutputFilter extends OutputFilter
 {

@@ -12,11 +12,11 @@ namespace ILess\Node;
 use ILess\Context;
 use ILess\Exception\Exception;
 use ILess\FileInfo;
+use ILess\Visitor\VisitorInterface;
 use LogicException;
 use ILess\Node;
 use ILess\Output\OutputInterface;
 use ILess\Util;
-use ILess\Visitor\Visitor;
 
 /**
  * Import
@@ -130,11 +130,9 @@ class ImportNode extends Node
     }
 
     /**
-     * Accepts a visit
-     *
-     * @param Visitor $visitor
+     * @inheritdoc
      */
-    public function accept(Visitor $visitor)
+    public function accept(VisitorInterface $visitor)
     {
         if ($this->features) {
             $this->features = $visitor->visit($this->features);
