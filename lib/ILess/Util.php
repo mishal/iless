@@ -62,7 +62,7 @@ class Util
      */
     public static function encodeURIComponent($string)
     {
-        $revert = array('%21' => '!', '%2A' => '*', '%27' => "'", '%28' => '(', '%29' => ')');
+        $revert = ['%21' => '!', '%2A' => '*', '%27' => "'", '%28' => '(', '%29' => ')'];
 
         return strtr(rawurlencode($string), $revert);
     }
@@ -94,7 +94,7 @@ class Util
             }
         }
 
-        return array($line, $column, $extractContent);
+        return [$line, $column, $extractContent];
     }
 
     /**
@@ -167,7 +167,7 @@ class Util
             $path = substr($path, 0, $fragmentStart);
         }
 
-        return array($fragment, $path);
+        return [$fragment, $path];
     }
 
     /**
@@ -202,7 +202,7 @@ class Util
         }
 
         $segments = array_reverse(explode('/', $path));
-        $path = array();
+        $path = [];
         $path_len = 0;
         while ($segments) {
             $segment = array_pop($segments);

@@ -28,7 +28,7 @@ class JoinSelectorVisitor extends Visitor
      *
      * @var array
      */
-    protected $contexts = array(array());
+    protected $contexts = [[]];
 
     /**
      * Visits a rule node
@@ -60,10 +60,10 @@ class JoinSelectorVisitor extends Visitor
      */
     public function visitRuleset(RulesetNode $node, VisitorArguments $arguments)
     {
-        $paths = array();
+        $paths = [];
 
         if (!$node->root) {
-            $selectors = array();
+            $selectors = [];
             foreach ($node->selectors as $selector) {
                 /* @var $selector SelectorNode */
                 if ($selector->getIsOutput()) {
@@ -77,7 +77,7 @@ class JoinSelectorVisitor extends Visitor
                 $context = $this->contexts[count($this->contexts) - 1];
                 $paths = $node->joinSelectors($context, $selectors);
             } else {
-                $node->rules = array();
+                $node->rules = [];
             }
 
             $node->paths = $paths;

@@ -67,7 +67,7 @@ class ExtendNode extends Node
      *
      * @var array
      */
-    public $selfSelectors = array();
+    public $selfSelectors = [];
 
     /**
      * First extend on this path flag
@@ -112,7 +112,7 @@ class ExtendNode extends Node
         $this->option = $option;
         $this->index = $index;
         $this->objectId = self::$nextId++;
-        $this->parentIds = array($this->objectId);
+        $this->parentIds = [$this->objectId];
 
         switch ($option) {
             case 'all':
@@ -129,7 +129,7 @@ class ExtendNode extends Node
     /**
      * @var array
      */
-    public $parentIds = array();
+    public $parentIds = [];
 
     /**
      * @inheritdoc
@@ -159,7 +159,7 @@ class ExtendNode extends Node
      */
     public function findSelfSelectors($selectors)
     {
-        $selfElements = array();
+        $selfElements = [];
         for ($i = 0; $i < count($selectors); $i++) {
             $selectorElements = $selectors[$i]->elements;
             if ($i > 0 && count($selectorElements) && $selectorElements[0]->combinator->value === '') {
@@ -168,9 +168,9 @@ class ExtendNode extends Node
             $selfElements = array_merge($selfElements, $selectors[$i]->elements);
         }
 
-        $this->selfSelectors = array(
-            (object)array('elements' => (array)$selfElements),
-        );
+        $this->selfSelectors = [
+            (object)['elements' => (array)$selfElements],
+        ];
     }
 
 }

@@ -44,7 +44,7 @@ class Base64VLQ
      *
      * @var array
      */
-    private $charToIntMap = array(
+    private $charToIntMap = [
         'A' => 0,
         'B' => 1,
         'C' => 2,
@@ -109,14 +109,14 @@ class Base64VLQ
         9 => 61,
         '+' => 62,
         '/' => 63,
-    );
+    ];
 
     /**
      * Integer to char map
      *
      * @var array
      */
-    private $intToCharMap = array(
+    private $intToCharMap = [
         0 => 'A',
         1 => 'B',
         2 => 'C',
@@ -181,7 +181,7 @@ class Base64VLQ
         61 => '9',
         62 => '+',
         63 => '/',
-    );
+    ];
 
     /**
      * Constructor

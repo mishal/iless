@@ -46,7 +46,7 @@ class MixinDefinitionNode extends RulesetNode
      *
      * @var array
      */
-    public $params = array();
+    public $params = [];
 
     /**
      * The arity
@@ -60,14 +60,14 @@ class MixinDefinitionNode extends RulesetNode
      *
      * @var array
      */
-    public $rules = array();
+    public $rules = [];
 
     /**
      * Lookups cache array
      *
      * @var array
      */
-    public $lookups = array();
+    public $lookups = [];
 
     /**
      * Number of required parameters
@@ -81,7 +81,7 @@ class MixinDefinitionNode extends RulesetNode
      *
      * @var array
      */
-    public $frames = array();
+    public $frames = [];
 
     /**
      * The condition
@@ -113,14 +113,14 @@ class MixinDefinitionNode extends RulesetNode
      */
     public function __construct(
         $name,
-        array $params = array(),
-        array $rules = array(),
+        array $params = [],
+        array $rules = [],
         $condition = null,
         $variadic = false,
-        $frames = array()
+        $frames = []
     ) {
         $this->name = $name;
-        $this->selectors = array(new SelectorNode(array(new ElementNode(null, $name))));
+        $this->selectors = [new SelectorNode([new ElementNode(null, $name)])];
 
         $this->params = $params;
         $this->condition = $condition;
@@ -184,17 +184,17 @@ class MixinDefinitionNode extends RulesetNode
         $mixinFrames = array_merge($this->frames, $context->frames);
         $mixinEnv = Context::createCopyForCompilation($context, $mixinFrames);
 
-        $compiledArguments = array();
+        $compiledArguments = [];
         $frame = $this->compileParams($context, $mixinEnv, (array)$arguments, $compiledArguments);
 
         // use array_values so the array keys are reset
         $ex = new ExpressionNode(array_values($compiledArguments));
         array_unshift($frame->rules, new RuleNode('@arguments', $ex->compile($context)));
 
-        $ruleset = new RulesetNode(array(), $this->rules);
+        $ruleset = new RulesetNode([], $this->rules);
         $ruleset->originalRuleset = $this;
 
-        $ruleSetEnv = Context::createCopyForCompilation($context, array_merge(array($this, $frame), $mixinFrames));
+        $ruleSetEnv = Context::createCopyForCompilation($context, array_merge([$this, $frame], $mixinFrames));
         $ruleset = $ruleset->compile($ruleSetEnv);
 
         if ($important) {
@@ -217,10 +217,10 @@ class MixinDefinitionNode extends RulesetNode
     public function compileParams(
         Context $context,
         Context $mixinEnv,
-        $arguments = array(),
-        array &$compiledArguments = array()
+        $arguments = [],
+        array &$compiledArguments = []
     ) {
-        $frame = new RulesetNode(array(), array());
+        $frame = new RulesetNode([], []);
         $params = $this->params;
         $argsCount = 0;
 
@@ -229,7 +229,7 @@ class MixinDefinitionNode extends RulesetNode
         }
 
         // create a copy of mixin environment
-        $mixinEnv = Context::createCopyForCompilation($mixinEnv, array_merge(array($frame), $mixinEnv->frames));
+        $mixinEnv = Context::createCopyForCompilation($mixinEnv, array_merge([$frame], $mixinEnv->frames));
 
         if ($arguments) {
             $argsCount = count($arguments);
@@ -271,7 +271,7 @@ class MixinDefinitionNode extends RulesetNode
             }
             if (isset($param['name']) && ($name = $param['name'])) {
                 if (isset($param['variadic']) && $param['variadic']) {
-                    $varArgs = array();
+                    $varArgs = [];
                     for ($j = $argIndex; $j < $argsCount; $j++) {
                         $varArgs[] = $arguments[$j]['value']->compile($context);
                     }
@@ -329,7 +329,7 @@ class MixinDefinitionNode extends RulesetNode
         );
 
         $compileEnv = Context::createCopyForCompilation($context, array_merge(
-            array($frame), $this->frames, $context->frames
+            [$frame], $this->frames, $context->frames
         ));
 
         if (!$this->condition->compile($compileEnv)) {
@@ -383,7 +383,7 @@ class MixinDefinitionNode extends RulesetNode
      */
     public function makeImportant()
     {
-        $importantRules = array();
+        $importantRules = [];
         foreach ($this->rules as $rule) {
             if ($rule instanceof MakeableImportantInterface) {
                 $importantRules[] = $rule->makeImportant();

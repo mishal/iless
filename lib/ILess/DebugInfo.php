@@ -92,10 +92,10 @@ final class DebugInfo
      */
     public function getAsMediaQuery()
     {
-        return strtr(self::$mediaQueryFormat, array(
+        return strtr(self::$mediaQueryFormat, [
             '%file%' => self::escapeFilenameForMediaQuery(sprintf('file://%s', $this->filename)),
             '%line%' => $this->lineNumber,
-        ));
+        ]);
     }
 
     /**
@@ -123,7 +123,7 @@ final class DebugInfo
     public static function escapeFilenameForMediaQuery($filename)
     {
         return preg_replace_callback('/([\.|:|\/|(\\\\)])/',
-            array('ILess\DebugInfo', 'replaceCallback'), $filename);
+            ['ILess\DebugInfo', 'replaceCallback'], $filename);
     }
 
 }

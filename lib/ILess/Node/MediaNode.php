@@ -47,7 +47,7 @@ class MediaNode extends DirectiveNode
      *
      * @var array
      */
-    public $rules = array();
+    public $rules = [];
 
     /**
      * Referenced flag
@@ -59,7 +59,7 @@ class MediaNode extends DirectiveNode
     /**
      * @var array
      */
-    public $allExtends = array();
+    public $allExtends = [];
 
     /**
      * Constructor
@@ -70,19 +70,19 @@ class MediaNode extends DirectiveNode
      * @param FileInfo $currentFileInfo The current file info
      */
     public function __construct(
-        array $value = array(),
-        array $features = array(),
+        array $value = [],
+        array $features = [],
         $index = 0,
         FileInfo $currentFileInfo = null
     ) {
         $this->index = $index;
         $this->currentFileInfo = $currentFileInfo;
 
-        $selector = new SelectorNode(array(), array(), null, $this->index, $this->currentFileInfo);
+        $selector = new SelectorNode([], [], null, $this->index, $this->currentFileInfo);
         $selectors = $selector->createEmptySelectors();
 
         $this->features = new ValueNode($features);
-        $this->rules = array(new RulesetNode($selectors, $value));
+        $this->rules = [new RulesetNode($selectors, $value)];
         $this->rules[0]->allowImports = true;
     }
 
@@ -119,11 +119,11 @@ class MediaNode extends DirectiveNode
     public function compile(Context $context, $arguments = null, $important = null)
     {
         if (!$context->mediaBlocks) {
-            $context->mediaBlocks = array();
-            $context->mediaPath = array();
+            $context->mediaBlocks = [];
+            $context->mediaPath = [];
         }
 
-        $media = new MediaNode(array(), array(), $this->index, $this->currentFileInfo);
+        $media = new MediaNode([], [], $this->index, $this->currentFileInfo);
 
         if ($this->debugInfo) {
             $this->rules[0]->debugInfo = $this->debugInfo;
@@ -155,7 +155,7 @@ class MediaNode extends DirectiveNode
                 $context->getFunctionRegistry()->inherit();
 
         array_unshift($context->frames, $this->rules[0]);
-        $media->rules = array($this->rules[0]->compile($context));
+        $media->rules = [$this->rules[0]->compile($context)];
         array_shift($context->frames);
 
         array_pop($context->mediaPath);
@@ -173,14 +173,14 @@ class MediaNode extends DirectiveNode
     {
         $result = $this;
         if (count($context->mediaBlocks) > 1) {
-            $selector = new SelectorNode(array(), array(), null, $this->index, $this->currentFileInfo);
+            $selector = new SelectorNode([], [], null, $this->index, $this->currentFileInfo);
             $selectors = $selector->createEmptySelectors();
 
             $result = new RulesetNode($selectors, $context->mediaBlocks);
             $result->multiMedia = true;
         }
-        $context->mediaBlocks = array();
-        $context->mediaPath = array();
+        $context->mediaBlocks = [];
+        $context->mediaPath = [];
 
         return $result;
     }
@@ -193,12 +193,12 @@ class MediaNode extends DirectiveNode
      */
     public function compileNested(Context $context)
     {
-        $path = array_merge($context->mediaPath, array($this));
+        $path = array_merge($context->mediaPath, [$this]);
 
         // Extract the media-query conditions separated with `,` (OR).
         foreach ($path as $key => $p) {
             $value = $p->features instanceof ValueNode ? $p->features->value : $p->features;
-            $path[$key] = is_array($value) ? $value : array($value);
+            $path[$key] = is_array($value) ? $value : [$value];
         }
 
         // Trace all permutations to generate the resulting media-query.
@@ -210,13 +210,13 @@ class MediaNode extends DirectiveNode
         //b and c and e
 
         $permuted = $this->permute($path);
-        $expressions = array();
+        $expressions = [];
         foreach ($permuted as $path) {
             for ($i = 0, $len = count($path); $i < $len; $i++) {
                 $path[$i] = $path[$i] instanceof GenerateCSSInterface ? $path[$i] : new AnonymousNode($path[$i]);
             }
             for ($i = count($path) - 1; $i > 0; $i--) {
-                array_splice($path, $i, 0, array(new AnonymousNode('and')));
+                array_splice($path, $i, 0, [new AnonymousNode('and')]);
             }
             $expressions[] = new ExpressionNode($path);
         }
@@ -224,7 +224,7 @@ class MediaNode extends DirectiveNode
         $this->features = new ValueNode($expressions);
 
         // Fake a tree-node that doesn't output anything.
-        return new RulesetNode(array(), array());
+        return new RulesetNode([], []);
     }
 
     /**
@@ -236,16 +236,16 @@ class MediaNode extends DirectiveNode
     public function permute(array $array)
     {
         if (!count($array)) {
-            return array();
+            return [];
         } elseif (count($array) === 1) {
             return $array[0];
         } else {
-            $result = array();
+            $result = [];
             $rest = $this->permute(array_slice($array, 1));
             foreach ($rest as $r) {
                 foreach ($array[0] as $a) {
                     $result[] = array_merge(
-                        is_array($a) ? $a : array($a), is_array($r) ? $r : array($r)
+                        is_array($a) ? $a : [$a], is_array($r) ? $r : [$r]
                     );
                 }
             }
@@ -265,9 +265,9 @@ class MediaNode extends DirectiveNode
             return;
         }
 
-        $this->rules = array(
-            new RulesetNode($selectors, array($this->rules[0])),
-        );
+        $this->rules = [
+            new RulesetNode($selectors, [$this->rules[0]]),
+        ];
     }
 
     /**

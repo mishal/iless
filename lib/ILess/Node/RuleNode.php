@@ -94,7 +94,7 @@ class RuleNode extends Node implements MakeableImportantInterface, MarkableAsRef
         $inline = false,
         $variable = null
     ) {
-        parent::__construct(($value instanceof Node) ? $value : new ValueNode(array($value)));
+        parent::__construct(($value instanceof Node) ? $value : new ValueNode([$value]));
 
         $this->name = $name;
         $this->important = $important ? ' '.trim($important) : '';
@@ -136,7 +136,7 @@ class RuleNode extends Node implements MakeableImportantInterface, MarkableAsRef
 
         $e = null;
         try {
-            array_push($context->importantScope, array());
+            array_push($context->importantScope, []);
             $compiledValue = $this->value->compile($context);
 
             if (!$this->variable && $compiledValue instanceof DetachedRulesetNode) {

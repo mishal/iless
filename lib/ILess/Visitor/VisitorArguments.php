@@ -28,7 +28,7 @@ final class VisitorArguments
      *
      * @param array $arguments
      */
-    public function __construct($arguments = array())
+    public function __construct($arguments = [])
     {
         foreach ($arguments as $argument => $value) {
             $this->$argument = $value;

@@ -34,7 +34,7 @@ class Generator extends Configurable
      *
      * @var array
      */
-    protected $defaultOptions = array(
+    protected $defaultOptions = [
         // an optional source root, useful for relocating source files
         // on a server or removing repeated values in the 'sources' entry.
         // This value is prepended to the individual entries in the 'source' field.
@@ -51,7 +51,7 @@ class Generator extends Configurable
         'base_path' => '',
         // encode inline map using base64?
         'inline_encode_base64' => true,
-    );
+    ];
 
     /**
      * The base64 VLQ encoder
@@ -65,7 +65,7 @@ class Generator extends Configurable
      *
      * @var array
      */
-    protected $mappings = array();
+    protected $mappings = [];
 
     /**
      * The root node
@@ -79,14 +79,14 @@ class Generator extends Configurable
      *
      * @var array
      */
-    protected $contentsMap = array();
+    protected $contentsMap = [];
 
     /**
      * File to content map
      *
      * @var array
      */
-    protected $sources = array();
+    protected $sources = [];
 
     /**
      * Constructor
@@ -99,7 +99,7 @@ class Generator extends Configurable
     public function __construct(
         RulesetNode $root,
         array $contentsMap,
-        $options = array(),
+        $options = [],
         Base64VLQ $encoder = null
     ) {
         $this->root = $root;
@@ -242,13 +242,13 @@ class Generator extends Configurable
         $originalColumn,
         $sourceFile
     ) {
-        $this->mappings[] = array(
+        $this->mappings[] = [
             'generated_line' => $generatedLine,
             'generated_column' => $generatedColumn,
             'original_line' => $originalLine,
             'original_column' => $originalColumn,
             'source_file' => $sourceFile,
-        );
+        ];
 
         return $this;
     }
@@ -260,7 +260,7 @@ class Generator extends Configurable
      */
     public function clear()
     {
-        $this->mappings = array();
+        $this->mappings = [];
 
         return $this;
     }
@@ -296,7 +296,7 @@ class Generator extends Configurable
      */
     protected function generateJson()
     {
-        $sourceMap = array(
+        $sourceMap = [
             // File version (always the first entry in the object) and must be a positive integer.
             'version' => self::VERSION,
             // An optional name of the generated code that this source map is associated with.
@@ -305,10 +305,10 @@ class Generator extends Configurable
             'sourceRoot' => $this->getOption('sourceRoot'),
             // A list of original sources used by the 'mappings' entry.
             'sources' => array_keys($this->sources),
-        );
+        ];
 
         // A list of symbol names used by the 'mappings' entry.
-        $sourceMap['names'] = array();
+        $sourceMap['names'] = [];
         // A string with the encoded mapping data.
         $sourceMap['mappings'] = $this->generateMappings();
 
@@ -354,7 +354,7 @@ class Generator extends Configurable
         }
 
         // group mappings by generated line number.
-        $groupedMap = $groupedMapEncoded = array();
+        $groupedMap = $groupedMapEncoded = [];
         foreach ($this->mappings as $m) {
             $groupedMap[$m['generated_line']][] = $m;
         }
@@ -367,7 +367,7 @@ class Generator extends Configurable
                 $groupedMapEncoded[] = ';';
             }
 
-            $lineMapEncoded = array();
+            $lineMapEncoded = [];
             $lastGeneratedColumn = 0;
 
             foreach ($line_map as $m) {

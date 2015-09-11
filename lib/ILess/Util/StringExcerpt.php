@@ -23,7 +23,7 @@ final class StringExcerpt
      *
      * @var array
      */
-    protected $lines = array();
+    protected $lines = [];
 
     /**
      * Current line

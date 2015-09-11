@@ -33,7 +33,7 @@ class DetachedRulesetNode extends Node
     /**
      * @var array
      */
-    public $frames = array();
+    public $frames = [];
 
     /**
      * @var bool
@@ -46,7 +46,7 @@ class DetachedRulesetNode extends Node
      * @param RulesetNode $ruleset
      * @param array $frames
      */
-    public function __construct(RulesetNode $ruleset, $frames = array())
+    public function __construct(RulesetNode $ruleset, $frames = [])
     {
         $this->ruleset = $ruleset;
         $this->frames = $frames;

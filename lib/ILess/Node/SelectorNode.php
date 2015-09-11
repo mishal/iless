@@ -34,14 +34,14 @@ class SelectorNode extends Node implements MarkableAsReferencedInterface, Refere
      *
      * @var array
      */
-    public $elements = array();
+    public $elements = [];
 
     /**
      * Array of extend definitions
      *
      * @var array
      */
-    public $extendList = array();
+    public $extendList = [];
 
     /**
      * The condition
@@ -93,7 +93,7 @@ class SelectorNode extends Node implements MarkableAsReferencedInterface, Refere
      */
     public function __construct(
         array $elements,
-        array $extendList = array(),
+        array $extendList = [],
         ConditionNode $condition = null,
         $index = 0,
         FileInfo $currentFileInfo = null,
@@ -133,7 +133,7 @@ class SelectorNode extends Node implements MarkableAsReferencedInterface, Refere
      */
     public function compile(Context $context, $arguments = null, $important = null)
     {
-        $elements = $extendList = array();
+        $elements = $extendList = [];
         // compile elements
         foreach ($this->elements as $e) {
             $elements[] = $e->compile($context);
@@ -159,7 +159,7 @@ class SelectorNode extends Node implements MarkableAsReferencedInterface, Refere
      * @param boolean|ConditionNode $compiledCondition Compiled condition
      * @return SelectorNode
      */
-    public function createDerived(array $elements, array $extendList = array(), $compiledCondition = null)
+    public function createDerived(array $elements, array $extendList = [], $compiledCondition = null)
     {
         $compiledCondition = !is_null($compiledCondition) ? $compiledCondition : $this->compiledCondition;
         $selector = new SelectorNode($elements, count($extendList) ? $extendList : $this->extendList, null,
@@ -179,10 +179,10 @@ class SelectorNode extends Node implements MarkableAsReferencedInterface, Refere
     {
         $element = new ElementNode('', '&', $this->index, $this->currentFileInfo);
 
-        $selector = new SelectorNode(array($element), array(), null, $this->index, $this->currentFileInfo);
+        $selector = new SelectorNode([$element], [], null, $this->index, $this->currentFileInfo);
         $selector->mediaEmpty = true;
 
-        return array($selector);
+        return [$selector];
     }
 
     /**
@@ -274,7 +274,7 @@ class SelectorNode extends Node implements MarkableAsReferencedInterface, Refere
                 array_shift($elements);
             }
         } else {
-            $elements = array();
+            $elements = [];
         }
 
         $this->cachedElements = $elements;

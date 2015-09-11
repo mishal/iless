@@ -99,14 +99,14 @@ class Core
      *
      * @var array
      */
-    protected $variables = array();
+    protected $variables = [];
 
     /**
      * Array of parsed rules
      *
      * @var array
      */
-    protected $rules = array();
+    protected $rules = [];
 
     /**
      * @var ParserInput
@@ -176,7 +176,7 @@ class Core
             $ruleset = $file->getRuleset();
             if (!$ruleset) {
                 $file->setRuleset(
-                    ($ruleset = new RulesetNode(array(), $this->parse($file->getContent())))
+                    ($ruleset = new RulesetNode([], $this->parse($file->getContent())))
                 );
             }
         }
@@ -225,7 +225,7 @@ class Core
         }
 
         $importedFile->setRuleset(
-            ($ruleset = new RulesetNode(array(), $this->parse($string)))
+            ($ruleset = new RulesetNode([], $this->parse($string)))
         );
 
         if ($returnRuleset) {
@@ -257,7 +257,7 @@ class Core
      */
     public function clearVariables()
     {
-        $this->variables = array();
+        $this->variables = [];
 
         return $this;
     }
@@ -285,7 +285,7 @@ class Core
     public function unsetVariable($variable)
     {
         if (!is_array($variable)) {
-            $variable = array($variable);
+            $variable = [$variable];
         }
 
         foreach ($variable as $name) {
@@ -359,7 +359,7 @@ class Core
      */
     public function reset($variables = true)
     {
-        $this->rules = array();
+        $this->rules = [];
 
         if ($variables) {
             $this->clearVariables();
@@ -410,7 +410,7 @@ class Core
      */
     protected function getRootRuleset()
     {
-        $root = new RulesetNode(array(), $this->rules);
+        $root = new RulesetNode([], $this->rules);
         $root->root = true;
         $root->firstRoot = true;
         $root->allowImports = true;
@@ -515,7 +515,7 @@ class Core
     protected function prepareVariables(Context $context, array $variables)
     {
         // FIXME: flag to mark variables as prepared!
-        $prepared = array();
+        $prepared = [];
         foreach ($variables as $name => $value) {
             // user provided node, no need to process it further
             if ($value instanceof Node) {
@@ -530,7 +530,7 @@ class Core
         }
 
         if (count($prepared)) {
-            $context->customVariables = new RulesetNode(array(), $prepared);
+            $context->customVariables = new RulesetNode([], $prepared);
         }
     }
 
@@ -587,7 +587,7 @@ class Core
      */
     protected function parsePrimary()
     {
-        $root = array();
+        $root = [];
         while (true) {
             while (true) {
                 $node = $this->parseComment();
@@ -612,14 +612,14 @@ class Core
             }
 
             $node = $this->matchFuncs(
-                array(
+                [
                     'parseMixinDefinition',
                     'parseRule',
                     'parseRuleset',
                     'parseMixinCall',
                     'parseRulesetCall',
                     'parseDirective',
-                )
+                ]
             );
 
             if ($node) {
@@ -702,7 +702,7 @@ class Core
                 return null;
             }
 
-            $this->input->commentStore = array();
+            $this->input->commentStore = [];
 
             // Guard
             if ($this->input->str('when')) {
@@ -741,7 +741,7 @@ class Core
         $important = false;
         $index = $this->input->i;
         $c = null;
-        $args = array();
+        $args = [];
 
         if ($s !== '.' && $s !== '#') {
             return null;
@@ -749,7 +749,7 @@ class Core
 
         $this->input->save(); // stop us absorbing part of an invalid selector
 
-        $elements = array();
+        $elements = [];
         while (true) {
             $elemIndex = $this->input->i;
             $e = $this->input->re('/\\G[#.](?:[\w-]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/');
@@ -790,22 +790,22 @@ class Core
      */
     protected function parseMixinArgs($isCall)
     {
-        $expressions = array();
-        $argsSemiColon = array();
+        $expressions = [];
+        $argsSemiColon = [];
         $isSemiColonSeparated = null;
-        $argsComma = array();
+        $argsComma = [];
         $expressionContainsNamed = null;
         $name = null;
         $expand = null;
-        $returner = array('args' => null, 'variadic' => false);
+        $returner = ['args' => null, 'variadic' => false];
 
         $this->input->save();
 
         while (true) {
             if ($isCall) {
-                $arg = $this->matchFuncs(array('parseDetachedRuleset', 'parseExpression'));
+                $arg = $this->matchFuncs(['parseDetachedRuleset', 'parseExpression']);
             } else {
-                $this->input->commentStore = array();
+                $this->input->commentStore = [];
                 if ($this->input->str('...')) {
                     $returner['variadic'] = true;
                     if ($this->input->char(";") && !$isSemiColonSeparated) {
@@ -813,14 +813,14 @@ class Core
                     }
 
                     if ($isSemiColonSeparated) {
-                        $argsSemiColon[] = array('variadic' => true);
+                        $argsSemiColon[] = ['variadic' => true];
                     } else {
-                        $argsComma[] = array('variadic' => true);
+                        $argsComma[] = ['variadic' => true];
                     }
                     break;
                 }
                 $arg = $this->matchFuncs(
-                    array('parseEntitiesVariable', 'parseEntitiesLiteral', 'parseEntitiesKeyword')
+                    ['parseEntitiesVariable', 'parseEntitiesLiteral', 'parseEntitiesKeyword']
                 );
             }
 
@@ -858,7 +858,7 @@ class Core
                         $expressionContainsNamed = true;
                     }
 
-                    $value = $this->matchFuncs(array('parseDetachedRuleset', 'parseExpression'));
+                    $value = $this->matchFuncs(['parseDetachedRuleset', 'parseExpression']);
                     if (!$value) {
                         if ($isCall) {
                             throw new CompilerException(
@@ -868,7 +868,7 @@ class Core
                             );
                         } else {
                             $this->input->restore();
-                            $returner['args'] = array();
+                            $returner['args'] = [];
 
                             return $returner;
                         }
@@ -885,9 +885,9 @@ class Core
                         }
 
                         if ($isSemiColonSeparated) {
-                            $argsSemiColon[] = array('name' => $arg->name, 'variadic' => true);
+                            $argsSemiColon[] = ['name' => $arg->name, 'variadic' => true];
                         } else {
-                            $argsComma[] = array('name' => $arg->name, 'variadic' => true);
+                            $argsComma[] = ['name' => $arg->name, 'variadic' => true];
                         }
                         break;
                     } else {
@@ -903,7 +903,7 @@ class Core
                 $expressions[] = $value;
             }
 
-            $argsComma[] = array('name' => $nameLoop, 'value' => $value, 'expand' => $expand);
+            $argsComma[] = ['name' => $nameLoop, 'value' => $value, 'expand' => $expand];
 
             if ($this->input->char(',')) {
                 continue;
@@ -923,9 +923,9 @@ class Core
                 if (count($expressions) > 1) {
                     $value = new ValueNode($expressions);
                 }
-                $argsSemiColon[] = array('name' => $name, 'value' => $value, 'expand' => $expand);
+                $argsSemiColon[] = ['name' => $name, 'value' => $value, 'expand' => $expand];
                 $name = null;
-                $expressions = array();
+                $expressions = [];
                 $expressionContainsNamed = false;
             }
         }
@@ -957,14 +957,14 @@ class Core
 
         $this->input->save();
 
-        if ($name = $this->matchFuncs(array('parseVariable', 'parseRuleProperty'))) {
+        if ($name = $this->matchFuncs(['parseVariable', 'parseRuleProperty'])) {
 
             $isVariable = is_string($name);
             if ($isVariable) {
                 $value = $this->parseDetachedRuleset();
             }
 
-            $this->input->commentStore = array();
+            $this->input->commentStore = [];
 
             if (!$value) {
 
@@ -1037,7 +1037,7 @@ class Core
      */
     protected function parseRuleset()
     {
-        $selectors = array();
+        $selectors = [];
 
         $this->input->save();
 
@@ -1052,7 +1052,7 @@ class Core
                 break;
             }
             $selectors[] = $s;
-            $this->input->commentStore = array();
+            $this->input->commentStore = [];
             if ($s->condition && count($selectors) > 1) {
                 throw new ParserException(
                     'Guards are only currently allowed on a single selector.',
@@ -1073,7 +1073,7 @@ class Core
                 );
             }
 
-            $this->input->commentStore = array();
+            $this->input->commentStore = [];
         }
 
         if ($selectors && is_array($rules = $this->parseBlock())) {
@@ -1108,9 +1108,9 @@ class Core
      */
     protected function parseSelector($isLess = false)
     {
-        $elements = array();
-        $extendList = array();
-        $allExtends = array();
+        $elements = [];
+        $extendList = [];
+        $allExtends = [];
         $condition = null;
         $when = false;
         $e = null;
@@ -1169,7 +1169,7 @@ class Core
      */
     protected function parseExtend($isRule = false)
     {
-        $extendList = array();
+        $extendList = [];
         $index = $this->input->i;
 
         if (!$this->input->str($isRule ? '&:extend(' : ':extend(')) {
@@ -1178,7 +1178,7 @@ class Core
 
         do {
             $option = null;
-            $elements = array();
+            $elements = [];
             while (!($option = $this->input->re('/\\G(all)(?=\s*(\)|,))/'))) {
                 $e = $this->parseElement();
                 if (!$e) {
@@ -1242,7 +1242,7 @@ class Core
         $c = $this->parseCombinator();
 
         $e = $this->match(
-            array(
+            [
                 '/\\G^(?:\d+\.\d+|\d+)%/',
                 // http://stackoverflow.com/questions/3665962/regular-expression-error-no-ending-delimiter
                 '/\\G^(?:[.#]?|:*)(?:[\w-]|[^\\x{00}-\\x{9f}]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/',
@@ -1252,7 +1252,7 @@ class Core
                 '/\\G^\([^&()@]+\)/',
                 '/\\G^[\.#:](?=@)/',
                 'parseEntitiesVariableCurly',
-            )
+            ]
         );
 
         if (!$e) {
@@ -1337,12 +1337,12 @@ class Core
         $val = null;
         if (($op = $this->input->re('/\\G[|~*$^]?=/'))) {
             $val = $this->match(
-                array(
+                [
                     'parseEntitiesQuoted',
                     '/\\G[0-9]+%/',
                     '/\\G[\w-]+/',
                     'parseEntitiesVariableCurly',
-                )
+                ]
             );
         }
 
@@ -1361,7 +1361,7 @@ class Core
     protected function parseValue()
     {
         $e = null;
-        $expressions = array();
+        $expressions = [];
         do {
             $e = $this->parseExpression();
             if ($e) {
@@ -1422,15 +1422,15 @@ class Core
     protected function parseRuleProperty()
     {
         $this->input->save();
-        $index = array();
-        $name = array();
+        $index = [];
+        $name = [];
 
         $simpleProperty = $this->input->re('/\\G([_a-zA-Z0-9-]+)\s*:/');
         if ($simpleProperty) {
             $name = new KeywordNode($simpleProperty[1]);
             $this->input->forget();
 
-            return array($name);
+            return [$name];
         }
 
         // In PHP 5.3 we cannot use $this in the closure
@@ -1491,7 +1491,7 @@ class Core
             $isSpaced = $this->input->isWhitespace(-1);
             while (true) {
                 $op = ($op = $this->input->re('/\\G[-+]\s+/')) ? $op : (!$isSpaced ? ($this->match(
-                    array('+', '-')
+                    ['+', '-']
                 )) : false);
                 if (!$op) {
                     break;
@@ -1505,7 +1505,7 @@ class Core
                 $m->parensInOp = true;
                 $a->parensInOp = true;
 
-                $operation = new OperationNode($op, array($operation ? $operation : $m, $a), $isSpaced);
+                $operation = new OperationNode($op, [$operation ? $operation : $m, $a], $isSpaced);
                 $isSpaced = $this->input->isWhitespace(-1);
             }
 
@@ -1531,7 +1531,7 @@ class Core
 
                 $this->input->save();
 
-                $op = $this->match(array('/', '*'));
+                $op = $this->match(['/', '*']);
 
                 if (!$op) {
                     $this->input->forget();
@@ -1550,7 +1550,7 @@ class Core
                 $m->parensInOp = true;
                 $a->parensInOp = true;
 
-                $operation = new OperationNode($op, array($operation ? $operation : $m, $a), $isSpaced);
+                $operation = new OperationNode($op, [$operation ? $operation : $m, $a], $isSpaced);
                 $isSpaced = $this->input->isWhitespace(-1);
             }
 
@@ -1600,7 +1600,7 @@ class Core
         }
 
         $this->expect('(');
-        if ($a = ($this->matchFuncs(array('parseAddition', 'parseEntitiesKeyword', 'parseEntitiesQuoted')))) {
+        if ($a = ($this->matchFuncs(['parseAddition', 'parseEntitiesKeyword', 'parseEntitiesQuoted']))) {
             $op = null;
             if ($this->input->char('>')) {
                 if ($this->input->char('=')) {
@@ -1626,7 +1626,7 @@ class Core
 
             $c = null;
             if ($op) {
-                $b = $this->matchFuncs(array('parseAddition', 'parseEntitiesKeyword', 'parseEntitiesQuoted'));
+                $b = $this->matchFuncs(['parseAddition', 'parseEntitiesKeyword', 'parseEntitiesQuoted']);
                 if ($b) {
                     $c = new ConditionNode($op, $a, $b, $index, $negate);
                 } else {
@@ -1655,7 +1655,7 @@ class Core
             $a = $this->parseAddition();
             if ($a && $this->input->char(')')) {
                 $this->input->forget();
-                $e = new ExpressionNode(array($a));
+                $e = new ExpressionNode([$a]);
                 $e->parens = true;
 
                 return $e;
@@ -1683,13 +1683,13 @@ class Core
         }
 
         $o = $this->matchFuncs(
-            array(
+            [
                 'parseSubExpression',
                 'parseEntitiesDimension',
                 'parseEntitiesColor',
                 'parseEntitiesVariable',
                 'parseEntitiesCall',
-            )
+            ]
         );
 
         if ($negate) {
@@ -1720,7 +1720,7 @@ class Core
     {
         $block = $this->parseBlock();
         if (null !== $block) {
-            $block = new RulesetNode(array(), $block);
+            $block = new RulesetNode([], $block);
         }
 
         return $block;
@@ -1744,7 +1744,7 @@ class Core
      */
     protected function parseComments()
     {
-        $comments = array();
+        $comments = [];
         while ($comment = $this->parseComment()) {
             $comments[] = $comment;
         }
@@ -1776,7 +1776,7 @@ class Core
             return null;
         }
 
-        $value = $this->matchFuncs(array('parseImport', 'parsePlugin', 'parseMedia'));
+        $value = $this->matchFuncs(['parseImport', 'parsePlugin', 'parseMedia']);
 
         if ($value) {
             return $value;
@@ -1847,7 +1847,7 @@ class Core
 
         }
 
-        $this->input->commentStore = array();
+        $this->input->commentStore = [];
 
         if ($hasIdentifier) {
             $value = $this->parseEntity();
@@ -1892,7 +1892,7 @@ class Core
     protected function parseEntity()
     {
         return $this->matchFuncs(
-            array(
+            [
                 'parseComment',
                 'parseEntitiesLiteral',
                 'parseEntitiesVariable',
@@ -1900,7 +1900,7 @@ class Core
                 'parseEntitiesCall',
                 'parseEntitiesKeyword',
                 'parseEntitiesJavascript',
-            )
+            ]
         );
     }
 
@@ -1912,12 +1912,12 @@ class Core
     protected function parseEntitiesLiteral()
     {
         return $this->matchFuncs(
-            array(
+            [
                 'parseEntitiesDimension',
                 'parseEntitiesColor',
                 'parseEntitiesQuoted',
                 'parseUnicodeDescriptor',
-            )
+            ]
         );
     }
 
@@ -2059,11 +2059,11 @@ class Core
         }
 
         $value = $this->match(
-            array(
+            [
                 'parseEntitiesQuoted',
                 'parseEntitiesVariable',
                 '/\\G(?:(?:\\\\[\(\)\'"])|[^\(\)\'"])+/',
-            )
+            ]
         );
 
         $this->input->autoCommentAbsorb = true;
@@ -2134,10 +2134,10 @@ class Core
      */
     protected function parseEntitiesArguments()
     {
-        $args = array();
+        $args = [];
 
         while (true) {
-            $arg = $this->matchFuncs(array('parseEntitiesAssignment', 'parseExpression'));
+            $arg = $this->matchFuncs(['parseEntitiesAssignment', 'parseExpression']);
             if (!$arg) {
                 break;
             }
@@ -2191,7 +2191,7 @@ class Core
      */
     protected function parseExpression()
     {
-        $entities = array();
+        $entities = [];
         $e = null;
         do {
             $e = $this->parseComment();
@@ -2200,7 +2200,7 @@ class Core
                 continue;
             }
 
-            $e = $this->matchFuncs(array('parseAddition', 'parseEntity'));
+            $e = $this->matchFuncs(['parseAddition', 'parseEntity']);
             if ($e) {
                 $entities[] = $e;
                 // operations do not allow keyword "/" dimension (e.g. small/20px) so we support that here
@@ -2290,10 +2290,10 @@ class Core
         if ($dir) {
             $options = $this->parseImportOptions();
             if (!$options) {
-                $options = array();
+                $options = [];
             }
 
-            if (($path = $this->matchFuncs(array('parseEntitiesQuoted', 'parseEntitiesUrl')))) {
+            if (($path = $this->matchFuncs(['parseEntitiesQuoted', 'parseEntitiesUrl']))) {
                 $features = $this->parseMediaFeatures();
 
                 if (!$this->input->char(';')) {
@@ -2329,7 +2329,7 @@ class Core
             return null;
         }
 
-        $options = array();
+        $options = [];
 
         do {
             if ($o = $this->parseImportOption()) {
@@ -2414,7 +2414,7 @@ class Core
      */
     protected function parseMediaFeatures()
     {
-        $features = array();
+        $features = [];
         do {
             if ($e = $this->parseMediaFeature()) {
                 $features[] = $e;
@@ -2440,11 +2440,11 @@ class Core
      */
     protected function parseMediaFeature()
     {
-        $nodes = array();
+        $nodes = [];
         $this->input->save();
 
         do {
-            if ($e = $this->matchFuncs(array('parseEntitiesKeyword', 'parseEntitiesVariable'))) {
+            if ($e = $this->matchFuncs(['parseEntitiesKeyword', 'parseEntitiesVariable'])) {
                 $nodes[] = $e;
             } elseif ($this->input->char('(')) {
                 $p = $this->parseProperty();
@@ -2487,8 +2487,8 @@ class Core
         $index = $this->input->i;
         $dir = $this->input->re('/\\G^@plugin?\s+/');
         if ($dir) {
-            $options = array('plugin' => true);
-            if (($path = $this->matchFuncs(array('parseEntitiesQuoted', 'parseEntitiesUrl')))) {
+            $options = ['plugin' => true];
+            if (($path = $this->matchFuncs(['parseEntitiesQuoted', 'parseEntitiesUrl']))) {
                 if (!$this->input->char(';')) {
                     $this->input->i = $index;
                     throw new ParserException('Missing semi-colon on plugin');
@@ -2579,7 +2579,7 @@ class Core
     protected function match($token)
     {
         if (!is_array($token)) {
-            $token = array($token);
+            $token = [$token];
         }
 
         foreach ($token as $t) {

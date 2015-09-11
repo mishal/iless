@@ -30,7 +30,7 @@ class Parser extends Core
      *
      * @var array
      */
-    protected $outputFilters = array();
+    protected $outputFilters = [];
 
     /**
      * The cache
@@ -48,12 +48,12 @@ class Parser extends Core
      * @param array $outputFilters Array of output filters - deprecated
      */
     public function __construct(
-        array $options = array(),
+        array $options = [],
         CacheInterface $cache = null,
-        array $importers = array(),
-        array $outputFilters = array()
+        array $importers = [],
+        array $outputFilters = []
     ) {
-        $importDirs = array();
+        $importDirs = [];
         // we have an import dirs option
         if (isset($options['import_dirs'])) {
             $importDirs = (array)$options['import_dirs'];
@@ -63,9 +63,9 @@ class Parser extends Core
         $context = new Context($options, new FunctionRegistry());
 
         if (!$importers) {
-            $importers = array(
+            $importers = [
                 new FileSystemImporter($importDirs),
-            );
+            ];
         }
 
         // output filters
@@ -95,7 +95,7 @@ class Parser extends Core
         // 3) environment options
         $cacheKey = $this->generateCacheKey(
             serialize($this->rules).serialize($variables).serialize(
-                array(
+                [
                     $this->context->compress,
                     $this->context->sourceMap,
                     $this->context->sourceMapOptions,
@@ -109,7 +109,7 @@ class Parser extends Core
                     $this->context->urlArgs,
                     $this->context->dumpLineNumbers,
                     $this->context->strictImports,
-                )
+                ]
             )
         );
 
@@ -133,13 +133,13 @@ class Parser extends Core
         if ($rebuild) {
             $css = parent::toCSS($ruleset, $variables);
             // what have been imported?
-            $importedFiles = array();
+            $importedFiles = [];
             foreach ($this->importer->getImportedFiles() as $importedFile) {
                 // we need to save original path, last modified timestamp and currentFileInfo object
                 // see ILess\Importer::setImportedFile()
-                $importedFiles[] = array($importedFile[0]->getLastModified(), $importedFile[1], $importedFile[2]);
+                $importedFiles[] = [$importedFile[0]->getLastModified(), $importedFile[1], $importedFile[2]];
             }
-            $this->cache->set($cacheKey, array($css, $importedFiles));
+            $this->cache->set($cacheKey, [$css, $importedFiles]);
         }
 
         return $this->filter($css);
@@ -199,7 +199,7 @@ class Parser extends Core
      * @return $this
      * @throws InvalidArgumentException If the callable is not valid
      */
-    public function addFunction($functionName, $callable, $aliases = array())
+    public function addFunction($functionName, $callable, $aliases = [])
     {
         $this->getContext()->getFunctionRegistry()->addFunction($functionName, $callable, $aliases);
 

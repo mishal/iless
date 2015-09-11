@@ -60,7 +60,7 @@ class ValueNode extends Node
             return $this->value[0]->compile($context);
         }
 
-        $return = array();
+        $return = [];
         foreach ($this->value as $v) {
             $return[] = $v->compile($context);
         }

@@ -79,7 +79,7 @@ class ExpressionNode extends Node implements MarkableAsReferencedInterface
         }
         $count = count($this->value);
         if ($count > 1) {
-            $compiled = array();
+            $compiled = [];
             foreach ($this->value as $v) {
                 /* @var $v Node */
                 $compiled[] = $v->compile($context);
@@ -123,7 +123,7 @@ class ExpressionNode extends Node implements MarkableAsReferencedInterface
     public function throwAwayComments()
     {
         if (is_array($this->value)) {
-            $new = array();
+            $new = [];
             foreach ($this->value as $v) {
                 if ($v instanceof CommentNode) {
                     continue;

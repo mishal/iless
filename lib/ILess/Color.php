@@ -44,7 +44,7 @@ final class Color
      *
      * @var array
      */
-    public $rgb = array();
+    public $rgb = [];
 
     /**
      * The alpha channel
@@ -86,7 +86,7 @@ final class Color
      * @param integer $alpha The alpha channel
      * @param string $originalForm
      */
-    public function __construct($rgb = array(255, 255, 255), $alpha = 1, $originalForm = null)
+    public function __construct($rgb = [255, 255, 255], $alpha = 1, $originalForm = null)
     {
         if (is_array($rgb)) {
             $this->rgb = $rgb;
@@ -111,7 +111,7 @@ final class Color
                     $this->rgb[] = hexdec($c.$c);
                 }
             } elseif (strtolower($rgb) == 'transparent') {
-                $this->rgb = array(255, 255, 255);
+                $this->rgb = [255, 255, 255];
                 $this->isTransparentKeyword = true;
                 $alpha = 0;
             } else {
@@ -131,7 +131,7 @@ final class Color
      */
     protected function getFixedRGB()
     {
-        $components = array();
+        $components = [];
         foreach ($this->rgb as $i) {
 
             $i = Math::round($i);
@@ -165,7 +165,7 @@ final class Color
             $color = new Color(substr(Color::color($keyword), 1));
             $color->keyword = $keyword;
         } elseif ($keyword === 'transparent') {
-            $color = new Color(array(255, 255, 255), 0);
+            $color = new Color([255, 255, 255], 0);
             $color->isTransparentKeyword = true;
         }
 
@@ -330,7 +330,7 @@ final class Color
             $h /= 6;
         }
 
-        $this->hsl = array('h' => $h * 360, 's' => $s, 'l' => $l, 'a' => $a);
+        $this->hsl = ['h' => $h * 360, 's' => $s, 'l' => $l, 'a' => $a];
 
         return $this->hsl;
     }
@@ -380,7 +380,7 @@ final class Color
             $h /= 6;
         }
 
-        return array('h' => $h * 360, 's' => $s, 'v' => $v, 'a' => $a);
+        return ['h' => $h * 360, 's' => $s, 'v' => $v, 'a' => $a];
     }
 
     /**
@@ -391,7 +391,7 @@ final class Color
     public function toARGB()
     {
         $argb = array_merge(
-            array($this->alpha * 255),
+            [$this->alpha * 255],
             $this->rgb
         );
 
@@ -449,12 +449,12 @@ final class Color
                 'rgba(%s)',
                 join(
                     $compress ? ',' : ', ',
-                    array(
+                    [
                         $fixedRGB[0],
                         $fixedRGB[1],
                         $fixedRGB[2],
                         Math::clean($this->clamp($alpha, 1)),
-                    )
+                    ]
                 )
             );
         }
@@ -464,7 +464,7 @@ final class Color
             return $this->keyword;
         }
 
-        $color = array();
+        $color = [];
         foreach ($this->getFixedRgb() as $i) {
             $color[] = str_pad(dechex(Math::round($i)), 2, '0', STR_PAD_LEFT);
         }

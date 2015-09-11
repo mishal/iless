@@ -23,21 +23,21 @@ abstract class Configurable
      *
      * @var array
      */
-    protected $options = array();
+    protected $options = [];
 
     /**
      * Array of default options
      *
      * @var array
      */
-    protected $defaultOptions = array();
+    protected $defaultOptions = [];
 
     /**
      * Constructor
      *
      * @param array $options
      */
-    public function __construct($options = array())
+    public function __construct($options = [])
     {
         $this->setOptions($options);
         $this->setup();
@@ -58,7 +58,7 @@ abstract class Configurable
     {
         // first convert to array if needed
         if (!is_array($options)) {
-            if (is_object($options) && is_callable(array($options, 'toArray'))) {
+            if (is_object($options) && is_callable([$options, 'toArray'])) {
                 $options = $options->toArray();
             } else {
                 throw new InvalidArgumentException(sprintf('Options for "%s" must be an array or a object with ->toArray() method',

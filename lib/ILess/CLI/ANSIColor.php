@@ -21,16 +21,16 @@ class ANSIColor
      *
      * @var array
      */
-    protected static $codes = array(
-        'reset' => array(0, 0),
-        'bold' => array(1, 22),
-        'inverse' => array(7, 27),
-        'underline' => array(4, 24),
-        'yellow' => array(33, 39),
-        'green' => array(32, 39),
-        'red' => array(31, 39),
-        'grey' => array(90, 39),
-    );
+    protected static $codes = [
+        'reset' => [0, 0],
+        'bold' => [1, 22],
+        'inverse' => [7, 27],
+        'underline' => [4, 24],
+        'yellow' => [33, 39],
+        'green' => [32, 39],
+        'red' => [31, 39],
+        'grey' => [90, 39],
+    ];
 
     /**
      * Colorizes the string by given style

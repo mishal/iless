@@ -31,7 +31,7 @@ abstract class Visitor implements VisitorInterface
      *
      * @var array
      */
-    private $methodCache = array();
+    private $methodCache = [];
 
     /**
      * @var string
@@ -98,9 +98,9 @@ abstract class Visitor implements VisitorInterface
         }
 
         if (($type = $node->getType()) && ($funcName = 'visit'.$type) && isset($this->methodCache[$funcName])) {
-            $arguments = new VisitorArguments(array(
+            $arguments = new VisitorArguments([
                 'visitDeeper' => true,
-            ));
+            ]);
 
             $newNode = $this->$funcName($node, $arguments);
 
@@ -138,13 +138,13 @@ abstract class Visitor implements VisitorInterface
         if ($nonReplacing || !$this->isReplacing()) {
             // @ is here intentionally to prevent warnings like when exception is thrown:
             // Warning: array_map(): An error occurred while invoking the map callback
-            @array_map(array($this, 'visit'), $nodes);
+            @array_map([$this, 'visit'], $nodes);
 
             return $nodes;
         }
 
         // Replacing
-        $newNodes = array();
+        $newNodes = [];
         foreach ($nodes as $node) {
             $evald = $this->visit($node);
             if ($evald === null) {

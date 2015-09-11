@@ -51,9 +51,9 @@ class ImportNode extends Node implements \Serializable
      *
      * @var array
      */
-    public $options = array(
+    public $options = [
         'inline' => false,
-    );
+    ];
 
     /**
      * The features
@@ -110,7 +110,7 @@ class ImportNode extends Node implements \Serializable
     public function __construct(
         Node $path,
         Node $features = null,
-        array $options = array(),
+        array $options = [],
         $index = 0,
         FileInfo $currentFileInfo = null
     ) {
@@ -192,20 +192,20 @@ class ImportNode extends Node implements \Serializable
                 }
             }
 
-            return array();
+            return [];
         }
 
         if ($this->skip) {
-            return array();
+            return [];
         }
 
         if ($this->getOption('inline')) {
-            $contents = new AnonymousNode($this->root, 0, new FileInfo(array(
+            $contents = new AnonymousNode($this->root, 0, new FileInfo([
                 'filename' => $this->importedFilename,
                 'reference' => $this->path->currentFileInfo->reference
-            )), true, true, false);
+            ]), true, true, false);
 
-            return $this->features ? new MediaNode(array($contents), $this->features->value) : [$contents];
+            return $this->features ? new MediaNode([$contents], $this->features->value) : [$contents];
         } elseif ($this->css) {
             $features = $this->features ? $this->features->compile($context) : null;
             $import = new ImportNode($this->compilePath($context), $features, $this->options, $this->index);
@@ -217,7 +217,7 @@ class ImportNode extends Node implements \Serializable
             return $import;
         } else {
 
-            $ruleset = new RulesetNode(array(), $this->root ? $this->root->rules : array());
+            $ruleset = new RulesetNode([], $this->root ? $this->root->rules : []);
             $ruleset->compileImports($context);
 
             return $this->features ? new MediaNode($ruleset->rules, $this->features->value) : $ruleset->rules;

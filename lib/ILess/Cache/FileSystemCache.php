@@ -51,10 +51,10 @@ class FileSystemCache extends Cache
      *
      * @var array
      */
-    protected $defaultOptions = array(
+    protected $defaultOptions = [
         'ttl' => 86400,
         'suffix' => '.cache',
-    );
+    ];
 
     /**
      * Constructor
@@ -63,13 +63,13 @@ class FileSystemCache extends Cache
      * @throws LogicException If "cache_dir" option is missing
      * @throws CacheException If the cache directory does not exist or is not writable.
      */
-    public function __construct($options = array())
+    public function __construct($options = [])
     {
         // this is a cache directory
         if (is_string($options)) {
-            $options = array(
+            $options = [
                 'cache_dir' => $options,
-            );
+            ];
         }
         parent::__construct($options);
     }
@@ -234,7 +234,7 @@ class FileSystemCache extends Cache
             throw new CacheException(sprintf('Unable to read cache file "%s".', $path));
         }
 
-        $data = array();
+        $data = [];
         @flock($fp, LOCK_SH);
         $data[self::READ_TIMEOUT] = intval(@stream_get_contents($fp, 12, 0));
         if ($type != self::READ_TIMEOUT && time() < $data[self::READ_TIMEOUT]) {

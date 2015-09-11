@@ -69,10 +69,10 @@ class CallbackImporter implements ImporterInterface
      */
     public function import($path, FileInfo $currentFileInfo)
     {
-        return call_user_func_array($this->importCallback, array(
+        return call_user_func_array($this->importCallback, [
             $path,
             $currentFileInfo,
-        ));
+        ]);
     }
 
     /**
@@ -80,10 +80,10 @@ class CallbackImporter implements ImporterInterface
      */
     public function getLastModified($path, FileInfo $currentFileInfo)
     {
-        return call_user_func_array($this->lastModifiedCallback, array(
+        return call_user_func_array($this->lastModifiedCallback, [
             $path,
             $currentFileInfo,
-        ));
+        ]);
     }
 
 }

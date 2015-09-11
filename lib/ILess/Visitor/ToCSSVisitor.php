@@ -103,7 +103,7 @@ class ToCSSVisitor extends Visitor
     {
         // mixin definitions do not get compiled - this means they keep state
         // so we have to clear that state here so it isn't used if toCSS is called twice
-        $node->frames = array();
+        $node->frames = [];
     }
 
     /**
@@ -275,10 +275,10 @@ class ToCSSVisitor extends Visitor
             $this->checkPropertiesInRoot($node->rules);
         }
 
-        $rulesets = array();
+        $rulesets = [];
 
         if (!$node->root) {
-            $paths = array();
+            $paths = [];
             foreach ($node->paths as $p) {
                 if ($p[0]->elements[0]->combinator->value === ' ') {
                     $p[0]->elements[0]->combinator = new CombinatorNode('');
@@ -314,7 +314,7 @@ class ToCSSVisitor extends Visitor
             if ($count > 0) {
                 $node->accept($this);
             } else {
-                $node->rules = array();
+                $node->rules = [];
             }
 
             $arguments->visitDeeper = false;
@@ -333,14 +333,14 @@ class ToCSSVisitor extends Visitor
 
             // now decide whether we keep the ruleset
             if ($node->rules && $node->paths) {
-                array_splice($rulesets, 0, 0, array($node));
+                array_splice($rulesets, 0, 0, [$node]);
             }
 
         } else {
             $node->accept($this);
             $arguments->visitDeeper = false;
             if ($node->firstRoot || count($node->rules) > 0) {
-                array_splice($rulesets, 0, 0, array($node));
+                array_splice($rulesets, 0, 0, [$node]);
             }
         }
 
@@ -395,7 +395,7 @@ class ToCSSVisitor extends Visitor
      */
     private function mergeRules(array &$rules)
     {
-        $groups = array();
+        $groups = [];
         for ($i = 0, $rulesCount = count($rules); $i < $rulesCount; $i++) {
             $rule = $rules[$i];
             if (($rule instanceof RuleNode) && $rule->merge) {
@@ -404,7 +404,7 @@ class ToCSSVisitor extends Visitor
                     $key .= ',!';
                 }
                 if (!isset($groups[$key])) {
-                    $groups[$key] = array();
+                    $groups[$key] = [];
                 } else {
                     array_splice($rules, $i--, 1);
                     $rulesCount--;
@@ -416,14 +416,14 @@ class ToCSSVisitor extends Visitor
         foreach ($groups as $parts) {
             if (count($parts) > 1) {
                 $rule = $parts[0];
-                $spacedGroups = array();
-                $lastSpacedGroup = array();
+                $spacedGroups = [];
+                $lastSpacedGroup = [];
                 foreach ($parts as $p) {
                     if ($p->merge === '+') {
                         if (count($lastSpacedGroup) > 0) {
                             $spacedGroups[] = $this->toExpression($lastSpacedGroup);
                         }
-                        $lastSpacedGroup = array();
+                        $lastSpacedGroup = [];
                     }
                     $lastSpacedGroup[] = $p;
                 }
@@ -441,7 +441,7 @@ class ToCSSVisitor extends Visitor
     private function removeDuplicateRules(array &$rules)
     {
         // remove duplicates
-        $ruleCache = array();
+        $ruleCache = [];
         for ($i = count($rules) - 1; $i >= 0; $i--) {
             $rule = $rules[$i];
             if ($rule instanceof RuleNode) {
@@ -451,7 +451,7 @@ class ToCSSVisitor extends Visitor
                 } else {
                     $ruleList = &$ruleCache[$key];
                     if ($ruleList instanceof RuleNode) {
-                        $ruleList = $ruleCache[$key] = array($ruleCache[$key]->toCSS($this->getContext()));
+                        $ruleList = $ruleCache[$key] = [$ruleCache[$key]->toCSS($this->getContext())];
                     }
                     $ruleCSS = $rule->toCSS($this->getContext());
                     if (array_search($ruleCSS, $ruleList) !== false) {
@@ -470,7 +470,7 @@ class ToCSSVisitor extends Visitor
      */
     private function toExpression($values)
     {
-        $mapped = array();
+        $mapped = [];
         foreach ($values as $p) {
             $mapped[] = $p->value;
         }

@@ -46,7 +46,7 @@ class Autoloader
 
         self::$libDir = dirname(__DIR__).'/ILess';
 
-        if (false === spl_autoload_register(array('ILess\Autoloader', 'loadClass'))) {
+        if (false === spl_autoload_register(['ILess\Autoloader', 'loadClass'])) {
             throw new Exception('Unable to register ILess\Autoloader::loadClass as an autoloading method.');
         }
 
@@ -60,7 +60,7 @@ class Autoloader
      */
     public static function unregister()
     {
-        spl_autoload_unregister(array('ILess\Autoloader', 'loadClass'));
+        spl_autoload_unregister(['ILess\Autoloader', 'loadClass']);
         self::$registered = false;
     }
 

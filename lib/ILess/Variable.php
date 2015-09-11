@@ -96,11 +96,11 @@ class Variable
         if (Color::isNamedColor($value) || strtolower($value) === 'transparent' || strpos($value, '#') === 0) {
             $value = new ColorNode(new Color($value));
         } elseif (preg_match(self::RGBA_COLOR_REGEXP, $value, $matches)) { // RGB(A) colors
-            $value = new ColorNode(new Color(array(
+            $value = new ColorNode(new Color([
                 $matches[1],
                 $matches[2],
                 $matches[3],
-            ), isset($matches[4]) ? $matches[4] : 1));
+            ], isset($matches[4]) ? $matches[4] : 1));
         } // Quoted string
         elseif (preg_match(self::QUOTED_REGEXP, $value, $matches)) {
             $value = new QuotedNode($matches[0], $matches[0][0] == '"' ? $matches[1] : $matches[2]);
@@ -125,9 +125,9 @@ class Variable
      */
     public function toNode()
     {
-        return new RuleNode('@'.$this->name, new ValueNode(array(
+        return new RuleNode('@'.$this->name, new ValueNode([
             $this->value,
-        )), $this->important ? '!important' : '');
+        ]), $this->important ? '!important' : '');
     }
 
     /**

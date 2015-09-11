@@ -108,7 +108,7 @@ class OperationNode extends Node
 
             return $a->operate($context, $this->operator, $b);
         } else {
-            return new OperationNode($this->operator, array($a, $b), $this->isSpaced);
+            return new OperationNode($this->operator, [$a, $b], $this->isSpaced);
         }
     }
 

@@ -43,7 +43,7 @@ class CallNode extends Node
      *
      * @var array
      */
-    protected $args = array();
+    protected $args = [];
 
     /**
      * The index
@@ -90,7 +90,7 @@ class CallNode extends Node
     public function compile(Context $context, $arguments = null, $important = null)
     {
         // prepare arguments
-        $args = array();
+        $args = [];
         foreach ($this->args as $arg) {
             /* @var $arg Node */
             $args[] = $arg->compile($context);

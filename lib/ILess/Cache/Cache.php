@@ -25,7 +25,7 @@ abstract class Cache extends Configurable implements CacheInterface
      * @param string $driver The driver name
      * @param array|mixed $options Array of options for the driver
      */
-    public static function factory($driver, $options = array())
+    public static function factory($driver, $options = [])
     {
         if (!class_exists($cacheClass = sprintf('ILess\Cache\%s', $driver))) {
             throw new InvalidArgumentException(sprintf('The cache driver "%s" does not exist.', $driver));

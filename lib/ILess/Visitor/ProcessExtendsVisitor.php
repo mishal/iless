@@ -34,12 +34,12 @@ class ProcessExtendsVisitor extends Visitor
      *
      * @var array
      */
-    public $allExtendsStack = array();
+    public $allExtendsStack = [];
 
     /**
      * @var array
      */
-    public $extendIndicies = array();
+    public $extendIndicies = [];
 
     /**
      * @var int
@@ -51,7 +51,7 @@ class ProcessExtendsVisitor extends Visitor
      */
     public function run($root)
     {
-        $this->extendIndicies = array();
+        $this->extendIndicies = [];
 
         $finder = new ExtendFinderVisitor();
         $finder->run($root);
@@ -61,7 +61,7 @@ class ProcessExtendsVisitor extends Visitor
         }
 
         $root->allExtends = $this->doExtendChaining($root->allExtends, $root->allExtends);
-        $this->allExtendsStack = array(&$root->allExtends);
+        $this->allExtendsStack = [&$root->allExtends];
 
         $newRoot = $this->visit($root);
         $this->checkExtendsForNonMatched($root->allExtends);
@@ -71,7 +71,7 @@ class ProcessExtendsVisitor extends Visitor
 
     private function checkExtendsForNonMatched($extendList)
     {
-        $process = array();
+        $process = [];
         foreach ($extendList as $extend) {
             if (!$extend->hasFoundMatches && count($extend->parentIds) === 1) {
                 $process[] = $extend;
@@ -112,7 +112,7 @@ class ProcessExtendsVisitor extends Visitor
         // this method deals with all the chaining work - without it, extend is flat and doesn't work on other extend selectors
         // this is also the most expensive.. and a match on one selector can cause an extension of a selector we had already processed if
         // we look at each selector at a time, as is done in visitRuleset
-        $extendsToAdd = array();
+        $extendsToAdd = [];
         // loop through comparing every extend with every target extend.
         // a target extend is the one on the ruleset we are looking at copy/edit/pasting in place
         // e.g. .a:extend(.b) {} and .b:extend(.c) {} then the first extend extends the second one
@@ -132,7 +132,7 @@ class ProcessExtendsVisitor extends Visitor
                 }
 
                 // find a match in the target extends self selector (the bit before :extend)
-                $selectorPath = array($targetExtend->selfSelectors[0]);
+                $selectorPath = [$targetExtend->selfSelectors[0]];
 
                 $matches = $this->findMatch($extend, $selectorPath);
                 if (count($matches)) {
@@ -145,7 +145,7 @@ class ProcessExtendsVisitor extends Visitor
                         $newExtend = new ExtendNode($targetExtend->selector, $targetExtend->option);
                         $newExtend->selfSelectors = $newSelector;
                         // add the extend onto the list of extends for that selector
-                        end($newSelector)->extendList = array($newExtend);
+                        end($newSelector)->extendList = [$newExtend];
                         // record that we need to add it.
                         $extendsToAdd[] = $newExtend;
                         $newExtend->ruleset = $targetExtend->ruleset;
@@ -239,7 +239,7 @@ class ProcessExtendsVisitor extends Visitor
 
         $allExtends = $this->allExtendsStack[count($this->allExtendsStack) - 1];
         $pathsCount = count($node->paths);
-        $selectorsToAdd = array();
+        $selectorsToAdd = [];
 
         // look at each selector path in the ruleset, find any extend matches and then copy, find and replace
         for ($extendIndex = 0, $allExtendCount = count($allExtends); $extendIndex < $allExtendCount; $extendIndex++) {
@@ -332,10 +332,10 @@ class ProcessExtendsVisitor extends Visitor
         // returns an array of selector matches that can then be replaced
         $needleElements = $extend->selector->elements;
         $needleElementsCount = false;
-        $potentialMatches = array();
+        $potentialMatches = [];
         $potentialMatchesCount = 0;
         $potentialMatch = null;
-        $matches = array();
+        $matches = [];
 
         // loop through the haystack elements
         for ($haystackSelectorIndex = 0, $haystackPathCount = count($haystackSelectorPath); $haystackSelectorIndex < $haystackPathCount; $haystackSelectorIndex++) {
@@ -344,12 +344,12 @@ class ProcessExtendsVisitor extends Visitor
                 $haystackElement = $hackstackSelector->elements[$hackstackElementIndex];
                 // if we allow elements before our match we can add a potential match every time. otherwise only at the first element.
                 if ($extend->allowBefore || ($haystackSelectorIndex === 0 && $hackstackElementIndex === 0)) {
-                    $potentialMatches[] = array(
+                    $potentialMatches[] = [
                         'pathIndex' => $haystackSelectorIndex,
                         'index' => $hackstackElementIndex,
                         'matched' => 0,
                         'initialCombinator' => $haystackElement->combinator,
-                    );
+                    ];
                     $potentialMatchesCount++;
                 }
 
@@ -394,7 +394,7 @@ class ProcessExtendsVisitor extends Visitor
                             $potentialMatch['length'] = $needleElementsCount;
                             $potentialMatch['endPathIndex'] = $haystackSelectorIndex;
                             $potentialMatch['endPathElementIndex'] = $hackstackElementIndex + 1; // index after end of match
-                            $potentialMatches = array(); // we don't allow matches to overlap, so start matching again
+                            $potentialMatches = []; // we don't allow matches to overlap, so start matching again
                             $potentialMatchesCount = 0;
                             $matches[] = $potentialMatch;
                         }
@@ -467,7 +467,7 @@ class ProcessExtendsVisitor extends Visitor
         // for a set of matches, replace each match with the replacement selector
         $currentSelectorPathIndex = 0;
         $currentSelectorPathElementIndex = 0;
-        $path = array();
+        $path = [];
         $selectorPathCount = count($selectorPath);
 
         for ($matchIndex = 0, $matchesCount = count($matches); $matchIndex < $matchesCount; $matchIndex++) {
@@ -492,7 +492,7 @@ class ProcessExtendsVisitor extends Visitor
             // last parameter of array_slice is different than the last parameter of javascript's slice
                 array_slice($selector->elements, $currentSelectorPathElementIndex,
                     ($match['index'] - $currentSelectorPathElementIndex)),
-                array($firstElement),
+                [$firstElement],
                 array_slice($replacementSelector->elements, 1)
             );
 

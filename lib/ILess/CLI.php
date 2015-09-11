@@ -34,59 +34,59 @@ class CLI extends Configurable
      *
      * @var array
      */
-    protected $cliArguments = array();
+    protected $cliArguments = [];
 
     /**
      * Array of default options
      *
      * @var array
      */
-    protected $defaultOptions = array(
+    protected $defaultOptions = [
         'silent' => false,
         'append' => false,
         'no_color' => false,
-    );
+    ];
 
     /**
      * Array of valid options
      *
      * @var array
      */
-    protected $validOptions = array(
+    protected $validOptions = [
         // option name => array(description, array of flags)
-        'help' => array('Print help (this message) and exit.', array('h')),
-        'version' => array('Print version number and exit.', array('v')),
-        'silent' => array('Suppress output of error messages.', array('s')),
-        'no_color' => array('Disable colorized output.', array()),
-        'compress' => array('Compress output by removing the whitespace.', array('x')),
-        'append' => array('Append the generated CSS to the target file?', array('a')),
-        'no_ie_compat' => array('Disable IE compatibility checks.', array()),
-        'source_map' => array('Outputs an inline sourcemap to the generated CSS (or output to filename.map).', array()),
-        'source_map_url' => array('The complete url and filename put in the less file.', array()),
-        'source_map_base_path' => array('Sets sourcemap base path, defaults to current working directory.', array()),
-        'strict-math' => array('Strict math. Requires brackets.', array('sm')),
-        'strict-units' => array(
+        'help' => ['Print help (this message) and exit.', ['h']],
+        'version' => ['Print version number and exit.', ['v']],
+        'silent' => ['Suppress output of error messages.', ['s']],
+        'no_color' => ['Disable colorized output.', []],
+        'compress' => ['Compress output by removing the whitespace.', ['x']],
+        'append' => ['Append the generated CSS to the target file?', ['a']],
+        'no_ie_compat' => ['Disable IE compatibility checks.', []],
+        'source_map' => ['Outputs an inline sourcemap to the generated CSS (or output to filename.map).', []],
+        'source_map_url' => ['The complete url and filename put in the less file.', []],
+        'source_map_base_path' => ['Sets sourcemap base path, defaults to current working directory.', []],
+        'strict-math' => ['Strict math. Requires brackets.', ['sm']],
+        'strict-units' => [
             'Allows mixed units, e.g. 1px+1em or 1px*1px which have units that cannot be represented.',
-            array('su'),
-        ),
-        'root-path' => array(
+            ['su'],
+        ],
+        'root-path' => [
             'Sets rootpath for url rewriting in relative imports and urls. Works with or without the relative-urls option.',
-            array('rp'),
-        ),
-        'relative-urls' => array('Re-writes relative urls to the base less file.', array('ru')),
-        'url-args' => array('Adds params into url tokens (e.g. 42, cb=42 or a=1&b=2)', array()),
-        'dump_line_numbers' => array(
+            ['rp'],
+        ],
+        'relative-urls' => ['Re-writes relative urls to the base less file.', ['ru']],
+        'url-args' => ['Adds params into url tokens (e.g. 42, cb=42 or a=1&b=2)', []],
+        'dump_line_numbers' => [
             'Outputs filename and line numbers. TYPE can be either \'comments\', which will output the debug info within comments, \'mediaquery\' that will output the information within a fake media query which is compatible with the SASS format, and \'all\' which will do both.',
-            array(),
-        ),
-    );
+            [],
+        ],
+    ];
 
     /**
      * Array of valid flags
      *
      * @var array
      */
-    protected $validFlags = array();
+    protected $validFlags = [];
 
     /**
      * Valid flag
@@ -114,11 +114,11 @@ class CLI extends Configurable
      *
      * @var array
      */
-    private $stdAliases = array(
+    private $stdAliases = [
         '−',
         '–',
         '-',
-    );
+    ];
 
     /**
      * Constructor
@@ -179,7 +179,7 @@ class CLI extends Configurable
      */
     protected function convertOptions(array $options)
     {
-        $converted = array();
+        $converted = [];
         foreach ($options as $option => $value) {
             if (strpos($option, '-') !== false) {
                 $option = str_replace('-', '_', $option);
@@ -311,14 +311,14 @@ class CLI extends Configurable
      */
     protected function prepareOptionsForTheParser()
     {
-        $options = array();
+        $options = [];
 
         foreach ($this->getOptions() as $option => $value) {
             switch ($option) {
                 case 'source_map':
 
                     $options['source_map'] = true;
-                    $options['source_map_options'] = array();
+                    $options['source_map_options'] = [];
 
                     if (is_string($value)) {
                         $options['source_map_options']['write_to'] = $value;
@@ -389,7 +389,7 @@ class CLI extends Configurable
      */
     public function getUsage()
     {
-        $options = array();
+        $options = [];
         $max = 0;
         foreach ($this->validOptions as $optionName => $properties) {
             $optionName = str_replace('_', '-', $optionName);
@@ -405,13 +405,13 @@ class CLI extends Configurable
                 $max = strlen($option) + 2;
             }
 
-            $options[] = array(
+            $options[] = [
                 $option,
                 $help,
-            );
+            ];
         }
 
-        $optionsFormatted = array();
+        $optionsFormatted = [];
         foreach ($options as $option) {
             list($name, $help) = $option;
             // line will be too long
@@ -429,11 +429,11 @@ usage: {%script_name} [option option=parameter ...] source [destination]
 If source is set to `-` (dash or hyphen-minus), input is read from stdin.
 
 options:
-{%options}'.PHP_EOL, array(
+{%options}'.PHP_EOL, [
             '{%signature}' => $this->getSignature(),
             '{%script_name}' => $this->scriptName,
             '{%options}' => join(PHP_EOL, $optionsFormatted),
-        ));
+        ]);
     }
 
     /**
@@ -520,11 +520,11 @@ SIGNATURE;
      */
     protected function parseArguments($args)
     {
-        $return = array(
-            'arguments' => array(),
-            'flags' => array(),
-            'options' => array(),
-        );
+        $return = [
+            'arguments' => [],
+            'flags' => [],
+            'options' => [],
+        ];
 
         while ($arg = array_shift($args)) {
             if (in_array($arg, $this->stdAliases)) {

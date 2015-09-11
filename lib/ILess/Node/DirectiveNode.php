@@ -43,7 +43,7 @@ class DirectiveNode extends Node implements
      *
      * @var array
      */
-    public $rules = array();
+    public $rules = [];
 
     /**
      * Current index
@@ -74,7 +74,7 @@ class DirectiveNode extends Node implements
     /**
      * @var array
      */
-    public $allExtends = array();
+    public $allExtends = [];
 
     /**
      * Constructor
@@ -106,8 +106,8 @@ class DirectiveNode extends Node implements
             if (is_array($rules)) {
                 $this->rules = $rules;
             } else {
-                $this->rules = array($rules);
-                $selectors = new SelectorNode(array(), array(), null, $index, $currentFileInfo);
+                $this->rules = [$rules];
+                $selectors = new SelectorNode([], [], null, $index, $currentFileInfo);
                 $this->rules[0]->selectors = $selectors->createEmptySelectors();
             }
             for ($i = 0; $i < count($this->rules); $i++) {
@@ -179,15 +179,15 @@ class DirectiveNode extends Node implements
         $mediaPathBackup = $context->mediaPath;
         $mediaBlocksBackup = $context->mediaBlocks;
 
-        $context->mediaPath = array();
-        $context->mediaBlocks = array();
+        $context->mediaPath = [];
+        $context->mediaBlocks = [];
 
         if ($value) {
             $value = $value->compile($context);
         }
 
         if ($rules) {
-            $rules = array($rules[0]->compile($context));
+            $rules = [$rules[0]->compile($context)];
             $rules[0]->root = true;
         }
 

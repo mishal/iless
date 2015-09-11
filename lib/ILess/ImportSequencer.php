@@ -27,12 +27,12 @@ final class ImportSequencer
     /**
      * @var array
      */
-    private $imports = array();
+    private $imports = [];
 
     /**
      * @var array
      */
-    private $variableImports = array();
+    private $variableImports = [];
 
     /**
      * @var int

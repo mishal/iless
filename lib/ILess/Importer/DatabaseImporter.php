@@ -32,19 +32,19 @@ class DatabaseImporter extends Configurable implements ImporterInterface
      *
      * @var array
      */
-    protected $defaultOptions = array(
+    protected $defaultOptions = [
         'table_name' => 'stylesheet',
         'filename_column' => 'filename',
         'data_column' => 'data',
         'updated_at_column' => 'updated_at',
-    );
+    ];
 
     /**
      * Constructor
      *
      * @param array $importPaths Array of import paths to search
      */
-    public function __construct(PDO $dbh, $options = array())
+    public function __construct(PDO $dbh, $options = [])
     {
         $this->dbh = $dbh;
         parent::__construct($options);
@@ -69,9 +69,9 @@ class DatabaseImporter extends Configurable implements ImporterInterface
             $this->getOption('filename_column')
         ));
 
-        $stmt->execute(array(
+        $stmt->execute([
             $path,
-        ));
+        ]);
 
         $result = $stmt->fetch(PDO::FETCH_COLUMN);
 
@@ -94,9 +94,9 @@ class DatabaseImporter extends Configurable implements ImporterInterface
             $this->getOption('filename_column')
         ));
 
-        $stmt->execute(array(
+        $stmt->execute([
             $path,
-        ));
+        ]);
 
         $result = $stmt->fetch(PDO::FETCH_NUM);
 

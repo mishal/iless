@@ -29,16 +29,16 @@ class FileSystemImporter extends Configurable implements ImporterInterface
      *
      * @var array
      */
-    protected $importDirs = array();
+    protected $importDirs = [];
 
     /**
      * Array of default options
      *
      * @var array
      */
-    protected $defaultOptions = array(
+    protected $defaultOptions = [
         'clear_stat_cache' => true, // clear the stat cache?
-    );
+    ];
 
     /**
      * Constructor
@@ -46,7 +46,7 @@ class FileSystemImporter extends Configurable implements ImporterInterface
      * @param array $importDirs Array of import paths to search
      * @param array $options Array of options
      */
-    public function __construct($importDirs = array(), $options = array())
+    public function __construct($importDirs = [], $options = [])
     {
         $this->importDirs = (array)$importDirs;
         parent::__construct($options);

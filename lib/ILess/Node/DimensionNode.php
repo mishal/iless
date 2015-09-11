@@ -50,7 +50,7 @@ class DimensionNode extends Node implements ComparableInterface, ToColorConverti
         parent::__construct(floatval($value));
 
         if (!$unit instanceof UnitNode) {
-            $unit = $unit ? new UnitNode(array($unit)) : new UnitNode();
+            $unit = $unit ? new UnitNode([$unit]) : new UnitNode();
         }
 
         $this->unit = $unit;
@@ -69,7 +69,7 @@ class DimensionNode extends Node implements ComparableInterface, ToColorConverti
      */
     public function toColor()
     {
-        return new ColorNode(array($this->value, $this->value, $this->value));
+        return new ColorNode([$this->value, $this->value, $this->value]);
     }
 
     /**
@@ -212,11 +212,11 @@ class DimensionNode extends Node implements ComparableInterface, ToColorConverti
     public function unify()
     {
         return $this->convertTo(
-            array(
+            [
                 'length' => 'px',
                 'duration' => 's',
                 'angle' => 'rad',
-            )
+            ]
         );
     }
 
@@ -232,11 +232,11 @@ class DimensionNode extends Node implements ComparableInterface, ToColorConverti
         $unit = clone $this->unit;
 
         if (is_string($conversions)) {
-            $derivedConversions = array();
+            $derivedConversions = [];
             foreach (UnitConversion::getGroups() as $i) {
                 $group = UnitConversion::getGroup($i);
                 if (isset($group[$conversions])) {
-                    $derivedConversions = array($i => $conversions);
+                    $derivedConversions = [$i => $conversions];
                 }
             }
             $conversions = $derivedConversions;

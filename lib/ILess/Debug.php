@@ -34,14 +34,14 @@ class Debug
             throw new InvalidArgumentException('The node to check does not have rules property.');
         }
 
-        $invalid = $indexes = array();
+        $invalid = $indexes = [];
         foreach ($node->rules as $i => $rule) {
             if (!$rule instanceof Node) {
-                $invalid[] = array(
+                $invalid[] = [
                     $i,
                     gettype($rule),
                     $rule,
-                );
+                ];
             }
         }
 
@@ -61,24 +61,24 @@ class Debug
             throw new InvalidArgumentException('The node to check does not have paths property.');
         }
 
-        $invalid = $indexes = array();
+        $invalid = $indexes = [];
         foreach ($node->paths as $i => $path) {
             if (!is_array($path)) {
-                $invalid[] = array(
+                $invalid[] = [
                     $i,
                     gettype($path),
                     $path,
-                );
+                ];
                 continue;
             }
 
             foreach ($path as $p => $sel) {
                 if (!$sel instanceof SelectorNode) {
-                    $invalid[] = array(
+                    $invalid[] = [
                         $i,
                         gettype($path),
                         $path,
-                    );
+                    ];
                 }
             }
         }
@@ -95,7 +95,7 @@ class Debug
 
     private static function formatInvalid($invalid)
     {
-        $out = array();
+        $out = [];
         foreach ($invalid as $i) {
             $out[] = 'index:'.$i[0].', type: '.$i[1].(is_object($i[2]) ? ('class: '.get_class($i[2])) : '');
         }

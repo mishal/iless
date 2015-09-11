@@ -25,14 +25,14 @@ class ArrayImporter implements ImporterInterface
      *
      * @var array
      */
-    protected $files = array();
+    protected $files = [];
 
     /**
      * An array of last modified timestamp
      *
      * @var array
      */
-    protected $lastModified = array();
+    protected $lastModified = [];
 
     /**
      * Constructor
@@ -40,7 +40,7 @@ class ArrayImporter implements ImporterInterface
      * @param array $files An array of files (keys are the names, and values are the source code)
      * @param array $lastModified An array of last modified (keys are the names, and values are the timestamp)
      */
-    public function __construct(array $files, array $lastModified = array())
+    public function __construct(array $files, array $lastModified = [])
     {
         $this->files = $files;
         $this->lastModified = $lastModified + array_fill_keys(array_keys($files), -1);

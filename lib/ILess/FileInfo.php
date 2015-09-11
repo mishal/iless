@@ -70,7 +70,7 @@ final class FileInfo implements \Serializable
      *
      * @param array $info
      */
-    public function __construct(array $info = array())
+    public function __construct(array $info = [])
     {
         foreach ($info as $property => $value) {
             if (!property_exists($this, $property)) {

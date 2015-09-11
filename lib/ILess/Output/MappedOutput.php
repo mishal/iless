@@ -44,7 +44,7 @@ class MappedOutput extends StandardOutput
      *
      * @var array
      */
-    protected $contentsMap = array();
+    protected $contentsMap = [];
 
     /**
      * Constructor

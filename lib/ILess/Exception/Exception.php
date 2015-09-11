@@ -144,11 +144,11 @@ class Exception extends \Exception
             }
         }
 
-        return array(
+        return [
             $line,
             $col,
             $excerptContent,
-        );
+        ];
     }
 
     /**
@@ -307,13 +307,13 @@ class Exception extends \Exception
             return $path;
         }
 
-        return sprintf('<a href="%s" class="file-edit">%s</a>', htmlspecialchars(strtr(self::$fileEditUrlFormat, array(
+        return sprintf('<a href="%s" class="file-edit">%s</a>', htmlspecialchars(strtr(self::$fileEditUrlFormat, [
             // allow more formats
             '%f' => $path,
             '%file' => $path,
             '%line' => $line,
             '%l' => $line,
-        ))), $path);
+        ])), $path);
     }
 
     /**
@@ -335,7 +335,7 @@ class Exception extends \Exception
      */
     public function toString($includeExcerpt = true, $html = true)
     {
-        $string = array();
+        $string = [];
         if ($this->currentFile) {
             // we have an line from the file
             if (($line = $this->getErrorLine()) !== null) {

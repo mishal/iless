@@ -45,14 +45,14 @@ class Importer
      *
      * @var array
      */
-    protected $importers = array();
+    protected $importers = [];
 
     /**
      * Array of imported files
      *
      * @var array
      */
-    protected $importedFiles = array();
+    protected $importedFiles = [];
 
     /**
      * @var PluginManager
@@ -135,7 +135,7 @@ class Importer
         $path,
         $tryAppendLessExtension = false,
         FileInfo $currentFileInfo,
-        array $importOptions = array(),
+        array $importOptions = [],
         $index = 0
     ) {
         $plugin = isset($importOptions['plugin']) && $importOptions['plugin'];
@@ -182,7 +182,7 @@ class Importer
                 if ($plugin) {
 
                     // create dummy ruleset which will hold the functions
-                    $ruleset = new RulesetNode(array(), array());
+                    $ruleset = new RulesetNode([], []);
                     $ruleset->root = false;
                     $ruleset->functions[] = function (FunctionRegistry $registry) use ($file) {
                         $registry->loadPlugin($file->getPath());
@@ -190,10 +190,10 @@ class Importer
 
                     $file->setRuleset($ruleset);
 
-                    return array(
+                    return [
                         true,
                         $file,
-                    );
+                    ];
 
                 } else {
                     $result = $this->doImport($file, $path, $currentFileInfo, $importOptions);
@@ -225,7 +225,7 @@ class Importer
         ImportedFile $file,
         $path,
         FileInfo $currentFileInfo,
-        array $importOptions = array(),
+        array $importOptions = [],
         $fromCache = false
     ) {
         $newEnv = Context::createCopyForCompilation($this->context, $this->context->frames);
@@ -297,10 +297,10 @@ class Importer
             }
         }
 
-        return array(
+        return [
             $alreadyImported,
             $this->importedFiles[$key][0],
-        );
+        ];
     }
 
     /**
@@ -414,7 +414,7 @@ class Importer
      */
     public function clearImporters()
     {
-        $this->importers = array();
+        $this->importers = [];
 
         return $this;
     }
@@ -440,7 +440,7 @@ class Importer
      */
     public function setImportedFile($pathAbsolute, ImportedFile $file, $path, FileInfo $currentFileInfo)
     {
-        $this->importedFiles[$pathAbsolute] = array($file, $path, $currentFileInfo);
+        $this->importedFiles[$pathAbsolute] = [$file, $path, $currentFileInfo];
         // save for source map generation
         $this->context->setFileContent($pathAbsolute, $file->getContent());
 

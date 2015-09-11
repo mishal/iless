@@ -23,7 +23,7 @@ class StandardOutput implements OutputInterface
      *
      * @var array
      */
-    protected $output = array();
+    protected $output = [];
 
     /**
      * Adds a chunk to the stack
@@ -36,9 +36,9 @@ class StandardOutput implements OutputInterface
      */
     public function add($chunk, FileInfo $fileInfo = null, $index = 0, $mapLines = null)
     {
-        $this->output[] = array(
+        $this->output[] = [
             $chunk,
-        );
+        ];
 
         return $this;
     }
@@ -60,7 +60,7 @@ class StandardOutput implements OutputInterface
      */
     public function toString()
     {
-        $result = array();
+        $result = [];
         foreach ($this->getOutput() as $o) {
             $result[] = $o[0];
         }

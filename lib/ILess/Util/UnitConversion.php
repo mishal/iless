@@ -20,28 +20,28 @@ final class UnitConversion
      *
      * @var array
      */
-    private static $groups = array('length', 'duration', 'angle');
+    private static $groups = ['length', 'duration', 'angle'];
 
     /**
      * Length conversions
      *
      * @var array
      */
-    private static $length = array();
+    private static $length = [];
 
     /**
      * Duration conversions
      *
      * @var array
      */
-    private static $duration = array();
+    private static $duration = [];
 
     /**
      * Angle conversions
      *
      * @var array
      */
-    private static $angle = array();
+    private static $angle = [];
 
     /**
      * @var bool
@@ -87,19 +87,19 @@ final class UnitConversion
         }
 
         // angle
-        self::$angle = array(
+        self::$angle = [
             'rad' => 1 / (2 * M_PI),
             'deg' => 1 / 360,
             'grad' => 1 / 400,
             'turn' => 1,
-        );
+        ];
 
-        self::$duration = array(
+        self::$duration = [
             's' => 1,
             'ms' => 0.001,
-        );
+        ];
 
-        self::$length = array(
+        self::$length = [
             'm' => 1,
             'cm' => 0.01,
             'mm' => 0.001,
@@ -107,7 +107,7 @@ final class UnitConversion
             'px' => 0.0254 / 96,
             'pt' => 0.0254 / 72,
             'pc' => 0.0254 / 72 * 12,
-        );
+        ];
 
         self::$setup = true;
     }

@@ -32,14 +32,14 @@ class UnitNode extends Node implements ComparableInterface
      *
      * @var array
      */
-    public $numerator = array();
+    public $numerator = [];
 
     /**
      * Denominator
      *
      * @var array
      */
-    public $denominator = array();
+    public $denominator = [];
 
     /**
      * The backup unit to use when unit is empty
@@ -55,7 +55,7 @@ class UnitNode extends Node implements ComparableInterface
      * @param array $denominator
      * @param string $backupUnit
      */
-    public function __construct(array $numerator = array(), array $denominator = array(), $backupUnit = null)
+    public function __construct(array $numerator = [], array $denominator = [], $backupUnit = null)
     {
         $this->numerator = $numerator;
         $this->denominator = $denominator;
@@ -164,7 +164,7 @@ class UnitNode extends Node implements ComparableInterface
 
     public function usedUnits()
     {
-        $result = array();
+        $result = [];
         foreach (UnitConversion::getGroups() as $groupName) {
             $group = UnitConversion::getGroup($groupName);
             for ($i = 0; $i < count($this->numerator); $i++) {
@@ -186,7 +186,7 @@ class UnitNode extends Node implements ComparableInterface
 
     public function cancel()
     {
-        $counter = array();
+        $counter = [];
 
         for ($i = 0; $i < count($this->numerator); $i++) {
             $atomicUnit = $this->numerator[$i];
@@ -198,8 +198,8 @@ class UnitNode extends Node implements ComparableInterface
             $counter[$atomicUnit] = (isset($counter[$atomicUnit]) ? $counter[$atomicUnit] : 0) - 1;
         }
 
-        $this->numerator = array();
-        $this->denominator = array();
+        $this->numerator = [];
+        $this->denominator = [];
 
         foreach ($counter as $atomicUnit => $count) {
             if ($count > 0) {

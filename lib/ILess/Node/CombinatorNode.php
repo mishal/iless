@@ -30,11 +30,11 @@ class CombinatorNode extends Node
     /**
      * @var array
      */
-    protected $noSpaceCombinators = array(
+    protected $noSpaceCombinators = [
         '' => true,
         ' ' => true,
         '|' => true,
-    );
+    ];
 
     /**
      * @var bool

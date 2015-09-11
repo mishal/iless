@@ -243,7 +243,7 @@ class ColorNode extends Node implements ComparableInterface
      */
     public function operate(Context $context, $op, Node $other)
     {
-        $result = array();
+        $result = [];
 
         if (!($other instanceof ColorNode)) {
             if (!$other instanceof ToColorConvertibleInterface) {

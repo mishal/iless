@@ -47,10 +47,10 @@ class NegativeNode extends Node
     public function compile(Context $context, $arguments = null, $important = null)
     {
         if ($context->isMathOn()) {
-            $operation = new OperationNode('*', array(
+            $operation = new OperationNode('*', [
                 new DimensionNode('-1'),
                 $this->value,
-            ));
+            ]);
 
             return $operation->compile($context);
         } else {

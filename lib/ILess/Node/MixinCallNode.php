@@ -44,7 +44,7 @@ class MixinCallNode extends Node
      *
      * @var array
      */
-    public $arguments = array();
+    public $arguments = [];
 
     /**
      * Current index
@@ -71,7 +71,7 @@ class MixinCallNode extends Node
      */
     public function __construct(
         array $elements,
-        array $arguments = array(),
+        array $arguments = [],
         $index = 0,
         FileInfo $currentFileInfo = null,
         $important = false
@@ -109,25 +109,25 @@ class MixinCallNode extends Node
      */
     public function compile(Context $context, $arguments = null, $important = null)
     {
-        $rules = array();
+        $rules = [];
         $match = false;
         $isOneFound = false;
-        $candidates = array();
-        $conditionResult = array();
+        $candidates = [];
+        $conditionResult = [];
 
-        $args = array();
+        $args = [];
         foreach ($this->arguments as $a) {
             $aValue = $a['value']->compile($context);
             if ($a['expand'] && is_array($aValue->value)) {
                 $aValue = $aValue->value;
                 for ($m = 0; $m < count($aValue); $m++) {
-                    $args[] = array('value' => $aValue[$m]);
+                    $args[] = ['value' => $aValue[$m]];
                 }
             } else {
-                $args[] = array(
+                $args[] = [
                     'name' => $a['name'],
                     'value' => $aValue,
-                );
+                ];
             }
         }
 
@@ -137,7 +137,7 @@ class MixinCallNode extends Node
          */
         $noArgumentsFilter = function ($rule) use ($context) {
             /* @var $rule RulesetNode */
-            return $rule->matchArgs(array(), $context);
+            return $rule->matchArgs([], $context);
         };
 
         // return values for the function
@@ -168,7 +168,7 @@ class MixinCallNode extends Node
                 for ($p = 0; $p < count($mixinPath) && $conditionResult[$f]; $p++) {
                     $namespace = $mixinPath[$p];
                     if ($namespace instanceof ConditionMatchableInterface) {
-                        $conditionResult[$f] = $conditionResult[$f] && $namespace->matchCondition(array(), $context);
+                        $conditionResult[$f] = $conditionResult[$f] && $namespace->matchCondition([], $context);
                     }
                 }
                 if ($mixin instanceof ConditionMatchableInterface) {
@@ -208,10 +208,10 @@ class MixinCallNode extends Node
                     }
 
                     if ($mixin->matchArgs($args, $context)) {
-                        $candidate = array(
+                        $candidate = [
                             'mixin' => $mixin,
                             'group' => $calcDefGroup($mixin, $mixinPath),
-                        );
+                        ];
 
                         if ($candidate['group'] !== $defFalseEitherCase) {
                             $candidates[] = $candidate;
@@ -223,7 +223,7 @@ class MixinCallNode extends Node
 
                 DefaultFunc::reset();
 
-                $count = array(0, 0, 0);
+                $count = [0, 0, 0];
                 for ($m = 0; $m < count($candidates); $m++) {
                     $count[$candidates[$m]['group']]++;
                 }
@@ -248,7 +248,7 @@ class MixinCallNode extends Node
                             $mixin = $candidates[$m]['mixin'];
                             if (!($mixin instanceof MixinDefinitionNode)) {
                                 $originalRuleset = $mixin->originalRuleset ? $mixin->originalRuleset : $mixin;
-                                $mixin = new MixinDefinitionNode('', array(), $mixin->rules, null, false);
+                                $mixin = new MixinDefinitionNode('', [], $mixin->rules, null, false);
                                 $mixin->originalRuleset = $originalRuleset;
                             }
                             $compiled = $mixin->compileCall($context, $args, $this->important);
@@ -294,7 +294,7 @@ class MixinCallNode extends Node
     private function formatArgs($args)
     {
         $context = new Context();
-        $message = $argsFormatted = array();
+        $message = $argsFormatted = [];
         $message[] = trim($this->selector->toCSS($context));
 
         if ($args) {

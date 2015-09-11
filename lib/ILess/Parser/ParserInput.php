@@ -46,7 +46,7 @@ final class ParserInput
      * @var
      */
     private $j = 0;
-    private $saveStack = array();
+    private $saveStack = [];
     private $furthest;
     private $furthestPossibleErrorMessage;
     private $chunks;
@@ -61,7 +61,7 @@ final class ParserInput
     /**
      * @var array
      */
-    public $commentStore = array();
+    public $commentStore = [];
 
     /**
      * @var bool
@@ -79,11 +79,11 @@ final class ParserInput
     public function save()
     {
         $this->currentPos = $this->i;
-        array_push($this->saveStack, (object)array(
+        array_push($this->saveStack, (object)[
             'current' => $this->current,
             'i' => $this->i,
             'j' => $this->j,
-        ));
+        ]);
     }
 
     /**
@@ -209,10 +209,10 @@ final class ParserInput
             if ($this->autoCommentAbsorb && $c === self::CHARCODE_FORWARD_SLASH) {
                 $nextChar = $inp[$this->i + 1];
                 if ($nextChar === '/') {
-                    $comment = array(
+                    $comment = [
                         'index' => $this->i,
                         'isLineComment' => true,
-                    );
+                    ];
                     $nextNewLine = strpos($inp, "\n", $this->i + 2);
                     if ($nextNewLine < 0) {
                         $nextNewLine = $endIndex;
@@ -225,10 +225,10 @@ final class ParserInput
                 } elseif ($nextChar === '*') {
                     $nextStarSlash = strpos($inp, '*/', $this->i + 2);
                     if ($nextStarSlash >= 0) {
-                        $comment = array(
+                        $comment = [
                             'index' => $this->i,
                             'text' => substr($inp, $this->i, $nextStarSlash + 2 - $this->i),
-                        );
+                        ];
                         $this->i += strlen($comment['text']) - 1;
                         $this->commentStore[] = $comment;
                         continue;
@@ -314,7 +314,7 @@ final class ParserInput
     {
         $this->input = $string;
         $this->i = $this->j = $this->currentPos = $this->furthest = 0;
-        $this->chunks = array($string);
+        $this->chunks = [$string];
         $this->current = $this->chunks[0];
         $this->skipWhitespace(0);
     }
@@ -331,12 +331,12 @@ final class ParserInput
             $this->i = $this->furthest;
         }
 
-        return (object)array(
+        return (object)[
             'isFinished' => $isFinished,
             'furthest' => $this->i,
             'furthestPossibleErrorMessage' => $message,
             'furthestReachedEnd' => $this->i >= strlen($this->input) - 1,
             'furthestChar' => @$this->input[$this->i],
-        );
+        ];
     }
 }

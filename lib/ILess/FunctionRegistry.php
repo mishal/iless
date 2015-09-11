@@ -55,7 +55,7 @@ class FunctionRegistry
      *
      * @var array
      */
-    protected $aliases = array(
+    protected $aliases = [
         '%' => 'template',
         'data-uri' => 'dataUri',
         'get-unit' => 'getunit',
@@ -64,7 +64,7 @@ class FunctionRegistry
         'image-size' => 'imageSize',
         'image-width' => 'imageWidth',
         'image-height' => 'imageHeight',
-    );
+    ];
 
     /**
      * @var FileInfo
@@ -81,7 +81,7 @@ class FunctionRegistry
      *
      * @var array
      */
-    private $functions = array(
+    private $functions = [
         'abs' => true,
         'acos' => true,
         'alpha' => true,
@@ -169,7 +169,7 @@ class FunctionRegistry
         'imageSize' => true,
         'imageWidth' => true,
         'imageHeight' => true,
-    );
+    ];
 
     /**
      * Constructor
@@ -177,7 +177,7 @@ class FunctionRegistry
      * @param array $aliases Array of function aliases in the format array(alias => function)
      * @param Context $context The context
      */
-    public function __construct($aliases = array(), Context $context = null)
+    public function __construct($aliases = [], Context $context = null)
     {
         $this->context = $context;
         $this->addAliases($aliases);
@@ -204,7 +204,7 @@ class FunctionRegistry
      * @return FunctionRegistry
      * @throws InvalidArgumentException If the callable is not valid
      */
-    public function addFunction($functionName, $callable, $aliases = array())
+    public function addFunction($functionName, $callable, $aliases = [])
     {
         if (!is_callable($callable, null, $callableName)) {
             throw new InvalidArgumentException(
@@ -218,7 +218,7 @@ class FunctionRegistry
         $this->functions[$functionName] = $callable;
 
         if (!is_array($aliases)) {
-            $aliases = array($aliases);
+            $aliases = [$aliases];
         }
 
         foreach ($aliases as $alias) {
@@ -247,7 +247,7 @@ class FunctionRegistry
                 $this->addFunction(
                     $function['name'],
                     $function['callable'],
-                    isset($function['alias']) ? $function['alias'] : array()
+                    isset($function['alias']) ? $function['alias'] : []
                 );
             } else {
                 // alternative syntax without aliases
@@ -410,7 +410,7 @@ class FunctionRegistry
      * @return mixed
      * @throws FunctionException If the method does not exist
      */
-    public function call($methodName, $arguments = array())
+    public function call($methodName, $arguments = [])
     {
         $methodName = strtolower($methodName);
 
@@ -423,7 +423,7 @@ class FunctionRegistry
 
             if ($this->functions[$methodName] === true) {
                 // built in function
-                return call_user_func_array(array($this, $methodName), $arguments);
+                return call_user_func_array([$this, $methodName], $arguments);
             } else {
                 // this is a external callable
                 // provide access to function registry (pass as first parameter)
@@ -511,7 +511,7 @@ class FunctionRegistry
      */
     public function e(Node $string)
     {
-        return new AnonymousNode(str_replace(array('~"', '"'), '', (string)$string));
+        return new AnonymousNode(str_replace(['~"', '"'], '', (string)$string));
     }
 
     /**
@@ -574,7 +574,7 @@ class FunctionRegistry
         if (is_array($node->value)) {
             $items = $node->value;
         } else {
-            $items = array($node);
+            $items = [$node];
         }
 
         // reset array keys!
@@ -696,7 +696,7 @@ class FunctionRegistry
             } else {
                 // use base 64 unless it's an ASCII or UTF-8 format
                 $charset = Mime::charsetsLookup($mime);
-                $useBase64 = !in_array($charset, array('US-ASCII', 'UTF-8'));
+                $useBase64 = !in_array($charset, ['US-ASCII', 'UTF-8']);
             }
             if ($useBase64) {
                 $mime .= ';base64';
@@ -893,7 +893,7 @@ class FunctionRegistry
      */
     protected function doMath($func, $number, $unit = null /*, $arguments...*/)
     {
-        $arguments = array();
+        $arguments = [];
         if (func_num_args() > 3) {
             foreach (func_get_args() as $i => $arg) {
                 // skip first 3 arguments
@@ -1083,7 +1083,7 @@ class FunctionRegistry
      */
     public function rgba($red, $green, $blue, $alpha)
     {
-        $rgb = array_map(array($this, 'scaled'), array($red, $green, $blue));
+        $rgb = array_map([$this, 'scaled'], [$red, $green, $blue]);
 
         return new ColorNode($rgb, $this->number($alpha));
     }
@@ -1231,21 +1231,21 @@ class FunctionRegistry
         $i = floor(($hue / 60) % 6);
         $f = ($hue / 60) - $i;
 
-        $vs = array(
+        $vs = [
             $value,
             $value * (1 - $saturation),
             $value * (1 - $f * $saturation),
             $value * (1 - (1 - $f) * $saturation),
-        );
+        ];
 
-        $perm = array(
-            array(0, 3, 1),
-            array(2, 0, 1),
-            array(1, 0, 3),
-            array(1, 2, 0),
-            array(3, 1, 0),
-            array(0, 1, 2),
-        );
+        $perm = [
+            [0, 3, 1],
+            [2, 0, 1],
+            [1, 0, 3],
+            [1, 2, 0],
+            [3, 1, 0],
+            [0, 1, 2],
+        ];
 
         return $this->rgba(
             $vs[$perm[$i][0]] * 255,
@@ -1634,11 +1634,11 @@ class FunctionRegistry
         $color1Rgb = $color1->getRGB();
         $color2Rgb = $color2->getRGB();
 
-        $rgb = array(
+        $rgb = [
             $color1Rgb[0] * $w1 + $color2Rgb[0] * $w2,
             $color1Rgb[1] * $w1 + $color2Rgb[1] * $w2,
             $color1Rgb[2] * $w1 + $color2Rgb[2] * $w2,
-        );
+        ];
 
         $alpha = $color1->getAlpha(true) * $p + $color2->getAlpha(true) * (1 - $p);
 
@@ -1743,7 +1743,7 @@ class FunctionRegistry
      */
     public function multiply(ColorNode $color1, ColorNode $color2)
     {
-        return $this->colorBlend(array($this, 'colorBlendMultiply'), $color1->getColor(), $color2->getColor());
+        return $this->colorBlend([$this, 'colorBlendMultiply'], $color1->getColor(), $color2->getColor());
     }
 
     /**
@@ -1755,7 +1755,7 @@ class FunctionRegistry
      */
     public function screen(ColorNode $color1, ColorNode $color2)
     {
-        return $this->colorBlend(array($this, 'colorBlendScreen'), $color1->getColor(), $color2->getColor());
+        return $this->colorBlend([$this, 'colorBlendScreen'], $color1->getColor(), $color2->getColor());
     }
 
     /**
@@ -1770,7 +1770,7 @@ class FunctionRegistry
      */
     public function overlay(ColorNode $color1, ColorNode $color2)
     {
-        return $this->colorBlend(array($this, 'colorBlendOverlay'), $color1->getColor(), $color2->getColor());
+        return $this->colorBlend([$this, 'colorBlendOverlay'], $color1->getColor(), $color2->getColor());
     }
 
     /**
@@ -1784,7 +1784,7 @@ class FunctionRegistry
      */
     public function softlight(ColorNode $color1, ColorNode $color2)
     {
-        return $this->colorBlend(array($this, 'colorBlendSoftlight'), $color1->getColor(), $color2->getColor());
+        return $this->colorBlend([$this, 'colorBlendSoftlight'], $color1->getColor(), $color2->getColor());
     }
 
     /**
@@ -1796,7 +1796,7 @@ class FunctionRegistry
      */
     public function hardlight(ColorNode $color1, ColorNode $color2)
     {
-        return $this->colorBlend(array($this, 'colorBlendHardlight'), $color1->getColor(), $color2->getColor());
+        return $this->colorBlend([$this, 'colorBlendHardlight'], $color1->getColor(), $color2->getColor());
     }
 
     /**
@@ -1808,7 +1808,7 @@ class FunctionRegistry
      */
     public function difference(ColorNode $color1, ColorNode $color2)
     {
-        return $this->colorBlend(array($this, 'colorBlendDifference'), $color1->getColor(), $color2->getColor());
+        return $this->colorBlend([$this, 'colorBlendDifference'], $color1->getColor(), $color2->getColor());
     }
 
     /**
@@ -1820,7 +1820,7 @@ class FunctionRegistry
      */
     public function exclusion(ColorNode $color1, ColorNode $color2)
     {
-        return $this->colorBlend(array($this, 'colorBlendExclusion'), $color1->getColor(), $color2->getColor());
+        return $this->colorBlend([$this, 'colorBlendExclusion'], $color1->getColor(), $color2->getColor());
     }
 
     /**
@@ -1832,7 +1832,7 @@ class FunctionRegistry
      */
     public function average(ColorNode $color1, ColorNode $color2)
     {
-        return $this->colorBlend(array($this, 'colorBlendAverage'), $color1->getColor(), $color2->getColor());
+        return $this->colorBlend([$this, 'colorBlendAverage'], $color1->getColor(), $color2->getColor());
     }
 
     /**
@@ -1844,7 +1844,7 @@ class FunctionRegistry
      */
     public function negation(ColorNode $color1, ColorNode $color2)
     {
-        return $this->colorBlend(array($this, 'colorBlendNegation'), $color1->getColor(), $color2->getColor());
+        return $this->colorBlend([$this, 'colorBlendNegation'], $color1->getColor(), $color2->getColor());
     }
 
     /**
@@ -2007,9 +2007,9 @@ class FunctionRegistry
 
         $gradientType = 'linear';
         $rectangleDimension = 'x="0" y="0" width="1" height="1"';
-        $renderEnv = new Context(array(
+        $renderEnv = new Context([
             'compress' => false,
-        ));
+        ]);
         $directionValue = $direction->toCSS($renderEnv);
 
         switch ($directionValue) {
@@ -2106,10 +2106,10 @@ class FunctionRegistry
         $size = $this->getImageSize($node);
 
         return new ExpressionNode(
-            array(
+            [
                 new DimensionNode($size['width'], 'px'),
                 new DimensionNode($size['height'], 'px'),
-            )
+            ]
         );
     }
 
@@ -2173,10 +2173,10 @@ class FunctionRegistry
             );
         }
 
-        return array(
+        return [
             'width' => $size[0],
             'height' => $size[1],
-        );
+        ];
     }
 
     /**
@@ -2208,8 +2208,8 @@ class FunctionRegistry
                 throw new CompilerException('One or more arguments required.');
         }
 
-        $order = array(); // elems only contains original argument values.
-        $values = array(); // key is the unit.toString() for unified tree.Dimension values,
+        $order = []; // elems only contains original argument values.
+        $values = []; // key is the unit.toString() for unified tree.Dimension values,
         $unitClone = $unitStatic = $j = null;
 
         // value is the index into the order array.
@@ -2346,7 +2346,7 @@ class FunctionRegistry
     {
         $ab = $color1->getAlpha();    // backdrop
         $as = $color2->getAlpha();    // source
-        $r = array();            // result
+        $r = [];            // result
 
         $ar = $as + $ab * (1 - $as);
         $rgb1 = $color1->rgb;

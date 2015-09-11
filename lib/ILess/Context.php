@@ -26,7 +26,7 @@ class Context
      *
      * @var array
      */
-    public $frames = array();
+    public $frames = [];
 
     /**
      * Custom variables
@@ -78,17 +78,17 @@ class Context
     /**
      * @var array
      */
-    public $mediaBlocks = array();
+    public $mediaBlocks = [];
 
     /**
      * @var array
      */
-    public $mediaPath = array();
+    public $mediaPath = [];
 
     /**
      * @var array
      */
-    public $paths = array();
+    public $paths = [];
 
     /**
      * Math is required to be in parenthesis like: <pre>(1+1)</pre>
@@ -158,14 +158,14 @@ class Context
      *
      * @var array
      */
-    public $selectors = array();
+    public $selectors = [];
 
     /**
      * Parens stack
      *
      * @var array
      */
-    protected $parensStack = array();
+    protected $parensStack = [];
 
     /**
      * Current file information. For error reporting,
@@ -194,14 +194,14 @@ class Context
      *
      * @var array
      */
-    public $sourceMapOptions = array();
+    public $sourceMapOptions = [];
 
     /**
      * Filename to contents of all parsed the files
      *
      * @var array
      */
-    public $contentsMap = array();
+    public $contentsMap = [];
 
     /**
      * The function registry
@@ -215,7 +215,7 @@ class Context
      *
      * @var array
      */
-    public $importantScope = array();
+    public $importantScope = [];
 
     /**
      * Whether to add args into url tokens
@@ -231,13 +231,13 @@ class Context
      * @param array $options
      * @throws InvalidArgumentException If passed options are invalid
      */
-    public function __construct(array $options = array(), FunctionRegistry $registry = null)
+    public function __construct(array $options = [], FunctionRegistry $registry = null)
     {
         if ($registry) {
             $this->setFunctionRegistry($registry);
         }
 
-        $invalid = array();
+        $invalid = [];
 
         // underscored property names
         $properties = array_keys(get_class_vars(__CLASS__));
@@ -255,12 +255,12 @@ class Context
 
             switch ($option) {
                 case 'dumpLineNumbers':
-                    if (!in_array($value, array(
+                    if (!in_array($value, [
                         true,
                         DebugInfo::FORMAT_ALL,
                         DebugInfo::FORMAT_COMMENT,
                         DebugInfo::FORMAT_MEDIA_QUERY,
-                    ), true)
+                    ], true)
                     ) {
                         // FIXME: report possible values?
                         $invalid[] = $option;
@@ -343,13 +343,13 @@ class Context
         $file = Util::normalizePath($file);
         $dirname = preg_replace('/[^\/\\\\]*$/', '', $file);
 
-        $this->currentFileInfo = new FileInfo(array(
+        $this->currentFileInfo = new FileInfo([
             'currentDirectory' => $dirname,
             'filename' => $file,
             'rootPath' => $this->currentFileInfo && $this->currentFileInfo->rootPath ?
                 $this->currentFileInfo->rootPath : $this->rootPath,
             'entryPath' => $dirname,
-        ));
+        ]);
     }
 
     /**
@@ -359,10 +359,10 @@ class Context
      * @param array $frames
      * @return Context
      */
-    public static function createCopy(Context $context, array $frames = array())
+    public static function createCopy(Context $context, array $frames = [])
     {
         // what to copy?
-        $copyProperties = array(
+        $copyProperties = [
             // options
             'compress', // whether to compress
             'canShortenColors', // can shorten colors?
@@ -380,9 +380,9 @@ class Context
             'customVariables', // variables from the php API
             'currentFileInfo', // current file information object
             'importantScope', // current file information object
-        );
+        ];
 
-        $target = new Context(array(), $context->getFunctionRegistry());
+        $target = new Context([], $context->getFunctionRegistry());
         self::copyFromOriginal($context, $target, $copyProperties);
 
         $target->frames = $frames;
@@ -395,9 +395,9 @@ class Context
      * @param array $frames
      * @return Context
      */
-    public static function createCopyForCompilation(Context $context, array $frames = array())
+    public static function createCopyForCompilation(Context $context, array $frames = [])
     {
-        $copyProperties = array(
+        $copyProperties = [
             'compress',        // whether to compress
             'ieCompat',        // whether to enforce IE compatibility (IE8 data-uri)
             'strictMath',      // whether math has to be within parenthesis
@@ -407,9 +407,9 @@ class Context
             'dumpLineNumbers', // dump line numbers?
             'urlArgs',         // whether to add args into url tokens
             'importantScope',  // used to bubble up !important statements
-        );
+        ];
 
-        $target = new Context(array(), $context->getFunctionRegistry());
+        $target = new Context([], $context->getFunctionRegistry());
         self::copyFromOriginal($context, $target, $copyProperties);
 
         $target->frames = $frames;

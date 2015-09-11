@@ -22,9 +22,9 @@ class GzCompressOutputFilter extends OutputFilter
      *
      * @var array
      */
-    protected $defaultOptions = array(
+    protected $defaultOptions = [
         'compression_level' => 9,
-    );
+    ];
 
     /**
      * @see OutputFilterInterface

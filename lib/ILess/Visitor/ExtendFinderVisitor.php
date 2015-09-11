@@ -26,12 +26,12 @@ class ExtendFinderVisitor extends Visitor
     /**
      * @var array
      */
-    protected $contexts = array();
+    protected $contexts = [];
 
     /**
      * @var array
      */
-    protected $allExtendsStack = array(array());
+    protected $allExtendsStack = [[]];
 
     /**
      * Found extends flag
@@ -85,7 +85,7 @@ class ExtendFinderVisitor extends Visitor
             return;
         }
 
-        $allSelectorsExtendList = array();
+        $allSelectorsExtendList = [];
         // get &:extend(.a); rules which apply to all selectors in this ruleset
         for ($i = 0, $count = count($node->rules); $i < $count; $i++) {
             if ($node->rules[$i] instanceof ExtendNode) {
@@ -100,7 +100,7 @@ class ExtendFinderVisitor extends Visitor
             $selectorPath = $node->paths[$i];
             $selector = end($selectorPath);
             $list = array_merge($selector->extendList, $allSelectorsExtendList);
-            $extendList = array();
+            $extendList = [];
             foreach ($list as $allSelectorsExtend) {
                 $extendList[] = clone $allSelectorsExtend;
             }
@@ -142,7 +142,7 @@ class ExtendFinderVisitor extends Visitor
      */
     public function visitMedia(MediaNode $node, VisitorArguments $argument)
     {
-        $node->allExtends = array();
+        $node->allExtends = [];
         $this->allExtendsStack[] = &$node->allExtends;
     }
 
@@ -166,7 +166,7 @@ class ExtendFinderVisitor extends Visitor
      */
     public function visitDirective(DirectiveNode $node, VisitorArguments $arguments)
     {
-        $node->allExtends = array();
+        $node->allExtends = [];
         $this->allExtendsStack[] = &$node->allExtends;
     }
 
