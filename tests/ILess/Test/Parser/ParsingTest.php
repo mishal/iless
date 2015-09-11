@@ -6,6 +6,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use ILess\Cache\CacheInterface;
 use ILess\DebugInfo;
 use ILess\FunctionRegistry;
 use ILess\Node;
@@ -32,13 +33,24 @@ class Test_Parser_ParsingTest extends Test_TestCase
         'relativeUrls' => true
     );
 
+    public static function setUpBeforeClass()
+    {
+        echo "\n ----- Testing parsing test with cache disabled ----- \n";
+    }
+
+    public static function tearDownAfterClass()
+    {
+        echo str_repeat('-', 40)."\n";
+    }
+
     /**
      * @param array $options
+     * @param CacheInterface $cache
      * @return Parser
      */
-    protected function createParser($options = array())
+    protected function createParser($options = array(), CacheInterface $cache = null)
     {
-        $parser = new Parser($options);
+        $parser = new Parser($options, $cache);
         // test functions
         $parser->addFunctions(
             array(
@@ -72,7 +84,14 @@ class Test_Parser_ParsingTest extends Test_TestCase
         $parser = $this->createParser($options);
         $parser->setVariables($variables);
 
-        echo "Compilation test for ".basename($lessFile)."\n";
+        // only for output info
+        $dirBase = basename(dirname($lessFile));
+        $baseName = basename($lessFile);
+        if ($dirBase !== 'less') {
+            $baseName = $dirBase.'/'.$baseName;
+        }
+
+        echo "Compilation test for $baseName\n";
 
         $parser->parseFile($lessFile);
         $preCompiled = file_get_contents($cssFile);

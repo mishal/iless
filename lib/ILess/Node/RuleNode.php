@@ -199,9 +199,6 @@ class RuleNode extends Node implements MakeableImportantInterface, MarkableAsRef
     public function generateCSS(Context $context, OutputInterface $output)
     {
         $output->add($this->name.($context->compress ? ':' : ': '), $this->currentFileInfo, $this->index);
-        if(is_null($this->value)) {
-            throw new \Exception('this is wrong');
-        }
         try {
             $this->value->generateCSS($context, $output);
         } catch (Exception $e) {

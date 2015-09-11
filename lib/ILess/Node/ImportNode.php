@@ -12,18 +12,18 @@ namespace ILess\Node;
 use ILess\Context;
 use ILess\Exception\Exception;
 use ILess\FileInfo;
-use ILess\Visitor\VisitorInterface;
-use LogicException;
 use ILess\Node;
 use ILess\Output\OutputInterface;
 use ILess\Util;
+use ILess\Visitor\VisitorInterface;
+use LogicException;
 
 /**
  * Import
  *
  * @package ILess\Node
  */
-class ImportNode extends Node
+class ImportNode extends Node implements \Serializable
 {
     /**
      * Node type
@@ -205,7 +205,7 @@ class ImportNode extends Node
                 'reference' => $this->path->currentFileInfo->reference
             )), true, true, false);
 
-            return $this->features ? new MediaNode(array($contents), $this->features->value) : array($contents);
+            return $this->features ? new MediaNode(array($contents), $this->features->value) : [$contents];
         } elseif ($this->css) {
             $features = $this->features ? $this->features->compile($context) : null;
             $import = new ImportNode($this->compilePath($context), $features, $this->options, $this->index);
@@ -216,6 +216,7 @@ class ImportNode extends Node
 
             return $import;
         } else {
+
             $ruleset = new RulesetNode(array(), $this->root ? $this->root->rules : array());
             $ruleset->compileImports($context);
 
@@ -313,6 +314,25 @@ class ImportNode extends Node
     public function getError()
     {
         return $this->error;
+    }
+
+    public function serialize()
+    {
+        $vars = get_object_vars($this);
+        if ($this->root && !is_object($this->root)) {
+            die("unserialize faled");
+            unset($vars['root']);
+        }
+
+        return serialize($vars);
+    }
+
+    public function unserialize($serialized)
+    {
+        $unserialized = unserialize($serialized);
+        foreach ($unserialized as $var => $val) {
+            $this->$var = $val;
+        }
     }
 
 }

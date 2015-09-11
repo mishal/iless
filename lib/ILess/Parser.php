@@ -142,8 +142,6 @@ class Parser extends Core
             $this->cache->set($cacheKey, array($css, $importedFiles));
         }
 
-
-
         return $this->filter($css);
     }
 

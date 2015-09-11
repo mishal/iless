@@ -10,8 +10,8 @@ namespace ILess;
 
 use ILess\Cache\CacheInterface;
 use ILess\Exception\Exception;
-use ILess\Exception\ParserException;
 use ILess\Exception\ImportException;
+use ILess\Exception\ParserException;
 use ILess\Importer\ImporterInterface;
 use ILess\Node;
 use ILess\Node\RulesetNode;
@@ -138,7 +138,25 @@ class Importer
         array $importOptions = array(),
         $index = 0
     ) {
-        $cacheKey = $this->generateCacheKey($currentFileInfo->currentDirectory.$path);
+        $plugin = isset($importOptions['plugin']) && $importOptions['plugin'];
+        $inline = isset($importOptions['inline']) && $importOptions['inline'];
+        $css = isset($importOptions['css']) && $importOptions['css'];
+
+        if ($tryAppendLessExtension && !pathinfo($path, PATHINFO_EXTENSION)) {
+            if ($plugin) {
+                $path .= '.php';
+            } else {
+                $path .= '.less';
+            }
+        }
+
+        // we must generate separate cache for inline and css files to avoid problems
+        // when someone wants to import the less file first as inline import and than normally
+        $cacheKey = $this->generateCacheKey(
+            (Util::isPathAbsolute($path) ? $path : $currentFileInfo->currentDirectory.$path)
+            . 'css-'.(int)$inline.'inline-'.(int)$css
+        );
+
         // do we have a file in the cache?
         if ($this->cache->has($cacheKey)) {
             // check the modified timestamp
@@ -148,20 +166,10 @@ class Importer
                 /* @var $file ImportedFile */
                 /* @var $importer ImporterInterface */
                 $lastModified = $importer->getLastModified($path, $currentFileInfo);
-                if ($lastModified !== false && $lastModified == $file->getLastModified()) {
+                if ($lastModified !== false && $lastModified === $file->getLastModified()) {
                     // the modification time is the same, take the one from cache
                     return $this->doImport($file, $path, $currentFileInfo, $importOptions, true);
                 }
-            }
-        }
-
-        $plugin = isset($importOptions['plugin']) && $importOptions['plugin'];
-
-        if ($tryAppendLessExtension && !pathinfo($path, PATHINFO_EXTENSION)) {
-            if ($plugin) {
-                $path .= '.php';
-            } else {
-                $path .= '.less';
             }
         }
 
@@ -193,7 +201,6 @@ class Importer
                     list(, $file) = $result;
                     // save the cache
                     $this->cache->set($cacheKey, $file);
-
                     return $result;
                 }
             }
@@ -258,18 +265,16 @@ class Importer
         if (isset($this->importedFiles[$key])) {
             $alreadyImported = true;
         } elseif (!$file->getRuleset()) {
-            $parser = new Core($newEnv, $this, $this->pluginManager);
             try {
                 // we do not parse the root but load the file as is
                 if (isset($importOptions['inline']) && $importOptions['inline']) {
                     $root = $file->getContent();
                 } else {
-                    // $root = new ILess\ILess\Node\RulesetNode(array(), $parser->parse($file->getContent()));
+                    $parser = new Core($newEnv, $this, $this->pluginManager);
                     $root = $parser->parseFile($file, true);
                     $root->root = false;
                     $root->firstRoot = false;
                 }
-
                 $file->setRuleset($root);
                 // we need to catch parse exceptions
             } catch (Exception $e) {
@@ -288,7 +293,7 @@ class Importer
             $ruleset = $this->importedFiles[$key][0]->getRuleset();
             if ($ruleset instanceof Node) {
                 // this is a workaround for reference and import one issues when taken cache
-                $this->updateReferenceInCurrentFileInfo($ruleset, $newEnv->currentFileInfo->reference);
+                $this->updateReferenceInCurrentFileInfo($ruleset, $newEnv->currentFileInfo);
             }
         }
 
@@ -302,16 +307,20 @@ class Importer
      * Updates the currentFileInfo object to the $value
      *
      * @param Node $node The node to update
-     * @param boolean $value The value
+     * @param FileInfo $newInfo The new file info
      */
-    protected function updateReferenceInCurrentFileInfo(Node $node, $value)
+    protected function updateReferenceInCurrentFileInfo(Node $node, FileInfo $newInfo)
     {
         if (isset($node->currentFileInfo)) {
-            $node->currentFileInfo->reference = $value;
+            $node->currentFileInfo->reference = $newInfo->reference;
+            $node->currentFileInfo->rootPath = $newInfo->rootPath;
         }
-        if (Node::propertyExists($node, 'rules')) {
+
+        if (Node::propertyExists($node, 'rules') &&
+            is_array($node->rules) && $node->rules
+        ) {
             foreach ($node->rules as $rule) {
-                $this->updateReferenceInCurrentFileInfo($rule, $value);
+                $this->updateReferenceInCurrentFileInfo($rule, $newInfo);
             }
         }
     }

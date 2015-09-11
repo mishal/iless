@@ -19,7 +19,7 @@ use ILess\Util;
  * @package ILess
  * @subpackage Import
  */
-final class ImportedFile
+final class ImportedFile implements \Serializable
 {
     /**
      * The absolute path or URL
@@ -144,6 +144,22 @@ final class ImportedFile
     public function getLastModified()
     {
         return $this->lastModified;
+    }
+
+    public function serialize()
+    {
+        return serialize([
+            $this->path,
+            $this->lastModified,
+            base64_encode($this->content),
+            $this->ruleset,
+        ]);
+    }
+
+    public function unserialize($serialized)
+    {
+        list($this->path, $this->lastModified, $this->content, $this->ruleset) = unserialize($serialized);
+        $this->content = base64_decode($this->content);
     }
 
 }

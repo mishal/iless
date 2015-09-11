@@ -12,16 +12,16 @@ namespace ILess\Visitor;
 use ILess\Context;
 use ILess\Exception\Exception;
 use ILess\Exception\ImportException;
+use ILess\ImportedFile;
+use ILess\Importer;
+use ILess\ImportSequencer;
 use ILess\Node\DetachedRulesetNode;
 use ILess\Node\DirectiveNode;
 use ILess\Node\ImportNode;
 use ILess\Node\MediaNode;
 use ILess\Node\MixinDefinitionNode;
-use ILess\Node\RulesetNode;
 use ILess\Node\RuleNode;
-use ILess\ImportedFile;
-use ILess\Importer;
-use ILess\ImportSequencer;
+use ILess\Node\RulesetNode;
 
 /**
  * Import visitor
@@ -330,7 +330,7 @@ class ImportVisitor extends Visitor
     /**
      * Visits a ruleset node (!again)
      *
-     * @param RuleNode $node The node
+     * @param RulesetNode $node The node
      * @param VisitorArguments $arguments The arguments
      * @return RulesetNode
      */
@@ -344,7 +344,7 @@ class ImportVisitor extends Visitor
     /**
      * Visits a media node
      *
-     * @param RuleNode $node The node
+     * @param MediaNode $node The node
      * @param VisitorArguments $arguments The arguments
      * @return MediaNode
      */
@@ -358,7 +358,7 @@ class ImportVisitor extends Visitor
     /**
      * Visits a media node (!again)
      *
-     * @param RuleNode $node The node
+     * @param MediaNode $node The node
      * @param VisitorArguments $arguments The arguments
      * @return MediaNode
      */

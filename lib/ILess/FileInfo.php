@@ -14,7 +14,7 @@ namespace ILess;
  *
  * @package ILess
  */
-final class FileInfo
+final class FileInfo implements \Serializable
 {
     /**
      * Full resolved filename of current file
@@ -73,7 +73,29 @@ final class FileInfo
     public function __construct(array $info = array())
     {
         foreach ($info as $property => $value) {
+            if (!property_exists($this, $property)) {
+                throw new \InvalidArgumentException(sprintf('Invalid property %s', $property));
+            }
             $this->$property = $value;
+        }
+    }
+
+    public function serialize()
+    {
+        $vars = get_object_vars($this);
+
+        unset($vars['reference']);
+        unset($vars['rootPath']);
+        unset($vars['importedFile']);
+
+        return serialize($vars);
+    }
+
+    public function unserialize($serialized)
+    {
+        $unserialized = unserialize($serialized);
+        foreach ($unserialized as $var => $val) {
+            $this->$var = $val;
         }
     }
 

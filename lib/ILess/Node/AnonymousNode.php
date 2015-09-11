@@ -58,9 +58,9 @@ class AnonymousNode extends Node implements ComparableInterface,
     /**
      * Constructor
      *
-     * @param string|ValueNode $value
+     * @param string|ValueNode|null $value
      * @param integer $index
-     * @param string $currentFileInfo
+     * @param FileInfo $currentFileInfo
      * @param boolean $mapLines
      * @param boolean $rulesetLike
      * @param boolean $referenced
@@ -74,6 +74,7 @@ class AnonymousNode extends Node implements ComparableInterface,
         $referenced = false
     ) {
         parent::__construct($value);
+
         $this->index = $index;
         $this->currentFileInfo = $currentFileInfo;
         $this->mapLines = $mapLines;

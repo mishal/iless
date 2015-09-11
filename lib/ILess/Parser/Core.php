@@ -198,7 +198,7 @@ class Core
      * Parses a string
      *
      * @param string $string The string to parse
-     * @param string $filename The filename for reference (will be visible in the source map)
+     * @param string $filename The filename for reference (will be visible in the source map) or path to a fake file which directory will be used for imports
      * @param bool $returnRuleset Return the ruleset?
      * @return $this
      */
