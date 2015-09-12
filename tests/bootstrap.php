@@ -14,7 +14,7 @@
  * @subpackage test
  */
 
-require dirname(__FILE__) . '/../vendor/autoload.php';
+require dirname(__FILE__) . '/../lib/ILess/Autoloader.php';
 require dirname(__FILE__) . '/ILess/Test/TestCase.php';
 
 define('ILESS_TEST_CACHE_DIR', sys_get_temp_dir().'/iless-test');
@@ -29,3 +29,5 @@ if (is_dir(ILESS_TEST_CACHE_DIR)) {
     }
     rmdir(ILESS_TEST_CACHE_DIR);
 }
+
+ILess\Autoloader::register();
