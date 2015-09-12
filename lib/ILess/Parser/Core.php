@@ -438,13 +438,14 @@ class Core
 
         $e = $css = null;
         try {
+
+            $this->prepareVariables($this->context, $variables);
+
             // pre compilation visitors
             foreach ($this->getPreCompileVisitors() as $visitor) {
                 /* @var $visitor Visitor */
                 $visitor->run($ruleset);
             }
-
-            $this->prepareVariables($this->context, $variables);
 
             // compile the ruleset
             $compiled = $ruleset->compile($this->context);

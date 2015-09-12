@@ -407,6 +407,7 @@ class Context
             'dumpLineNumbers', // dump line numbers?
             'urlArgs',         // whether to add args into url tokens
             'importantScope',  // used to bubble up !important statements
+            'customVariables', // variables from the php API
         ];
 
         $target = new Context([], $context->getFunctionRegistry());
