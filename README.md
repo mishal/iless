@@ -135,6 +135,10 @@ You have to configure the `program` option to point to `bin/iless`.
 
 **Note**: See additional command line options for the parser below.
 
+## Plugins
+
+  * [Custom imports](https://github.com/mishal/iless-plugin-custom-import) – allows to create custom schema like import directives like `foo://file.less`  
+
 ## Examples
 
 Parse the `my.less` and save it to `my.css` with compression enabled.
