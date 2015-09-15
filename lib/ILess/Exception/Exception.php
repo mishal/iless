@@ -323,7 +323,7 @@ class Exception extends \Exception
      */
     public function __toString()
     {
-        return $this->toString();
+        return $this->toString(true, php_sapi_name() !== 'cli');
     }
 
     /**
