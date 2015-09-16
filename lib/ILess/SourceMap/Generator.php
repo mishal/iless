@@ -116,8 +116,7 @@ class Generator extends Configurable
     {
         // fix windows paths
         if ($basePath = $this->getOption('base_path')) {
-            $basePath = str_replace('\\', '/', $basePath);
-            $this->setOption('base_path', $basePath);
+            $this->setOption('base_path', Util::normalizePath($basePath));
         }
     }
 
@@ -187,6 +186,7 @@ class Generator extends Configurable
      * @param string $content The content to write
      * @throws IOException If the file could not be saved
      * @throws InvalidArgumentException If the directory to write the map to does not exist or is not writable
+     * @return true
      */
     protected function saveMap($file, $content)
     {
@@ -212,17 +212,18 @@ class Generator extends Configurable
      */
     protected function normalizeFilename($filename)
     {
-        $filename = str_replace('\\', '/', $filename);
+        $filename = Util::normalizePath($filename);
         if (($basePath = $this->getOption('base_path'))
             && ($pos = strpos($filename, $basePath)) !== false
         ) {
             $filename = substr($filename, $pos + strlen($basePath));
-            if (strpos($filename, '\\') === 0 || strpos($filename, '/') === 0) {
+
+            if (strpos($filename, '/') === 0) {
                 $filename = substr($filename, 1);
             }
         }
 
-        return sprintf('%s%s', $this->getOption('root_path'), $filename);
+        return $this->getOption('root_path') . $filename;
     }
 
     /**
