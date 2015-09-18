@@ -138,6 +138,7 @@ You have to configure the `program` option to point to `bin/iless`.
 ## Plugins
 
   * [Custom imports](https://github.com/mishal/iless-plugin-custom-import) – allows to create custom schema like import directives like `foo://file.less`  
+  * [Autoprefix](https://github.com/mishal/iless-plugin-autoprefix) – autoprefix generated CSS using postcss autoprefixer plugin  
 
 ## Examples
 
