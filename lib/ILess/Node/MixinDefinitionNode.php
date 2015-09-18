@@ -103,6 +103,11 @@ class MixinDefinitionNode extends RulesetNode
     public $compileFirst = true;
 
     /**
+     * @var array
+     */
+    protected $optionalParameters = [];
+
+    /**
      * Constructor
      *
      * @param string $name
@@ -118,7 +123,8 @@ class MixinDefinitionNode extends RulesetNode
         $condition = null,
         $variadic = false,
         $frames = []
-    ) {
+    )
+    {
         $this->name = $name;
         $this->selectors = [new SelectorNode([new ElementNode(null, $name)])];
 
@@ -133,6 +139,8 @@ class MixinDefinitionNode extends RulesetNode
             foreach ($params as $p) {
                 if (!isset($p['name']) || ($p['name'] && !isset($p['value']))) {
                     $this->required++;
+                } else {
+                    $this->optionalParameters[] = $p['name'];
                 }
             }
         }
@@ -219,7 +227,8 @@ class MixinDefinitionNode extends RulesetNode
         Context $mixinEnv,
         $arguments = [],
         array &$compiledArguments = []
-    ) {
+    )
+    {
         $frame = new RulesetNode([], []);
         $params = $this->params;
         $argsCount = 0;
@@ -350,20 +359,27 @@ class MixinDefinitionNode extends RulesetNode
     {
         $argsLength = count($args);
 
+        $requiredArgsCount = 0;
+        foreach ($args as $arg) {
+            if (!isset($arg['name']) || !in_array($arg['name'], $this->optionalParameters)) {
+                $requiredArgsCount++;
+            }
+        }
+
         if (!$this->variadic) {
-            if ($argsLength < $this->required) {
+            if ($requiredArgsCount < $this->required) {
                 return false;
             }
             if ($argsLength > count($this->params)) {
                 return false;
             }
         } else {
-            if ($argsLength < ($this->required - 1)) {
+            if ($requiredArgsCount < ($this->required - 1)) {
                 return false;
             }
         }
 
-        $len = min($argsLength, $this->arity);
+        $len = min($requiredArgsCount, $this->arity);
 
         for ($i = 0; $i < $len; $i++) {
             if (!isset($this->params[$i]['name']) && !isset($this->params[$i]['variadic'])) {
