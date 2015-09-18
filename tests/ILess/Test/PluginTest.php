@@ -23,9 +23,9 @@ class PluginTest extends \PHPUnit_Framework_TestCase
 {
     public function testApi()
     {
-        $p = new myPlugin(array(
+        $p = new myPlugin([
             'foo' => 'bar',
-        ));
+        ]);
 
         $this->assertEquals($p->getOption('foo'), 'bar', 'The plugin is configurable');
     }

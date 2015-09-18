@@ -27,9 +27,9 @@ class Test_Node_VariableTest extends Test_TestCase
      */
     public function testConstructor()
     {
-        $v = new VariableNode('foo', array(
+        $v = new VariableNode('foo', [
             new AnonymousNode('foobar')
-        ));
+        ]);
     }
 
     /**
@@ -37,9 +37,9 @@ class Test_Node_VariableTest extends Test_TestCase
      */
     public function testGetType()
     {
-        $v = new ValueNode(array(
+        $v = new ValueNode([
             new AnonymousNode('foobar')
-        ));
+        ]);
         $this->assertEquals('Value', $v->getType());
     }
 
@@ -51,9 +51,9 @@ class Test_Node_VariableTest extends Test_TestCase
         $env = new Context();
         $output = new StandardOutput();
 
-        $v = new ValueNode(array(
+        $v = new ValueNode([
             new AnonymousNode('foobar')
-        ));
+        ]);
 
         $v->generateCss($env, $output);
         $this->assertEquals('foobar', $output->toString());

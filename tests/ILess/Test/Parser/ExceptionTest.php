@@ -17,25 +17,25 @@ use ILess\Parser;
  */
 class Test_Parser_ExceptionTest extends Test_TestCase
 {
-    protected $knownDiffs = array(
-        'color-invalid-hex-code.txt' => array(
+    protected $knownDiffs = [
+        'color-invalid-hex-code.txt' => [
             'column' => 32 // we are using different regexp to "catch" color nodes
-        ),
-        'color-invalid-hex-code2.txt' => array(
+        ],
+        'color-invalid-hex-code2.txt' => [
             'column' => 32 // we are using different regexp to "catch" color nodes
-        ),
-        'import-missing.txt' => array(
+        ],
+        'import-missing.txt' => [
             'message' => "'file-does-not-exist.less' wasn't found"
             // less.js uses paths to search in, we are using importers
-        ),
-    );
+        ],
+    ];
 
-    protected $skipTests = array(
+    protected $skipTests = [
         'javascript-error.less', // we cannot handle javascript
         'javascript-undefined-var.less', // we cannot handle javascript
-    );
+    ];
 
-    protected function createParser($options = array())
+    protected function createParser($options = [])
     {
         return new Parser($options);
     }
@@ -43,7 +43,7 @@ class Test_Parser_ExceptionTest extends Test_TestCase
     /**
      * @dataProvider getCompilationData
      */
-    public function testCompilation($lessFile, $exception, array $options = array())
+    public function testCompilation($lessFile, $exception, array $options = [])
     {
         if (in_array(basename($lessFile), $this->skipTests)) {
             return;
@@ -148,17 +148,17 @@ class Test_Parser_ExceptionTest extends Test_TestCase
             }
         }
 
-        $message = str_replace(array(
+        $message = str_replace([
             '{pathhref}',
             '{404status}',
-        ), '', $message);
+        ], '', $message);
 
-        return array(
+        return [
             $exceptionClass,
             $message,
             $line,
             $column,
-        );
+        ];
     }
 
     public function getCompilationData()

@@ -32,9 +32,9 @@ class Test_Node_RulesetTest extends Test_TestCase
      */
     public function testConstructor()
     {
-        $r = new RulesetNode(array(
+        $r = new RulesetNode([
             new ElementNode('div', 'foobar')
-        ), array());
+        ], []);
     }
 
     /**
@@ -42,9 +42,9 @@ class Test_Node_RulesetTest extends Test_TestCase
      */
     public function testGetType()
     {
-        $r = new RulesetNode(array(
+        $r = new RulesetNode([
             new ElementNode(' ', 'foobar')
-        ), array());
+        ], []);
         $this->assertEquals('Ruleset', $r->getType());
     }
 
@@ -56,16 +56,16 @@ class Test_Node_RulesetTest extends Test_TestCase
         $env = new Context();
         $output = new StandardOutput();
 
-        $r = new RulesetNode(array(
-            new SelectorNode(array(new ElementNode('', 'div'))),
-        ), array(
+        $r = new RulesetNode([
+            new SelectorNode([new ElementNode('', 'div')]),
+        ], [
             new RuleNode('color', new ColorNode('#fff')),
             new RuleNode('font-weight', new KeywordNode('bold')),
-        ));
+        ]);
 
-        $args = new VisitorArguments(array(
+        $args = new VisitorArguments([
             'visitDeeper' => true
-        ));
+        ]);
 
         $visitor = new JoinSelectorVisitor();
         $visitor->visitRuleset($r, $args);

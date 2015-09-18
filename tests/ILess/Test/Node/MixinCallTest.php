@@ -24,7 +24,7 @@ class Test_Node_MixinCallTest extends Test_TestCase
      */
     public function testConstructor()
     {
-        $mc = new MixinCallNode(array(new ElementNode('', 'foobar')));
+        $mc = new MixinCallNode([new ElementNode('', 'foobar')]);
     }
 
     /**
@@ -32,7 +32,7 @@ class Test_Node_MixinCallTest extends Test_TestCase
      */
     public function testGetType()
     {
-        $mc = new MixinCallNode(array(new ElementNode('', 'foobar')));
+        $mc = new MixinCallNode([new ElementNode('', 'foobar')]);
         $this->assertEquals('MixinCall', $mc->getType());
     }
 
@@ -44,7 +44,7 @@ class Test_Node_MixinCallTest extends Test_TestCase
         $this->setExpectedException('ILess\Exception\CompilerException');
 
         $env = new Context();
-        $mc = new MixinCallNode(array(new ElementNode('', 'foobar')));
+        $mc = new MixinCallNode([new ElementNode('', 'foobar')]);
 
         // throws an exception
         $result = $mc->compile($env);

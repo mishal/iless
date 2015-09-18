@@ -19,9 +19,9 @@ class ILess_Test_Issues_050Test extends Test_TestCase
 {
     public function testIssue()
     {
-        $parser = new Parser(array(
+        $parser = new Parser([
             'compress' => false,
-        ));
+        ]);
 
         $parser->parseString('@swatch: foobar;
 @import "../../../bootstrap3/less/@{swatch}/variables.less";
@@ -34,16 +34,16 @@ class ILess_Test_Issues_050Test extends Test_TestCase
 
     public function testIssueWithApiVariables()
     {
-        $parser = new Parser(array(
+        $parser = new Parser([
             'compress' => false,
-        ));
+        ]);
 
         $parser->parseString('
 @import "../../../bootstrap3/less/@{swatch}/variables.less";
 ');
-        $parser->setVariables(array(
+        $parser->setVariables([
             'swatch' => 'foobar',
-        ));
+        ]);
 
         $this->setExpectedException('ILess\Exception\ImportException', '/bootstrap3/less/foobar/variables.less');
 

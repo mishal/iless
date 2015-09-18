@@ -26,9 +26,9 @@ class Test_Node_SelectorTest extends Test_TestCase
      */
     public function testConstructor()
     {
-        $s = new SelectorNode(array(
+        $s = new SelectorNode([
             new ElementNode(' ', 'foobar')
-        ), array());
+        ], []);
     }
 
     /**
@@ -36,9 +36,9 @@ class Test_Node_SelectorTest extends Test_TestCase
      */
     public function testGetType()
     {
-        $s = new SelectorNode(array(
+        $s = new SelectorNode([
             new ElementNode(' ', 'foobar')
-        ), array());
+        ], []);
         $this->assertEquals('Selector', $s->getType());
     }
 
@@ -50,9 +50,9 @@ class Test_Node_SelectorTest extends Test_TestCase
         $env = new Context();
         $output = new StandardOutput();
 
-        $s = new SelectorNode(array(
+        $s = new SelectorNode([
             new ElementNode('', 'foobar')
-        ), array());
+        ], []);
 
         $s->generateCss($env, $output);
         $this->assertEquals(" foobar", $output->toString());

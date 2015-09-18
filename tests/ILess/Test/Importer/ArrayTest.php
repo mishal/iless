@@ -19,7 +19,7 @@ class Test_Importer_ArrayTest extends PHPUnit_Framework_TestCase
 {
     public function testSetFile()
     {
-        $importer = new ArrayImporter(array());
+        $importer = new ArrayImporter([]);
         $this->assertFalse($importer->import('foo.less', new FileInfo()));
 
         $fluent = $importer->setFile('foo.less', 'text');
@@ -30,20 +30,20 @@ class Test_Importer_ArrayTest extends PHPUnit_Framework_TestCase
     public function testGetLastModified()
     {
         $time = time();
-        $importer = new ArrayImporter(array('foo.less' => 'text'), array('foo.less' => $time));
+        $importer = new ArrayImporter(['foo.less' => 'text'], ['foo.less' => $time]);
         $this->assertEquals($time, $importer->getLastModified('foo.less', new FileInfo()));
     }
 
     public function testImport()
     {
-        $importer = new ArrayImporter(array(
+        $importer = new ArrayImporter([
             'vendor/foo.less' => '@import "bar";',
             'vendor/bar.less' => '@import "foobar"; @import "../parent"; a { color: blue; }',
             'foobar.less' => 'b { color: red; }',
             'parent.less' => '/* comment */',
-        ));
+        ]);
 
-        $parser = new Parser(array(), null, array($importer));
+        $parser = new Parser([], null, [$importer]);
         $parser->parseString('@import "vendor/foo";');
 
         $this->assertEquals("b {\n  color: red;\n}\n/* comment */\na {\n  color: blue;\n}\n", $parser->getCSS());

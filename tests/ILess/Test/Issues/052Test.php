@@ -19,9 +19,9 @@ class ILess_Test_Issues_052Test extends Test_TestCase
 {
     public function testIssue()
     {
-        $parser = new Parser(array(
+        $parser = new Parser([
             'compress' => false
-        ));
+        ]);
 
         $parser->parseString('
 #mxtest {
@@ -31,7 +31,7 @@ class ILess_Test_Issues_052Test extends Test_TestCase
   background: -moz-linear-gradient(top, @a 0%, darken(@a, 20) 100%);
 }');
 
-        $parser->setVariables(array('a' => 'rgb(46, 120, 176)', 'b' => 'rgba(0,1,2,0.3)'));
+        $parser->setVariables(['a' => 'rgb(46, 120, 176)', 'b' => 'rgba(0,1,2,0.3)']);
 
         $css = $parser->getCSS();
 

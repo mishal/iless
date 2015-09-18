@@ -21,14 +21,14 @@ class Test_SourceMap_SourceMapTest extends Test_TestCase
     {
         $this->sourceMap = sys_get_temp_dir().'/media.css.map';
 
-        $this->parser = new Parser(array(
+        $this->parser = new Parser([
             'sourceMap' => true,
-            'sourceMapOptions' => array(
+            'sourceMapOptions' => [
                 'base_path' => dirname(__FILE__).'/_fixtures',
                 'filename' => 'simple.css',
                 'write_to' => $this->sourceMap,
-            ),
-        ));
+            ],
+        ]);
         $this->fixturesDir = dirname(__FILE__).'/_fixtures';
     }
 
@@ -55,13 +55,13 @@ class Test_SourceMap_SourceMapTest extends Test_TestCase
 
     public function testInlineMap()
     {
-        $this->parser = new Parser(array(
+        $this->parser = new Parser([
             'sourceMap' => true,
-            'sourceMapOptions' => array(
+            'sourceMapOptions' => [
                 'base_path' => dirname(__FILE__).'/_fixtures',
                 'filename' => 'media.css',
-            ),
-        ));
+            ],
+        ]);
 
         $this->parser->parseFile($this->fixturesDir.'/media.less');
         $this->assertEquals(trim(file_get_contents($this->fixturesDir.'/media-map-inline.css')), $this->parser->getCss());
@@ -71,15 +71,15 @@ class Test_SourceMap_SourceMapTest extends Test_TestCase
     {
         $this->sourceMap = sys_get_temp_dir().'/media-content.css.map';
 
-        $this->parser = new Parser(array(
+        $this->parser = new Parser([
             'sourceMap' => true,
-            'sourceMapOptions' => array(
+            'sourceMapOptions' => [
                 'base_path' => dirname(__FILE__).'/_fixtures',
                 'filename' => 'media.css',
                 'source_contents' => true,
                 'write_to' => $this->sourceMap,
-            ),
-        ));
+            ],
+        ]);
 
         $this->parser->parseFile($this->fixturesDir.'/media.less');
 
@@ -95,15 +95,15 @@ class Test_SourceMap_SourceMapTest extends Test_TestCase
     {
         $this->sourceMap = sys_get_temp_dir().'/media-content.css.map';
 
-        $this->parser = new Parser(array(
+        $this->parser = new Parser([
             'sourceMap' => true,
-            'sourceMapOptions' => array(
+            'sourceMapOptions' => [
                 'base_path' => dirname(__FILE__).'/_fixtures',
                 'filename' => 'media.css',
                 'source_contents' => true,
                 'write_to' => $this->sourceMap,
-            ),
-        ));
+            ],
+        ]);
 
         $this->parser->parseString(file_get_contents($this->fixturesDir.'/media.less'), 'media.less');
 

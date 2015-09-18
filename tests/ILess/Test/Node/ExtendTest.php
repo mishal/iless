@@ -25,7 +25,7 @@ class Test_Node_ExtendTest extends Test_TestCase
      */
     public function testConstructor()
     {
-        $d = new ExtendNode(new SelectorNode(array(new AnonymousNode('foobar'))), 'all');
+        $d = new ExtendNode(new SelectorNode([new AnonymousNode('foobar')]), 'all');
     }
 
     /**
@@ -33,7 +33,7 @@ class Test_Node_ExtendTest extends Test_TestCase
      */
     public function testGetType()
     {
-        $d = new ExtendNode(new SelectorNode(array(new AnonymousNode('foobar'))), 'all');
+        $d = new ExtendNode(new SelectorNode([new AnonymousNode('foobar')]), 'all');
         $this->assertEquals('Extend', $d->getType());
     }
 
@@ -43,7 +43,7 @@ class Test_Node_ExtendTest extends Test_TestCase
     public function testCompile()
     {
         $env = new Context();
-        $d = new ExtendNode(new SelectorNode(array(new AnonymousNode('foobar'))), 'all');
+        $d = new ExtendNode(new SelectorNode([new AnonymousNode('foobar')]), 'all');
         $result = $d->compile($env);
         $this->assertInstanceOf('ILess\Node\ExtendNode', $result);
     }

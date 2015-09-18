@@ -27,12 +27,12 @@ class CachingTest extends \Test_Parser_ParsingTest
      *
      * @dataProvider getCompilationData
      */
-    public function testCompilationAgain($lessFile, $cssFile, $options = array(), $variables = array(), $filter = null)
+    public function testCompilationAgain($lessFile, $cssFile, $options = [], $variables = [], $filter = null)
     {
         $this->testCompilation($lessFile, $cssFile, $options, $variables, $filter);
     }
 
-    protected function createParser($options = array(), CacheInterface $cache = null)
+    protected function createParser($options = [], CacheInterface $cache = null)
     {
         return parent::createParser($options, $cache ? $cache : new FileSystemCache(ILESS_TEST_CACHE_DIR));
     }

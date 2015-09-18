@@ -2,8 +2,8 @@
 
 use ILess\Node\AnonymousNode;
 
-$this->addFunctions(array(
+$this->addFunctions([
     'test-transitive' => function () {
         return new AnonymousNode('transitive');
     }
-));
+]);

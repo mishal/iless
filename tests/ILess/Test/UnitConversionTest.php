@@ -8,11 +8,11 @@ class UnitConversionTest extends \PHPUnit_Framework_TestCase
     {
         $groups = \ILess\Util\UnitConversion::getGroups();
         $this->assertEquals(
-            array(
+            [
                 'length',
                 'duration',
                 'angle',
-            ),
+            ],
             $groups
         );
     }

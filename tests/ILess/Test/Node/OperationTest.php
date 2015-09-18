@@ -26,7 +26,7 @@ class Test_Node_OperationTest extends Test_TestCase
      */
     public function testConstructor()
     {
-        $o = new OperationNode('+', array(new AnonymousNode('10'), new AnonymousNode('15')));
+        $o = new OperationNode('+', [new AnonymousNode('10'), new AnonymousNode('15')]);
     }
 
     /**
@@ -34,7 +34,7 @@ class Test_Node_OperationTest extends Test_TestCase
      */
     public function testGetType()
     {
-        $o = new OperationNode('+', array(new AnonymousNode('10'), new AnonymousNode('15')));
+        $o = new OperationNode('+', [new AnonymousNode('10'), new AnonymousNode('15')]);
         $this->assertEquals('Operation', $o->getType());
     }
 
@@ -46,7 +46,7 @@ class Test_Node_OperationTest extends Test_TestCase
         $env = new Context();
         $output = new StandardOutput();
 
-        $o = new OperationNode('+', array(new AnonymousNode('10'), new AnonymousNode('15')));
+        $o = new OperationNode('+', [new AnonymousNode('10'), new AnonymousNode('15')]);
         $o->generateCss($env, $output);
         $this->assertEquals('10+15', $output->toString());
     }

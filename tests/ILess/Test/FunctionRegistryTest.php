@@ -24,7 +24,7 @@ class Test_FunctionRegistryTest extends Test_TestCase
 
     public function setUp()
     {
-        $this->registry = new FunctionRegistry(array(), new Context());
+        $this->registry = new FunctionRegistry([], new Context());
     }
 
     /**
@@ -42,26 +42,26 @@ class Test_FunctionRegistryTest extends Test_TestCase
 
     public function getDataForHslTest()
     {
-        return array(
+        return [
             // hue, saturation, lightness
-            array(array('0.5', '0', '0.5'), array(
+            [['0.5', '0', '0.5'], [
                 127.5, 127.5, 127.5
-            ), '#808080'),
-            array(array(
+            ], '#808080'],
+            [[
                 new DimensionNode('340'),
                 new DimensionNode('12', '%'),
                 new DimensionNode('95', '%'),
-            ), array(
+            ], [
                 243.78, 240.72, 241.74
-            ), '#f4f1f2'),
-            array(array(
+            ], '#f4f1f2'],
+            [[
                 new DimensionNode('340'),
                 new DimensionNode('50', '%'),
                 new DimensionNode('50', '%'),
-            ), array(
+            ], [
                 191.25, 63.75, 106.24999999999993
-            ), '#bf406a')
-        );
+            ], '#bf406a']
+        ];
     }
 
     /**
@@ -76,9 +76,9 @@ class Test_FunctionRegistryTest extends Test_TestCase
 
     public function getDataForScreenTest()
     {
-        return array(
-            array(new ColorNode(new Color('#f60000')), new ColorNode(new Color('#0000f6')), '#f600f6')
-        );
+        return [
+            [new ColorNode(new Color('#f60000')), new ColorNode(new Color('#0000f6')), '#f600f6']
+        ];
     }
 
     /**
@@ -93,9 +93,9 @@ class Test_FunctionRegistryTest extends Test_TestCase
 
     public function getDataForSpinTest()
     {
-        return array(
-            array(new ColorNode(new Color('#86797d')), new DimensionNode(40), '#867e79')
-        );
+        return [
+            [new ColorNode(new Color('#86797d')), new DimensionNode(40), '#867e79']
+        ];
     }
 
     /**
@@ -109,8 +109,8 @@ class Test_FunctionRegistryTest extends Test_TestCase
 
     public function getDataForEscapeTest()
     {
-        $values = array(new AnonymousNode('a=1'), new AnonymousNode('foobar'));
-        $expected = array('a%3D1', 'foobar');
+        $values = [new AnonymousNode('a=1'), new AnonymousNode('foobar')];
+        $expected = ['a%3D1', 'foobar'];
 
         return $this->prepareDataForProvider($values, $expected);
     }
@@ -121,8 +121,8 @@ class Test_FunctionRegistryTest extends Test_TestCase
     public function testCustomFunction()
     {
         $registry = new FunctionRegistry();
-        $registry->addFunction('foobar', array($this, 'foobarCallable'));
-        $registry->call('foobar', array('a', 'b'));
+        $registry->addFunction('foobar', [$this, 'foobarCallable']);
+        $registry->call('foobar', ['a', 'b']);
     }
 
     public function foobarCallable()

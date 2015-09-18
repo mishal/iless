@@ -28,10 +28,10 @@ class Test_Parser_ParsingTest extends Test_TestCase
      *
      * @var array
      */
-    protected $parserDefaultOptions = array(
+    protected $parserDefaultOptions = [
         'strictUnits' => false,
         'relativeUrls' => true
-    );
+    ];
 
     public static function setUpBeforeClass()
     {
@@ -48,12 +48,12 @@ class Test_Parser_ParsingTest extends Test_TestCase
      * @param CacheInterface $cache
      * @return Parser
      */
-    protected function createParser($options = array(), CacheInterface $cache = null)
+    protected function createParser($options = [], CacheInterface $cache = null)
     {
         $parser = new Parser($options, $cache);
         // test functions
         $parser->addFunctions(
-            array(
+            [
                 '_color' => function (FunctionRegistry $registry, Node $a) {
                     if ($a->value === 'evil red') {
                         return new ColorNode('600');
@@ -65,7 +65,7 @@ class Test_Parser_ParsingTest extends Test_TestCase
                 'add' => function (FunctionRegistry $registry, Node $a, Node $b) {
                     return new DimensionNode($a->value + $b->value);
                 },
-            )
+            ]
         );
 
         return $parser;
@@ -74,7 +74,7 @@ class Test_Parser_ParsingTest extends Test_TestCase
     /**
      * @dataProvider getCompilationData
      */
-    public function testCompilation($lessFile, $cssFile, $options = array(), $variables = array(), $filter = null)
+    public function testCompilation($lessFile, $cssFile, $options = [], $variables = [], $filter = null)
     {
         // default options
         if ($options !== false && !count($options)) {
@@ -117,7 +117,7 @@ class Test_Parser_ParsingTest extends Test_TestCase
                     }
                 }
             }
-            $this->assertEquals($actualDiff, array());
+            $this->assertEquals($actualDiff, []);
         } else {
             $this->assertEquals($preCompiled, $compiled, "Compilation error for: ".basename($lessFile));
         }
@@ -133,139 +133,139 @@ class Test_Parser_ParsingTest extends Test_TestCase
         foreach ($filesToTest as $fileToTest) {
             $expectedFile = $fixturesDir.'/less.js/css/'.str_replace('.less', '.css', basename($fileToTest));
             if (file_exists($expectedFile)) {
-                $data[] = array(
+                $data[] = [
                     $fileToTest,
                     $expectedFile,
-                );
+                ];
             }
         }
 
         // utf-8
-        $data[] = array(
+        $data[] = [
             $fixturesDir.'/utf8/less/utf8.less',
             $fixturesDir.'/utf8/css/utf8.css',
-        );
+        ];
 
         // bootstrap3
-        $data[] = array(
+        $data[] = [
             $fixturesDir.'/bootstrap3/less/bootstrap.less',
             $fixturesDir.'/bootstrap3/css/bootstrap.css',
-        );
+        ];
 
         // bootstrap2
-        $data[] = array(
+        $data[] = [
             $fixturesDir.'/bootstrap2/less/bootstrap.less',
             $fixturesDir.'/bootstrap2/css/bootstrap.css',
             // turn off strict math
-            array(
+            [
                 'strictUnits' => false,
                 'strictMath' => false,
-            ),
-        );
+            ],
+        ];
 
         // variables via the API
-        $data[] = array(
+        $data[] = [
             $fixturesDir.'/php/less/variables.less',
             $fixturesDir.'/php/css/variables.css',
-            array(),
-            array(
+            [],
+            [
                 'a' => 'black',
                 'fontdir' => '/fonts',
                 'base' => '12px',
                 'myurl' => '"http://example.com/image.jpg"',
-            ),
-        );
+            ],
+        ];
 
         // relative urls
-        $data[] = array(
+        $data[] = [
             $fixturesDir.'/relative_urls/less/simple.less',
             $fixturesDir.'/relative_urls/css/simple.css',
-            array(
+            [
                 'relativeUrls' => true,
-            ),
-        );
+            ],
+        ];
 
-        $data[] = array(
+        $data[] = [
             $fixturesDir.'/less.js/less/compression/compression.less',
             $fixturesDir.'/less.js/css/compression/compression.css',
-            array('compress' => true),
-        );
+            ['compress' => true],
+        ];
 
-        $data[] = array(
+        $data[] = [
             $fixturesDir.'/less.js/less/strict-units/strict-units.less',
             $fixturesDir.'/less.js/css/strict-units/strict-units.css',
-            array(
+            [
                 'strictMath' => true,
                 'strictUnits' => true,
-            ),
-        );
+            ],
+        ];
 
-        $data[] = array(
+        $data[] = [
             $fixturesDir.'/less.js/less/legacy/legacy.less',
             $fixturesDir.'/less.js/css/legacy/legacy.css',
-            array(
+            [
                 'strictMath' => false,
                 'strictUnits' => false,
-            ),
-        );
+            ],
+        ];
 
-        $data[] = array(
+        $data[] = [
             $fixturesDir.'/less.js/less/url-args/urls.less',
             $fixturesDir.'/less.js/css/url-args/urls.css',
-            array(
+            [
                 'urlArgs' => '424242',
-            ),
-        );
+            ],
+        ];
 
-        $data[] = array(
+        $data[] = [
             $fixturesDir.'/less.js/less/static-urls/urls.less',
             $fixturesDir.'/less.js/css/static-urls/urls.css',
-            array(
+            [
                 'strict_math' => true,
                 'relative_urls' => false,
                 'root_path' => 'folder (1)/',
-            ),
-        );
+            ],
+        ];
 
-        $data[] = array(
+        $data[] = [
             $fixturesDir.'/relative_urls/less/simple.less',
             $fixturesDir.'/relative_urls/css/simple.css',
-            array(
+            [
                 'relative_urls' => true,
-            ),
-        );
+            ],
+        ];
 
-        $data[] = array(
+        $data[] = [
             $fixturesDir.'/less.js/less/debug/linenumbers.less',
             $fixturesDir.'/less.js/css/debug/linenumbers-all.css',
-            array('dumpLineNumbers' => DebugInfo::FORMAT_ALL),
-            array(),
-            array($this, 'normalizeDebugPaths'),
-        );
+            ['dumpLineNumbers' => DebugInfo::FORMAT_ALL],
+            [],
+            [$this, 'normalizeDebugPaths'],
+        ];
 
-        $data[] = array(
+        $data[] = [
             $fixturesDir.'/less.js/less/debug/linenumbers.less',
             $fixturesDir.'/less.js/css/debug/linenumbers-comments.css',
-            array('dumpLineNumbers' => DebugInfo::FORMAT_COMMENT),
-            array(),
-            array($this, 'normalizeDebugPaths'),
-        );
+            ['dumpLineNumbers' => DebugInfo::FORMAT_COMMENT],
+            [],
+            [$this, 'normalizeDebugPaths'],
+        ];
 
-        $data[] = array(
+        $data[] = [
             $fixturesDir.'/less.js/less/debug/linenumbers.less',
             $fixturesDir.'/less.js/css/debug/linenumbers-mediaquery.css',
-            array('dumpLineNumbers' => DebugInfo::FORMAT_MEDIA_QUERY),
-            array(),
-            array($this, 'normalizeDebugPaths'),
-        );
+            ['dumpLineNumbers' => DebugInfo::FORMAT_MEDIA_QUERY],
+            [],
+            [$this, 'normalizeDebugPaths'],
+        ];
 
         // bootswatch
-        $data[] = array(
+        $data[] = [
             $fixturesDir.'/bootswatch/less/bootswatch.less',
             $fixturesDir.'/bootswatch/css/united/bootswatch.css',
-            array(),
-            array('swatch' => 'united')
-        );
+            [],
+            ['swatch' => 'united']
+        ];
 
         return $data;
     }
@@ -276,18 +276,18 @@ class Test_Parser_ParsingTest extends Test_TestCase
         $lessPath = str_replace('\\', '/', dirname(__FILE__).'/_fixtures/less.js/less/debug/');
 
         return str_replace(
-            array(
+            [
                 $importPath,
                 DebugInfo::escapeFilenameForMediaQuery($importPath),
                 $lessPath,
                 DebugInfo::escapeFilenameForMediaQuery($lessPath),
-            ),
-            array(
+            ],
+            [
                 '{pathimport}',
                 '{pathimportesc}',
                 '{path}',
                 '{pathesc}',
-            ),
+            ],
             $css
         );
     }

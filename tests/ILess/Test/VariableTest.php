@@ -39,48 +39,48 @@ class Test_VariableTest extends Test_TestCase
 
     public function getDataForTestCreateTest()
     {
-        return array(
-            array(
+        return [
+            [
                 'foo',
                 '#ffffff',
                 new RuleNode('@foo',
-                    new ValueNode(array(new ColorNode(new Color('#ffffff'))))),
-            ),
-            array(
+                    new ValueNode([new ColorNode(new Color('#ffffff'))])),
+            ],
+            [
                 'angle',
                 '-20rad',
                 new RuleNode('@angle',
-                    new ValueNode(array(
-                        new DimensionNode('-20', new UnitNode(array('rad'))),
-                    ))),
-            ),
-            array(
+                    new ValueNode([
+                        new DimensionNode('-20', new UnitNode(['rad'])),
+                    ])),
+            ],
+            [
                 'foobar',
                 '12px',
-                new RuleNode('@foobar', new ValueNode(array(
-                        new DimensionNode('12', new UnitNode(array('px'))),
-                    ))
+                new RuleNode('@foobar', new ValueNode([
+                        new DimensionNode('12', new UnitNode(['px'])),
+                    ])
                 ),
-            ),
-            array(
+            ],
+            [
                 'myurl',
                 '"http://example.com/image.jpg"',
-                new RuleNode('@myurl', new ValueNode(array(
+                new RuleNode('@myurl', new ValueNode([
                     new QuotedNode(
                         '"http://example.com/image.jpg"', 'http://example.com/image.jpg'),
-                ))),
-            ),
-            array(
+                ])),
+            ],
+            [
                 'rgb',
                 'rgb(46, 120, 176)',
-                new RuleNode('@rgb', new ValueNode(array(new ColorNode(array(46, 120, 176))))),
-            ),
-            array(
+                new RuleNode('@rgb', new ValueNode([new ColorNode([46, 120, 176])])),
+            ],
+            [
                 'rgba',
                 'rgba(46, 120, 176, 0.5)',
-                new RuleNode('@rgba', new ValueNode(array(new ColorNode(array(46, 120, 176), 0.5)))),
-            )
-        );
+                new RuleNode('@rgba', new ValueNode([new ColorNode([46, 120, 176], 0.5)])),
+            ]
+        ];
     }
 
 }

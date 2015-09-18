@@ -24,20 +24,20 @@ class Test_Parser_CoreTest extends Test_TestCase
 {
     public function setUp()
     {
-        $env = new Context(array(), new FunctionRegistry());
+        $env = new Context([], new FunctionRegistry());
 
-        $importer = new Importer($env, array(
+        $importer = new Importer($env, [
             new FileSystemImporter(),
-        ), new NoCache());
+        ], new NoCache());
 
         $this->parser = new Core($env, $importer);
     }
 
     public function testAssignVariablesAndReset()
     {
-        $this->parser->setVariables(array(
+        $this->parser->setVariables([
             'color' => 'red',
-        ));
+        ]);
 
         $this->parser->parseString('body { color: @color; }');
         $generated = $this->parser->getCSS();
@@ -52,9 +52,9 @@ class Test_Parser_CoreTest extends Test_TestCase
         $this->parser->reset();
         $this->assertEquals('', $this->parser->getCSS());
 
-        $this->parser->setVariables(array(
+        $this->parser->setVariables([
             'color' => 'blue',
-        ));
+        ]);
 
         $this->parser->parseString('body { color: @color; }');
 

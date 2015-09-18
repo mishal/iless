@@ -10,12 +10,12 @@ class Test_TestCase extends PHPUnit_Framework_TestCase
 {
     protected function prepareDataForProvider($values, $expected)
     {
-        return array_map(array($this, 'mapValuesWithExpected'), $values, $expected);
+        return array_map([$this, 'mapValuesWithExpected'], $values, $expected);
     }
 
     protected function mapValuesWithExpected($values, $expected)
     {
-        return array($values, $expected);
+        return [$values, $expected];
     }
 
     protected function diag($message)

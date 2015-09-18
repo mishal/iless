@@ -21,9 +21,9 @@ class Test_EnvironmentTest extends Test_TestCase
     public function testNormalizePath()
     {
         $env = new Context();
-        $copy = Context::createCopy($env, array(1));
+        $copy = Context::createCopy($env, [1]);
         $this->assertInstanceOf('ILess\Context', $copy);
-        $this->assertEquals($copy->frames, array(1));
+        $this->assertEquals($copy->frames, [1]);
     }
 
     /**
@@ -31,12 +31,12 @@ class Test_EnvironmentTest extends Test_TestCase
      */
     public function testOptions()
     {
-        $env = new Context(array(
+        $env = new Context([
             'source_map' => true,
             'strict_units' => 1,
             'tab_level' => 2,
             'strictMath' => true,
-        ));
+        ]);
 
         $this->assertTrue($env->sourceMap);
         $this->assertTrue($env->strictUnits);
@@ -51,9 +51,9 @@ class Test_EnvironmentTest extends Test_TestCase
      */
     public function testInvalidOptions()
     {
-        new Context(array(
+        new Context([
             'foo' => true,
             'foo_bar' => 1,
-        ));
+        ]);
     }
 }

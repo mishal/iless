@@ -36,7 +36,7 @@ class CLITest extends Test_TestCase
      */
     public function testIsValid()
     {
-        $cli = new CLI(array());
+        $cli = new CLI([]);
         $this->assertEquals(false, $cli->isValid());
     }
 
@@ -45,9 +45,9 @@ class CLITest extends Test_TestCase
      */
     public function testGetScriptName()
     {
-        $cli = new CLI(array(
+        $cli = new CLI([
             'foobar.php', 'arg1', 'arg2', 'arg3'
-        ));
+        ]);
         $this->assertEquals($cli->getScriptName(), 'foobar.php');
     }
 
@@ -57,34 +57,34 @@ class CLITest extends Test_TestCase
      */
     public function testParseArguments($arguments, $expected)
     {
-        $cli = new Test_CLI(array(
+        $cli = new Test_CLI([
             'foobar.php', 'arg1', 'arg2', 'arg3'
-        ));
+        ]);
         $this->assertSame($expected, $cli->parseArguments($arguments));
     }
 
     public function getDataForParseArgumentsTest()
     {
-        return array(
-            array(
+        return [
+            [
                 // to test:
-                array('a.less', 'b.css', '--source-map', '--compress', '-x'),
+                ['a.less', 'b.css', '--source-map', '--compress', '-x'],
                 // expected:
-                array('arguments' => array('a.less', 'b.css'), 'flags' => array('x'), 'options' => array('source-map' => true, 'compress' => true))
-            ),
-            array(
+                ['arguments' => ['a.less', 'b.css'], 'flags' => ['x'], 'options' => ['source-map' => true, 'compress' => true]]
+            ],
+            [
                 // to test:
-                array('--source-map=foobar.map', '--compress=false', '-x', 'a.less', 'b.css'),
+                ['--source-map=foobar.map', '--compress=false', '-x', 'a.less', 'b.css'],
                 // expected:
-                array('arguments' => array('a.less', 'b.css'), 'flags' => array('x'), 'options' => array('source-map' => 'foobar.map', 'compress' => false))
-            ),
-            array(
+                ['arguments' => ['a.less', 'b.css'], 'flags' => ['x'], 'options' => ['source-map' => 'foobar.map', 'compress' => false]]
+            ],
+            [
                 // to test:
-                array('-', '-x'), // read from stdin
+                ['-', '-x'], // read from stdin
                 // expected:
-                array('arguments' => array('-'), 'flags' => array('x'), 'options' => array())
-            )
-        );
+                ['arguments' => ['-'], 'flags' => ['x'], 'options' => []]
+            ]
+        ];
     }
 
     /**
@@ -99,28 +99,28 @@ class CLITest extends Test_TestCase
 
     public function getDataForIsSilentTest()
     {
-        return array(
-            array(
+        return [
+            [
                 // to test:
-                array('foobar.php', 'a.less', 'b.css', '--source-map', '--compress', '-x'),
+                ['foobar.php', 'a.less', 'b.css', '--source-map', '--compress', '-x'],
                 // expected:
                 false
-            ),
-            array(
+            ],
+            [
                 // to test:
                 // -s flag present
-                array('foobar.php', '--source-map=foobar.map', '--compress=false', '-s', 'a.less', 'b.css'),
+                ['foobar.php', '--source-map=foobar.map', '--compress=false', '-s', 'a.less', 'b.css'],
                 // expected:
                 true
-            ),
-            array(
+            ],
+            [
                 // to test:
                 // --compress option present
-                array('foobar.php', '--compress=true', '--silent'),
+                ['foobar.php', '--compress=true', '--silent'],
                 // expected:
                 true
-            )
-        );
+            ]
+        ];
     }
 
     /**
@@ -128,7 +128,7 @@ class CLITest extends Test_TestCase
      */
     public function testGetUsage()
     {
-        $cli = new Test_CLI(array('foobar.php'));
+        $cli = new Test_CLI(['foobar.php']);
         $this->assertContains('usage: foobar.php', $cli->getUsage());
     }
 

@@ -28,7 +28,7 @@ class Test_Cache_FileSystemTest extends Test_TestCase
             $dir = '\000YY:\/N0nSeNse/x';
         }
         $this->setExpectedException('ILess\Exception\CacheException', sprintf('The cache directory "%s" could not be created.', $dir));
-        $cache = new FileSystemCache(array('cache_dir' => $dir));
+        $cache = new FileSystemCache(['cache_dir' => $dir]);
     }
 
     /**
@@ -37,7 +37,7 @@ class Test_Cache_FileSystemTest extends Test_TestCase
     public function testDirectorySetupCreatesDirectory()
     {
         $dir = sys_get_temp_dir() . '/iless_test';
-        $cache = new FileSystemCache(array('cache_dir' => $dir));
+        $cache = new FileSystemCache(['cache_dir' => $dir]);
         // the directory has been created
         $this->assertEquals(true, is_dir($dir) && is_writable($dir));
         // cleanup
@@ -49,7 +49,7 @@ class Test_Cache_FileSystemTest extends Test_TestCase
      */
     public function testFileCache()
     {
-        $cache = new FileSystemCache(array('cache_dir' => sys_get_temp_dir()));
+        $cache = new FileSystemCache(['cache_dir' => sys_get_temp_dir()]);
         $cache->set('a', 'foobar');
         $this->assertEquals(true, $cache->has('a'));
         $cache->remove('a');

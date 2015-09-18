@@ -21,7 +21,7 @@ class Test_Issues_035Test extends Test_TestCase
     {
         $parser = new Parser();
 
-        $parser->setVariables(array('mycolor' => 'transparent'));
+        $parser->setVariables(['mycolor' => 'transparent']);
 
         $parser->parseString(
 '.test{

@@ -42,12 +42,12 @@ class Test_Node_ColorTest extends Test_TestCase
 
     public function getDataForConstructorTest()
     {
-        return array(
+        return [
             // color, array of rgb channels, alpha
-            array('#ffffff', array(255, 255, 255), 1),
-            array('#000000', array(0, 0, 0), 1),
-            array('#ddd', array(221, 221, 221), 1),
-        );
+            ['#ffffff', [255, 255, 255], 1],
+            ['#000000', [0, 0, 0], 1],
+            ['#ddd', [221, 221, 221], 1],
+        ];
     }
 
     /**
@@ -147,9 +147,9 @@ class Test_Node_ColorTest extends Test_TestCase
         $result = $color->operate($env, '+', $other);
         // new color is returned
         $this->assertInstanceOf('ILess\Node\ColorNode', $result);
-        $this->assertEquals($result->getRGB(), array(
+        $this->assertEquals($result->getRGB(), [
             255, 255, 255
-        ));
+        ]);
     }
 
 }

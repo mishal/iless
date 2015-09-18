@@ -28,13 +28,13 @@ class Test_MathTest extends Test_TestCase
 
     public function getDataForToFixedTest()
     {
-        return array(
+        return [
             // test, expected
-            array('1', 2, '1'),
-            array('0.00001', 20, '0.00001'),
-            array('0.000000000000001', 20, '0.000000000000001'),
-            array('1.000000000000001', 20, '1.000000000000001'),
-        );
+            ['1', 2, '1'],
+            ['0.00001', 20, '0.00001'],
+            ['0.000000000000001', 20, '0.000000000000001'],
+            ['1.000000000000001', 20, '1.000000000000001'],
+        ];
     }
 
     /**
@@ -48,13 +48,13 @@ class Test_MathTest extends Test_TestCase
 
     public function getDataForRoundTest()
     {
-        return array(
+        return [
             // test, precision, expected
-            array('1.499999', 0, '1'),
-            array('71.52', 0, '72'),
-            array('78.47', 0, '78'),
-            array('71.25', 0, '71')
-        );
+            ['1.499999', 0, '1'],
+            ['71.52', 0, '72'],
+            ['78.47', 0, '78'],
+            ['71.25', 0, '71']
+        ];
     }
 
 }

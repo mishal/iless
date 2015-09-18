@@ -26,7 +26,7 @@ class Test_ImporterTest extends Test_TestCase
     public function testRegisterImporter()
     {
         $env = new Context();
-        $i = new Importer($env, array(), new NoCache());
+        $i = new Importer($env, [], new NoCache());
 
         $r = $i->registerImporter(new FileSystemImporter(), 'file_system');
         $i->registerImporter(new FileSystemImporter(), 'disc');
@@ -45,11 +45,11 @@ class Test_ImporterTest extends Test_TestCase
     {
         $env = new Context();
         $importer = new FileSystemImporter();
-        $i = new Importer($env, array('disc' => $importer), new NoCache());
+        $i = new Importer($env, ['disc' => $importer], new NoCache());
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'disc' => $importer
-        ), $i->getImporters());
+        ], $i->getImporters());
     }
 
 }

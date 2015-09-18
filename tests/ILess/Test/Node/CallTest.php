@@ -25,7 +25,7 @@ class Test_Node_CallTest extends Test_TestCase
      */
     public function testGetType()
     {
-        $a = new CallNode('foo', array(), 0);
+        $a = new CallNode('foo', [], 0);
         $this->assertEquals('Call', $a->getType());
     }
 
@@ -36,17 +36,17 @@ class Test_Node_CallTest extends Test_TestCase
     {
         $env = new Context();
 
-        $a = new CallNode('foo', array(), 0);
+        $a = new CallNode('foo', [], 0);
         $output = new StandardOutput();
 
         $a->generateCss($env, $output);
         $this->assertEquals($output->toString(), 'foo()');
 
         // a bit complicated
-        $a = new CallNode('foo', array(
+        $a = new CallNode('foo', [
             new AnonymousNode('arg1'),
             new AnonymousNode('arg2'),
-        ), 0);
+        ], 0);
 
         $output = new StandardOutput();
         $a->generateCss($env, $output);

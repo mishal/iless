@@ -25,7 +25,7 @@ class Test_Node_MediaTest extends Test_TestCase
      */
     public function testConstructor()
     {
-        $d = new MediaNode(array('black'));
+        $d = new MediaNode(['black']);
     }
 
     /**
@@ -33,7 +33,7 @@ class Test_Node_MediaTest extends Test_TestCase
      */
     public function testGetType()
     {
-        $d = new MediaNode(array('black'));
+        $d = new MediaNode(['black']);
         $this->assertEquals('Media', $d->getType());
     }
 

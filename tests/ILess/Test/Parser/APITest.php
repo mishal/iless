@@ -28,9 +28,9 @@ class Test_ParserAPITest extends Test_TestCase
         $parser = new Parser();
         $this->assertInstanceOf('ILess\Cache\CacheInterface', $parser->getCache());
 
-        $parser = new Parser(array(), new FileSystemCache(array(
+        $parser = new Parser([], new FileSystemCache([
             'cache_dir' => sys_get_temp_dir()
-        )));
+        ]));
         $this->assertInstanceOf('ILess\Cache\CacheInterface', $parser->getCache());
     }
 

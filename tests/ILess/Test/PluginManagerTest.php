@@ -72,13 +72,13 @@ class PluginManagerTest extends PHPUnit_Framework_TestCase
 
         $plugins = $m->getPlugins();
 
-        $this->assertEquals(array($plugin), $plugins, 'getPlugins returns an array of plugins');
+        $this->assertEquals([$plugin], $plugins, 'getPlugins returns an array of plugins');
 
-        $m->addPlugins(array($plugin));
+        $m->addPlugins([$plugin]);
 
         $plugins = $m->getPlugins();
 
-        $this->assertEquals(array($plugin, $plugin), $plugins, 'getPlugins returns an array of plugins');
+        $this->assertEquals([$plugin, $plugin], $plugins, 'getPlugins returns an array of plugins');
     }
 
     public function testVisitors()
@@ -91,13 +91,13 @@ class PluginManagerTest extends PHPUnit_Framework_TestCase
 
         $visitors = $m->getVisitors();
 
-        $this->assertEquals(array($visitor), $visitors, 'getVisitors returns an array of visitors');
+        $this->assertEquals([$visitor], $visitors, 'getVisitors returns an array of visitors');
 
-        $m->addVisitors(array($visitor));
+        $m->addVisitors([$visitor]);
 
         $visitors = $m->getVisitors();
 
-        $this->assertEquals(array($visitor, $visitor), $visitors, 'getVisitors returns an array of visitors');
+        $this->assertEquals([$visitor, $visitor], $visitors, 'getVisitors returns an array of visitors');
     }
 
     public function testPreprocessors()
@@ -110,7 +110,7 @@ class PluginManagerTest extends PHPUnit_Framework_TestCase
 
         $preprocessors = $m->getPreProcessors();
 
-        $this->assertEquals(array($preprocessor1), $preprocessors,
+        $this->assertEquals([$preprocessor1], $preprocessors,
             'getPreProcessors returns an array of preprocessors');
 
         // add second but with higher priority
@@ -118,7 +118,7 @@ class PluginManagerTest extends PHPUnit_Framework_TestCase
 
         $preprocessors = $m->getPreProcessors();
 
-        $this->assertEquals(array($preprocessor2, $preprocessor1), $preprocessors,
+        $this->assertEquals([$preprocessor2, $preprocessor1], $preprocessors,
             'getPreProcessors returns an array of preprocessors');
     }
 
@@ -132,7 +132,7 @@ class PluginManagerTest extends PHPUnit_Framework_TestCase
 
         $postprocessors = $m->getPostProcessors();
 
-        $this->assertEquals(array($postprocessor1), $postprocessors,
+        $this->assertEquals([$postprocessor1], $postprocessors,
             'getPostProcessors returns an array of postprocessors');
 
         // add second but with higher priority
@@ -140,7 +140,7 @@ class PluginManagerTest extends PHPUnit_Framework_TestCase
 
         $postprocessors = $m->getPostProcessors();
 
-        $this->assertEquals(array($postprocessor2, $postprocessor1), $postprocessors,
+        $this->assertEquals([$postprocessor2, $postprocessor1], $postprocessors,
             'getPostProcessors returns an array of postprocessors');
     }
 

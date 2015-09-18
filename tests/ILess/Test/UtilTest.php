@@ -28,12 +28,12 @@ class Test_UtilTest extends Test_TestCase
 
     public function getDataForNormalizePathTest()
     {
-        return array(
-            array('foo', 'foo'),
-            array('http://foobar.com', 'http://foobar.com'),
-            array(__FILE__, str_replace('\\', '/', __FILE__)),
-            array('/a/d/tmp/../foo/test.jpg', '/a/d/foo/test.jpg')
-        );
+        return [
+            ['foo', 'foo'],
+            ['http://foobar.com', 'http://foobar.com'],
+            [__FILE__, str_replace('\\', '/', __FILE__)],
+            ['/a/d/tmp/../foo/test.jpg', '/a/d/foo/test.jpg']
+        ];
     }
 
     /**
@@ -47,11 +47,11 @@ class Test_UtilTest extends Test_TestCase
 
     public function getDataForCompareNodes()
     {
-        return array(
-            array(
+        return [
+            [
                 null, new AnonymousNode('a'), new AnonymousNode('b')
-            )
-        );
+            ]
+        ];
     }
 
 }

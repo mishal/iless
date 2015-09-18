@@ -25,7 +25,7 @@ class Test_Node_ExpressionTest extends Test_TestCase
      */
     public function testConstructor()
     {
-        $d = new ExpressionNode(array(new AnonymousNode('foobar')));
+        $d = new ExpressionNode([new AnonymousNode('foobar')]);
     }
 
     /**
@@ -33,7 +33,7 @@ class Test_Node_ExpressionTest extends Test_TestCase
      */
     public function testGetType()
     {
-        $d = new ExpressionNode(array(new AnonymousNode('foobar')));
+        $d = new ExpressionNode([new AnonymousNode('foobar')]);
         $this->assertEquals('Expression', $d->getType());
     }
 
@@ -44,7 +44,7 @@ class Test_Node_ExpressionTest extends Test_TestCase
     {
         $env = new Context();
         $output = new StandardOutput();
-        $d = new ExpressionNode(array(new AnonymousNode('foobar')));
+        $d = new ExpressionNode([new AnonymousNode('foobar')]);
         $d->generateCss($env, $output);
         $this->assertEquals('foobar', $output->toString());
     }
@@ -55,7 +55,7 @@ class Test_Node_ExpressionTest extends Test_TestCase
     public function testCompile()
     {
         $env = new Context();
-        $d = new ExpressionNode(array(new AnonymousNode('foobar')));
+        $d = new ExpressionNode([new AnonymousNode('foobar')]);
         $result = $d->compile($env);
         $this->assertInstanceOf('ILess\Node\AnonymousNode', $result);
         $this->assertEquals('foobar', $result->toCSS($env));

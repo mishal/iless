@@ -27,7 +27,7 @@ class Test_Visitor_ImportTest extends Test_TestCase
     public function testVisit()
     {
         $env = new Context();
-        $v = new ImportVisitor($env, new Importer($env, array(), new NoCache()));
+        $v = new ImportVisitor($env, new Importer($env, [], new NoCache()));
         $this->assertFalse($v->isReplacing());
     }
 

@@ -105,9 +105,9 @@ class Test_SourceMap_Base64VLQTest extends Test_TestCase
      */
     public function provideValidBase64()
     {
-        $tuples = array();
+        $tuples = [];
         foreach (str_split($this->B64STR) as $i => $char) {
-            $tuples[] = array($char, $i);
+            $tuples[] = [$char, $i];
         }
 
         return $tuples;
@@ -120,10 +120,10 @@ class Test_SourceMap_Base64VLQTest extends Test_TestCase
      */
     public function provideInvalidBase64()
     {
-        return array(
-            array('"', -1),
-            array('!', 64)
-        );
+        return [
+            ['"', -1],
+            ['!', 64]
+        ];
     }
 
     /**
@@ -153,41 +153,41 @@ class Test_SourceMap_Base64VLQTest extends Test_TestCase
      */
     public function provideBase64VLQ()
     {
-        return array(
-            array(0, 'A'),
-            array(1, 'C'),
-            array(2, 'E'),
-            array(4, 'I'),
-            array(8, 'Q'),
-            array(16, 'gB'),
-            array(32, 'gC'),
-            array(64, 'gE'),
-            array(128, 'gI'),
-            array(256, 'gQ'),
-            array(512, 'ggB'),
-            array(1024, 'ggC'),
-            array(2048, 'ggE'),
-            array(4096, 'ggI'),
-            array(8192, 'ggQ'),
-            array(16384, 'gggB'),
-            array(32768, 'gggC'),
-            array(65536, 'gggE'),
-            array(131072, 'gggI'),
-            array(262144, 'gggQ'),
-            array(524288, 'ggggB'),
-            array(1048576, 'ggggC'),
-            array(2097152, 'ggggE'),
-            array(4194304, 'ggggI'),
-            array(8388608, 'ggggQ'),
-            array(16777216, 'gggggB'),
-            array(33554432, 'gggggC'),
-            array(67108864, 'gggggE'),
-            array(134217728, 'gggggI'),
-            array(268435456, 'gggggQ'),
-            array(536870912, 'ggggggB'),
-            array(1073741824, 'ggggggC'),
-            array(2147483647, '+/////D'),
-        );
+        return [
+            [0, 'A'],
+            [1, 'C'],
+            [2, 'E'],
+            [4, 'I'],
+            [8, 'Q'],
+            [16, 'gB'],
+            [32, 'gC'],
+            [64, 'gE'],
+            [128, 'gI'],
+            [256, 'gQ'],
+            [512, 'ggB'],
+            [1024, 'ggC'],
+            [2048, 'ggE'],
+            [4096, 'ggI'],
+            [8192, 'ggQ'],
+            [16384, 'gggB'],
+            [32768, 'gggC'],
+            [65536, 'gggE'],
+            [131072, 'gggI'],
+            [262144, 'gggQ'],
+            [524288, 'ggggB'],
+            [1048576, 'ggggC'],
+            [2097152, 'ggggE'],
+            [4194304, 'ggggI'],
+            [8388608, 'ggggQ'],
+            [16777216, 'gggggB'],
+            [33554432, 'gggggC'],
+            [67108864, 'gggggE'],
+            [134217728, 'gggggI'],
+            [268435456, 'gggggQ'],
+            [536870912, 'ggggggB'],
+            [1073741824, 'ggggggC'],
+            [2147483647, '+/////D'],
+        ];
     }
 
 }

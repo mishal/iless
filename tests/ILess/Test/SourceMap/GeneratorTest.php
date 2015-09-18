@@ -30,7 +30,7 @@ class Test_SourceMap_GeneratorTest extends Test_TestCase
      */
     public function testBasic()
     {
-        $g = new Test_SourceMap_Generator(new RulesetNode(array(), array()), array());
+        $g = new Test_SourceMap_Generator(new RulesetNode([], []), []);
         $this->assertEquals(
             '{"version":3,"file":null,"sourceRoot":"","sources":[],"names":[],"mappings":""}',
             $g->generateJson()
@@ -42,7 +42,7 @@ class Test_SourceMap_GeneratorTest extends Test_TestCase
      */
     public function testGenerateMappings()
     {
-        $g = new Test_SourceMap_Generator(new RulesetNode(array(), array()), array());
+        $g = new Test_SourceMap_Generator(new RulesetNode([], []), []);
     }
 
 }

@@ -6,11 +6,11 @@
 use ILess\FunctionRegistry;
 use ILess\Node\AnonymousNode;
 
-$this->addFunctions(array(
+$this->addFunctions([
     'test-shadow' => function () {
         return new AnonymousNode("global");
     },
     'test-global' => function () {
         return new AnonymousNode("global");
     }
-));
+]);
