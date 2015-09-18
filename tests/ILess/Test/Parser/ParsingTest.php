@@ -259,6 +259,14 @@ class Test_Parser_ParsingTest extends Test_TestCase
             array($this, 'normalizeDebugPaths'),
         );
 
+        // bootswatch
+        $data[] = array(
+            $fixturesDir.'/bootswatch/less/bootswatch.less',
+            $fixturesDir.'/bootswatch/css/united/bootswatch.css',
+            array(),
+            array('swatch' => 'united')
+        );
+
         return $data;
     }
 

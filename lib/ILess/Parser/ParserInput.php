@@ -214,7 +214,7 @@ final class ParserInput
                         'isLineComment' => true,
                     ];
                     $nextNewLine = strpos($inp, "\n", $this->i + 2);
-                    if ($nextNewLine < 0) {
+                    if ($nextNewLine === false) {
                         $nextNewLine = $endIndex;
                     }
                     $this->i = $nextNewLine;
