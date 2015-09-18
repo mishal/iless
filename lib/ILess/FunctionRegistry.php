@@ -768,7 +768,9 @@ class FunctionRegistry
      */
     public function percentage(Node $number)
     {
-        return new DimensionNode($number->value * 100, '%');
+        return $this->doMath(function($n) {
+                return $n * 100;
+        }, $number, '%');
     }
 
     /**
@@ -923,7 +925,7 @@ class FunctionRegistry
             return call_user_func_array($func, $arguments);
         }
 
-        throw new CompilerException('The math functions take numbers as parameters');
+        throw new CompilerException('argument must be a number');
     }
 
     /**
