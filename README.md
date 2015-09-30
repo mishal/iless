@@ -119,19 +119,28 @@ For more examples check the [examples](./examples) folder in the source files.
 
 ## Command line usage
 
-To compile the LESS files (or input from `stdin`) you can use the ILess\CLI script (located in `bin` directory).
+To compile the LESS files (or input from `stdin`) you can use the ILess\CLI script (located in `bin` directory) or PHAR executable.
+
+## PHAR installation
+
+Download the PHAR archive
+
+    wget http://mishal.github.io/iless/iless-latest.phar
+    chmod +x iless-latest.phar
+    mv iless-latest.phar /usr/local/bin/iless
+    iless --version
 
 ## Usage from NetBeans IDE
 
 To compile the LESS files from your NetBeans IDE (*version 7.4 is required*) you need to configure the path to the `iless` executable.
  [How to setup the compilation](http://wiki.netbeans.org/NetBeans_74_NewAndNoteworthy#Compilation_on_Save).
 
-You have to configure the less path to point to `bin/iless`.
+You have to configure the less path to point to `bin/iless` or the PHAR executable.
 
 ## Usage from PhpStorm IDE
 
 To compile the LESS files from your PhpStorm IDE you need to configure the `File watcher` for `.less` files. [See the manual](http://www.jetbrains.com/phpstorm/webhelp/transpiling-sass-less-and-scss-to-css.html#d151302e621) how to do it.
-You have to configure the `program` option to point to `bin/iless`.
+You have to configure the `program` option to point to `bin/iless` or the PHAR executable.
 
 **Note**: See additional command line options for the parser below.
 
