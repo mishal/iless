@@ -23,7 +23,8 @@ ILess is a **PHP port** of the official LESS processor written in Javascript. Cu
 To use ILess in your project you can:
 
   - Install it using Composer ([more info on Packagist](https://packagist.org/packages/mishal/iless))
-  - [Download the latest release](https://github.com/mishal/iless/archive/master.zip)
+  - [Download the latest release](https://github.com/mishal/iless/releases)
+  - [Install the PHAR executable](https://github.com/mishal/iless#phar-installation)
   - Clone the repository: `git clone git://github.com/mishal/iless.git`
 
 ## Requirements
