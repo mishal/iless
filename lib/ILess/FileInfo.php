@@ -86,7 +86,6 @@ final class FileInfo implements \Serializable
 
         unset($vars['reference']);
         unset($vars['rootPath']);
-        unset($vars['importedFile']);
 
         return serialize($vars);
     }
