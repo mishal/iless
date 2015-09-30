@@ -1,0 +1,16 @@
+{
+  "output": "iless.phar",
+  "chmod": "0755",
+  "compactors": [
+  ],
+  "compression": "GZ",
+  "extract": false,
+  "main": "bin/iless",
+  "files": [
+    "LICENSE"
+  ],
+  "directories": [
+    "lib"
+  ],
+  "stub": true
+}
