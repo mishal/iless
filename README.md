@@ -13,10 +13,10 @@ For more info about the language see the official website: <http://lesscss.org>
 
 ILess is a **PHP port** of the official LESS processor written in Javascript. Current version of ILess is compatible with less.js `2.5.x.`
 
-## Build Status
+## Status
 
 [![Build Status](https://travis-ci.org/mishal/iless.png?branch=master)](https://travis-ci.org/mishal/iless)
-[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/mishal/iless/badges/quality-score.png?s=513af3953e6974968feac9c445db32489c62c35f)](https://scrutinizer-ci.com/g/mishal/iless/)
+[![Dependency Status](https://gemnasium.com/mishal/iless.svg)](https://gemnasium.com/mishal/iless)
 
 ## Getting Started
 
