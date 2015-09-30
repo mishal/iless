@@ -73,7 +73,7 @@ class Core
     /**
      * Parser version
      */
-    const VERSION = '2.0.7';
+    const VERSION = '2.0.8';
 
     /**
      * Less.js compatibility version
