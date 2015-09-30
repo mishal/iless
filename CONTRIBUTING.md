@@ -41,7 +41,7 @@ Read [more information on formatting](http://git-scm.com/book/ch7-1.html#Formatt
 
 ## Pull requests
 
- * **Always make your contributions** for the latest `develop` branch, not `master`.
+ * **Always make your contributions** for the latest `master` branch.
  * Create **separate branch** per patch or feature.
  * Remain focused in scope and avoid containing unrelated commits.
  * **Run the unit tests**. They should all pass.
