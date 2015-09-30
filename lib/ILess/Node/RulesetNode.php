@@ -994,9 +994,9 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     public function serialize()
     {
         $vars = get_object_vars($this);
-        $serialized = serialize($vars);
-
         unset($vars['functionRegistry']);
+
+        $serialized = serialize($vars);
 
         return $serialized;
     }

@@ -152,7 +152,7 @@ final class ImportedFile implements \Serializable
             $this->path,
             $this->lastModified,
             base64_encode($this->content),
-            $this->ruleset,
+            $this->ruleset
         ]);
     }
 

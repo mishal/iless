@@ -184,9 +184,7 @@ class Importer
                     // create dummy ruleset which will hold the functions
                     $ruleset = new RulesetNode([], []);
                     $ruleset->root = false;
-                    $ruleset->functions[] = function (FunctionRegistry $registry) use ($file) {
-                        $registry->loadPlugin($file->getPath());
-                    };
+                    $ruleset->functions[] = $file->getPath();
 
                     $file->setRuleset($ruleset);
 

@@ -187,8 +187,9 @@ class ImportNode extends Node implements \Serializable
             $registry = isset($context->frames[0]) && $context->frames[0]->functionRegistry ?
                 $context->frames[0]->functionRegistry : null;
             if ($registry && $this->root && $this->root->functions) {
-                foreach ($this->root->functions as $functions) {
-                    call_user_func($functions, $registry);
+                /* @var $registry FunctionRegistry */
+                foreach ($this->root->functions as $funcFile) {
+                    $registry->loadPlugin($funcFile);
                 }
             }
 
@@ -319,11 +320,7 @@ class ImportNode extends Node implements \Serializable
     public function serialize()
     {
         $vars = get_object_vars($this);
-        if ($this->root && !is_object($this->root)) {
-            die("unserialize faled");
-            unset($vars['root']);
-        }
-
+        unset($vars['skip'], $vars['error']);
         return serialize($vars);
     }
 
