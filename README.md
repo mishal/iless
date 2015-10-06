@@ -75,9 +75,9 @@ To run ILess you need `PHP >= 5.4.0`
     $parser->parseString('body { color: @color; }');
 
     // assign variables via the API
-    $parser->setVariables(array(
-        'color' => '#000000'
-    ));
+    $parser->setVariables([
+        'color' => 'white'
+    ]);
 
     // Add a custom function
     $parser->addFunction('superdarken', function(FunctionRegistry $registry, ColorNode $color) {
@@ -162,37 +162,64 @@ Parse input from `stdin` and save it to a file `my.css`.
 
 ## Usage and available options
 
-     _____        _______ _______ _______                                                                    
-       |   |      |______ |______ |______                                                                    
-     __|__ |_____ |______ ______| ______|                                                                    
-                                                                                                             
-    usage: iless [option option=parameter ...] source [destination]                                          
-                                                                                                             
-    If source is set to `-` (dash or hyphen-minus), input is read from stdin.                                
-                                                                                                             
-    options:                                                                                                 
-       -h, --help               Print help (this message) and exit.                                          
-       -v, --version            Print version number and exit.                                               
-       -s, --silent             Suppress output of error messages.                                           
-       --no-color               Disable colorized output.                                                    
-       -x, --compress           Compress output by removing the whitespace.                                  
-       -a, --append             Append the generated CSS to the target file?                                 
-       --no-ie-compat           Disable IE compatibility checks.                                             
+     _____        _______ _______ _______
+       |   |      |______ |______ |______
+     __|__ |_____ |______ ______| ______|
+
+    usage: iless [option option=parameter ...] source [destination]
+
+    If source is set to `-` (dash or hyphen-minus), input is read from stdin.
+
+    options:
+       -h, --help               Print help (this message) and exit.
+       -v, --version            Print version number and exit.
+       -s, --silent             Suppress output of error messages.
+       --setup-file             Setup file for the parser. Allows to setup custom variables, plugins...
+       --no-color               Disable colorized output.
+       -x, --compress           Compress output by removing the whitespace.
+       -a, --append             Append the generated CSS to the target file?
+       --no-ie-compat           Disable IE compatibility checks.
        --source-map             Outputs an inline sourcemap to the generated CSS (or output to filename.map).
-       --source-map-url         The complete url and filename put in the less file.                          
-       --source-map-base-path   Sets sourcemap base path, defaults to current working directory.             
-       -sm, --strict-math       Strict math. Requires brackets.                                              
-       -su, --strict-units      Allows mixed units, e.g. 1px+1em or 1px*1px which have units that cannot be  
-                                represented.                                                                 
-       -rp, --root-path         Sets rootpath for url rewriting in relative imports and urls. Works with or  
-                                without the relative-urls option.                                            
-       -ru, --relative-urls     Re-writes relative urls to the base less file.                               
-       --url-args               Adds params into url tokens (e.g. 42, cb=42 or a=1&b=2)                      
-       --dump-line-numbers      Outputs filename and line numbers. TYPE can be either 'comments', which will 
-                                output the debug info within comments, 'mediaquery' that will output the     
-                                information within a fake media query which is compatible with the SASS      
-                                format, and 'all' which will do both.                                        
-                                                                                                             
+       --source-map-url         The complete url and filename put in the less file.
+       --source-map-base-path   Sets sourcemap base path, defaults to current working directory.
+       -sm, --strict-math       Strict math. Requires brackets.
+       -su, --strict-units      Allows mixed units, e.g. 1px+1em or 1px*1px which have units that cannot be
+                                represented.
+       -rp, --root-path         Sets rootpath for url rewriting in relative imports and urls. Works with or
+                                without the relative-urls option.
+       -ru, --relative-urls     Re-writes relative urls to the base less file.
+       --url-args               Adds params into url tokens (e.g. 42, cb=42 or a=1&b=2)
+       --dump-line-numbers      Outputs filename and line numbers. TYPE can be either 'comments', which will
+                                output the debug info within comments, 'mediaquery' that will output the
+                                information within a fake media query which is compatible with the SASS
+                                format, and 'all' which will do both.
+
+## CLI setup
+
+You can setup the parser (plugins, custom variables...) , by using .iless file in the root directory of your project.
+The parser instance is available as `$parser` variable.
+
+Example of the `.iless` setup file:
+
+    <?php
+
+    use ILess\FunctionRegistry;
+    use ILess\Node\ColorNode;
+    use ILess\Node\DimensionNode;
+
+    /* @var $parser ILess\Parser */
+
+    $parser->addVariables([
+        'color' => 'white'
+    ]);
+
+    $parser->addFunction('superdarken', function (FunctionRegistry $registry, ColorNode $color) {
+        return $registry->call('darken', [$color, new DimensionNode(80, '%')]);
+    });
+
+If you want to use setup file from another location, simply pass the path as `--setup-file` option from the command line.
+
+    $ iless foo.less --setup-file=/home/user/project/setup.php
 
 ## Issues
 

@@ -57,6 +57,7 @@ class CLI extends Configurable
         'help' => ['Print help (this message) and exit.', ['h']],
         'version' => ['Print version number and exit.', ['v']],
         'silent' => ['Suppress output of error messages.', ['s']],
+        'setup_file' => ['Setup file for the parser. Allows to setup custom variables, plugins...', []],
         'no_color' => ['Disable colorized output.', []],
         'compress' => ['Compress output by removing the whitespace.', ['x']],
         'append' => ['Append the generated CSS to the target file?', ['a']],
@@ -251,7 +252,7 @@ class CLI extends Configurable
             // return error
             return 1;
         } elseif ($this->getOption('version')) {
-            echo Parser\Core::VERSION.' [compatible with less.js '.Parser\Core::LESS_JS_VERSION.']'.PHP_EOL;
+            echo Parser\Core::VERSION . ' [compatible with less.js ' . Parser\Core::LESS_JS_VERSION . ']' . PHP_EOL;
 
             return 0;
         } elseif ($this->getOption('help')) {
@@ -261,20 +262,43 @@ class CLI extends Configurable
         }
 
         try {
+            $toBeParsed = $this->cliArguments['arguments'][0];
             $parser = new Parser($this->prepareOptionsForTheParser());
 
-            $toBeParsed = $this->cliArguments['arguments'][0];
-
+            $method = null;
             // read from stdin
             if (in_array($toBeParsed, $this->stdAliases)) {
-                $content = file_get_contents('php://stdin');
-                $parser->parseString($content);
+                $toBeParsed = file_get_contents('php://stdin');
+                $method = 'parseString';
             } else {
                 if (!Util::isPathAbsolute($toBeParsed)) {
                     $toBeParsed = sprintf('%s/%s', $this->currentDir, $toBeParsed);
                 }
-                $parser->parseFile($toBeParsed);
+                $method = 'parseFile';
             }
+
+            // setup file
+            $setupFile = $this->getOption('setup_file');
+            if ($setupFile === null) {
+                $setupFilePath = getcwd() . '/.iless';
+                if (file_exists($setupFilePath)) {
+                    if (!is_readable($setupFilePath)) {
+                        throw new \RuntimeException(sprintf('Setup file "%s" could not be loaded. File does not exist or is not readable.', $setupFile));
+                    }
+                    self::loadSetupFile($setupFilePath, $parser);
+                }
+            } else {
+                $setupFilePath = $setupFile;
+                if (!Util::isPathAbsolute($setupFilePath)) {
+                    $setupFilePath = getcwd() . '/' . $setupFile;
+                }
+                if (!is_readable($setupFilePath)) {
+                    throw new \RuntimeException(sprintf('Setup file "%s" could not be loaded. File does not exist or is not readable.', $setupFilePath));
+                }
+                self::loadSetupFile($setupFilePath, $parser);
+            }
+
+            $parser->$method($toBeParsed);
 
             $toBeSavedTo = null;
             if (isset($this->cliArguments['arguments'][1])) {
@@ -302,6 +326,18 @@ class CLI extends Configurable
         }
 
         return true;
+    }
+
+    /**
+     * Loads setup file
+     */
+    private static function loadSetupFile()
+    {
+        // parser will be available as $parser variable, nothing else is declared
+        $parser = func_get_arg(1);
+        ob_start();
+        include func_get_arg(0);
+        ob_end_clean();
     }
 
     /**
@@ -343,6 +379,7 @@ class CLI extends Configurable
                 case 'silent':
                 case 'no_color':
                 case 'append':
+                case 'setup_file':
                     continue 2;
 
                 case 'no_ie_compat':
@@ -415,10 +452,10 @@ class CLI extends Configurable
         foreach ($options as $option) {
             list($name, $help) = $option;
             // line will be too long
-            if (strlen($name.$help) + 2 > self::MAX_LINE_LENGTH) {
-                $help = wordwrap($help, self::MAX_LINE_LENGTH, PHP_EOL.str_repeat(' ', $max + 2));
+            if (strlen($name . $help) + 2 > self::MAX_LINE_LENGTH) {
+                $help = wordwrap($help, self::MAX_LINE_LENGTH, PHP_EOL . str_repeat(' ', $max + 2));
             }
-            $optionsFormatted[] = sprintf(' %-'.$max.'s %s', $name, $help);
+            $optionsFormatted[] = sprintf(' %-' . $max . 's %s', $name, $help);
         }
 
         return strtr('
@@ -429,7 +466,7 @@ usage: {%script_name} [option option=parameter ...] source [destination]
 If source is set to `-` (dash or hyphen-minus), input is read from stdin.
 
 options:
-{%options}'.PHP_EOL, [
+{%options}' . PHP_EOL, [
             '{%signature}' => $this->getSignature(),
             '{%script_name}' => $this->scriptName,
             '{%options}' => join(PHP_EOL, $optionsFormatted),

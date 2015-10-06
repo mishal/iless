@@ -1,0 +1,9 @@
+<?php
+
+/* @var $parser \ILess\Parser */
+
+$parser->addVariables([
+    'color' => 'red'
+]);
+
+var_dump(array_keys(get_defined_vars()));

@@ -132,4 +132,48 @@ class CLITest extends Test_TestCase
         $this->assertContains('usage: foobar.php', $cli->getUsage());
     }
 
+    public function testSetupFileInDirectory()
+    {
+        $cli = new Test_CLI(['iless.php', __DIR__ . '/Parser/_fixtures/cli/less/test.less']);
+        $expected = file_get_contents(__DIR__ . '/Parser/_fixtures/cli/css/test.css');
+
+        $cwd = getcwd();
+
+        $this->assertEquals(true, $cli->isValid());
+
+        // change dir
+        chdir(__DIR__ . '/Parser/_fixtures/cli/less');
+
+        ob_start();
+        $cli->run();
+        $result = ob_get_clean();
+
+        chdir($cwd);
+
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testSetupFileSpecifiedAsArgumentThrowsException()
+    {
+        $cli = new Test_CLI(['iless.php', __DIR__ . '/Parser/_fixtures/cli/less/test.less', '--setup-file=invalid']);
+        $this->assertEquals(true, $cli->isValid());
+
+        $this->setExpectedException('\RuntimeException');
+
+        $cli->run();
+    }
+
+    public function testSetupFileSpecifiedAsArgument()
+    {
+        $cli = new Test_CLI(['iless.php', __DIR__ . '/Parser/_fixtures/cli/less/test.less', '--setup-file=' . __DIR__ . '/Parser/_fixtures/cli/less/setup.php']);
+        $expected = file_get_contents(__DIR__ . '/Parser/_fixtures/cli/css/test2.css');
+
+        $this->assertEquals(true, $cli->isValid());
+
+        ob_start();
+        $cli->run();
+        $result = ob_get_clean();
+
+        $this->assertEquals($expected, $result);
+    }
 }
