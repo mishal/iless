@@ -51,7 +51,7 @@ class Exception extends \Exception
     /**
      * Excerpt from the string which contains error
      *
-     * @var string
+     * @var Util\StringExcerpt
      */
     private $excerpt;
 
@@ -242,7 +242,7 @@ class Exception extends \Exception
     /**
      * Returns the excerpt from the string which contains the error
      *
-     * @return string
+     * @return Util\StringExcerpt|null
      */
     final public function getExcerpt()
     {
