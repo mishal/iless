@@ -1,3 +1,8 @@
+[![Build Status](https://travis-ci.org/mishal/iless.png?branch=master)](https://travis-ci.org/mishal/iless)
+[![Dependency Status](https://gemnasium.com/mishal/iless.svg)](https://gemnasium.com/mishal/iless)
+[![Downloads](https://img.shields.io/packagist/dm/mishal/iless.svg)](https://packagist.org/packages/mishal/iless)
+[![Latest release](https://img.shields.io/packagist/v/mishal/iless.svg)](https://github.com/mishal/iless/releases)
+
 # ILess - PHP port of Less.js
 
 ![ILess](logo.png)
@@ -12,13 +17,6 @@ For more info about the language see the official website: <http://lesscss.org>
 ## What is This?
 
 ILess is a **PHP port** of the official LESS processor written in Javascript. Current version of ILess is compatible with less.js `2.5.x.`
-
-## Status
-
-[![Build Status](https://travis-ci.org/mishal/iless.png?branch=master)](https://travis-ci.org/mishal/iless)
-[![Dependency Status](https://gemnasium.com/mishal/iless.svg)](https://gemnasium.com/mishal/iless)
-[![Downloads](https://img.shields.io/packagist/dm/mishal/iless.svg)](https://packagist.org/packages/mishal/iless)
-[![Latest release](https://img.shields.io/packagist/v/mishal/iless.svg)](https://github.com/mishal/iless/releases)
 
 ## Getting Started
 
