@@ -17,6 +17,8 @@ ILess is a **PHP port** of the official LESS processor written in Javascript. Cu
 
 [![Build Status](https://travis-ci.org/mishal/iless.png?branch=master)](https://travis-ci.org/mishal/iless)
 [![Dependency Status](https://gemnasium.com/mishal/iless.svg)](https://gemnasium.com/mishal/iless)
+[![Downloads](https://img.shields.io/packagist/dm/mishal/iless.svg)](https://packagist.org/packages/mishal/iless)
+[![Latest release](https://img.shields.io/packagist/v/mishal/iless.svg)](https://github.com/mishal/iless/releases)
 
 ## Getting Started
 
@@ -224,8 +226,6 @@ If you want to use setup file from another location, simply pass the path as `--
 ## Issues
 
 Before opening any issue, please search for [existing issues](https://github.com/mishal/iless/issues). After that if you find a bug or would like to make feature request, please open a new issue. Please *always* create a unit test.
-
-The `master` branch should contain only stable code, while the `develop` branch, as the name suggests, is for development.
 
  * [List of issues](https://github.com/mishal/iless/issues)
 
