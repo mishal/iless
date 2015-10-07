@@ -20,6 +20,11 @@ class Test_CLI extends CLI
     {
         return parent::isSilent();
     }
+
+    protected function detectColors()
+    {
+        return false;
+    }
 }
 
 /**
@@ -158,9 +163,12 @@ class CLITest extends Test_TestCase
         $cli = new Test_CLI(['iless.php', __DIR__ . '/Parser/_fixtures/cli/less/test.less', '--setup-file=invalid']);
         $this->assertEquals(true, $cli->isValid());
 
-        $this->setExpectedException('\RuntimeException');
+        ob_start();
+        $errorCode = $cli->run();
+        $result = ob_get_clean();
 
-        $cli->run();
+        $this->assertEquals(1, $errorCode);
+        $this->assertContains('could not be loaded.', $result);
     }
 
     public function testSetupFileSpecifiedAsArgument()

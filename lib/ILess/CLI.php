@@ -11,7 +11,7 @@ namespace ILess;
 
 use ILess;
 use ILess\CLI\ANSIColor;
-use ILess\Exception\Exception;
+use Exception;
 use ILess\Util;
 use InvalidArgumentException;
 use ILess\Parser;
@@ -242,7 +242,7 @@ class CLI extends Configurable
     /**
      * Runs the task based on the arguments
      *
-     * @return true|integer True on success, error code on failure
+     * @return integer 0 on success, error code on failure
      */
     public function run()
     {
@@ -322,10 +322,10 @@ class CLI extends Configurable
                 $this->renderException($e);
             }
 
-            return $e->getCode();
+            return $e->getCode() ?: 1;
         }
 
-        return true;
+        return 0;
     }
 
     /**
@@ -499,7 +499,7 @@ SIGNATURE;
         $hasColors = $this->detectColors();
 
         // excerpt?
-        if ($e instanceof Exception) {
+        if ($e instanceof ILess\Exception\Exception) {
 
             printf("%s: %s\n", $this->scriptName, $hasColors && !$this->getOption('no_color') ?
                 ANSIColor::colorize($e->toString(false), 'red') : $e->toString(false));

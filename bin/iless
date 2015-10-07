@@ -14,20 +14,13 @@
  * @subpackage ILess\CLI
  */
 
-// register the autoloader
 use ILess\Autoloader;
 use ILess\CLI;
-use ILess\Exception\Exception;
 
 require_once dirname(__FILE__).'/../lib/ILess/Autoloader.php';
 Autoloader::register();
 
-try {
-    $cli = new CLI($argv);
-    $statusCode = $cli->run();
-} catch (Exception $e) {
-    echo $e;
-    $statusCode = $e->getCode();
-}
+$cli = new CLI($argv);
+$statusCode = $cli->run();
 
-exit(is_numeric($statusCode) ? $statusCode : 0);
+exit($statusCode);
