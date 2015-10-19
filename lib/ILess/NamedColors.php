@@ -10,14 +10,12 @@
 namespace ILess;
 
 /**
- * NamedColors
- *
- * @package ILess
+ * NamedColors.
  */
 final class NamedColors
 {
     /**
-     * Array of named colors
+     * Array of named colors.
      *
      * @var array
      */
@@ -170,5 +168,4 @@ final class NamedColors
         'yellow' => '#ffff00',
         'yellowgreen' => '#9acd32',
     ];
-
 }

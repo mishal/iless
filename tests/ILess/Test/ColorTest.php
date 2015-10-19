@@ -9,10 +9,8 @@
 use ILess\Color;
 
 /**
- * Color tests
+ * Color tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Color
  */
 class Test_ColorTest extends Test_TestCase
@@ -52,5 +50,4 @@ class Test_ColorTest extends Test_TestCase
         $this->assertEquals(0, $color->getGreen());
         $this->assertEquals(0, $color->getBlue());
     }
-
 }

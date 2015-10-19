@@ -16,43 +16,42 @@ use ILess\Output\OutputInterface;
 use ILess\Visitor\VisitorInterface;
 
 /**
- * Media
- *
- * @package ILess\Node
+ * Media.
  */
 class MediaNode extends DirectiveNode
 {
     /**
-     * Media type
+     * Media type.
      *
      * @var string
      */
     protected $type = 'Media';
 
     /**
-     * Current index
-     * @var integer
+     * Current index.
+     *
+     * @var int
      */
     public $index = 0;
 
     /**
-     * Features
+     * Features.
      *
      * @var ValueNode
      */
     public $features;
 
     /**
-     * Rules
+     * Rules.
      *
      * @var array
      */
     public $rules = [];
 
     /**
-     * Referenced flag
+     * Referenced flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $isReferenced = false;
 
@@ -62,11 +61,11 @@ class MediaNode extends DirectiveNode
     public $allExtends = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $value The array of values
      * @param array $features The array of features
-     * @param integer $index The index
+     * @param int $index The index
      * @param FileInfo $currentFileInfo The current file info
      */
     public function __construct(
@@ -87,7 +86,7 @@ class MediaNode extends DirectiveNode
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function accept(VisitorInterface $visitor)
     {
@@ -99,7 +98,7 @@ class MediaNode extends DirectiveNode
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
@@ -109,11 +108,12 @@ class MediaNode extends DirectiveNode
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return RulesetNode
      */
     public function compile(Context $context, $arguments = null, $important = null)
@@ -123,7 +123,7 @@ class MediaNode extends DirectiveNode
             $context->mediaPath = [];
         }
 
-        $media = new MediaNode([], [], $this->index, $this->currentFileInfo);
+        $media = new self([], [], $this->index, $this->currentFileInfo);
 
         if ($this->debugInfo) {
             $this->rules[0]->debugInfo = $this->debugInfo;
@@ -164,9 +164,10 @@ class MediaNode extends DirectiveNode
     }
 
     /**
-     * Compiles top media
+     * Compiles top media.
      *
      * @param Context $context
+     *
      * @return RulesetNode
      */
     public function compileTop(Context $context)
@@ -186,9 +187,10 @@ class MediaNode extends DirectiveNode
     }
 
     /**
-     * Compiles nested media
+     * Compiles nested media.
      *
      * @param Context $context
+     *
      * @return RulesetNode
      */
     public function compileNested(Context $context)
@@ -212,10 +214,10 @@ class MediaNode extends DirectiveNode
         $permuted = $this->permute($path);
         $expressions = [];
         foreach ($permuted as $path) {
-            for ($i = 0, $len = count($path); $i < $len; $i++) {
+            for ($i = 0, $len = count($path); $i < $len; ++$i) {
                 $path[$i] = $path[$i] instanceof GenerateCSSInterface ? $path[$i] : new AnonymousNode($path[$i]);
             }
-            for ($i = count($path) - 1; $i > 0; $i--) {
+            for ($i = count($path) - 1; $i > 0; --$i) {
                 array_splice($path, $i, 0, [new AnonymousNode('and')]);
             }
             $expressions[] = new ExpressionNode($path);
@@ -228,9 +230,10 @@ class MediaNode extends DirectiveNode
     }
 
     /**
-     * Creates permutations
+     * Creates permutations.
      *
      * @param array $array The array
+     *
      * @return array
      */
     public function permute(array $array)
@@ -255,7 +258,7 @@ class MediaNode extends DirectiveNode
     }
 
     /**
-     * Bubbles the selectors
+     * Bubbles the selectors.
      *
      * @param array $selectors
      */
@@ -277,5 +280,4 @@ class MediaNode extends DirectiveNode
     {
         return true;
     }
-
 }

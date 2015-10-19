@@ -12,10 +12,8 @@ use ILess\Importer;
 use ILess\Importer\FileSystemImporter;
 
 /**
- * ILess\Importer tests
+ * ILess\Importer tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Importer
  */
 class Test_ImporterTest extends Test_TestCase
@@ -48,8 +46,7 @@ class Test_ImporterTest extends Test_TestCase
         $i = new Importer($env, ['disc' => $importer], new NoCache());
 
         $this->assertEquals([
-            'disc' => $importer
+            'disc' => $importer,
         ], $i->getImporters());
     }
-
 }

@@ -12,9 +12,7 @@ namespace ILess\Parser;
 use stdClass;
 
 /**
- * Parser input utility
- *
- * @package ILess\Parser
+ * Parser input utility.
  */
 final class ParserInput
 {
@@ -28,21 +26,22 @@ final class ParserInput
     const CHARCODE_9 = 57;
 
     /**
-     * Current index
+     * Current index.
      *
      * @var int
      */
     public $i = 0;
 
     /**
-     * LeSS input string
+     * LeSS input string.
      *
      * @var string
      */
     private $input;
 
     /**
-     * Current chunk
+     * Current chunk.
+     *
      * @var
      */
     private $j = 0;
@@ -70,7 +69,6 @@ final class ParserInput
 
     /**
      * Constructor.
-     *
      */
     public function __construct()
     {
@@ -79,7 +77,7 @@ final class ParserInput
     public function save()
     {
         $this->currentPos = $this->i;
-        array_push($this->saveStack, (object)[
+        array_push($this->saveStack, (object) [
             'current' => $this->current,
             'i' => $this->i,
             'j' => $this->j,
@@ -109,6 +107,7 @@ final class ParserInput
 
     /**
      * @param $offset
+     *
      * @return bool
      */
     public function isWhiteSpace($offset = 0)
@@ -129,7 +128,7 @@ final class ParserInput
         $m = preg_match($tok, $this->current, $matches);
 
         if (!$m) {
-            return null;
+            return;
         }
 
         $this->skipWhitespace(strlen($matches[0]));
@@ -140,7 +139,7 @@ final class ParserInput
     public function char($tok)
     {
         if (@$this->input[$this->i] !== $tok) {
-            return null;
+            return;
         }
 
         $this->skipWhitespace(1);
@@ -151,9 +150,9 @@ final class ParserInput
     public function str($tok)
     {
         $tokLength = strlen($tok);
-        for ($i = 0; $i < $tokLength; $i++) {
+        for ($i = 0; $i < $tokLength; ++$i) {
             if (@$this->input[$this->i + $i] !== $tok[$i]) {
-                return null;
+                return;
             }
         }
 
@@ -170,12 +169,12 @@ final class ParserInput
         $startChar = $this->input[$this->i];
 
         if ($startChar !== "'" && $startChar !== '"') {
-            return null;
+            return;
         }
 
         $length = strlen($this->input);
         $currentPosition = $this->i;
-        for ($i = 1; $i + $currentPosition < $length; $i++) {
+        for ($i = 1; $i + $currentPosition < $length; ++$i) {
             $nextChar = $this->input[$i + $currentPosition];
             switch ($nextChar) {
                 case '\\':
@@ -192,7 +191,7 @@ final class ParserInput
             }
         }
 
-        return null;
+        return;
     }
 
     private function skipWhitespace($length)
@@ -204,7 +203,7 @@ final class ParserInput
         $mem = ($this->i += $length);
         $inp = $this->input;
 
-        for (; $this->i < $endIndex; $this->i++) {
+        for (; $this->i < $endIndex; ++$this->i) {
             $c = ord($inp[$this->i]);
             if ($this->autoCommentAbsorb && $c === self::CHARCODE_FORWARD_SLASH) {
                 $nextChar = $inp[$this->i + 1];
@@ -260,15 +259,16 @@ final class ParserInput
 
     /**
      * Original less.js function handles string and regexp here, I have to create
-     * additional method for regexp, see `peekReg`
+     * additional method for regexp, see `peekReg`.
      *
      * @param $tok
+     *
      * @return bool
      */
     public function peek($tok)
     {
         $tokLength = strlen($tok);
-        for ($i = 0; $i < $tokLength; $i++) {
+        for ($i = 0; $i < $tokLength; ++$i) {
             if (@$this->input[$this->i + $i] !== $tok[$i]) {
                 return false;
             }
@@ -331,7 +331,7 @@ final class ParserInput
             $this->i = $this->furthest;
         }
 
-        return (object)[
+        return (object) [
             'isFinished' => $isFinished,
             'furthest' => $this->i,
             'furthestPossibleErrorMessage' => $message,

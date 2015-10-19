@@ -10,63 +10,61 @@
 namespace ILess;
 
 /**
- * File information
- *
- * @package ILess
+ * File information.
  */
 final class FileInfo implements \Serializable
 {
     /**
-     * Full resolved filename of current file
+     * Full resolved filename of current file.
      *
      * @var string
      */
     public $filename;
 
     /**
-     * Path to append to normal URLs for this node
+     * Path to append to normal URLs for this node.
      *
      * @var string
      */
     public $rootPath;
 
     /**
-     * Path to the current file, absolute
+     * Path to the current file, absolute.
      *
      * @var string
      */
     public $currentDirectory;
 
     /**
-     * Filename of the base file
+     * Filename of the base file.
      *
      * @var string
      */
     public $rootFilename;
 
     /**
-     * Absolute path to the entry directory
+     * Absolute path to the entry directory.
      *
      * @var string
      */
     public $entryPath;
 
     /**
-     * Whether the file should not be output and only output parts that are referenced
+     * Whether the file should not be output and only output parts that are referenced.
      *
-     * @var boolean
+     * @var bool
      */
     public $reference = false;
 
     /**
-     * The imported file
+     * The imported file.
      *
      * @var ImportedFile
      */
     public $importedFile;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $info
      */
@@ -97,5 +95,4 @@ final class FileInfo implements \Serializable
             $this->$var = $val;
         }
     }
-
 }

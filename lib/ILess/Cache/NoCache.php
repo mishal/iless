@@ -10,14 +10,12 @@
 namespace ILess\Cache;
 
 /**
- * Cache which does no storing at all
- *
+ * Cache which does no storing at all.
  */
 class NoCache extends Cache
 {
     /**
-     * Constructor
-     *
+     * Constructor.
      */
     public function __construct()
     {
@@ -58,5 +56,4 @@ class NoCache extends Cache
     public function clean()
     {
     }
-
 }

@@ -64,45 +64,43 @@ use ILess\Visitor\Visitor;
 use InvalidArgumentException;
 
 /**
- * Parser core
- *
- * @package ILess\Parser
+ * Parser core.
  */
 class Core
 {
     /**
-     * Parser version
+     * Parser version.
      */
     const VERSION = '2.1.0';
 
     /**
-     * Less.js compatibility version
+     * Less.js compatibility version.
      */
     const LESS_JS_VERSION = '2.5.x';
 
     /**
-     * The context
+     * The context.
      *
      * @var Context
      */
     protected $context;
 
     /**
-     * The importer
+     * The importer.
      *
      * @var Importer
      */
     protected $importer;
 
     /**
-     * Array of variables
+     * Array of variables.
      *
      * @var array
      */
     protected $variables = [];
 
     /**
-     * Array of parsed rules
+     * Array of parsed rules.
      *
      * @var array
      */
@@ -119,7 +117,7 @@ class Core
     protected $pluginManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Context $context The context
      * @param Importer $importer The importer
@@ -134,11 +132,13 @@ class Core
     }
 
     /**
-     * Parse a Less string from a given file
+     * Parse a Less string from a given file.
      *
      * @throws ParserException
+     *
      * @param string|ImportedFile $file The file to parse (Will be loaded via the importer)
-     * @param boolean $returnRuleset Indicates whether the parsed rules should be wrapped in a ruleset.
+     * @param bool $returnRuleset Indicates whether the parsed rules should be wrapped in a ruleset.
+     *
      * @return mixed If $returnRuleset is true, ILess\Parser\Core, ILess\ILess\Node\RulesetNode otherwise
      */
     public function parseFile($file, $returnRuleset = false)
@@ -147,7 +147,6 @@ class Core
         $previousFileInfo = $this->context->currentFileInfo;
 
         if (!($file instanceof ImportedFile)) {
-
             $this->context->setCurrentFile($file);
 
             if ($previousFileInfo) {
@@ -162,9 +161,7 @@ class Core
             $this->context->currentFileInfo->importedFile = $file;
 
             $ruleset = $file->getRuleset();
-
         } else {
-
             $this->context->setCurrentFile($file->getPath());
 
             if ($previousFileInfo) {
@@ -195,16 +192,17 @@ class Core
     }
 
     /**
-     * Parses a string
+     * Parses a string.
      *
      * @param string $string The string to parse
      * @param string $filename The filename for reference (will be visible in the source map) or path to a fake file which directory will be used for imports
      * @param bool $returnRuleset Return the ruleset?
+     *
      * @return $this
      */
     public function parseString($string, $filename = '__string_to_parse__', $returnRuleset = false)
     {
-        $string = Util::normalizeString((string)$string);
+        $string = Util::normalizeString((string) $string);
 
         // we need unique key
         $key = sprintf('%s[__%s__]', $filename, md5($string));
@@ -238,9 +236,10 @@ class Core
     }
 
     /**
-     * Adds variables
+     * Adds variables.
      *
      * @param array $variables Array of variables
+     *
      * @return $this
      */
     public function addVariables(array $variables)
@@ -251,7 +250,7 @@ class Core
     }
 
     /**
-     * Clears all assigned variables
+     * Clears all assigned variables.
      *
      * @return $this
      */
@@ -263,9 +262,10 @@ class Core
     }
 
     /**
-     * Sets variables
+     * Sets variables.
      *
      * @param array $variables
+     *
      * @return $this
      */
     public function setVariables(array $variables)
@@ -276,10 +276,12 @@ class Core
     }
 
     /**
-     * Unsets a previously set variable
+     * Unsets a previously set variable.
      *
      * @param string|array $variable The variable name(s) to unset as string or an array
+     *
      * @see setVariables, addVariables
+     *
      * @return $this
      */
     public function unsetVariable($variable)
@@ -291,8 +293,8 @@ class Core
         foreach ($variable as $name) {
             if (isset($this->variables[$name])) {
                 unset($this->variables[$name]);
-            } elseif (isset($this->variables['!'.$name])) {
-                unset($this->variables['!'.$name]);
+            } elseif (isset($this->variables['!' . $name])) {
+                unset($this->variables['!' . $name]);
             }
         }
 
@@ -300,10 +302,12 @@ class Core
     }
 
     /**
-     * Parse a Less string into nodes
+     * Parse a Less string into nodes.
      *
      * @param string $string The string to parse
+     *
      * @return array
+     *
      * @throws ParserException If there was an error in parsing the string
      */
     protected function parse($string)
@@ -352,9 +356,10 @@ class Core
     }
 
     /**
-     * Resets the parser
+     * Resets the parser.
      *
-     * @param boolean $variables Reset also assigned variables via the API?
+     * @param bool $variables Reset also assigned variables via the API?
+     *
      * @return $this
      */
     public function reset($variables = true)
@@ -369,7 +374,7 @@ class Core
     }
 
     /**
-     * Returns the plugin manager
+     * Returns the plugin manager.
      *
      * @return PluginManager|null
      */
@@ -379,9 +384,10 @@ class Core
     }
 
     /**
-     * Generates unique cache key for given $filename
+     * Generates unique cache key for given $filename.
      *
      * @param string $filename
+     *
      * @return string
      */
     protected function generateCacheKey($filename)
@@ -390,7 +396,7 @@ class Core
     }
 
     /**
-     * Returns the CSS
+     * Returns the CSS.
      *
      * @return string
      */
@@ -404,7 +410,7 @@ class Core
     }
 
     /**
-     * Returns root ruleset
+     * Returns root ruleset.
      *
      * @return RulesetNode
      */
@@ -419,11 +425,13 @@ class Core
     }
 
     /**
-     * Converts the ruleset to CSS
+     * Converts the ruleset to CSS.
      *
      * @param RulesetNode $ruleset
      * @param array $variables
+     *
      * @return string The generated CSS code
+     *
      * @throws
      */
     protected function toCSS(RulesetNode $ruleset, array $variables)
@@ -438,7 +446,6 @@ class Core
 
         $e = $css = null;
         try {
-
             $this->prepareVariables($this->context, $variables);
 
             // pre compilation visitors
@@ -487,9 +494,7 @@ class Core
             if ($this->context->compress) {
                 $css = preg_replace('/(^(\s)+)|((\s)+$)/', '', $css);
             }
-
         } catch (\Exception $e) {
-
         }
 
         // restore
@@ -508,7 +513,7 @@ class Core
     }
 
     /**
-     * Prepare variable to be used as nodes
+     * Prepare variable to be used as nodes.
      *
      * @param Context $context
      * @param array $variables
@@ -536,7 +541,7 @@ class Core
     }
 
     /**
-     * Returns array of pre compilation visitors
+     * Returns array of pre compilation visitors.
      *
      * @return array
      */
@@ -559,7 +564,7 @@ class Core
     }
 
     /**
-     * Returns an array of post compilation visitors
+     * Returns an array of post compilation visitors.
      *
      * @return array
      */
@@ -568,7 +573,7 @@ class Core
         // core visitors
         $postCompileVisitors = [
             new JoinSelectorVisitor(),
-            new ProcessExtendsVisitor()
+            new ProcessExtendsVisitor(),
         ];
 
         if ($this->pluginManager) {
@@ -641,7 +646,7 @@ class Core
 
     /**
      * comments are collected by the main parsing mechanism and then assigned to nodes
-     * where the current structure allows it
+     * where the current structure allows it.
      *
      * @return CommentNode|null
      */
@@ -671,7 +676,7 @@ class Core
     }
 
     /**
-     * Parses a mixin definition
+     * Parses a mixin definition.
      *
      * @return MixinDefinitionNode|null
      */
@@ -680,7 +685,7 @@ class Core
         if (($this->input->currentChar() !== '.' && $this->input->currentChar() !== '#') ||
             $this->input->peekReg('/\\G^[^{]*\}/')
         ) {
-            return null;
+            return;
         }
 
         $this->input->save();
@@ -700,7 +705,7 @@ class Core
             if (!$this->input->char(')')) {
                 $this->input->restore("Missing closing ')'");
 
-                return null;
+                return;
             }
 
             $this->input->commentStore = [];
@@ -724,7 +729,7 @@ class Core
     }
 
     /**
-     * Parses a mixin call with an optional argument list
+     * Parses a mixin call with an optional argument list.
      *
      *   #mixins > .square(#fff);
      *    .rounded(4px, black);
@@ -745,7 +750,7 @@ class Core
         $args = [];
 
         if ($s !== '.' && $s !== '#') {
-            return null;
+            return;
         }
 
         $this->input->save(); // stop us absorbing part of an invalid selector
@@ -783,10 +788,12 @@ class Core
     }
 
     /**
-     * Parses mixin arguments
+     * Parses mixin arguments.
      *
-     * @param boolean $isCall The definition or function call?
+     * @param bool $isCall The definition or function call?
+     *
      * @return array
+     *
      * @throws CompilerException If there is an error the definition of arguments
      */
     protected function parseMixinArgs($isCall)
@@ -809,7 +816,7 @@ class Core
                 $this->input->commentStore = [];
                 if ($this->input->str('...')) {
                     $returner['variadic'] = true;
-                    if ($this->input->char(";") && !$isSemiColonSeparated) {
+                    if ($this->input->char(';') && !$isSemiColonSeparated) {
                         $isSemiColonSeparated = true;
                     }
 
@@ -876,12 +883,11 @@ class Core
                     }
 
                     $nameLoop = ($name = $val->name);
-
                 } elseif ($this->input->str('...')) {
                     if (!$isCall) {
                         $returner['variadic'] = true;
 
-                        if ($this->input->char(";") && !$isSemiColonSeparated) {
+                        if ($this->input->char(';') && !$isSemiColonSeparated) {
                             $isSemiColonSeparated = true;
                         }
 
@@ -911,7 +917,6 @@ class Core
             }
 
             if ($this->input->char(';') || $isSemiColonSeparated) {
-
                 if ($expressionContainsNamed) {
                     throw new CompilerException(
                         'Cannot mix ; and , as delimiter types',
@@ -938,9 +943,10 @@ class Core
     }
 
     /**
-     * Parses a rule
+     * Parses a rule.
      *
-     * @param boolean $tryAnonymous
+     * @param bool $tryAnonymous
+     *
      * @return RuleNode|null
      */
     protected function parseRule($tryAnonymous = false)
@@ -953,13 +959,12 @@ class Core
         $c = $this->input->currentChar();
 
         if ($c === '.' || $c === '#' || $c === '&' || $c === ':') {
-            return null;
+            return;
         }
 
         $this->input->save();
 
         if ($name = $this->matchFuncs(['parseVariable', 'parseRuleProperty'])) {
-
             $isVariable = is_string($name);
             if ($isVariable) {
                 $value = $this->parseDetachedRuleset();
@@ -968,7 +973,6 @@ class Core
             $this->input->commentStore = [];
 
             if (!$value) {
-
                 if (is_array($name) && count($name) > 1) {
                     $tmp = array_pop($name);
                     $merge = !$isVariable && $tmp->value ? $tmp->value : false;
@@ -1019,7 +1023,7 @@ class Core
     }
 
     /**
-     * Parses an anonymous value
+     * Parses an anonymous value.
      *
      * @return AnonymousNode|null
      */
@@ -1031,9 +1035,10 @@ class Core
     }
 
     /**
-     * Parses a ruleset like: `div, .class, body > p {...}`
+     * Parses a ruleset like: `div, .class, body > p {...}`.
      *
      * @return RulesetNode|null
+     *
      * @throws ParserException
      */
     protected function parseRuleset()
@@ -1091,7 +1096,7 @@ class Core
     }
 
     /**
-     * Parses a selector with less extensions e.g. the ability to extend and guard
+     * Parses a selector with less extensions e.g. the ability to extend and guard.
      *
      * @return SelectorNode|null
      */
@@ -1103,8 +1108,10 @@ class Core
     /**
      * Parses a CSS selector.
      *
-     * @param boolean $isLess Is this a less sector? (ie. has ability to extend and guard)
+     * @param bool $isLess Is this a less sector? (ie. has ability to extend and guard)
+     *
      * @return SelectorNode|null
+     *
      * @throws ParserException
      */
     protected function parseSelector($isLess = false)
@@ -1162,10 +1169,12 @@ class Core
     }
 
     /**
-     * Parses extend
+     * Parses extend.
      *
-     * @param boolean $isRule Is is a rule?
+     * @param bool $isRule Is is a rule?
+     *
      * @return ExtendNode|null
+     *
      * @throws CompilerException
      */
     protected function parseExtend($isRule = false)
@@ -1174,7 +1183,7 @@ class Core
         $index = $this->input->i;
 
         if (!$this->input->str($isRule ? '&:extend(' : ':extend(')) {
-            return null;
+            return;
         }
 
         do {
@@ -1201,7 +1210,6 @@ class Core
             }
 
             $extendList[] = new ExtendNode(new SelectorNode($elements), $option, $index);
-
         } while ($this->input->char(','));
 
         $this->expect('/\\G\)/');
@@ -1214,7 +1222,7 @@ class Core
     }
 
     /**
-     * Parses extend rule
+     * Parses extend rule.
      *
      * @return ExtendNode|null
      */
@@ -1224,7 +1232,7 @@ class Core
     }
 
     /**
-     * Parses a selector element
+     * Parses a selector element.
      *
      *  * `div`
      *  * `+ h1`
@@ -1257,7 +1265,6 @@ class Core
         );
 
         if (!$e) {
-
             $this->input->save();
             if ($this->input->char('(')) {
                 if (($v = $this->parseSelector()) && $this->input->char(')')) {
@@ -1302,13 +1309,13 @@ class Core
         }
 
         if ($c === '>' || $c === '+' || $c === '~' || $c === '|' || $c === '^') {
-            $this->input->i++;
+            ++$this->input->i;
             if ($c === '^' && $this->input->currentChar() === '^') {
                 $c = '^^';
-                $this->input->i++;
+                ++$this->input->i;
             }
             while ($this->input->isWhitespace()) {
-                $this->input->i++;
+                ++$this->input->i;
             }
 
             return new CombinatorNode($c);
@@ -1320,14 +1327,14 @@ class Core
     }
 
     /**
-     * Parses an attribute
+     * Parses an attribute.
      *
      * @return AttributeNode|null
      */
     protected function parseAttribute()
     {
         if (!$this->input->char('[')) {
-            return null;
+            return;
         }
 
         $key = $this->parseEntitiesVariableCurly();
@@ -1353,7 +1360,7 @@ class Core
     }
 
     /**
-     * Parses a value - a comma-delimited list of expressions like:
+     * Parses a value - a comma-delimited list of expressions like:.
      *
      * `font-family: Baskerville, Georgia, serif;`
      *
@@ -1379,7 +1386,7 @@ class Core
     }
 
     /**
-     * Parses the `!important` keyword
+     * Parses the `!important` keyword.
      *
      * @return string|null
      */
@@ -1391,7 +1398,7 @@ class Core
     }
 
     /**
-     * Parses a variable
+     * Parses a variable.
      *
      * @return string
      */
@@ -1403,7 +1410,7 @@ class Core
     }
 
     /**
-     * Parses a variable entity using the protective `{}` like: `@{variable}`
+     * Parses a variable entity using the protective `{}` like: `@{variable}`.
      *
      * @return VariableNode|null
      */
@@ -1411,12 +1418,12 @@ class Core
     {
         $index = $this->input->i;
         if ($this->input->currentChar() === '@' && ($curly = $this->input->re('/\\G@\{([\w-]+)\}/'))) {
-            return new VariableNode('@'.$curly[1], $index, $this->context->currentFileInfo);
+            return new VariableNode('@' . $curly[1], $index, $this->context->currentFileInfo);
         }
     }
 
     /**
-     * Parses rule property
+     * Parses rule property.
      *
      * @return array
      */
@@ -1465,12 +1472,12 @@ class Core
                 array_shift($index);
             }
 
-            for ($k = 0; $k < count($name); $k++) {
+            for ($k = 0; $k < count($name); ++$k) {
                 $s = $name[$k];
                 // intentionally @, the name can be an empty string
                 $name[$k] = @$s[0] !== '@' ?
                     new KeywordNode($s) :
-                    new VariableNode('@'.substr($s, 2, -1), $index[$k], $this->context->currentFileInfo);
+                    new VariableNode('@' . substr($s, 2, -1), $index[$k], $this->context->currentFileInfo);
             }
 
             return $name;
@@ -1479,9 +1486,8 @@ class Core
         $this->input->restore();
     }
 
-
     /**
-     * Parses an addition operation
+     * Parses an addition operation.
      *
      * @return OperationNode|null
      */
@@ -1515,7 +1521,7 @@ class Core
     }
 
     /**
-     * Parses multiplication operation
+     * Parses multiplication operation.
      *
      * @return OperationNode|null
      */
@@ -1560,7 +1566,7 @@ class Core
     }
 
     /**
-     * Parses the conditions
+     * Parses the conditions.
      *
      * @return ConditionNode|null
      */
@@ -1586,9 +1592,10 @@ class Core
     }
 
     /**
-     * Parses condition
+     * Parses condition.
      *
      * @return ConditionNode|null
+     *
      * @throws ParserException
      */
     protected function parseCondition()
@@ -1644,7 +1651,7 @@ class Core
     }
 
     /**
-     * Parses a sub-expression
+     * Parses a sub-expression.
      *
      * @return ExpressionNode|null
      */
@@ -1664,7 +1671,7 @@ class Core
 
             $this->input->restore("Expected ')'");
 
-            return null;
+            return;
         }
 
         $this->input->restore();
@@ -1672,7 +1679,7 @@ class Core
 
     /**
      * Parses an operand. An operand is anything that can be part of an operation,
-     * such as a color, or a variable
+     * such as a color, or a variable.
      *
      * @return NegativeNode|null
      */
@@ -1739,7 +1746,7 @@ class Core
     }
 
     /**
-     * Parses comments
+     * Parses comments.
      *
      * @return array Array of comments
      */
@@ -1754,13 +1761,15 @@ class Core
     }
 
     /**
-     * Parses the CSS directive like:
+     * Parses the CSS directive like:.
      *
      * <pre>
+     *
      * @charset "utf-8";
      * </pre>
      *
      * @return DirectiveNode|null
+     *
      * @throws ParserException
      */
     protected function parseDirective()
@@ -1774,7 +1783,7 @@ class Core
         $index = $this->input->i;
 
         if ($this->input->currentChar() !== '@') {
-            return null;
+            return;
         }
 
         $value = $this->matchFuncs(['parseImport', 'parsePlugin', 'parseMedia']);
@@ -1788,13 +1797,13 @@ class Core
         $name = $this->input->re('/\\G@[a-z-]+/');
 
         if (!$name) {
-            return null;
+            return;
         }
 
         $nonVendorSpecificName = $name;
         $pos = strpos($name, '-', 2);
         if ($name[1] == '-' && $pos > 0) {
-            $nonVendorSpecificName = '@'.substr($name, $pos + 1);
+            $nonVendorSpecificName = '@' . substr($name, $pos + 1);
         }
 
         switch ($nonVendorSpecificName) {
@@ -1821,11 +1830,11 @@ class Core
                 $isRooted = true;
                 break;
             */
-            case "@counter-style":
+            case '@counter-style':
                 $hasIdentifier = true;
                 $hasBlock = true;
                 break;
-            case "@charset":
+            case '@charset':
                 $hasIdentifier = true;
                 $hasBlock = false;
                 break;
@@ -1833,15 +1842,15 @@ class Core
                 $hasExpression = true;
                 $hasBlock = false;
                 break;
-            case "@keyframes":
+            case '@keyframes':
                 $hasIdentifier = true;
                 break;
-            case "@host":
-            case "@page":
+            case '@host':
+            case '@page':
                 $hasUnknown = true;
                 break;
-            case "@document":
-            case "@supports":
+            case '@document':
+            case '@supports':
                 $hasUnknown = true;
                 $isRooted = false;
                 break;
@@ -1862,7 +1871,7 @@ class Core
             }
         } elseif ($hasUnknown) {
             $value = $this->input->re('/\\G^[^{;]+/');
-            $value = trim((string)$value);
+            $value = trim((string) $value);
             if ($value) {
                 $value = new AnonymousNode($value);
             }
@@ -1906,7 +1915,7 @@ class Core
     }
 
     /**
-     * Parse entities literal
+     * Parse entities literal.
      *
      * @return Node|null
      */
@@ -1923,7 +1932,7 @@ class Core
     }
 
     /**
-     * Parses an entity variable
+     * Parses an entity variable.
      *
      * @return VariableNode|null
      */
@@ -1936,14 +1945,14 @@ class Core
     }
 
     /**
-     * Parse entities dimension (a number and a unit like 0.5em, 95%)
+     * Parse entities dimension (a number and a unit like 0.5em, 95%).
      *
      * @return DimensionNode|null
      */
     protected function parseEntitiesDimension()
     {
         if ($this->input->peekNotNumeric()) {
-            return null;
+            return;
         }
 
         if ($value = $this->input->re('/\\G^([+-]?\d*\.?\d+)(%|[a-z]+)?/i')) {
@@ -1955,6 +1964,7 @@ class Core
      * Parses a hexadecimal color.
      *
      * @return ColorNode
+     *
      * @throws ParserException
      */
     protected function parseEntitiesColor()
@@ -1975,7 +1985,7 @@ class Core
 
     /**
      * Parses a string, which supports escaping " and '
-     * "milky way" 'he\'s the one!'
+     * "milky way" 'he\'s the one!'.
      *
      * @return QuotedNode|null
      */
@@ -1995,7 +2005,7 @@ class Core
         if (!$str) {
             $this->input->restore();
 
-            return null;
+            return;
         }
 
         $this->input->forget();
@@ -2010,7 +2020,7 @@ class Core
     }
 
     /**
-     * Parses an unicode descriptor, as is used in unicode-range U+0?? or U+00A1-00A9
+     * Parses an unicode descriptor, as is used in unicode-range U+0?? or U+00A1-00A9.
      *
      * @return UnicodeDescriptorNode|null
      */
@@ -2022,7 +2032,7 @@ class Core
     }
 
     /**
-     * A catch-all word, such as: `black border-collapse`
+     * A catch-all word, such as: `black border-collapse`.
      *
      * @return ColorNode|KeywordNode|null
      */
@@ -2044,7 +2054,7 @@ class Core
     }
 
     /**
-     * Parses url() tokens
+     * Parses url() tokens.
      *
      * @return UrlNode|null
      */
@@ -2056,7 +2066,7 @@ class Core
         if (!$this->input->str('url(')) {
             $this->input->autoCommentAbsorb = true;
 
-            return null;
+            return;
         }
 
         $value = $this->match(
@@ -2073,7 +2083,7 @@ class Core
 
         return new UrlNode(
             (isset($value->value) || $value instanceof VariableNode) ? $value : new AnonymousNode(
-                (string)$value
+                (string) $value
             ),
             $index,
             $this->context->currentFileInfo
@@ -2081,14 +2091,14 @@ class Core
     }
 
     /**
-     * Parses a function call
+     * Parses a function call.
      *
      * @return CallNode|null
      */
     protected function parseEntitiesCall()
     {
         if ($this->input->peekReg('/\\G^url\(/i')) {
-            return null;
+            return;
         }
 
         $index = $this->input->i;
@@ -2100,7 +2110,7 @@ class Core
         if (!$name) {
             $this->input->forget();
 
-            return null;
+            return;
         }
 
         $name = $name[1];
@@ -2120,7 +2130,7 @@ class Core
         if (!$this->input->char(')')) {
             $this->input->restore("Could not parse call arguments or missing ')'");
 
-            return null;
+            return;
         }
 
         $this->input->forget();
@@ -2129,7 +2139,7 @@ class Core
     }
 
     /**
-     * Parse a list of arguments
+     * Parse a list of arguments.
      *
      * @return array
      */
@@ -2154,7 +2164,7 @@ class Core
     /**
      * Parses an assignments (argument entities for calls).
      * They are present in ie filter properties as shown below.
-     * filter: progid:DXImageTransform.Microsoft.Alpha( *opacity=50* )
+     * filter: progid:DXImageTransform.Microsoft.Alpha( *opacity=50* ).
      *
      * @return AssignmentNode|null
      */
@@ -2165,13 +2175,13 @@ class Core
         if (!$key) {
             $this->input->restore();
 
-            return null;
+            return;
         }
 
         if (!$this->input->char('=')) {
             $this->input->restore();
 
-            return null;
+            return;
         }
 
         $value = $this->parseEntity();
@@ -2186,7 +2196,7 @@ class Core
 
     /**
      * Parses an expression. Expressions either represent mathematical operations,
-     * or white-space delimited entities like: `1px solid black`, `@var * 2`
+     * or white-space delimited entities like: `1px solid black`, `@var * 2`.
      *
      * @return ExpressionNode|null
      */
@@ -2220,14 +2230,14 @@ class Core
     }
 
     /**
-     * Parses IE's alpha function `alpha(opacity=88)`
+     * Parses IE's alpha function `alpha(opacity=88)`.
      *
      * @return AlphaNode|null
      */
     protected function parseAlpha()
     {
         if (!$this->input->re('/\\G^opacity=/i')) {
-            return null;
+            return;
         }
 
         $value = $this->input->re('/\\G^\d+/');
@@ -2244,7 +2254,7 @@ class Core
     }
 
     /**
-     * Parses a javascript code
+     * Parses a javascript code.
      *
      * @return JavascriptNode|null
      */
@@ -2260,7 +2270,7 @@ class Core
         if (!$jsQuote) {
             $this->input->restore();
 
-            return null;
+            return;
         }
 
         if ($js = $this->input->re('/\\G^[^`]*`/')) {
@@ -2268,7 +2278,7 @@ class Core
 
             return new JavascriptNode(
                 substr($js, 0, strlen($js) - 1),
-                (bool)$escape,
+                (bool) $escape,
                 $index,
                 $this->context->currentFileInfo
             );
@@ -2278,9 +2288,10 @@ class Core
     }
 
     /**
-     * Parses a @import directive
+     * Parses a @import directive.
      *
      * @return ImportNode|null
+     *
      * @throws ParserException
      */
     protected function parseImport()
@@ -2319,7 +2330,7 @@ class Core
     }
 
     /**
-     * Parses import options
+     * Parses import options.
      *
      * @return array
      */
@@ -2327,7 +2338,7 @@ class Core
     {
         // list of options, surrounded by parens
         if (!$this->input->char('(')) {
-            return null;
+            return;
         }
 
         $options = [];
@@ -2359,7 +2370,7 @@ class Core
     }
 
     /**
-     * Parses import option
+     * Parses import option.
      *
      * @return string|null
      */
@@ -2371,7 +2382,7 @@ class Core
     }
 
     /**
-     * Parses media block
+     * Parses media block.
      *
      * @return MediaNode|null
      */
@@ -2391,7 +2402,7 @@ class Core
             if (null === $rules) {
                 $this->input->restore('Media definitions require block statements after any features');
 
-                return null;
+                return;
             }
 
             $this->input->forget();
@@ -2409,7 +2420,7 @@ class Core
     }
 
     /**
-     * Parses media features
+     * Parses media features.
      *
      * @return array
      */
@@ -2433,9 +2444,8 @@ class Core
         return $features ? $features : null;
     }
 
-
     /**
-     * Parses single media feature
+     * Parses single media feature.
      *
      * @return ExpressionNode|null
      */
@@ -2460,12 +2470,12 @@ class Core
                     } else {
                         $this->input->restore('Badly formed media feature definition');
 
-                        return null;
+                        return;
                     }
                 } else {
                     $this->input->restore("Missing closing ')'");
 
-                    return null;
+                    return;
                 }
             }
         } while ($e);
@@ -2478,9 +2488,10 @@ class Core
     }
 
     /**
-     * A @plugin directive, used to import compiler extensions dynamically. `@plugin "lib"`;
+     * A @plugin directive, used to import compiler extensions dynamically. `@plugin "lib"`;.
      *
      * @return ImportNode|null
+     *
      * @throws ParserException
      */
     protected function parsePlugin()
@@ -2504,7 +2515,7 @@ class Core
     }
 
     /**
-     * Parses the property
+     * Parses the property.
      *
      * @return string|null
      */
@@ -2516,7 +2527,7 @@ class Core
     }
 
     /**
-     * Parses a rule terminator
+     * Parses a rule terminator.
      *
      * @return string
      */
@@ -2526,7 +2537,7 @@ class Core
     }
 
     /**
-     * Returns the context
+     * Returns the context.
      *
      * @return Context
      */
@@ -2536,9 +2547,10 @@ class Core
     }
 
     /**
-     * Set the current parser environment
+     * Set the current parser environment.
      *
      * @param Context $context
+     *
      * @return $this
      */
     public function setContext(Context $context)
@@ -2549,7 +2561,7 @@ class Core
     }
 
     /**
-     * Returns the importer
+     * Returns the importer.
      *
      * @return Importer
      */
@@ -2559,9 +2571,10 @@ class Core
     }
 
     /**
-     * Set the importer
+     * Set the importer.
      *
      * @param Importer $importer
+     *
      * @return $this
      */
     public function setImporter(Importer $importer)
@@ -2572,10 +2585,11 @@ class Core
     }
 
     /**
-     * Parse from a token, regexp or string, and move forward if match
+     * Parse from a token, regexp or string, and move forward if match.
      *
      * @param array|string $token The token
-     * @return null|boolean|object
+     *
+     * @return null|bool|object
      */
     protected function match($token)
     {
@@ -2604,7 +2618,9 @@ class Core
      * any non null value.
      *
      * @param array $functions The array of functions to call
+     *
      * @throws InvalidArgumentException If the function does not exist
+     *
      * @return Node|mixed
      */
     protected function matchFuncs(array $functions)
@@ -2621,11 +2637,13 @@ class Core
     }
 
     /**
-     * Expects a string to be present at the current position
+     * Expects a string to be present at the current position.
      *
      * @param string $token The single character
      * @param string $message The error message for the exception
+     *
      * @return Node|null
+     *
      * @throws ParserException If the expected token does not match
      */
     protected function expect($token, $message = null)
@@ -2648,9 +2666,10 @@ class Core
     }
 
     /**
-     * Returns the debug information
+     * Returns the debug information.
      *
-     * @param integer $index The index
+     * @param int $index The index
+     *
      * @return \ILess\DebugInfo
      */
     protected function getDebugInfo($index)
@@ -2659,5 +2678,4 @@ class Core
 
         return new DebugInfo($this->context->currentFileInfo->filename, $lineNumber);
     }
-
 }

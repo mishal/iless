@@ -12,10 +12,8 @@ use ILess\Node\ValueNode;
 use ILess\Output\StandardOutput;
 
 /**
- * Value node tests
+ * Value node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Value
  * @group node
  */
@@ -27,7 +25,7 @@ class Test_Node_ValueTest extends Test_TestCase
     public function testConstructor()
     {
         $v = new ValueNode([
-            new AnonymousNode('foobar')
+            new AnonymousNode('foobar'),
         ]);
     }
 
@@ -37,7 +35,7 @@ class Test_Node_ValueTest extends Test_TestCase
     public function testGetType()
     {
         $v = new ValueNode([
-            new AnonymousNode('foobar')
+            new AnonymousNode('foobar'),
         ]);
         $this->assertEquals('Value', $v->getType());
     }
@@ -51,11 +49,10 @@ class Test_Node_ValueTest extends Test_TestCase
         $output = new StandardOutput();
 
         $v = new ValueNode([
-            new AnonymousNode('foobar')
+            new AnonymousNode('foobar'),
         ]);
 
         $v->generateCss($env, $output);
         $this->assertEquals('foobar', $output->toString());
     }
-
 }

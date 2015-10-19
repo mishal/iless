@@ -11,17 +11,14 @@ namespace ILess\Node;
 use ILess\Node;
 
 /**
- * Unicode descriptor
- *
- * @package ILess\Node
+ * Unicode descriptor.
  */
 class UnicodeDescriptorNode extends Node
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'UnicodeDescriptor';
-
 }

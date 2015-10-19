@@ -11,10 +11,8 @@ use ILess\Node\KeywordNode;
 use ILess\Node\MediaNode;
 
 /**
- * Media node tests
+ * Media node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Media
  * @group node
  */
@@ -44,5 +42,4 @@ class Test_Node_MediaTest extends Test_TestCase
         $result = $d->compile($env);
         $this->assertInstanceOf('ILess\Node\KeywordNode', $result);
     }
-
 }

@@ -10,9 +10,7 @@
 namespace ILess\Exception;
 
 /**
- * IO exception for a filesystem operation failure
- *
- * @package ILess\Exception
+ * IO exception for a filesystem operation failure.
  */
 class IOException extends Exception
 {

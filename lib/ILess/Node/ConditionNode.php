@@ -15,61 +15,60 @@ use ILess\Util;
 use ILess\Visitor\VisitorInterface;
 
 /**
- * Condition
- *
- * @package ILess\Node
+ * Condition.
  */
 class ConditionNode extends Node
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'Condition';
 
     /**
-     * The operator
+     * The operator.
+     *
      * @var string
      */
     private $op;
 
     /**
-     * The left operand
+     * The left operand.
      *
      * @var Node
      */
     private $lvalue;
 
     /**
-     * The right operand
+     * The right operand.
      *
      * @var Node
      */
     private $rvalue;
 
     /**
-     * Current index
+     * Current index.
      *
-     * @var integer
+     * @var int
      */
     private $index = 0;
 
     /**
      * Negate the result?
      *
-     * @var boolean
+     * @var bool
      */
     private $negate = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $op The operator
      * @param Node $l The left operand
      * @param Node $r The right operand
-     * @param integer $i
-     * @param boolean $negate
+     * @param int $i
+     * @param bool $negate
      */
     public function __construct($op, Node $l, Node $r, $i = 0, $negate = false)
     {
@@ -77,11 +76,11 @@ class ConditionNode extends Node
         $this->lvalue = $l;
         $this->rvalue = $r;
         $this->index = $i;
-        $this->negate = (boolean)$negate;
+        $this->negate = (boolean) $negate;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function accept(VisitorInterface $visitor)
     {
@@ -90,12 +89,13 @@ class ConditionNode extends Node
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
-     * @return boolean
+     * @param bool|null $important Important flag
+     *
+     * @return bool
      */
     public function compile(Context $context, $arguments = null, $important = null)
     {
@@ -126,5 +126,4 @@ class ConditionNode extends Node
 
         return $this->negate ? !$result : $result;
     }
-
 }

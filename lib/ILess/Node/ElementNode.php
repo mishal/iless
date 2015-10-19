@@ -16,39 +16,37 @@ use ILess\Output\OutputInterface;
 use ILess\Visitor\VisitorInterface;
 
 /**
- * Element
- *
- * @package ILess\Node
+ * Element.
  */
 class ElementNode extends Node
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'Element';
 
     /**
-     * ILess\Node combinator
+     * ILess\Node combinator.
      *
      * @var CombinatorNode
      */
     public $combinator;
 
     /**
-     * The current index
+     * The current index.
      *
-     * @var integer
+     * @var int
      */
     public $index = 0;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param CombinatorNode|string $combinator The combinator
      * @param string|Node $value The value
-     * @param integer $index The current index
+     * @param int $index The current index
      * @param FileInfo $currentFileInfo Current file information
      */
     public function __construct($combinator, $value, $index = 0, FileInfo $currentFileInfo = null)
@@ -68,7 +66,7 @@ class ElementNode extends Node
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function accept(VisitorInterface $visitor)
     {
@@ -79,7 +77,7 @@ class ElementNode extends Node
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
@@ -87,9 +85,10 @@ class ElementNode extends Node
     }
 
     /**
-     * Convert to CSS
+     * Convert to CSS.
      *
      * @param Context $context The context
+     *
      * @return string
      */
     public function toCSS(Context $context)
@@ -105,24 +104,24 @@ class ElementNode extends Node
         if ($value === '' && strlen($this->combinator->value) && $this->combinator->value[0] === '&') {
             return '';
         } else {
-            return $this->combinator->toCSS($context).$value;
+            return $this->combinator->toCSS($context) . $value;
         }
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return ElementNode
      */
     public function compile(Context $context, $arguments = null, $important = null)
     {
-        return new ElementNode($this->combinator,
+        return new self($this->combinator,
             $this->value instanceof CompilableInterface ? $this->value->compile($context) : $this->value,
             $this->index, $this->currentFileInfo
         );
     }
-
 }

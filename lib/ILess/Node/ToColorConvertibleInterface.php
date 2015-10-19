@@ -9,20 +9,15 @@
 
 namespace ILess\Node;
 
-use ILess\Node\ColorNode;
-
 /**
- * ToColorConvertibleInterface
- *
- * @package ILess\Node
+ * ToColorConvertibleInterface.
  */
 interface ToColorConvertibleInterface
 {
     /**
-     * Converts the node to a color node
+     * Converts the node to a color node.
      *
      * @return ColorNode
      */
     public function toColor();
-
 }

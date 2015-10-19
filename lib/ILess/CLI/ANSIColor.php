@@ -10,14 +10,12 @@
 namespace ILess\CLI;
 
 /**
- * ANSIColor
- *
- * @package ILess\CLI
+ * ANSIColor.
  */
 class ANSIColor
 {
     /**
-     * Array of ANSI codes
+     * Array of ANSI codes.
      *
      * @var array
      */
@@ -33,10 +31,11 @@ class ANSIColor
     ];
 
     /**
-     * Colorizes the string by given style
+     * Colorizes the string by given style.
      *
      * @param string $string The string to colorize
      * @param string $style The style
+     *
      * @return string
      */
     public static function colorize($string, $style)
@@ -44,11 +43,10 @@ class ANSIColor
         $styles = explode('+', $style);
         $colorized = '';
         foreach ($styles as $s) {
-            $colorized .= "\033[".self::$codes[$s][0].'m';
+            $colorized .= "\033[" . self::$codes[$s][0] . 'm';
         }
-        $colorized .= $string."\033[".self::$codes[$s][1].'m';
+        $colorized .= $string . "\033[" . self::$codes[$s][1] . 'm';
 
         return $colorized;
     }
-
 }

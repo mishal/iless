@@ -32,7 +32,7 @@ class myTestPreProcessor implements PreProcessorInterface
 
     public function process($inputString, array $extra)
     {
-        return $inputString.'-pre-processed-by '.$this->name;
+        return $inputString . '-pre-processed-by ' . $this->name;
     }
 }
 
@@ -47,7 +47,7 @@ class myTestPostProcessor implements PostProcessorInterface
 
     public function process($css, array $extra)
     {
-        return $css.'-pre-processed-by '.$this->name;
+        return $css . '-pre-processed-by ' . $this->name;
     }
 }
 
@@ -143,5 +143,4 @@ class PluginManagerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals([$postprocessor2, $postprocessor1], $postprocessors,
             'getPostProcessors returns an array of postprocessors');
     }
-
 }

@@ -11,10 +11,8 @@ use ILess\Node\UnitNode;
 use ILess\Output\StandardOutput;
 
 /**
- * Dimension node tests
+ * Dimension node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Dimension
  * @group node
  */
@@ -63,5 +61,4 @@ class Test_Node_DimensionTest extends Test_TestCase
 
         $this->assertEquals('15px', $output->toString());
     }
-
 }

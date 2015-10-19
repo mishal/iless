@@ -10,9 +10,7 @@
 namespace ILess\Util;
 
 /**
- * Mime lookup utility
- *
- * @package ILess\Util
+ * Mime lookup utility.
  */
 final class Mime
 {
@@ -22,9 +20,10 @@ final class Mime
     private static $finfo;
 
     /**
-     * Lookup mime type for the file
+     * Lookup mime type for the file.
      *
      * @param string $path The absolute path to a file
+     *
      * @return string|null
      */
     public static function lookup($path)
@@ -33,9 +32,10 @@ final class Mime
     }
 
     /**
-     * Lookup the charset for the mime type
+     * Lookup the charset for the mime type.
      *
      * @param string $type The mime type
+     *
      * @return string
      */
     public static function charsetsLookup($type)
@@ -45,7 +45,7 @@ final class Mime
     }
 
     /**
-     * Returns the file info handle
+     * Returns the file info handle.
      *
      * @return resource
      */

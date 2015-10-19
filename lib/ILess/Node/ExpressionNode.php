@@ -6,6 +6,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace ILess\Node;
 
 use ILess\Context;
@@ -15,37 +16,36 @@ use ILess\Output\OutputInterface;
 use ILess\Visitor\VisitorInterface;
 
 /**
- * Expression
- *
- * @package ILess\Node
+ * Expression.
  */
 class ExpressionNode extends Node implements MarkableAsReferencedInterface
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'Expression';
 
     /**
-     * Parens flag
+     * Parens flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $parens = false;
 
     /**
-     * Parens in operator flag
+     * Parens in operator flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $parensInOp = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $value
+     *
      * @throws Exception
      */
     public function __construct(array $value)
@@ -54,7 +54,7 @@ class ExpressionNode extends Node implements MarkableAsReferencedInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function accept(VisitorInterface $visitor)
     {
@@ -62,11 +62,12 @@ class ExpressionNode extends Node implements MarkableAsReferencedInterface
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return ParenNode|ExpressionNode|Node
      */
     public function compile(Context $context, $arguments = null, $important = null)
@@ -84,7 +85,7 @@ class ExpressionNode extends Node implements MarkableAsReferencedInterface
                 /* @var $v Node */
                 $compiled[] = $v->compile($context);
             }
-            $return = new ExpressionNode($compiled);
+            $return = new self($compiled);
         } elseif ($count === 1) {
             if (property_exists($this->value[0], 'parens') && $this->value[0]->parens
                 && property_exists($this->value[0], 'parensInOp') && !$this->value[0]->parensInOp
@@ -108,11 +109,11 @@ class ExpressionNode extends Node implements MarkableAsReferencedInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
-        for ($i = 0, $count = count($this->value); $i < $count; $i++) {
+        for ($i = 0, $count = count($this->value); $i < $count; ++$i) {
             $this->value[$i]->generateCSS($context, $output);
             if ($i + 1 < $count) {
                 $output->add(' ');
@@ -135,9 +136,7 @@ class ExpressionNode extends Node implements MarkableAsReferencedInterface
     }
 
     /**
-     * Marks as referenced
-     *
-     * @return void
+     * Marks as referenced.
      */
     public function markReferenced()
     {
@@ -147,6 +146,4 @@ class ExpressionNode extends Node implements MarkableAsReferencedInterface
             }
         }
     }
-
-
 }

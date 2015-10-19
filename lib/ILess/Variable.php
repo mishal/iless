@@ -9,7 +9,6 @@
 
 namespace ILess;
 
-use ILess\Node;
 use ILess\Node\AnonymousNode;
 use ILess\Node\ColorNode;
 use ILess\Node\DimensionNode;
@@ -18,62 +17,58 @@ use ILess\Node\RuleNode;
 use ILess\Node\QuotedNode;
 
 /**
- * Variable represents custom variable passed by the API (not from less string or file)
- *
- * @package ILess
+ * Variable represents custom variable passed by the API (not from less string or file).
  */
 class Variable
 {
     /**
-     * Dimension detection regexp
-     *
+     * Dimension detection regexp.
      */
     const DIMENSION_REGEXP = '/^([+-]?\d*\.?\d+)(%|[a-z]+)?$/';
 
     /**
-     * Quoted detection regexp
-     *
+     * Quoted detection regexp.
      */
     const QUOTED_REGEXP = '/^"((?:[^"\\\\\r\n]|\\\\.)*)"|\'((?:[^\'\\\\\r\n]|\\\\.)*)\'$/';
 
     /**
-     * RGBA detection regexp
+     * RGBA detection regexp.
      */
     const RGBA_COLOR_REGEXP = '/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/';
 
     /**
-     * Important flag
+     * Important flag.
      *
-     * @var boolean
+     * @var bool
      */
     protected $important = false;
 
     /**
-     * The name
+     * The name.
      *
      * @var string
      */
     protected $name;
 
     /**
-     * The value
+     * The value.
      *
      * @var Node
      */
     protected $value;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $name The name of the variable
      * @param Node $value The value of the variable
-     * @param boolean $important Important?
+     * @param bool $important Important?
      */
     public function __construct($name, Node $value, $important = false)
     {
         $this->name = ltrim($name, '@');
         $this->value = $value;
-        $this->important = (boolean)$important;
+        $this->important = (boolean) $important;
     }
 
     /**
@@ -81,6 +76,7 @@ class Variable
      *
      * @param string $name The name of the variable
      * @param mixed $value The value of the variable
+     *
      * @return Variable
      */
     public static function create($name, $value)
@@ -115,23 +111,23 @@ class Variable
             $value = new AnonymousNode($value);
         }
 
-        return new Variable($name, $value, $important);
+        return new self($name, $value, $important);
     }
 
     /**
-     * Converts the variable to the node
+     * Converts the variable to the node.
      *
      * @return RuleNode
      */
     public function toNode()
     {
-        return new RuleNode('@'.$this->name, new ValueNode([
+        return new RuleNode('@' . $this->name, new ValueNode([
             $this->value,
         ]), $this->important ? '!important' : '');
     }
 
     /**
-     * Returns the variable name
+     * Returns the variable name.
      *
      * @return string
      */
@@ -141,7 +137,7 @@ class Variable
     }
 
     /**
-     * Returns the variable value
+     * Returns the variable value.
      *
      * @return Node
      */
@@ -149,5 +145,4 @@ class Variable
     {
         return $this->value;
     }
-
 }

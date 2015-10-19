@@ -12,16 +12,15 @@ namespace ILess\Node;
 use ILess\Node;
 
 /**
- * Node comparable interface
- *
- * @package ILess\Node
+ * Node comparable interface.
  */
 interface ComparableInterface
 {
     /**
-     * Compares the another node
+     * Compares the another node.
      *
      * @param Node $other
+     *
      * @return int|null
      */
     public function compare(Node $other);

@@ -11,8 +11,6 @@ namespace ILess\Exception;
 
 /**
  * Compiler exception represents an syntax error.
- *
- * @package ILess\Exception
  */
 class CompilerException extends Exception
 {

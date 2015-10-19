@@ -10,20 +10,17 @@
 namespace ILess\Plugin;
 
 /**
- * Post processor interface
- *
- * @package ILess\Plugin
+ * Post processor interface.
  */
 interface PostProcessorInterface
 {
     /**
-     * Post process the generated CSS
+     * Post process the generated CSS.
      *
      * @param string $css
      * @param array $extra Extra information
+     *
      * @return string
      */
     public function process($css, array $extra);
-
 }
-

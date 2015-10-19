@@ -13,9 +13,7 @@ use ILess\Exception\Exception;
 use ILess\Node\KeywordNode;
 
 /**
- * DefaultFunc
- *
- * @package ILess
+ * DefaultFunc.
  */
 final class DefaultFunc
 {
@@ -30,7 +28,7 @@ final class DefaultFunc
     private static $value;
 
     /**
-     * Set an exception error
+     * Set an exception error.
      *
      * @param Exception $error
      */
@@ -40,9 +38,10 @@ final class DefaultFunc
     }
 
     /**
-     * Compiles the default func
+     * Compiles the default func.
      *
      * @return KeywordNode|null
+     *
      * @throws Exception
      */
     public static function compile()
@@ -57,7 +56,7 @@ final class DefaultFunc
     }
 
     /**
-     * Sets the value
+     * Sets the value.
      *
      * @param mixed $value
      */
@@ -67,11 +66,10 @@ final class DefaultFunc
     }
 
     /**
-     * Reset
+     * Reset.
      */
     public static function reset()
     {
         self::$value = self::$error = null;
     }
-
 }

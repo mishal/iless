@@ -4,9 +4,8 @@ namespace ILess\Test;
 
 use ILess\Cache\CacheInterface;
 use ILess\Cache\FileSystemCache;
-use ILess\Parser;
 
-require_once __DIR__.'/ParsingTest.php';
+require_once __DIR__ . '/ParsingTest.php';
 
 class CachingTest extends \Test_Parser_ParsingTest
 {
@@ -19,11 +18,11 @@ class CachingTest extends \Test_Parser_ParsingTest
 
     public static function tearDownAfterClass()
     {
-        echo str_repeat('-', 40)."\n";
+        echo str_repeat('-', 40) . "\n";
     }
 
     /**
-     * Test again, when the cache is already there
+     * Test again, when the cache is already there.
      *
      * @dataProvider getCompilationData
      */
@@ -36,5 +35,4 @@ class CachingTest extends \Test_Parser_ParsingTest
     {
         return parent::createParser($options, $cache ? $cache : new FileSystemCache(ILESS_TEST_CACHE_DIR));
     }
-
 }

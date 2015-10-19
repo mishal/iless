@@ -10,15 +10,14 @@
 namespace ILess\OutputFilter;
 
 /**
- * GzCompress filter
+ * GzCompress filter.
  *
- * @package ILess\OutputFilter
  * @deprecated
  */
 class GzCompressOutputFilter extends OutputFilter
 {
     /**
-     * Array of default options
+     * Array of default options.
      *
      * @var array
      */
@@ -33,5 +32,4 @@ class GzCompressOutputFilter extends OutputFilter
     {
         return gzcompress($output, $this->getOption('compression_level'));
     }
-
 }

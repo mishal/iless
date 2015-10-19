@@ -12,10 +12,8 @@ use ILess\Node\OperationNode;
 use ILess\Output\StandardOutput;
 
 /**
- * Operation node tests
+ * Operation node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Operation
  * @group node
  */
@@ -50,5 +48,4 @@ class Test_Node_OperationTest extends Test_TestCase
         $o->generateCss($env, $output);
         $this->assertEquals('10+15', $output->toString());
     }
-
 }

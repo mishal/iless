@@ -28,35 +28,33 @@ use ILess\Node\SelectorNode;
 use ILess\Node\ValueNode;
 
 /**
- * To CSS visitor
- *
- * @package ILess\Visitor
+ * To CSS visitor.
  */
 class ToCSSVisitor extends Visitor
 {
     /**
-     * The context
+     * The context.
      *
      * @var Context
      */
     protected $context;
 
     /**
-     * Is replacing flag
+     * Is replacing flag.
      *
-     * @var boolean
+     * @var bool
      */
     protected $isReplacing = true;
 
     /**
-     * Charset flag
+     * Charset flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $charset = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Context $context
      */
@@ -67,7 +65,7 @@ class ToCSSVisitor extends Visitor
     }
 
     /**
-     * Returns the context
+     * Returns the context.
      *
      * @return Context
      */
@@ -77,26 +75,28 @@ class ToCSSVisitor extends Visitor
     }
 
     /**
-     * Visits a rule node
+     * Visits a rule node.
      *
      * @param RuleNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return array|RuleNode
      */
     public function visitRule(RuleNode $node, VisitorArguments $arguments)
     {
         if ($node->variable) {
-            return null;
+            return;
         }
 
         return $node;
     }
 
     /**
-     * Visits a mixin definition
+     * Visits a mixin definition.
      *
      * @param MixinDefinitionNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return array
      */
     public function visitMixinDefinition(MixinDefinitionNode $node, VisitorArguments $arguments)
@@ -107,37 +107,38 @@ class ToCSSVisitor extends Visitor
     }
 
     /**
-     * Visits a extend node
+     * Visits a extend node.
      *
      * @param ExtendNode $node The node
      * @param VisitorArguments $arguments The arguments
-     * @return null
      */
     public function visitExtend(ExtendNode $node, VisitorArguments $arguments)
     {
     }
 
     /**
-     * Visits a comment node
+     * Visits a comment node.
      *
      * @param CommentNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return CommentNode|null
      */
     public function visitComment(CommentNode $node, VisitorArguments $arguments)
     {
         if ($node->isSilent($this->getContext())) {
-            return null;
+            return;
         }
 
         return $node;
     }
 
     /**
-     * Visits a media node
+     * Visits a media node.
      *
      * @param MediaNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return MediaNode|null
      */
     public function visitMedia(MediaNode $node, VisitorArguments $arguments)
@@ -146,40 +147,42 @@ class ToCSSVisitor extends Visitor
         $arguments->visitDeeper = false;
 
         if (!count($node->rules)) {
-            return null;
+            return;
         }
 
         return $node;
     }
 
     /**
-     * Visits a import node
+     * Visits a import node.
      *
      * @param ImportNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return ImportNode|null
      */
     public function visitImport(ImportNode $node, VisitorArguments $arguments)
     {
         if ($node->path->currentFileInfo->reference !== false && $node->css) {
-            return null;
+            return;
         }
 
         return $node;
     }
 
     /**
-     * Visits a directive node
+     * Visits a directive node.
      *
      * @param DirectiveNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return DirectiveNode|null
      */
     public function visitDirective(DirectiveNode $node, VisitorArguments $arguments)
     {
         if ($node->name === '@charset') {
             if (!$node->getIsReferenced()) {
-                return null;
+                return;
             }
             // Only output the debug info together with subsequent @charset definitions
             // a comment (or @media statement) before the actual @charset directive would
@@ -193,7 +196,7 @@ class ToCSSVisitor extends Visitor
                     return $this->visit($comment);
                 }
 
-                return null;
+                return;
             }
             $this->charset = true;
         }
@@ -211,7 +214,7 @@ class ToCSSVisitor extends Visitor
             }
 
             if (!count($node->rules)) {
-                return null;
+                return;
             }
 
             // the directive was not directly referenced - we need to check whether some of its children
@@ -225,10 +228,10 @@ class ToCSSVisitor extends Visitor
 
             // The directive was not directly referenced and does not contain anything that
             // was referenced. Therefore it must not be shown in output.
-            return null;
+            return;
         } else {
             if (!$node->getIsReferenced()) {
-                return null;
+                return;
             }
         }
 
@@ -237,6 +240,7 @@ class ToCSSVisitor extends Visitor
 
     /**
      * @param DirectiveNode $node
+     *
      * @return bool
      */
     private function hasVisibleChild(DirectiveNode $node)
@@ -250,7 +254,7 @@ class ToCSSVisitor extends Visitor
             $bodyRules = $bodyRules[0]->rules;
         }
 
-        for ($r = 0; $r < count($bodyRules); $r++) {
+        for ($r = 0; $r < count($bodyRules); ++$r) {
             $rule = $bodyRules[$r];
             if ($rule instanceof ReferencedInterface && $rule->getIsReferenced()) {
                 // the directive contains something that was referenced (likely by extend)
@@ -263,10 +267,11 @@ class ToCSSVisitor extends Visitor
     }
 
     /**
-     * Visits a ruleset node
+     * Visits a ruleset node.
      *
      * @param RulesetNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return array|RulesetNode
      */
     public function visitRuleset(RulesetNode $node, VisitorArguments $arguments)
@@ -303,10 +308,10 @@ class ToCSSVisitor extends Visitor
                     // visit because we are moving them out from being a child
                     $rulesets[] = $this->visit($rule);
                     array_splice($node->rules, $i, 1);
-                    $count--;
+                    --$count;
                     continue;
                 }
-                $i++;
+                ++$i;
             }
 
             // accept the visitor to remove rules and refactor itself
@@ -335,7 +340,6 @@ class ToCSSVisitor extends Visitor
             if ($node->rules && $node->paths) {
                 array_splice($rulesets, 0, 0, [$node]);
             }
-
         } else {
             $node->accept($this);
             $arguments->visitDeeper = false;
@@ -352,7 +356,7 @@ class ToCSSVisitor extends Visitor
     }
 
     /**
-     * Visits anonymous node
+     * Visits anonymous node.
      *
      * @param AnonymousNode $node
      * @param VisitorArguments $arguments
@@ -360,7 +364,7 @@ class ToCSSVisitor extends Visitor
     public function visitAnonymous(AnonymousNode $node, VisitorArguments $arguments)
     {
         if (!$node->getIsReferenced()) {
-            return null;
+            return;
         }
 
         $node->accept($this);
@@ -369,14 +373,15 @@ class ToCSSVisitor extends Visitor
     }
 
     /**
-     * Checks properties for presence in selector blocks
+     * Checks properties for presence in selector blocks.
      *
      * @param array $rules
+     *
      * @throws CompilerException
      */
     private function checkPropertiesInRoot($rules)
     {
-        for ($i = 0, $count = count($rules); $i < $count; $i++) {
+        for ($i = 0, $count = count($rules); $i < $count; ++$i) {
             $ruleNode = $rules[$i];
             if ($ruleNode instanceof RuleNode && !$ruleNode->variable) {
                 throw new CompilerException(
@@ -389,14 +394,14 @@ class ToCSSVisitor extends Visitor
     }
 
     /**
-     * Merges rules
+     * Merges rules.
      *
      * @param array $rules
      */
     private function mergeRules(array &$rules)
     {
         $groups = [];
-        for ($i = 0, $rulesCount = count($rules); $i < $rulesCount; $i++) {
+        for ($i = 0, $rulesCount = count($rules); $i < $rulesCount; ++$i) {
             $rule = $rules[$i];
             if (($rule instanceof RuleNode) && $rule->merge) {
                 $key = $rule->name;
@@ -407,7 +412,7 @@ class ToCSSVisitor extends Visitor
                     $groups[$key] = [];
                 } else {
                     array_splice($rules, $i--, 1);
-                    $rulesCount--;
+                    --$rulesCount;
                 }
                 $groups[$key][] = $rule;
             }
@@ -434,7 +439,7 @@ class ToCSSVisitor extends Visitor
     }
 
     /**
-     * Removes duplicates
+     * Removes duplicates.
      *
      * @param array $rules
      */
@@ -442,7 +447,7 @@ class ToCSSVisitor extends Visitor
     {
         // remove duplicates
         $ruleCache = [];
-        for ($i = count($rules) - 1; $i >= 0; $i--) {
+        for ($i = count($rules) - 1; $i >= 0; --$i) {
             $rule = $rules[$i];
             if ($rule instanceof RuleNode) {
                 $key = serialize($rule->name);
@@ -466,6 +471,7 @@ class ToCSSVisitor extends Visitor
 
     /**
      * @param $values
+     *
      * @return ExpressionNode
      */
     private function toExpression($values)
@@ -480,11 +486,11 @@ class ToCSSVisitor extends Visitor
 
     /**
      * @param $values
+     *
      * @return ValueNode
      */
     private function toValue($values)
     {
         return new ValueNode($values);
     }
-
 }

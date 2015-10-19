@@ -11,10 +11,8 @@ use ILess\Node\DirectiveNode;
 use ILess\Output\StandardOutput;
 
 /**
- * Dimension node tests
+ * Dimension node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Directive
  * @group node
  */
@@ -61,5 +59,4 @@ class Test_Node_DirectiveTest extends Test_TestCase
         $d = new DirectiveNode('15', new AnonymousNode('bar'));
         $this->assertEquals(null, $d->variable('foo'));
     }
-
 }

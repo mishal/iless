@@ -10,10 +10,8 @@ use ILess\Node\AssignmentNode;
 use ILess\Output\StandardOutput;
 
 /**
- * Assignment node tests
+ * Assignment node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Assignment
  * @group node
  */
@@ -40,5 +38,4 @@ class Test_Node_AssignmentTest extends Test_TestCase
         $a->generateCss($env, $output);
         $this->assertEquals($output->toString(), 'a=50');
     }
-
 }

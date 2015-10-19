@@ -31,5 +31,4 @@ class UnitConversionTest extends \PHPUnit_Framework_TestCase
         $group = \ILess\Util\UnitConversion::getGroup('invalid');
         $this->assertInternalType('null', $group);
     }
-
 }

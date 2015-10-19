@@ -8,10 +8,8 @@
 use ILess\Cache\FileSystemCache;
 
 /**
- * File cache tests
+ * File cache tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Cache_FileSystem
  * @group cache
  */
@@ -55,5 +53,4 @@ class Test_Cache_FileSystemTest extends Test_TestCase
         $cache->remove('a');
         $this->assertEquals(false, $cache->has('a'));
     }
-
 }

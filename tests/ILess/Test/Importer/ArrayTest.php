@@ -11,7 +11,7 @@ use ILess\Importer\ArrayImporter;
 use ILess\Parser;
 
 /**
- * Array importer tests
+ * Array importer tests.
  *
  * @group importer
  */

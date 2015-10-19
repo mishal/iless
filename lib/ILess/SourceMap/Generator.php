@@ -18,9 +18,7 @@ use ILess\Output\MappedOutput;
 use ILess\Util;
 
 /**
- * Source map generator
- *
- * @package ILess\SourceMap
+ * Source map generator.
  */
 class Generator extends Configurable
 {
@@ -30,7 +28,7 @@ class Generator extends Configurable
     const VERSION = 3;
 
     /**
-     * Array of default options
+     * Array of default options.
      *
      * @var array
      */
@@ -54,42 +52,42 @@ class Generator extends Configurable
     ];
 
     /**
-     * The base64 VLQ encoder
+     * The base64 VLQ encoder.
      *
      * @var Base64VLQ
      */
     protected $encoder;
 
     /**
-     * Array of mappings
+     * Array of mappings.
      *
      * @var array
      */
     protected $mappings = [];
 
     /**
-     * The root node
+     * The root node.
      *
      * @var RulesetNode
      */
     protected $root;
 
     /**
-     * Array of contents map
+     * Array of contents map.
      *
      * @var array
      */
     protected $contentsMap = [];
 
     /**
-     * File to content map
+     * File to content map.
      *
      * @var array
      */
     protected $sources = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RulesetNode $root The root node
      * @param array $contentsMap Array of file contents map
@@ -109,8 +107,7 @@ class Generator extends Configurable
     }
 
     /**
-     * Setups the generator
-     *
+     * Setups the generator.
      */
     protected function setup()
     {
@@ -121,9 +118,10 @@ class Generator extends Configurable
     }
 
     /**
-     * Generates the CSS
+     * Generates the CSS.
      *
      * @param Context $context
+     *
      * @return string
      */
     public function generateCSS(Context $context)
@@ -169,7 +167,7 @@ class Generator extends Configurable
             } else {
                 $sourceMapContent = Util::encodeURIComponent($sourceMapContent);
             }
-            $sourceMapUrl = $sourceMap.$sourceMapContent;
+            $sourceMapUrl = $sourceMap . $sourceMapContent;
         }
 
         if ($sourceMapUrl) {
@@ -180,12 +178,14 @@ class Generator extends Configurable
     }
 
     /**
-     * Saves the source map to a file
+     * Saves the source map to a file.
      *
      * @param string $file The absolute path to a file
      * @param string $content The content to write
+     *
      * @throws IOException If the file could not be saved
      * @throws InvalidArgumentException If the directory to write the map to does not exist or is not writable
+     *
      * @return true
      */
     protected function saveMap($file, $content)
@@ -205,9 +205,10 @@ class Generator extends Configurable
     }
 
     /**
-     * Normalizes the filename
+     * Normalizes the filename.
      *
      * @param string $filename
+     *
      * @return string
      */
     protected function normalizeFilename($filename)
@@ -227,13 +228,14 @@ class Generator extends Configurable
     }
 
     /**
-     * Adds a mapping
+     * Adds a mapping.
      *
-     * @param integer $generatedLine The line number in generated file
-     * @param integer $generatedColumn The column number in generated file
-     * @param integer $originalLine The line number in original file
-     * @param integer $originalColumn The column number in original file
+     * @param int $generatedLine The line number in generated file
+     * @param int $generatedColumn The column number in generated file
+     * @param int $originalLine The line number in original file
+     * @param int $originalColumn The column number in original file
      * @param string $sourceFile The original source file
+     *
      * @return Generator
      */
     public function addMapping(
@@ -255,7 +257,7 @@ class Generator extends Configurable
     }
 
     /**
-     * Clear the mappings
+     * Clear the mappings.
      *
      * @return Generator
      */
@@ -267,9 +269,10 @@ class Generator extends Configurable
     }
 
     /**
-     * Sets the encoder
+     * Sets the encoder.
      *
      * @param Base64VLQ $encoder
+     *
      * @return Generator
      */
     public function setEncoder(Base64VLQ $encoder)
@@ -280,7 +283,7 @@ class Generator extends Configurable
     }
 
     /**
-     * Returns the encoder
+     * Returns the encoder.
      *
      * @return Base64VLQ
      */
@@ -290,9 +293,10 @@ class Generator extends Configurable
     }
 
     /**
-     * Generates the JSON source map
+     * Generates the JSON source map.
      *
      * @return string
+     *
      * @see https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit#
      */
     protected function generateJson()
@@ -329,14 +333,14 @@ class Generator extends Configurable
     }
 
     /**
-     * Returns the sources contents
+     * Returns the sources contents.
      *
      * @return array|null
      */
     protected function getSourcesContent()
     {
         if (empty($this->sources)) {
-            return null;
+            return;
         }
 
         // FIXME: we should output only those which were used
@@ -344,7 +348,7 @@ class Generator extends Configurable
     }
 
     /**
-     * Generates the mappings string
+     * Generates the mappings string.
      *
      * @return string
      */
@@ -393,21 +397,21 @@ class Generator extends Configurable
                 $lineMapEncoded[] = $mapEncoded;
             }
 
-            $groupedMapEncoded[] = implode(',', $lineMapEncoded).';';
+            $groupedMapEncoded[] = implode(',', $lineMapEncoded) . ';';
         }
 
         return rtrim(implode($groupedMapEncoded), ';');
     }
 
     /**
-     * Finds the index for the filename
+     * Finds the index for the filename.
      *
      * @param string $filename
-     * @return integer|false
+     *
+     * @return int|false
      */
     protected function findFileIndex($filename)
     {
         return array_search($filename, array_keys($this->sources));
     }
-
 }

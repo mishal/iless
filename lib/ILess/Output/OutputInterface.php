@@ -12,19 +12,18 @@ namespace ILess\Output;
 use ILess\FileInfo;
 
 /**
- * Output interface
- *
- * @package ILess\Output
+ * Output interface.
  */
 interface OutputInterface
 {
     /**
-     * Adds a chunk to the stack
+     * Adds a chunk to the stack.
      *
      * @param string $chunk The chunk to output
      * @param FileInfo $fileInfo The file information
-     * @param integer $index The index
+     * @param int $index The index
      * @param mixed $mapLines
+     *
      * @return StandardOutput
      */
     public function add($chunk, FileInfo $fileInfo = null, $index = 0, $mapLines = null);
@@ -32,15 +31,14 @@ interface OutputInterface
     /**
      * Is the output empty?
      *
-     * @return boolean
+     * @return bool
      */
     public function isEmpty();
 
     /**
-     * Converts the output to string
+     * Converts the output to string.
      *
      * @return string
      */
     public function toString();
-
 }

@@ -7,16 +7,14 @@ use ILess\Plugin\Plugin;
 
 class myPlugin extends Plugin
 {
-
     /**
-     * Installs itself
+     * Installs itself.
      *
      * @param Parser $parser
      */
     public function install(Parser $parser)
     {
     }
-
 }
 
 class PluginTest extends \PHPUnit_Framework_TestCase

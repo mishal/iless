@@ -9,10 +9,8 @@
 use ILess\Cache\FileSystemCache;
 
 /**
- * Issue #48 test
+ * Issue #48 test.
  *
- * @package ILess
- * @subpackage test
  * @group issue
  */
 class Test_Issues_048Test extends Test_TestCase
@@ -48,5 +46,4 @@ class Test_Issues_048Test extends Test_TestCase
         unlink($this->cacheDir . '/something.txt');
         rmdir($this->cacheDir);
     }
-
 }

@@ -16,38 +16,37 @@ use RecursiveIteratorIterator;
 use SplFileInfo;
 
 /**
- * Cache which stores the contents to files
- *
+ * Cache which stores the contents to files.
  */
 class FileSystemCache extends Cache
 {
     /**
-     * Read data flag
+     * Read data flag.
      */
     const READ_DATA = 1;
 
     /**
-     * Read timeout flag
+     * Read timeout flag.
      */
     const READ_TIMEOUT = 2;
 
     /**
-     * Last modified flag
+     * Last modified flag.
      */
     const READ_LAST_MODIFIED = 4;
 
     /**
-     * Hash flag
+     * Hash flag.
      */
     const READ_HASH = 8;
 
     /**
-     * Separator
+     * Separator.
      */
     const SEPARATOR = ':';
 
     /**
-     * Array of options
+     * Array of options.
      *
      * @var array
      */
@@ -57,9 +56,10 @@ class FileSystemCache extends Cache
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array|string $options Array of options or cache dir path as string
+     *
      * @throws LogicException If "cache_dir" option is missing
      * @throws CacheException If the cache directory does not exist or is not writable.
      */
@@ -75,7 +75,7 @@ class FileSystemCache extends Cache
     }
 
     /**
-     * Setups the driver
+     * Setups the driver.
      *
      * @throws LogicException If the cache_dir option is missing
      * @throws CacheException If the cache directory does not exist or is not writable.
@@ -99,7 +99,9 @@ class FileSystemCache extends Cache
      * Setups the cache directory.
      *
      * @param string $cacheDir
+     *
      * @throws CacheException If the cache directory does not exist or is not writable.
+     *
      * @return true If the setup was successful
      */
     protected function setupCacheDir($cacheDir)
@@ -119,7 +121,7 @@ class FileSystemCache extends Cache
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function has($cacheKey)
     {
@@ -129,7 +131,7 @@ class FileSystemCache extends Cache
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function get($cacheKey)
     {
@@ -149,7 +151,7 @@ class FileSystemCache extends Cache
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function set($cacheKey, $data, $ttl = null)
     {
@@ -157,7 +159,7 @@ class FileSystemCache extends Cache
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function remove($cacheKey)
     {
@@ -165,7 +167,7 @@ class FileSystemCache extends Cache
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function clean()
     {
@@ -180,7 +182,7 @@ class FileSystemCache extends Cache
             if ($file->isDir()) {
                 continue;
             } else {
-                if ($extension == ('.'.pathinfo($file->getFilename(), PATHINFO_EXTENSION))) {
+                if ($extension == ('.' . pathinfo($file->getFilename(), PATHINFO_EXTENSION))) {
                     $result = @unlink($file) && $result;
                 }
             }
@@ -193,20 +195,22 @@ class FileSystemCache extends Cache
      * Converts a cache key to a full path.
      *
      * @param string $key The cache key
+     *
      * @return string The full path to the cache file
      */
     protected function getFilePath($key)
     {
-        return $this->getOption('cache_dir').
-        DIRECTORY_SEPARATOR.str_replace(self::SEPARATOR, DIRECTORY_SEPARATOR, $key)
-        .$this->getOption('suffix');
+        return $this->getOption('cache_dir') .
+        DIRECTORY_SEPARATOR . str_replace(self::SEPARATOR, DIRECTORY_SEPARATOR, $key)
+        . $this->getOption('suffix');
     }
 
     /**
-     * Validate the path
+     * Validate the path.
      *
      * @param string $path
-     * @return boolean
+     *
+     * @return bool
      */
     protected function isValid($path)
     {
@@ -262,9 +266,9 @@ class FileSystemCache extends Cache
      *
      * @param string $path The file path
      * @param string $data The data to put in cache
-     * @param integer $timeout The timeout timestamp
+     * @param int $timeout The timeout timestamp
      *
-     * @return boolean true if ok, otherwise false
+     * @return bool true if ok, otherwise false
      *
      * @throws CacheException
      */
@@ -297,5 +301,4 @@ class FileSystemCache extends Cache
 
         return true;
     }
-
 }

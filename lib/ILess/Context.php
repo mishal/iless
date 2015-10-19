@@ -9,27 +9,23 @@
 
 namespace ILess;
 
-use ILess\Node;
 use ILess\Node\RulesetNode;
-use ILess\Util;
 use InvalidArgumentException;
 
 /**
- * Context
- *
- * @package ILess
+ * Context.
  */
 class Context
 {
     /**
-     * Array of frames
+     * Array of frames.
      *
      * @var array
      */
     public $frames = [];
 
     /**
-     * Custom variables
+     * Custom variables.
      *
      * @var RulesetNode
      */
@@ -45,31 +41,31 @@ class Context
     /**
      * Can shorten colors?
      *
-     * @var boolean
+     * @var bool
      */
     public $canShortenColors = true;
 
     /**
-     * The math precision
+     * The math precision.
      *
-     * @var integer
+     * @var int
      */
     public $numPrecision = null;
 
     /**
-     * @var boolean
+     * @var bool
      */
     public $strictImports = false;
 
     /**
      * Adjust URL's to be relative?
      *
-     * @var boolean
+     * @var bool
      */
     public $relativeUrls = false;
 
     /**
-     * Root path
+     * Root path.
      *
      * @var string
      */
@@ -91,30 +87,30 @@ class Context
     public $paths = [];
 
     /**
-     * Math is required to be in parenthesis like: <pre>(1+1)</pre>
+     * Math is required to be in parenthesis like: <pre>(1+1)</pre>.
      *
-     * @var boolean
+     * @var bool
      */
     public $strictMath = true;
 
     /**
      * Validate the units used?
      *
-     * @var boolean
+     * @var bool
      */
     public $strictUnits = true;
 
     /**
      * Process imports?
      *
-     * @var boolean
+     * @var bool
      */
     public $processImports = true;
 
     /**
-     * IE8 data-uri compatibility
+     * IE8 data-uri compatibility.
      *
-     * @var boolean
+     * @var bool
      */
     public $ieCompat = true;
 
@@ -126,42 +122,42 @@ class Context
     public $dumpLineNumbers = false;
 
     /**
-     * Tab level
+     * Tab level.
      *
-     * @var integer
+     * @var int
      */
     public $tabLevel = 0;
 
     /**
-     * First selector flag
+     * First selector flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $firstSelector = false;
 
     /**
-     * Last rule flag
+     * Last rule flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $lastRule = false;
 
     /**
-     * Important flag (currently not implemented in less.js)
+     * Important flag (currently not implemented in less.js).
      *
-     * @var boolean
+     * @var bool
      */
     public $isImportant = false;
 
     /**
-     * Selectors
+     * Selectors.
      *
      * @var array
      */
     public $selectors = [];
 
     /**
-     * Parens stack
+     * Parens stack.
      *
      * @var array
      */
@@ -178,57 +174,58 @@ class Context
     /**
      * What is this for?
      *
-     * @var boolean
+     * @var bool
      */
     public $importMultiple = false;
 
     /**
-     * Source map flag
+     * Source map flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $sourceMap = false;
 
     /**
-     * Array of source map options
+     * Array of source map options.
      *
      * @var array
      */
     public $sourceMapOptions = [];
 
     /**
-     * Filename to contents of all parsed the files
+     * Filename to contents of all parsed the files.
      *
      * @var array
      */
     public $contentsMap = [];
 
     /**
-     * The function registry
+     * The function registry.
      *
      * @var FunctionRegistry
      */
     protected $functionRegistry;
 
     /**
-     * Used to bubble up !important statements
+     * Used to bubble up !important statements.
      *
      * @var array
      */
     public $importantScope = [];
 
     /**
-     * Whether to add args into url tokens
+     * Whether to add args into url tokens.
      *
      * @var string
      */
     public $urlArgs = '';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param FunctionRegistry $registry The function registry
      * @param array $options
+     *
      * @throws InvalidArgumentException If passed options are invalid
      */
     public function __construct(array $options = [], FunctionRegistry $registry = null)
@@ -271,7 +268,7 @@ class Context
                 case 'compress':
                 case 'importMultiple':
                 case 'ieCompat':
-                    $value = (boolean)$value;
+                    $value = (boolean) $value;
                     break;
             }
 
@@ -279,13 +276,12 @@ class Context
         }
 
         if (count($invalid)) {
-            throw new InvalidArgumentException(sprintf('Invalid options "%s" given.', join(', ', $invalid)));
+            throw new InvalidArgumentException(sprintf('Invalid options "%s" given.', implode(', ', $invalid)));
         }
-
     }
 
     /**
-     * Returns the function registry
+     * Returns the function registry.
      *
      * @return FunctionRegistry
      */
@@ -295,7 +291,7 @@ class Context
     }
 
     /**
-     * Returns the contents map
+     * Returns the contents map.
      *
      * @return array
      */
@@ -305,10 +301,11 @@ class Context
     }
 
     /**
-     * Sets file contents to the map
+     * Sets file contents to the map.
      *
      * @param string $filePath
      * @param string $content
+     *
      * @return Context
      */
     public function setFileContent($filePath, $content)
@@ -319,9 +316,10 @@ class Context
     }
 
     /**
-     * Sets the function registry, also links the registry with this environment instance
+     * Sets the function registry, also links the registry with this environment instance.
      *
      * @param FunctionRegistry $registry
+     *
      * @return Context
      */
     public function setFunctionRegistry(FunctionRegistry $registry)
@@ -334,7 +332,7 @@ class Context
     }
 
     /**
-     * Sets current file
+     * Sets current file.
      *
      * @param string $file The path to a file
      */
@@ -353,10 +351,11 @@ class Context
     }
 
     /**
-     * Creates a copy of The context
+     * Creates a copy of The context.
      *
      * @param Context $context
      * @param array $frames
+     *
      * @return Context
      */
     public static function createCopy(Context $context, array $frames = [])
@@ -382,7 +381,7 @@ class Context
             'importantScope', // current file information object
         ];
 
-        $target = new Context([], $context->getFunctionRegistry());
+        $target = new self([], $context->getFunctionRegistry());
         self::copyFromOriginal($context, $target, $copyProperties);
 
         $target->frames = $frames;
@@ -393,6 +392,7 @@ class Context
     /**
      * @param Context $context
      * @param array $frames
+     *
      * @return Context
      */
     public static function createCopyForCompilation(Context $context, array $frames = [])
@@ -410,7 +410,7 @@ class Context
             'customVariables', // variables from the php API
         ];
 
-        $target = new Context([], $context->getFunctionRegistry());
+        $target = new self([], $context->getFunctionRegistry());
         self::copyFromOriginal($context, $target, $copyProperties);
 
         $target->frames = $frames;
@@ -430,7 +430,7 @@ class Context
     /**
      * Is math on?
      *
-     * @return boolean
+     * @return bool
      */
     public function isMathOn()
     {
@@ -488,5 +488,4 @@ class Context
     {
         $this->frames = array_merge($this->frames, $frames);
     }
-
 }

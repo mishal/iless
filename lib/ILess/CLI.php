@@ -12,32 +12,27 @@ namespace ILess;
 use ILess;
 use ILess\CLI\ANSIColor;
 use Exception;
-use ILess\Util;
 use InvalidArgumentException;
-use ILess\Parser;
 
 /**
- * The CLI handler
- *
- * @package ILess
+ * The CLI handler.
  */
 class CLI extends Configurable
 {
     /**
-     * Maximum line length
-     *
+     * Maximum line length.
      */
     const MAX_LINE_LENGTH = 78;
 
     /**
-     * Parsed cli arguments
+     * Parsed cli arguments.
      *
      * @var array
      */
     protected $cliArguments = [];
 
     /**
-     * Array of default options
+     * Array of default options.
      *
      * @var array
      */
@@ -48,7 +43,7 @@ class CLI extends Configurable
     ];
 
     /**
-     * Array of valid options
+     * Array of valid options.
      *
      * @var array
      */
@@ -83,35 +78,35 @@ class CLI extends Configurable
     ];
 
     /**
-     * Array of valid flags
+     * Array of valid flags.
      *
      * @var array
      */
     protected $validFlags = [];
 
     /**
-     * Valid flag
+     * Valid flag.
      *
-     * @var boolean
+     * @var bool
      */
     protected $isValid = false;
 
     /**
-     * Current script name
+     * Current script name.
      *
      * @var string
      */
     protected $scriptName;
 
     /**
-     * Current directory
+     * Current directory.
      *
      * @var string
      */
     protected $currentDir;
 
     /**
-     * Stdin aliases
+     * Stdin aliases.
      *
      * @var array
      */
@@ -122,7 +117,7 @@ class CLI extends Configurable
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $cliArguments Array of ILess\CLI arguments ($argv array)
      * @param string $currentDir Current directory
@@ -136,9 +131,8 @@ class CLI extends Configurable
     }
 
     /**
-     * Setups the ILess\CLI handler
+     * Setups the ILess\CLI handler.
      *
-     * @return void
      * @throws InvalidArgumentException If there is an error in the arguments
      */
     protected function setup()
@@ -176,6 +170,7 @@ class CLI extends Configurable
      * less.js command options to ILess valid options.
      *
      * @param array $options
+     *
      * @return array
      */
     protected function convertOptions(array $options)
@@ -201,7 +196,7 @@ class CLI extends Configurable
     /**
      * Is valid?
      *
-     * @return boolean
+     * @return bool
      */
     public function isValid()
     {
@@ -212,7 +207,8 @@ class CLI extends Configurable
      * Is flag set?
      *
      * @param string $flag The flag to check
-     * @return boolean
+     *
+     * @return bool
      */
     public function hasFlag($flag)
     {
@@ -220,7 +216,7 @@ class CLI extends Configurable
     }
 
     /**
-     * Returns the script name
+     * Returns the script name.
      *
      * @return string
      */
@@ -230,7 +226,7 @@ class CLI extends Configurable
     }
 
     /**
-     * Returns the current directory
+     * Returns the current directory.
      *
      * @return string
      */
@@ -240,9 +236,9 @@ class CLI extends Configurable
     }
 
     /**
-     * Runs the task based on the arguments
+     * Runs the task based on the arguments.
      *
-     * @return integer 0 on success, error code on failure
+     * @return int 0 on success, error code on failure
      */
     public function run()
     {
@@ -329,7 +325,7 @@ class CLI extends Configurable
     }
 
     /**
-     * Loads setup file
+     * Loads setup file.
      */
     private static function loadSetupFile()
     {
@@ -341,7 +337,7 @@ class CLI extends Configurable
     }
 
     /**
-     * Prepares options for the parser
+     * Prepares options for the parser.
      *
      * @return array
      */
@@ -404,12 +400,14 @@ class CLI extends Configurable
     }
 
     /**
-     * Saves the generated CSS to a given file
+     * Saves the generated CSS to a given file.
      *
      * @param string $targetFile The target file to write to
      * @param string $css The css
-     * @param boolean $append Append the CSS?
-     * @return boolean|integer The number of bytes that were written to the file, or false on failure.
+     * @param bool $append Append the CSS?
+     *
+     * @return bool|int The number of bytes that were written to the file, or false on failure.
+     *
      * @throws Exception If the file could not be saved
      */
     protected function saveCss($targetFile, $css, $append = false)
@@ -420,7 +418,7 @@ class CLI extends Configurable
     }
 
     /**
-     * Returns the ILess\CLI usage
+     * Returns the ILess\CLI usage.
      *
      * @return string
      */
@@ -432,7 +430,7 @@ class CLI extends Configurable
             $optionName = str_replace('_', '-', $optionName);
             list($help, $flags) = $properties;
             if ($flags) {
-                $option = sprintf('  -%s, --%s', join(',-', $flags), $optionName);
+                $option = sprintf('  -%s, --%s', implode(',-', $flags), $optionName);
             } else {
                 $option = sprintf('  --%s', $optionName);
             }
@@ -469,14 +467,15 @@ options:
 {%options}' . PHP_EOL, [
             '{%signature}' => $this->getSignature(),
             '{%script_name}' => $this->scriptName,
-            '{%options}' => join(PHP_EOL, $optionsFormatted),
+            '{%options}' => implode(PHP_EOL, $optionsFormatted),
         ]);
     }
 
     /**
-     * Returns the signature
+     * Returns the signature.
      *
      * @return string
+     *
      * @link http://patorjk.com/software/taag/#p=display&f=Cyberlarge&t=iless
      */
     protected function getSignature()
@@ -486,11 +485,10 @@ options:
    |   |      |______ |______ |______
  __|__ |_____ |______ ______| ______|
 SIGNATURE;
-
     }
 
     /**
-     * Renders an exception
+     * Renders an exception.
      *
      * @param Exception $e
      */
@@ -500,7 +498,6 @@ SIGNATURE;
 
         // excerpt?
         if ($e instanceof ILess\Exception\Exception) {
-
             printf("%s: %s\n", $this->scriptName, $hasColors && !$this->getOption('no_color') ?
                 ANSIColor::colorize($e->toString(false), 'red') : $e->toString(false));
 
@@ -509,7 +506,6 @@ SIGNATURE;
                     printf("%s\n", $excerpt->toTerminal()) :
                     printf("%s\n", $excerpt->toText());
             }
-
         } else {
             printf("%s: %s\n", $this->scriptName,
                 $hasColors && !$this->getOption('no_color') ? ANSIColor::colorize($e->getMessage(),
@@ -530,7 +526,7 @@ SIGNATURE;
     /**
      * Does the console support colors?
      *
-     * @return boolean
+     * @return bool
      */
     protected function detectColors()
     {
@@ -541,7 +537,7 @@ SIGNATURE;
     /**
      * Is silence requested?
      *
-     * @return boolean
+     * @return bool
      */
     protected function isSilent()
     {
@@ -549,10 +545,12 @@ SIGNATURE;
     }
 
     /**
-     * Parses the $argv array to a more useful array
+     * Parses the $argv array to a more useful array.
      *
      * @param array $args The $argv array
+     *
      * @return array
+     *
      * @link http://php.net/manual/en/features.commandline.php#83843
      */
     protected function parseArguments($args)
@@ -578,7 +576,7 @@ SIGNATURE;
             } // Is it a flag or a serial of flags? (prefixed with -)
             else {
                 if (substr($arg, 0, 1) === '-') {
-                    for ($i = 1; isset($arg[$i]); $i++) {
+                    for ($i = 1; isset($arg[$i]); ++$i) {
                         $return['flags'][] = $arg[$i];
                     }
                 } else {
@@ -592,9 +590,10 @@ SIGNATURE;
 
     /**
      * Converts the value. Parses strings like "false" to boolean false,
-     * "true" to boolean true
+     * "true" to boolean true.
      *
      * @param string $value
+     *
      * @return mixed
      */
     protected function convertValue($value)
@@ -615,5 +614,4 @@ SIGNATURE;
 
         return $value;
     }
-
 }

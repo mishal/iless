@@ -10,8 +10,7 @@
 namespace ILess\Exception;
 
 /**
- * Parser exception
- * @package ILess\Exception
+ * Parser exception.
  */
 class ParserException extends Exception
 {

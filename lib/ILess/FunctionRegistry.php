@@ -13,7 +13,6 @@ use Exception;
 use ILess\Exception\CompilerException;
 use ILess\Exception\FunctionException;
 use ILess\Exception\IOException;
-use ILess\Node;
 use ILess\Node\AnonymousNode;
 use ILess\Node\ColorNode;
 use ILess\Node\CommentNode;
@@ -25,33 +24,31 @@ use ILess\Node\UnitNode;
 use ILess\Node\ToColorConvertibleInterface;
 use ILess\Node\QuotedNode;
 use ILess\Node\OperationNode;
-use ILess\Util;
 use ILess\Util\Mime;
 use InvalidArgumentException;
 use RuntimeException;
 
 /**
- * Function registry
+ * Function registry.
  *
- * @package ILess
  * @see http://lesscss.org/#reference
  */
 class FunctionRegistry
 {
     /**
-     * Maximum allowed size of data uri for IE8
+     * Maximum allowed size of data uri for IE8.
      */
     const IE8_DATA_URI_MAX = 32768;
 
     /**
-     * Less environment
+     * Less environment.
      *
      * @var Context
      */
     protected $context;
 
     /**
-     * Array of function aliases
+     * Array of function aliases.
      *
      * @var array
      */
@@ -77,7 +74,7 @@ class FunctionRegistry
     private $parent;
 
     /**
-     * Array of callable functions
+     * Array of callable functions.
      *
      * @var array
      */
@@ -172,7 +169,7 @@ class FunctionRegistry
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $aliases Array of function aliases in the format array(alias => function)
      * @param Context $context The context
@@ -185,6 +182,7 @@ class FunctionRegistry
 
     /**
      * @param FileInfo $file
+     *
      * @return $this
      */
     public function setCurrentFile(FileInfo $file)
@@ -194,14 +192,15 @@ class FunctionRegistry
         return $this;
     }
 
-
     /**
-     * Adds a function to the functions
+     * Adds a function to the functions.
      *
      * @param string $functionName
      * @param callable $callable
      * @param string|array $aliases The array of aliases
+     *
      * @return FunctionRegistry
+     *
      * @throws InvalidArgumentException If the callable is not valid
      */
     public function addFunction($functionName, $callable, $aliases = [])
@@ -229,7 +228,7 @@ class FunctionRegistry
     }
 
     /**
-     * Adds functions
+     * Adds functions.
      *
      * <pre>
      * $registry->addFunctions(array('name' => function() {}));
@@ -238,6 +237,7 @@ class FunctionRegistry
      * </pre>
      *
      * @param array $functions Array of functions
+     *
      * @return FunctionRegistry
      */
     public function addFunctions(array $functions)
@@ -259,9 +259,10 @@ class FunctionRegistry
     }
 
     /**
-     * Sets the parent registry
+     * Sets the parent registry.
      *
      * @param FunctionRegistry $parent
+     *
      * @return $this
      */
     public function setParent(FunctionRegistry $parent)
@@ -276,12 +277,13 @@ class FunctionRegistry
         return $this;
     }
 
-
     /**
-     * Loads a plugin from given path
+     * Loads a plugin from given path.
      *
      * @param string $path
+     *
      * @return $this
+     *
      * @throws RuntimeException
      */
     public function loadPlugin($path)
@@ -300,7 +302,7 @@ class FunctionRegistry
     }
 
     /**
-     * Clones the registry and setups the parent
+     * Clones the registry and setups the parent.
      *
      * @return FunctionRegistry
      */
@@ -314,7 +316,7 @@ class FunctionRegistry
     }
 
     /**
-     * Returns names of registered functions
+     * Returns names of registered functions.
      *
      * @return array
      */
@@ -327,6 +329,7 @@ class FunctionRegistry
      * Does the function exist?
      *
      * @param string $name
+     *
      * @return bool
      */
     public function hasFunction($name)
@@ -337,9 +340,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns aliases for registered functions
+     * Returns aliases for registered functions.
      *
-     * @param boolean $withFunctions Include function names?
+     * @param bool $withFunctions Include function names?
+     *
      * @return array
      */
     public function getAliases($withFunctions = false)
@@ -348,10 +352,11 @@ class FunctionRegistry
     }
 
     /**
-     * Adds a function alias
+     * Adds a function alias.
      *
      * @param string $alias The alias name
      * @param string $function The function name
+     *
      * @return FunctionRegistry
      */
     public function addAlias($alias, $function)
@@ -368,9 +373,10 @@ class FunctionRegistry
     }
 
     /**
-     * Adds aliases
+     * Adds aliases.
      *
      * @param array $aliases
+     *
      * @return FunctionRegistry
      */
     public function addAliases(array $aliases)
@@ -383,7 +389,7 @@ class FunctionRegistry
     }
 
     /**
-     * Sets The context
+     * Sets The context.
      *
      * @param Context $context
      */
@@ -393,7 +399,7 @@ class FunctionRegistry
     }
 
     /**
-     * Returns the context instance
+     * Returns the context instance.
      *
      * @return mixed
      */
@@ -403,11 +409,13 @@ class FunctionRegistry
     }
 
     /**
-     * Calls a method with given arguments
+     * Calls a method with given arguments.
      *
      * @param string $methodName
      * @param array $arguments
+     *
      * @return mixed
+     *
      * @throws FunctionException If the method does not exist
      */
     public function call($methodName, $arguments = [])
@@ -431,7 +439,6 @@ class FunctionRegistry
 
                 return call_user_func_array($this->functions[$methodName], $arguments);
             }
-
         } else {
             if ($this->parent) {
                 return $this->parent->call($methodName, $arguments);
@@ -441,9 +448,10 @@ class FunctionRegistry
 
     /**
      * Prepares the arguments before function calls.
-     * This does the same as in less.js's functionCaller object
+     * This does the same as in less.js's functionCaller object.
      *
      * @param array $arguments
+     *
      * @return array
      */
     protected function prepareArguments(array $arguments)
@@ -494,11 +502,12 @@ class FunctionRegistry
      * * Most common encoded characters are: `<space>`, #, ^, (, ), {, }, |, :, >, <, ;, ], [ =`
      *
      * @param Node $string A string to escape
+     *
      * @return AnonymousNode Escaped string content without quotes.
      */
     public function escape(Node $string)
     {
-        return new AnonymousNode(urlencode((string)$string));
+        return new AnonymousNode(urlencode((string) $string));
     }
 
     /**
@@ -507,17 +516,19 @@ class FunctionRegistry
      * or uses proprietary syntax which LESS doesn't recognize.
      *
      * @param string $string A string to escape
+     *
      * @return AnonymousNode Content without quotes.
      */
     public function e(Node $string)
     {
-        return new AnonymousNode(str_replace(['~"', '"'], '', (string)$string));
+        return new AnonymousNode(str_replace(['~"', '"'], '', (string) $string));
     }
 
     /**
-     * Returns the number of items
+     * Returns the number of items.
      *
      * @param Node $values
+     *
      * @return DimensionNode
      */
     public function length(Node $values)
@@ -526,7 +537,7 @@ class FunctionRegistry
     }
 
     /**
-     * Min
+     * Min.
      *
      * @return DimensionNode
      */
@@ -536,7 +547,7 @@ class FunctionRegistry
     }
 
     /**
-     * Max
+     * Max.
      *
      * @return DimensionNode
      */
@@ -546,25 +557,27 @@ class FunctionRegistry
     }
 
     /**
-     * Extract
+     * Extract.
      *
      * @param Node $node
      * @param Node $index
+     *
      * @return null|Node
      */
     public function extract(Node $node, Node $index)
     {
-        $index = (int)$index->value - 1; // (1-based index)
+        $index = (int) $index->value - 1; // (1-based index)
         $values = $this->getItemsFromNode($node);
         if (isset($values[$index])) {
             return $values[$index];
         }
 
-        return null;
+        return;
     }
 
     /**
      * @param Node $node
+     *
      * @return array
      */
     private function getItemsFromNode(Node $node)
@@ -586,9 +599,10 @@ class FunctionRegistry
      * The first argument is string with placeholders.
      * All placeholders start with percentage symbol % followed by letter s,S,d,D,a, or A.
      * Remaining arguments contain expressions to replace placeholders.
-     * If you need to print the percentage symbol, escape it by another percentage %%.*
+     * If you need to print the percentage symbol, escape it by another percentage %%.*.
      *
      * @param Node $string
+     *
      * @return QuotedNode
      */
     public function template(Node $string /* , $value1, $value2, ... */)
@@ -627,7 +641,9 @@ class FunctionRegistry
      * @param Node $pattern A string or regular expression pattern to search for.
      * @param Node $replacement The string to replace the matched pattern with.
      * @param Node $flags (Optional) regular expression flags.
+     *
      * @return QuotedNode
+     *
      * @see http://lesscss.org/functions/#string-functions-replace
      */
     public function replace(Node $string, Node $pattern, Node $replacement, Node $flags = null)
@@ -657,7 +673,7 @@ class FunctionRegistry
 
         // we cannot use preg_quote here, since the expression is already quoted in less.js
         $regexp = str_replace('/', '\\/', $pattern->value);
-        $result = preg_replace('/'.$regexp.'/'.$flags, $replacement, $result, $limit);
+        $result = preg_replace('/' . $regexp . '/' . $flags, $replacement, $result, $limit);
 
         return new QuotedNode(
             isset($string->quote) ? $string->quote : '',
@@ -673,7 +689,9 @@ class FunctionRegistry
      *
      * @param Node $mimeType A mime type string
      * @param Node $url The URL of the file to inline.
+     *
      * @return UrlNode
+     *
      * @throws IOException
      */
     public function dataUri(Node $mimeType, Node $filePath = null)
@@ -702,7 +720,7 @@ class FunctionRegistry
                 $mime .= ';base64';
             }
         } else {
-            $useBase64 = (bool)preg_match('/;base64$/', $mime);
+            $useBase64 = (bool) preg_match('/;base64$/', $mime);
         }
 
         // the file was not found
@@ -720,7 +738,7 @@ class FunctionRegistry
         $buffer = file_get_contents($path);
         $buffer = $useBase64 ? base64_encode($buffer) : Util::encodeURIComponent($buffer);
 
-        $uri = "data:".$mime.','.$buffer.$fragment;
+        $uri = 'data:' . $mime . ',' . $buffer . $fragment;
 
         // IE8 cannot handle a data-uri larger than 32KB. If this is exceeded
         // and the ieCompat option is enabled, return normal url() instead.
@@ -735,13 +753,14 @@ class FunctionRegistry
         }
 
         // FIXME: we don't have any information about current index here!
-        return new UrlNode(new QuotedNode('"'.$uri.'"', $uri, false));
+        return new UrlNode(new QuotedNode('"' . $uri . '"', $uri, false));
     }
 
     /**
-     * Rounds up to an integer
+     * Rounds up to an integer.
      *
      * @param Node $number
+     *
      * @return DimensionNode
      */
     public function ceil($number)
@@ -750,9 +769,10 @@ class FunctionRegistry
     }
 
     /**
-     * Rounds down to an integer
+     * Rounds down to an integer.
      *
      * @param Node $number
+     *
      * @return Node
      */
     public function floor($number)
@@ -761,23 +781,25 @@ class FunctionRegistry
     }
 
     /**
-     * Converts to a %, e.g. 0.5 -> 50%
+     * Converts to a %, e.g. 0.5 -> 50%.
      *
      * @param Node $number
+     *
      * @return DimensionNode
      */
     public function percentage(Node $number)
     {
-        return $this->doMath(function($n) {
+        return $this->doMath(function ($n) {
                 return $n * 100;
         }, $number, '%');
     }
 
     /**
-     * Rounds a number to a number of places
+     * Rounds a number to a number of places.
      *
      * @param string|Node $number The number to round
-     * @param integer $places The precision
+     * @param int $places The precision
+     *
      * @return DimensionNode
      */
     public function round($number, DimensionNode $places = null)
@@ -795,9 +817,10 @@ class FunctionRegistry
     }
 
     /**
-     * Calculates square root of a number
+     * Calculates square root of a number.
      *
      * @param mixed $number
+     *
      * @return mixed
      */
     public function sqrt($number)
@@ -806,9 +829,10 @@ class FunctionRegistry
     }
 
     /**
-     * Absolute value of a number
+     * Absolute value of a number.
      *
      * @param mixed $number The number
+     *
      * @return mixed
      */
     public function abs($number)
@@ -817,9 +841,10 @@ class FunctionRegistry
     }
 
     /**
-     * Sine function
+     * Sine function.
      *
      * @param string $number The number
+     *
      * @return mixed
      */
     public function sin($number)
@@ -828,9 +853,10 @@ class FunctionRegistry
     }
 
     /**
-     * Arcsine - inverse of sine function
+     * Arcsine - inverse of sine function.
      *
      * @param string $number
+     *
      * @return mixed
      */
     public function asin($number)
@@ -839,9 +865,10 @@ class FunctionRegistry
     }
 
     /**
-     * Cosine function
+     * Cosine function.
      *
      * @param string $number
+     *
      * @return mixed
      */
     public function cos($number)
@@ -850,9 +877,10 @@ class FunctionRegistry
     }
 
     /**
-     * Arc cosine - inverse of cosine function
+     * Arc cosine - inverse of cosine function.
      *
      * @param string $number
+     *
      * @return mixed
      */
     public function acos($number)
@@ -861,9 +889,10 @@ class FunctionRegistry
     }
 
     /**
-     * Tangent function
+     * Tangent function.
      *
      * @param mixed $number
+     *
      * @return mixed
      */
     public function tan($number)
@@ -872,9 +901,10 @@ class FunctionRegistry
     }
 
     /**
-     * Arc tangent - inverse of tangent function
+     * Arc tangent - inverse of tangent function.
      *
      * @param mixed $number
+     *
      * @return mixed
      */
     public function atan($number)
@@ -883,14 +913,16 @@ class FunctionRegistry
     }
 
     /**
-     * Does the math using Math
+     * Does the math using Math.
      *
      * @param string $func The math function like sqrt, floor...
-     * @param DimensionNode|integer $number The number
+     * @param DimensionNode|int $number The number
      * @param UnitNode|string $unit The unit
      * @param mixed ...$argument1 Argument for the mathematical function
      * @param mixed ...$argument2 Argument for the mathematical function
+     *
      * @return mixed
+     *
      * @throws CompilerException
      */
     protected function doMath($func, $number, $unit = null /*, $arguments...*/)
@@ -907,7 +939,6 @@ class FunctionRegistry
         }
 
         if ($number instanceof DimensionNode) {
-
             if ($unit === null) {
                 $unit = $number->unit;
             } else {
@@ -918,7 +949,6 @@ class FunctionRegistry
             array_unshift($arguments, $number);
 
             return new DimensionNode(call_user_func_array($func, $arguments), $unit);
-
         } elseif (is_numeric($number)) {
             array_unshift($arguments, $number);
 
@@ -929,7 +959,7 @@ class FunctionRegistry
     }
 
     /**
-     * Returns pi
+     * Returns pi.
      *
      * @return DimensionNode
      */
@@ -939,11 +969,13 @@ class FunctionRegistry
     }
 
     /**
-     * First argument raised to the power of the second argument
+     * First argument raised to the power of the second argument.
      *
      * @param Node $number
      * @param Node $exponent
+     *
      * @throws CompilerException
+     *
      * @return DimensionNode
      */
     public function pow($number, $exponent)
@@ -961,10 +993,11 @@ class FunctionRegistry
     }
 
     /**
-     * First argument modulus second argument
+     * First argument modulus second argument.
      *
      * @param DimensionNode $number1
      * @param DimensionNode $number2
+     *
      * @return DimensionNode
      */
     public function mod(DimensionNode $number1, DimensionNode $number2)
@@ -973,27 +1006,30 @@ class FunctionRegistry
     }
 
     /**
-     * Converts between number types
+     * Converts between number types.
      *
      * @param DimensionNode $number
      * @param Node $units
+     *
      * @return DimensionNode|null
      */
     public function convert(Node $number, Node $units)
     {
         if (!$number instanceof DimensionNode) {
-            return null;
+            return;
         }
 
         return $number->convertTo($units->value);
     }
 
     /**
-     * Changes number units without converting it
+     * Changes number units without converting it.
      *
      * @param Node $number The dimension
      * @param Node $unit The unit
+     *
      * @throws CompilerException
+     *
      * @return DimensionNode
      */
     public function unit(Node $number, Node $unit = null)
@@ -1024,7 +1060,9 @@ class FunctionRegistry
      * Returns units of a number.
      *
      * @param DimensionNode $node
+     *
      * @return AnonymousNode
+     *
      * @see http://lesscss.org/functions/#misc-functions-get-unit
      */
     public function getunit(DimensionNode $node)
@@ -1033,9 +1071,10 @@ class FunctionRegistry
     }
 
     /**
-     * Converts string or escaped value into color
+     * Converts string or escaped value into color.
      *
      * @param Node $string
+     *
      * @throws CompilerException
      * @returns ColorNode
      */
@@ -1062,11 +1101,12 @@ class FunctionRegistry
     }
 
     /**
-     * Converts to a color
+     * Converts to a color.
      *
      * @param Node|int $red The red component of a color
      * @param Node|int $green The green component of a color
      * @param Node|int $blue The blue component of a color
+     *
      * @return ColorNode
      */
     public function rgb($red, $green, $blue)
@@ -1075,12 +1115,13 @@ class FunctionRegistry
     }
 
     /**
-     * Converts to a color
+     * Converts to a color.
      *
      * @param Node $red The red component of a color
      * @param Node $green The green component of a color
      * @param Node $blue The blue component of a color
      * @param Node|float $alpha The alpha channel
+     *
      * @return ColorNode
      */
     public function rgba($red, $green, $blue, $alpha)
@@ -1091,10 +1132,11 @@ class FunctionRegistry
     }
 
     /**
-     * Scales the number to percentage
+     * Scales the number to percentage.
      *
      * @param DimensionNode $n The number
-     * @param integer $size
+     * @param int $size
+     *
      * @return float
      */
     protected function scaled($n, $size = 255)
@@ -1107,10 +1149,12 @@ class FunctionRegistry
     }
 
     /**
-     * Converts the $number to "real" number
+     * Converts the $number to "real" number.
      *
-     * @param DimensionNode|integer|float $number
+     * @param DimensionNode|int|float $number
+     *
      * @return float
+     *
      * @throws InvalidArgumentException
      */
     public function number($number)
@@ -1127,9 +1171,10 @@ class FunctionRegistry
     }
 
     /**
-     * Creates a `#AARRGGBB`
+     * Creates a `#AARRGGBB`.
      *
      * @param Color $color The color
+     *
      * @return AnonymousNode
      */
     public function argb(Node $color)
@@ -1142,11 +1187,12 @@ class FunctionRegistry
     }
 
     /**
-     * Creates a color
+     * Creates a color.
      *
      * @param Node $hue The hue
      * @param Node $saturation The saturation
      * @param Node $lightness The lightness
+     *
      * @return ColorNode
      */
     public function hsl($hue, $saturation, $lightness)
@@ -1155,12 +1201,13 @@ class FunctionRegistry
     }
 
     /**
-     * Creates a color from hsla color namespace
+     * Creates a color from hsla color namespace.
      *
      * @param mixed $hue
      * @param mixed $saturation
      * @param mixed $lightness
      * @param mixed $alpha
+     *
      * @return ColorNode
      */
     public function hsla($hue, $saturation, $lightness, $alpha)
@@ -1182,11 +1229,12 @@ class FunctionRegistry
     }
 
     /**
-     * Helper for hsla()
+     * Helper for hsla().
      *
      * @param float $h
      * @param float $m1
      * @param float $m2
+     *
      * @return float
      */
     protected function hslaHue($h, $m1, $m2)
@@ -1204,11 +1252,11 @@ class FunctionRegistry
     }
 
     /**
-     * Creates a color
+     * Creates a color.
      *
-     * @param integer $hue The hue
-     * @param integer $saturation The saturation
-     * @param integer $value The value
+     * @param int $hue The hue
+     * @param int $saturation The saturation
+     * @param int $value The value
      */
     public function hsv($hue, $saturation, $value)
     {
@@ -1216,12 +1264,12 @@ class FunctionRegistry
     }
 
     /**
-     * Creates a color
+     * Creates a color.
      *
-     * @param integer $hue The hue
-     * @param integer $saturation The saturation
-     * @param integer $value The value
-     * @param integer $alpha The alpha channel
+     * @param int $hue The hue
+     * @param int $saturation The saturation
+     * @param int $value The value
+     * @param int $alpha The alpha channel
      */
     public function hsva($hue, $saturation, $value, $alpha)
     {
@@ -1258,9 +1306,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns the `hue` channel of the $color in the HSL space
+     * Returns the `hue` channel of the $color in the HSL space.
      *
      * @param ColorNode $color
+     *
      * @return DimensionNode
      */
     public function hue(ColorNode $color)
@@ -1269,9 +1318,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns the `saturation` channel of the $color in the HSL space
+     * Returns the `saturation` channel of the $color in the HSL space.
      *
      * @param ColorNode $color
+     *
      * @return DimensionNode
      */
     public function saturation(ColorNode $color)
@@ -1280,9 +1330,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns the 'lightness' channel of @color in the HSL space
+     * Returns the 'lightness' channel of @color in the HSL space.
      *
      * @param ColorNode $color
+     *
      * @return DimensionNode
      */
     public function lightness(ColorNode $color)
@@ -1291,9 +1342,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns the `hue` channel of @color in the HSV space
+     * Returns the `hue` channel of @color in the HSV space.
      *
      * @param ColorNode $color
+     *
      * @return string
      */
     public function hsvhue(Node $color)
@@ -1307,9 +1359,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns the `saturation` channel of @color in the HSV space
+     * Returns the `saturation` channel of @color in the HSV space.
      *
      * @param ColorNode $color
+     *
      * @return string
      */
     public function hsvsaturation(Node $color)
@@ -1323,9 +1376,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns the 'value' channel of @color in the HSV space
+     * Returns the 'value' channel of @color in the HSV space.
      *
      * @param ColorNode $color
+     *
      * @return string
      */
     public function hsvvalue(Node $color)
@@ -1339,9 +1393,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns the 'red' channel of @color
+     * Returns the 'red' channel of @color.
      *
      * @param ColorNode $color
+     *
      * @return string
      */
     public function red(ColorNode $color)
@@ -1350,9 +1405,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns the 'green' channel of @color
+     * Returns the 'green' channel of @color.
      *
      * @param ColorNode $color
+     *
      * @return string
      */
     public function green(ColorNode $color)
@@ -1361,9 +1417,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns the 'blue' channel of @color
+     * Returns the 'blue' channel of @color.
      *
      * @param ColorNode $color
+     *
      * @return DimensionNode
      */
     public function blue(ColorNode $color)
@@ -1372,9 +1429,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns the 'alpha' channel of the $color
+     * Returns the 'alpha' channel of the $color.
      *
      * @param ColorNode $color The color
+     *
      * @return DimensionNode
      */
     public function alpha(Node $color)
@@ -1387,9 +1445,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns the 'luma' value (perceptual brightness) of the $color
+     * Returns the 'luma' value (perceptual brightness) of the $color.
      *
      * @param ColorNode $color
+     *
      * @return DimensionNode
      */
     public function luma(ColorNode $color)
@@ -1398,9 +1457,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns the luminance of the color
+     * Returns the luminance of the color.
      *
      * @param ColorNode $color
+     *
      * @return DimensionNode
      */
     public function luminance(ColorNode $color)
@@ -1409,12 +1469,14 @@ class FunctionRegistry
     }
 
     /**
-     * Return a color 10% points *more* saturated
+     * Return a color 10% points *more* saturated.
      *
      * @param ColorNode $color
      * @param Node $percentage The percentage
      * @param Node $method The color method
+     *
      * @throws InvalidArgumentException
+     *
      * @return ColorNode*
      */
     public function saturate(Node $color, Node $percentage = null, Node $method = null)
@@ -1422,7 +1484,7 @@ class FunctionRegistry
         // filter: saturate(3.2);
         // should be kept as is, so check for color
         if ($color instanceof DimensionNode) {
-            return null;
+            return;
         }
 
         $color = $this->getColorNode($color, 'Cannot saturate the color');
@@ -1441,12 +1503,14 @@ class FunctionRegistry
     }
 
     /**
-     * Return a color 10% points *less* saturated
+     * Return a color 10% points *less* saturated.
      *
      * @param ColorNode $color
      * @param Node $percentage The percentage
      * @param Node $method The color method
+     *
      * @throws InvalidArgumentException
+     *
      * @return ColorNode
      */
     public function desaturate(ColorNode $color, Node $percentage = null, Node $method = null)
@@ -1467,12 +1531,14 @@ class FunctionRegistry
     }
 
     /**
-     * Return a color 10% points *lighter*
+     * Return a color 10% points *lighter*.
      *
      * @param Node $color
      * @param Node $percentage The percentage (Default to 10%)
      * @param Node $method The color method
+     *
      * @throws InvalidArgumentException
+     *
      * @return ColorNode
      */
     public function lighten(Node $color, Node $percentage = null, Node $method = null)
@@ -1492,12 +1558,14 @@ class FunctionRegistry
     }
 
     /**
-     * Return a color 10% points *darker*
+     * Return a color 10% points *darker*.
      *
      * @param Node $color
      * @param DimensionNode $percentage The percentage (Default to 10%)
      * @param Node $method The method
+     *
      * @return ColorNode
+     *
      * @throws InvalidArgumentException
      */
     public function darken(Node $color, DimensionNode $percentage = null, Node $method = null)
@@ -1517,12 +1585,14 @@ class FunctionRegistry
     }
 
     /**
-     * Return a color 10% points *less* transparent
+     * Return a color 10% points *less* transparent.
      *
      * @param ColorNode $color
      * @param DimensionNode $percentage The percentage (Default to 10%)
      * @param Node $method The method
+     *
      * @return ColorNode
+     *
      * @throws InvalidArgumentException
      */
     public function fadein(ColorNode $color, DimensionNode $percentage = null, Node $method = null)
@@ -1542,12 +1612,14 @@ class FunctionRegistry
     }
 
     /**
-     * Return a color 10% points *more* transparent
+     * Return a color 10% points *more* transparent.
      *
      * @param ColorNode $color
      * @param DimensionNode $percentage The percentage (Default to 10%)
      * @param Node $method The method
+     *
      * @return ColorNode
+     *
      * @throws InvalidArgumentException
      */
     public function fadeout(ColorNode $color, DimensionNode $percentage = null, Node $method = null)
@@ -1567,10 +1639,11 @@ class FunctionRegistry
     }
 
     /**
-     * Return $color with 50% transparency
+     * Return $color with 50% transparency.
      *
      * @param ColorNode $color
      * @param DimensionNode $percentage
+     *
      * @return string
      */
     public function fade(ColorNode $color, DimensionNode $percentage = null)
@@ -1589,29 +1662,33 @@ class FunctionRegistry
     }
 
     /**
-     * Return a color with a 10 degree larger in hue
+     * Return a color with a 10 degree larger in hue.
      *
      * @param ColorNode $color
      * @param DimensionNode $degrees
+     *
      * @return ColorNode
      */
     public function spin(ColorNode $color, DimensionNode $degrees = null)
     {
         $degrees = $degrees ? $degrees->value : 10;
-        $hue = (string)fmod($color->getHue(true) + $degrees, 360);
+        $hue = (string) fmod($color->getHue(true) + $degrees, 360);
         $hue = $hue < 0 ? 360 + $hue : $hue;
 
         return $this->hsla($hue, $color->getSaturation(true), $color->getLightness(true), $color->getAlpha());
     }
 
     /**
-     * Return a mix of $color1 and $color2 with given $weightPercentage (defaults to 50%)
+     * Return a mix of $color1 and $color2 with given $weightPercentage (defaults to 50%).
      *
      * @param Node $color1
      * @param Node $color2
      * @param DimensionNode $weightPercentage
+     *
      * @return ColorNode
+     *
      * @link http://sass-lang.com
+     *
      * @copyright 2006-2009 Hampton Catlin, Nathan Weizenbaum, and Chris Eppstein
      */
     public function mix(Node $color1, Node $color2, DimensionNode $weightPercentage = null)
@@ -1648,9 +1725,10 @@ class FunctionRegistry
     }
 
     /**
-     * Return a color mixed 10% with white
+     * Return a color mixed 10% with white.
      *
      * @param Node $color
+     *
      * @return string
      */
     public function tint(Node $color, Node $percentage = null)
@@ -1659,10 +1737,11 @@ class FunctionRegistry
     }
 
     /**
-     * Return a color mixed 10% with black
+     * Return a color mixed 10% with black.
      *
      * @param Node $color
      * @param Node $percentage
+     *
      * @return string
      */
     public function shade(Node $color, Node $percentage = null)
@@ -1671,9 +1750,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns a grey, 100% desaturated color
+     * Returns a grey, 100% desaturated color.
      *
      * @param ColorNode $color
+     *
      * @return string
      */
     public function greyscale(ColorNode $color)
@@ -1682,12 +1762,13 @@ class FunctionRegistry
     }
 
     /**
-     * Return @darkColor if @color is > 43% luma otherwise return @lightColor, see notes
+     * Return @darkColor if @color is > 43% luma otherwise return @lightColor, see notes.
      *
      * @param Node $color
      * @param ColorNode|null $darkColor
      * @param ColorNode|null $lightColor
      * @param DimensionNode|null $thresholdPercentage
+     *
      * @return ColorNode
      */
     public function contrast(
@@ -1703,7 +1784,7 @@ class FunctionRegistry
             if ($color instanceof DimensionNode ||
                 !$color instanceof ToColorConvertibleInterface
             ) {
-                return null;
+                return;
             }
             $color = $color->toColor();
         }
@@ -1737,10 +1818,11 @@ class FunctionRegistry
     }
 
     /**
-     * Multiplies the $color1 with $color2
+     * Multiplies the $color1 with $color2.
      *
      * @param ColorNode $color1 The first color
      * @param ColorNode $color2 The second color
+     *
      * @return ColorNode
      */
     public function multiply(ColorNode $color1, ColorNode $color2)
@@ -1749,10 +1831,11 @@ class FunctionRegistry
     }
 
     /**
-     * Screen
+     * Screen.
      *
      * @param ColorNode $color1 The first color
      * @param ColorNode $color2 The second color
+     *
      * @return ColorNode
      */
     public function screen(ColorNode $color1, ColorNode $color2)
@@ -1767,7 +1850,9 @@ class FunctionRegistry
      *
      * @param ColorNode $color1 A base color object. Also the determinant color to make the result lighter or darker.
      * @param ColorNode $color2 A color object to overlay.
+     *
      * @return ColorNode
+     *
      * @see http://lesscss.org/functions/#color-blending-overlay
      */
     public function overlay(ColorNode $color1, ColorNode $color2)
@@ -1781,7 +1866,9 @@ class FunctionRegistry
      *
      * @param ColorNode $color1 The first color
      * @param ColorNode $color2 The second color
+     *
      * @return ColorNode
+     *
      * @see http://lesscss.org/functions/#color-blending-softlight
      */
     public function softlight(ColorNode $color1, ColorNode $color2)
@@ -1790,10 +1877,11 @@ class FunctionRegistry
     }
 
     /**
-     * Hardlight filter
+     * Hardlight filter.
      *
      * @param ColorNode $color1 The first color
      * @param ColorNode $color2 The second color
+     *
      * @return ColorNode
      */
     public function hardlight(ColorNode $color1, ColorNode $color2)
@@ -1802,10 +1890,11 @@ class FunctionRegistry
     }
 
     /**
-     * Difference
+     * Difference.
      *
      * @param ColorNode $color1 The first color
      * @param ColorNode $color2 The second color
+     *
      * @return ColorNode
      */
     public function difference(ColorNode $color1, ColorNode $color2)
@@ -1814,10 +1903,11 @@ class FunctionRegistry
     }
 
     /**
-     * Exclusion
+     * Exclusion.
      *
      * @param ColorNode $color1 The first color
      * @param ColorNode $color2 The second color
+     *
      * @return ColorNode
      */
     public function exclusion(ColorNode $color1, ColorNode $color2)
@@ -1826,10 +1916,11 @@ class FunctionRegistry
     }
 
     /**
-     * Average
+     * Average.
      *
      * @param ColorNode $color1 The first color
      * @param ColorNode $color2 The second color
+     *
      * @return ColorNode
      */
     public function average(ColorNode $color1, ColorNode $color2)
@@ -1838,10 +1929,11 @@ class FunctionRegistry
     }
 
     /**
-     * Negation
+     * Negation.
      *
      * @param ColorNode $color1 The first color
      * @param ColorNode $color2 The second color
+     *
      * @return ColorNode
      */
     public function negation(ColorNode $color1, ColorNode $color2)
@@ -1850,9 +1942,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns true if passed a color, including keyword colors
+     * Returns true if passed a color, including keyword colors.
      *
      * @param Node $colorOrAnything
+     *
      * @return KeywordNode
      */
     public function iscolor(Node $colorOrAnything)
@@ -1861,9 +1954,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns true if a number of any unit
+     * Returns true if a number of any unit.
      *
      * @param Node $numberOrAnything
+     *
      * @return KeywordNode
      */
     public function isnumber(Node $numberOrAnything)
@@ -1872,9 +1966,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns true if it is passed a string
+     * Returns true if it is passed a string.
      *
      * @param Node $stringOrAnything
+     *
      * @return KeywordNode
      */
     public function isstring(Node $stringOrAnything)
@@ -1883,9 +1978,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns true if it is passed keyword
+     * Returns true if it is passed keyword.
      *
      * @param Node $numberOrAnything
+     *
      * @return KeywordNode
      */
     public function iskeyword(Node $keywordOrAnything)
@@ -1894,10 +1990,11 @@ class FunctionRegistry
     }
 
     /**
-     * Returns true if it is a string and a url
+     * Returns true if it is a string and a url.
      *
      * @param mixed $urlOrAnything
-     * @return boolean
+     *
+     * @return bool
      */
     public function isurl(Node $urlOrAnything)
     {
@@ -1905,9 +2002,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns true if it is a number and a px
+     * Returns true if it is a number and a px.
      *
      * @param Node $urlOrAnything The node to check
+     *
      * @return KeywordNode
      */
     public function ispixel(Node $pixelOrAnything)
@@ -1920,9 +2018,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns true if it is a number and a %
+     * Returns true if it is a number and a %.
      *
      * @param Node $percentageOrAnything
+     *
      * @return KeywordNode
      */
     public function ispercentage(Node $percentageOrAnything)
@@ -1935,9 +2034,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns true if it is a number and an em
+     * Returns true if it is a number and an em.
      *
      * @param Node $emOrAnything
+     *
      * @return KeywordNode
      */
     public function isem(Node $emOrAnything)
@@ -1950,11 +2050,12 @@ class FunctionRegistry
     }
 
     /**
-     * returns if a parameter is a number and is in a particular unit
+     * returns if a parameter is a number and is in a particular unit.
      *
      * @param Node $node
      * @param Node $unit The unit to check
-     * @return boolean
+     *
+     * @return bool
      */
     public function isunit(Node $node, Node $unit = null)
     {
@@ -1968,10 +2069,11 @@ class FunctionRegistry
     }
 
     /**
-     * Returns true if the node is detached ruleset
+     * Returns true if the node is detached ruleset.
      *
      * @param Node $node
-     * @return boolean
+     *
+     * @return bool
      */
     public function isruleset(Node $node)
     {
@@ -1979,11 +2081,13 @@ class FunctionRegistry
     }
 
     /**
-     * Creates a SVG gradient
+     * Creates a SVG gradient.
      *
      * @param Node $direction
      * @param Node ...$stop1
+     *
      * @return UrlNode
+     *
      * @throws CompilerException If the arguments are invalid
      */
     public function svggradient(Node $direction /*  $stop1, $stop2, ... */)
@@ -2039,11 +2143,11 @@ class FunctionRegistry
                 );
         }
 
-        $returner = '<?xml version="1.0" ?>'.
-            '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" viewBox="0 0 1 1" preserveAspectRatio="none">'.
-            '<'.$gradientType.'Gradient id="gradient" gradientUnits="userSpaceOnUse" '.$gradientDirectionSvg.'>';
+        $returner = '<?xml version="1.0" ?>' .
+            '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" viewBox="0 0 1 1" preserveAspectRatio="none">' .
+            '<' . $gradientType . 'Gradient id="gradient" gradientUnits="userSpaceOnUse" ' . $gradientDirectionSvg . '>';
 
-        for ($i = 0; $i < count($stops); $i++) {
+        for ($i = 0; $i < count($stops); ++$i) {
             if ($stops[$i] instanceof ExpressionNode) {
                 $color = $stops[$i]->value[0];
                 $position = $stops[$i]->value[1];
@@ -2072,23 +2176,24 @@ class FunctionRegistry
             $colorValue = $color->getColor()->toRGB();
 
             $alpha = $color->getAlpha(true);
-            $returner .= '<stop offset="'.$positionValue.'" stop-color="'.
-                $colorValue.'"'.
-                ($alpha < 1 ? ' stop-opacity="'.$alpha.'"' : '').'/>';
+            $returner .= '<stop offset="' . $positionValue . '" stop-color="' .
+                $colorValue . '"' .
+                ($alpha < 1 ? ' stop-opacity="' . $alpha . '"' : '') . '/>';
         }
 
-        $returner .= '</'.$gradientType.'Gradient><rect '.$rectangleDimension.' fill="url(#gradient)" /></svg>';
+        $returner .= '</' . $gradientType . 'Gradient><rect ' . $rectangleDimension . ' fill="url(#gradient)" /></svg>';
 
         $returner = Util::encodeURIComponent($returner);
-        $returner = 'data:image/svg+xml,'.$returner;
+        $returner = 'data:image/svg+xml,' . $returner;
 
-        return new UrlNode(new QuotedNode("'".$returner."'", $returner, false));
+        return new UrlNode(new QuotedNode("'" . $returner . "'", $returner, false));
     }
 
     /**
-     * Default function
+     * Default function.
      *
      * @return KeywordNode|null
+     *
      * @throws Exception
      */
     public function defaultFunc()
@@ -2097,10 +2202,12 @@ class FunctionRegistry
     }
 
     /**
-     * Returns the image size
+     * Returns the image size.
      *
      * @param Node $node The path node
+     *
      * @return ExpressionNode
+     *
      * @throws IOException
      */
     public function imageSize(Node $node)
@@ -2116,10 +2223,12 @@ class FunctionRegistry
     }
 
     /**
-     * Returns the image width
+     * Returns the image width.
      *
      * @param Node $node The path node
+     *
      * @return DimensionNode
+     *
      * @throws IOException
      */
     public function imageWidth(Node $node)
@@ -2130,10 +2239,12 @@ class FunctionRegistry
     }
 
     /**
-     * Returns the image height
+     * Returns the image height.
      *
      * @param Node $node The path node
+     *
      * @return DimensionNode
+     *
      * @throws IOException
      */
     public function imageHeight(Node $node)
@@ -2144,10 +2255,12 @@ class FunctionRegistry
     }
 
     /**
-     * Returns the width and height of the image
+     * Returns the width and height of the image.
      *
      * @param Node $path
+     *
      * @throws IOException
+     *
      * @return array
      */
     protected function getImageSize(Node $path)
@@ -2182,9 +2295,10 @@ class FunctionRegistry
     }
 
     /**
-     * Returns the file path, takes care about relative urls
+     * Returns the file path, takes care about relative urls.
      *
      * @param string $path
+     *
      * @return mixed|string
      */
     protected function getFilePath($path)
@@ -2193,9 +2307,9 @@ class FunctionRegistry
 
         if (Util::isPathRelative($path) && $this->currentFileInfo) {
             if ($this->context->relativeUrls) {
-                $path = $this->currentFileInfo->currentDirectory.$path;
+                $path = $this->currentFileInfo->currentDirectory . $path;
             } else {
-                $path = $this->currentFileInfo->entryPath.$path;
+                $path = $this->currentFileInfo->entryPath . $path;
             }
             $path = Util::normalizePath($path);
         }
@@ -2215,7 +2329,7 @@ class FunctionRegistry
         $unitClone = $unitStatic = $j = null;
 
         // value is the index into the order array.
-        for ($i = 0; $i < count($args); $i++) {
+        for ($i = 0; $i < count($args); ++$i) {
             $current = $args[$i];
             if (!($current instanceof DimensionNode)) {
                 if (is_array($args[$i])) {
@@ -2278,7 +2392,7 @@ class FunctionRegistry
 
         $args = implode(($this->context->compress ? ',' : ', '), $order);
 
-        return new AnonymousNode(($isMin ? 'min' : 'max').'('.$args.')');
+        return new AnonymousNode(($isMin ? 'min' : 'max') . '(' . $args . ')');
     }
 
     /**
@@ -2286,6 +2400,7 @@ class FunctionRegistry
      *
      * @param Node $node
      * @param string $className The className to check
+     *
      * @return KeywordNode
      */
     protected function isA(Node $node, $className)
@@ -2298,10 +2413,11 @@ class FunctionRegistry
     }
 
     /**
-     * Clamps the value
+     * Clamps the value.
      *
-     * @param integer $value
-     * @return integer
+     * @param int $value
+     *
+     * @return int
      */
     protected function clamp($value)
     {
@@ -2309,11 +2425,13 @@ class FunctionRegistry
     }
 
     /**
-     * Convert the given node to color node
+     * Convert the given node to color node.
      *
      * @param Node $node The node
      * @param null $exceptionMessage ILess\Exception\Exception message if the node could not be converted to color node
+     *
      * @return ColorNode
+     *
      * @throws InvalidArgumentException If the node could not be converted to color
      */
     protected function getColorNode(Node $node, $exceptionMessage = null)
@@ -2337,11 +2455,12 @@ class FunctionRegistry
     }
 
     /**
-     * Color blending
+     * Color blending.
      *
      * @param callable $mode
      * @param Color $color1
      * @param Color $color2
+     *
      * @return ColorNode
      */
     protected function colorBlend(callable $mode, Color $color1, Color $color2)
@@ -2353,7 +2472,7 @@ class FunctionRegistry
         $ar = $as + $ab * (1 - $as);
         $rgb1 = $color1->rgb;
         $rgb2 = $color2->rgb;
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < 3; ++$i) {
             $cb = $rgb1[$i] / 255;
             $cs = $rgb2[$i] / 255;
             $cr = call_user_func($mode, $cb, $cs);

@@ -17,72 +17,70 @@ use ILess\Output\OutputInterface;
 use ILess\Output\StandardOutput;
 
 /**
- * Rule
- *
- * @package ILess\Node
+ * Rule.
  */
 class RuleNode extends Node implements MakeableImportantInterface, MarkableAsReferencedInterface
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'Rule';
 
     /**
-     * The name
+     * The name.
      *
      * @var string
      */
     public $name;
 
     /**
-     * Important keyword ( "!important")
+     * Important keyword ( "!important").
      *
      * @var string
      */
     public $important;
 
     /**
-     * Current index
+     * Current index.
      *
-     * @var integer
+     * @var int
      */
     public $index = 0;
 
     /**
-     * Inline flag
+     * Inline flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $inline = false;
 
     /**
      * Is variable?
      *
-     * @var boolean
+     * @var bool
      */
     public $variable = false;
 
     /**
-     * Merge flag
+     * Merge flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $merge = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string|array $name The rule name
      * @param string|ValueNode $value The value
      * @param string $important Important keyword
      * @param string|null $merge Merge?
-     * @param integer $index Current index
+     * @param int $index Current index
      * @param FileInfo $currentFileInfo The current file info
-     * @param boolean $inline Inline flag
-     * @param boolean|null $variable
+     * @param bool $inline Inline flag
+     * @param bool|null $variable
      */
     public function __construct(
         $name,
@@ -97,21 +95,23 @@ class RuleNode extends Node implements MakeableImportantInterface, MarkableAsRef
         parent::__construct(($value instanceof Node) ? $value : new ValueNode([$value]));
 
         $this->name = $name;
-        $this->important = $important ? ' '.trim($important) : '';
+        $this->important = $important ? ' ' . trim($important) : '';
         $this->merge = $merge;
         $this->index = $index;
         $this->currentFileInfo = $currentFileInfo;
-        $this->inline = (boolean)$inline;
+        $this->inline = (boolean) $inline;
         $this->variable = null !== $variable ? $variable : (is_string($name) && $name[0] === '@');
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return RuleNode
+     *
      * @throws
      */
     public function compile(Context $context, $arguments = null, $important = null)
@@ -151,14 +151,13 @@ class RuleNode extends Node implements MakeableImportantInterface, MarkableAsRef
                 $important = $importantResult['important'];
             }
 
-            $return = new RuleNode($name,
+            $return = new self($name,
                 $compiledValue,
                 $important, $this->merge,
                 $this->index, $this->currentFileInfo,
                 $this->inline,
                 $variable
             );
-
         } catch (Exception $e) {
             if ($e instanceof Exception) {
                 if ($e->getCurrentFile() === null && $e->getIndex() === null) {
@@ -181,12 +180,13 @@ class RuleNode extends Node implements MakeableImportantInterface, MarkableAsRef
     /**
      * @param Context $context
      * @param array $name
+     *
      * @return string
      */
     private function evalName(Context $context, $name)
     {
         $output = new StandardOutput();
-        for ($i = 0, $n = count($name); $i < $n; $i++) {
+        for ($i = 0, $n = count($name); $i < $n; ++$i) {
             $name[$i]->compile($context)->generateCss($context, $output);
         }
 
@@ -194,11 +194,11 @@ class RuleNode extends Node implements MakeableImportantInterface, MarkableAsRef
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
-        $output->add($this->name.($context->compress ? ':' : ': '), $this->currentFileInfo, $this->index);
+        $output->add($this->name . ($context->compress ? ':' : ': '), $this->currentFileInfo, $this->index);
         try {
             $this->value->generateCSS($context, $output);
         } catch (Exception $e) {
@@ -208,18 +208,18 @@ class RuleNode extends Node implements MakeableImportantInterface, MarkableAsRef
             // rethrow
             throw $e;
         }
-        $output->add($this->important.(($this->inline || ($context->lastRule && $context->compress)) ? '' : ';'),
+        $output->add($this->important . (($this->inline || ($context->lastRule && $context->compress)) ? '' : ';'),
             $this->currentFileInfo, $this->index);
     }
 
     /**
-     * Makes the node important
+     * Makes the node important.
      *
      * @return RuleNode
      */
     public function makeImportant()
     {
-        return new RuleNode(
+        return new self(
             $this->name,
             $this->value,
             '!important',
@@ -231,9 +231,7 @@ class RuleNode extends Node implements MakeableImportantInterface, MarkableAsRef
     }
 
     /**
-     * Marks as referenced
-     *
-     * @return void
+     * Marks as referenced.
      */
     public function markReferenced()
     {
@@ -254,5 +252,4 @@ class RuleNode extends Node implements MakeableImportantInterface, MarkableAsRef
             }
         }
     }
-
 }

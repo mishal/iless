@@ -24,28 +24,26 @@ use ILess\Node\RuleNode;
 use ILess\Node\RulesetNode;
 
 /**
- * Import visitor
- *
- * @package ILess\Visitor
+ * Import visitor.
  */
 class ImportVisitor extends Visitor
 {
     /**
-     * The importer
+     * The importer.
      *
      * @var Importer
      */
     protected $importer;
 
     /**
-     * Finished flag
+     * Finished flag.
      *
-     * @var boolean
+     * @var bool
      */
     protected $isFinished = false;
 
     /**
-     * The context
+     * The context.
      *
      * @var Context
      */
@@ -67,7 +65,7 @@ class ImportVisitor extends Visitor
     protected $type = VisitorInterface::TYPE_PRE_COMPILE;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Context $context The context
      * @param Importer $importer The importer
@@ -91,7 +89,7 @@ class ImportVisitor extends Visitor
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function run($root)
     {
@@ -102,10 +100,11 @@ class ImportVisitor extends Visitor
     }
 
     /**
-     * Visits a import node
+     * Visits a import node.
      *
      * @param ImportNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return ImportNode
      */
     public function visitImport(ImportNode $node, VisitorArguments $arguments)
@@ -113,7 +112,7 @@ class ImportVisitor extends Visitor
         if (!$node->css || $node->getOption('inline')) {
             $context = Context::createCopyForCompilation($this->context, $this->context->frames);
             $importParent = $context->frames[0];
-            $this->importCount++;
+            ++$this->importCount;
 
             if ($node->isVariableImport()) {
                 $this->sequencer->addVariableImport(
@@ -157,12 +156,11 @@ class ImportVisitor extends Visitor
         $isPlugin = $node->getOption('plugin');
 
         if ($compiledNode && (!$compiledNode->css || $inlineCSS)) {
-
             if ($node->getOption('multiple')) {
                 $context->importMultiple = true;
             }
 
-            for ($i = 0; $i < count($importParent->rules); $i++) {
+            for ($i = 0; $i < count($importParent->rules); ++$i) {
                 if ($importParent->rules[$i] === $node) {
                     $importParent->rules[$i] = $compiledNode;
                     break;
@@ -204,7 +202,6 @@ class ImportVisitor extends Visitor
                         $this->end = $oldEnv;
                     }
                 }
-
             } catch (ImportException $e) {
                 // optional import
                 if (isset($compiledNode->options['optional']) && $compiledNode->options['optional']) {
@@ -217,17 +214,18 @@ class ImportVisitor extends Visitor
             }
         }
 
-        $this->importCount--;
+        --$this->importCount;
         if ($this->isFinished) {
             $this->sequencer->tryRun();
         }
     }
 
     /**
-     * Visits a rule node
+     * Visits a rule node.
      *
      * @param RuleNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return RuleNode
      */
     public function visitRule(RuleNode $node, VisitorArguments $arguments)
@@ -242,10 +240,11 @@ class ImportVisitor extends Visitor
     }
 
     /**
-     * Visits a rule node (!again)
+     * Visits a rule node (!again).
      *
      * @param RuleNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return RuleNode
      */
     public function visitRuleOut(RuleNode $node, VisitorArguments $arguments)
@@ -258,10 +257,11 @@ class ImportVisitor extends Visitor
     }
 
     /**
-     * Visits a directive node
+     * Visits a directive node.
      *
      * @param DirectiveNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return DirectiveNode
      */
     public function visitDirective(DirectiveNode $node, VisitorArguments $arguments)
@@ -272,10 +272,11 @@ class ImportVisitor extends Visitor
     }
 
     /**
-     * Visits a directive node (!again)
+     * Visits a directive node (!again).
      *
      * @param DirectiveNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return DirectiveNode
      */
     public function visitDirectiveOut(DirectiveNode $node, VisitorArguments $arguments)
@@ -286,10 +287,11 @@ class ImportVisitor extends Visitor
     }
 
     /**
-     * Visits a mixin definition node
+     * Visits a mixin definition node.
      *
      * @param MixinDefinitionNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return MixinDefinitionNode
      */
     public function visitMixinDefinition(MixinDefinitionNode $node, VisitorArguments $arguments)
@@ -300,10 +302,11 @@ class ImportVisitor extends Visitor
     }
 
     /**
-     * Visits a mixin definition node (!again)
+     * Visits a mixin definition node (!again).
      *
      * @param MixinDefinitionNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return MixinDefinitionNode
      */
     public function visitMixinDefinitionOut(MixinDefinitionNode $node, VisitorArguments $arguments)
@@ -314,10 +317,11 @@ class ImportVisitor extends Visitor
     }
 
     /**
-     * Visits a ruleset node
+     * Visits a ruleset node.
      *
      * @param RulesetNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return RulesetNode
      */
     public function visitRuleset(RulesetNode $node, VisitorArguments $arguments)
@@ -328,10 +332,11 @@ class ImportVisitor extends Visitor
     }
 
     /**
-     * Visits a ruleset node (!again)
+     * Visits a ruleset node (!again).
      *
      * @param RulesetNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return RulesetNode
      */
     public function visitRulesetOut(RulesetNode $node, VisitorArguments $arguments)
@@ -342,10 +347,11 @@ class ImportVisitor extends Visitor
     }
 
     /**
-     * Visits a media node
+     * Visits a media node.
      *
      * @param MediaNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return MediaNode
      */
     public function visitMedia(MediaNode $node, VisitorArguments $arguments)
@@ -356,10 +362,11 @@ class ImportVisitor extends Visitor
     }
 
     /**
-     * Visits a media node (!again)
+     * Visits a media node (!again).
      *
      * @param MediaNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return MediaNode
      */
     public function visitMediaOut(MediaNode $node, VisitorArguments $arguments)
@@ -368,5 +375,4 @@ class ImportVisitor extends Visitor
 
         return $node;
     }
-
 }

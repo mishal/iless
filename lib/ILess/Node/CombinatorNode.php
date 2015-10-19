@@ -14,14 +14,12 @@ use ILess\Node;
 use ILess\Output\OutputInterface;
 
 /**
- * Combinator
- *
- * @package ILess\Node
+ * Combinator.
  */
 class CombinatorNode extends Node
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
@@ -42,7 +40,7 @@ class CombinatorNode extends Node
     public $emptyOrWhitespace;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $value The string
      */
@@ -58,12 +56,11 @@ class CombinatorNode extends Node
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
         $spaceOrEmpty = ($context->compress || (isset($this->noSpaceCombinators[$this->value]))) ? '' : ' ';
-        $output->add($spaceOrEmpty.$this->value.$spaceOrEmpty);
+        $output->add($spaceOrEmpty . $this->value . $spaceOrEmpty);
     }
-
 }

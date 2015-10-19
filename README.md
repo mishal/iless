@@ -96,10 +96,10 @@ To run ILess you need `PHP >= 5.4.0`
     use ILess\Cache\FileSystemCache;
 
     // setup the parser to use the cache
-    $parser = new Parser(array(), new FileSystemCache(array(
+    $parser = new Parser(array(), new FileSystemCache([
         'cache_dir' => sys_get_temp_dir() . '/iless',
         'ttl' => 86400 // the lifetime of cached files in seconds (1 day by default)
-    ));
+    ]);
 
 The parser will use the cache driver to save *serialized data* from parsed files and strings and to save *generated CSS*.
 The `ttl` option allows to set the lifetime of the cached files. The **change of the imported files will regenerate the cache** for those files automatically.

@@ -11,7 +11,6 @@ require_once '_bootstrap.php';
 
 class myLessUtils
 {
-
     public static function foobar(FunctionRegistry $registry, Node $color = null)
     {
         // what can you do here, look to ILess\FunctionRegistry.php
@@ -24,13 +23,12 @@ class myLessUtils
 }
 
 try {
-
-    $cacheDir = dirname(__FILE__).'/cache';
+    $cacheDir = dirname(__FILE__) . '/cache';
     $parser = new Parser();
     // adds a function with an alias: fb
-    $parser->addFunction('foobar', array('myLessUtils', 'foobar'), array(
+    $parser->addFunction('foobar', ['myLessUtils', 'foobar'], [
         'fb',
-    ));
+    ]);
     $parser->parseString('
   @color: red;
   #head {
@@ -44,7 +42,7 @@ try {
 }
 
 $cssContent = $parser->getCSS();
-file_put_contents($cacheDir.'/function.css', $cssContent);
+file_put_contents($cacheDir . '/function.css', $cssContent);
 $css = 'cache/function.css';
 
 $example = 'custom function';

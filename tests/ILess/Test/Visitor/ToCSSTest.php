@@ -9,16 +9,13 @@ use ILess\Context;
 use ILess\Visitor\ToCSSVisitor;
 
 /**
- * ILess\ILess\Visitor\Visitor\ToCSSVisitor tests
+ * ILess\ILess\Visitor\Visitor\ToCSSVisitor tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Visitor_ToCSS
  * @group visitor
  */
 class Test_Visitor_ToCSSTest extends Test_TestCase
 {
-
     /**
      * @covers __constructor
      */
@@ -27,5 +24,4 @@ class Test_Visitor_ToCSSTest extends Test_TestCase
         $v = new ToCSSVisitor(new Context());
         $this->assertTrue($v->isReplacing());
     }
-
 }

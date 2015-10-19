@@ -18,46 +18,44 @@ use ILess\Output\OutputInterface;
 use ILess\Visitor\VisitorInterface;
 
 /**
- * Function call
- *
- * @package ILess\Node
+ * Function call.
  */
 class CallNode extends Node
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'Call';
 
     /**
-     * The function name
+     * The function name.
      *
      * @var string
      */
     protected $name;
 
     /**
-     * Array of arguments
+     * Array of arguments.
      *
      * @var array
      */
     protected $args = [];
 
     /**
-     * The index
+     * The index.
      *
-     * @var integer
+     * @var int
      */
     protected $index = 0;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $name Name of the function
      * @param array $args Array of arguments
-     * @param integer $index The current index
+     * @param int $index The current index
      * @param FileInfo $currentFileInfo The current file info
      */
     public function __construct($name, array $args, $index = 0, FileInfo $currentFileInfo = null)
@@ -69,7 +67,7 @@ class CallNode extends Node
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function accept(VisitorInterface $visitor)
     {
@@ -79,12 +77,14 @@ class CallNode extends Node
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return CallNode|Node
+     *
      * @throws FunctionException
      */
     public function compile(Context $context, $arguments = null, $important = null)
@@ -103,7 +103,7 @@ class CallNode extends Node
             $result = $registry->call($this->name, $args);
 
             if ($result === null) {
-                $result = new CallNode($this->name, $args, $this->index, $this->currentFileInfo);
+                $result = new self($this->name, $args, $this->index, $this->currentFileInfo);
             }
         } catch (\Exception $e) {
             throw new FunctionException(sprintf('Error evaluating function `%s`', $this->name), $this->index,
@@ -114,7 +114,7 @@ class CallNode extends Node
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
@@ -124,8 +124,8 @@ class CallNode extends Node
             $context->canShortenColors = false;
         }
 
-        $output->add($this->name.'(', $this->currentFileInfo, $this->index);
-        for ($i = 0, $count = count($this->args); $i < $count; $i++) {
+        $output->add($this->name . '(', $this->currentFileInfo, $this->index);
+        for ($i = 0, $count = count($this->args); $i < $count; ++$i) {
             $this->args[$i]->generateCSS($context, $output);
             if ($i + 1 < $count) {
                 $output->add(', ');
@@ -139,5 +139,4 @@ class CallNode extends Node
 
         $output->add(')');
     }
-
 }

@@ -12,18 +12,17 @@ namespace ILess\Node;
 use ILess\Context;
 
 /**
- * Condition matchable interface
- *
- * @package ILess\Node
+ * Condition matchable interface.
  */
 interface ConditionMatchableInterface
 {
     /**
-     * Match a condition
+     * Match a condition.
      *
      * @param array $arguments
      * @param Context $context
-     * @return boolean
+     *
+     * @return bool
      */
     public function matchCondition(array $arguments, Context $context);
 }

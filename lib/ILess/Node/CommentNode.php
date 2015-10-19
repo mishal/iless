@@ -15,50 +15,48 @@ use ILess\Node;
 use ILess\Output\OutputInterface;
 
 /**
- * Comment
- *
- * @package ILess\Node
+ * Comment.
  */
 class CommentNode extends Node implements MarkableAsReferencedInterface
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'Comment';
 
     /**
-     * Current index
+     * Current index.
      *
-     * @var integer
+     * @var int
      */
     public $index = 0;
 
     /**
      * Is line comment?
      *
-     * @var boolean
+     * @var bool
      */
     protected $isLineComment = false;
 
     /**
-     * Reference flag
+     * Reference flag.
      *
-     * @var boolean
+     * @var bool
      */
     protected $isReferenced = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $value The comment value
-     * @param boolean $isLineComment
+     * @param bool $isLineComment
      */
     public function __construct($value, $isLineComment = false, $index = 0, FileInfo $currentFileInfo = null)
     {
         parent::__construct($value);
-        $this->isLineComment = (boolean)$isLineComment;
+        $this->isLineComment = (boolean) $isLineComment;
         $this->index = $index;
         $this->currentFileInfo = $currentFileInfo;
     }
@@ -67,7 +65,8 @@ class CommentNode extends Node implements MarkableAsReferencedInterface
      * Is the comment silent?
      *
      * @param Context $context
-     * @return boolean
+     *
+     * @return bool
      */
     public function isSilent(Context $context)
     {
@@ -78,7 +77,7 @@ class CommentNode extends Node implements MarkableAsReferencedInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
@@ -89,13 +88,10 @@ class CommentNode extends Node implements MarkableAsReferencedInterface
     }
 
     /**
-     * Mark the comment as referenced
-     *
-     * @return void
+     * Mark the comment as referenced.
      */
     public function markReferenced()
     {
         $this->isReferenced = true;
     }
-
 }

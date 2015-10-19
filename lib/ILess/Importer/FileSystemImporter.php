@@ -19,20 +19,18 @@ use ILess\Util;
  * # Possible options
  *
  * `clear_stat_cache` (boolean) - clear stat cache?
- *
- * @package ILess\Importer
  */
 class FileSystemImporter extends Configurable implements ImporterInterface
 {
     /**
-     * Array of import paths
+     * Array of import paths.
      *
      * @var array
      */
     protected $importDirs = [];
 
     /**
-     * Array of default options
+     * Array of default options.
      *
      * @var array
      */
@@ -41,19 +39,19 @@ class FileSystemImporter extends Configurable implements ImporterInterface
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $importDirs Array of import paths to search
      * @param array $options Array of options
      */
     public function __construct($importDirs = [], $options = [])
     {
-        $this->importDirs = (array)$importDirs;
+        $this->importDirs = (array) $importDirs;
         parent::__construct($options);
     }
 
     /**
-     * Setups the importer
+     * Setups the importer.
      */
     protected function setup()
     {
@@ -87,24 +85,25 @@ class FileSystemImporter extends Configurable implements ImporterInterface
     }
 
     /**
-     * Tries to find a file
+     * Tries to find a file.
      *
      * @param string $path The path to a file
      * @param FileInfo $currentFileInfo
+     *
      * @return string|false
      */
     protected function find($path, FileInfo $currentFileInfo)
     {
         if (Util::isPathAbsolute($path) && is_readable($path)) {
             return realpath($path);
-        } elseif (is_readable($currentFileInfo->currentDirectory.$path)) {
-            return realpath($currentFileInfo->currentDirectory.$path);
+        } elseif (is_readable($currentFileInfo->currentDirectory . $path)) {
+            return realpath($currentFileInfo->currentDirectory . $path);
         }
 
         // try import dirs
         foreach ($this->importDirs as $importDir) {
-            if (is_readable($importDir.'/'.$path)) {
-                return realpath($importDir.'/'.$path);
+            if (is_readable($importDir . '/' . $path)) {
+                return realpath($importDir . '/' . $path);
             }
         }
 
@@ -112,7 +111,7 @@ class FileSystemImporter extends Configurable implements ImporterInterface
     }
 
     /**
-     * Returns an array of import paths
+     * Returns an array of import paths.
      *
      * @return array
      */
@@ -122,10 +121,11 @@ class FileSystemImporter extends Configurable implements ImporterInterface
     }
 
     /**
-     * Adds import directory
+     * Adds import directory.
      *
      * @param string $dir The directory
-     * @param boolean $prepend Prepend?
+     * @param bool $prepend Prepend?
+     *
      * @return FileSystemImporter
      */
     public function addImportDir($dir, $prepend = false)
@@ -140,16 +140,16 @@ class FileSystemImporter extends Configurable implements ImporterInterface
     }
 
     /**
-     * Set import directories
+     * Set import directories.
      *
      * @param array $dirs
+     *
      * @return FileSystemImporter
      */
     public function setImportDirs($dirs)
     {
-        $this->importDirs = (array)$dirs;
+        $this->importDirs = (array) $dirs;
 
         return $this;
     }
-
 }

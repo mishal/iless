@@ -14,49 +14,47 @@ use ILess\Util;
 use ILess\ImportedFile;
 
 /**
- * Base exception
- *
- * @package ILess\Exception
+ * Base exception.
  */
 class Exception extends \Exception
 {
     /**
-     * The current file
+     * The current file.
      *
      * @var ImportedFile|FileInfo|string
      */
     private $currentFile;
 
     /**
-     * The current parser index
+     * The current parser index.
      *
-     * @var integer
+     * @var int
      */
     private $index;
 
     /**
-     * Current line
+     * Current line.
      *
-     * @var integer|null
+     * @var int|null
      */
     private $errorLine;
 
     /**
-     * Current column
+     * Current column.
      *
-     * @var integer|null
+     * @var int|null
      */
     private $errorColumn;
 
     /**
-     * Excerpt from the string which contains error
+     * Excerpt from the string which contains error.
      *
      * @var Util\StringExcerpt
      */
     private $excerpt;
 
     /**
-     * File editor link. Allows variable holders:
+     * File editor link. Allows variable holders:.
      *
      *  * `%file` or `%f` - current file
      *  * `%line` or `%l` - current line
@@ -66,20 +64,20 @@ class Exception extends \Exception
     protected static $fileEditUrlFormat = 'editor://open?file=%f&line=%l';
 
     /**
-     * File excerpt line number
+     * File excerpt line number.
      *
-     * @var integer|false
+     * @var int|false
      */
     protected static $fileExcerptLineNumber = 3;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $message The exception message
-     * @param integer $index The current parser index
+     * @param int $index The current parser index
      * @param FileInfo|ImportedFile|string $currentFile The file
      * @param \Exception $previous Previous exception
-     * @param integer $code The exception code
+     * @param int $code The exception code
      */
     public function __construct(
         $message = null,
@@ -101,28 +99,30 @@ class Exception extends \Exception
     }
 
     /**
-     * Formats the message
+     * Formats the message.
      *
      * @param string $message The exception message
      * @param \Exception $previous Previous exception
+     *
      * @return string
      */
     private function formatMessage($message, \Exception $previous = null)
     {
         $messageFormatted = $message;
         if ($previous && $previous->getMessage() !== $message) {
-            $messageFormatted .= ': '.$previous->getMessage();
+            $messageFormatted .= ': ' . $previous->getMessage();
         }
 
         return $messageFormatted;
     }
 
     /**
-     * Returns the current line and column
+     * Returns the current line and column.
      *
      * @param FileInfo|ImportedFile|string $currentFile The file
-     * @param integer $index Current position index
-     * @param boolean $excerpt Include the string excerpt?
+     * @param int $index Current position index
+     * @param bool $excerpt Include the string excerpt?
+     *
      * @return array
      */
     protected function getLocation($currentFile, $index, $column = null, $excerpt = true)
@@ -152,9 +152,7 @@ class Exception extends \Exception
     }
 
     /**
-     * Updates the line, column and excerpt
-     *
-     * @return void
+     * Updates the line, column and excerpt.
      */
     protected function updateFileErrorInformation()
     {
@@ -164,18 +162,17 @@ class Exception extends \Exception
     }
 
     /**
-     * Sets the editor url format
+     * Sets the editor url format.
      *
      * @param string $format
-     * @return void
      */
     public static function setFileEditorUrlFormat($format)
     {
-        self::$fileEditUrlFormat = (string)$format;
+        self::$fileEditUrlFormat = (string) $format;
     }
 
     /**
-     * Returns the editor url format
+     * Returns the editor url format.
      *
      * @return string
      */
@@ -185,9 +182,9 @@ class Exception extends \Exception
     }
 
     /**
-     * Sets the number of lines to display in file excerpts when an exception is displayed
+     * Sets the number of lines to display in file excerpts when an exception is displayed.
      *
-     * @param integer|false $number
+     * @param int|false $number
      */
     public static function setFileExcerptLineNumber($number)
     {
@@ -195,9 +192,9 @@ class Exception extends \Exception
     }
 
     /**
-     * Returns the number of lines to display in file excerpts
+     * Returns the number of lines to display in file excerpts.
      *
-     * @return integer|false
+     * @return int|false
      */
     public static function getFileExcerptLineNumber()
     {
@@ -205,7 +202,7 @@ class Exception extends \Exception
     }
 
     /**
-     * Returns the file
+     * Returns the file.
      *
      * @return ImportedFile|FileInfo|null
      */
@@ -215,10 +212,10 @@ class Exception extends \Exception
     }
 
     /**
-     * Sets the current file
+     * Sets the current file.
      *
      * @param ImportedFile|FileInfo|string $file
-     * @param integer $index The current index
+     * @param int $index The current index
      */
     public function setCurrentFile($file, $index = null)
     {
@@ -230,9 +227,9 @@ class Exception extends \Exception
     }
 
     /**
-     * Returns the current index
+     * Returns the current index.
      *
-     * @return integer
+     * @return int
      */
     final public function getIndex()
     {
@@ -240,7 +237,7 @@ class Exception extends \Exception
     }
 
     /**
-     * Returns the excerpt from the string which contains the error
+     * Returns the excerpt from the string which contains the error.
      *
      * @return Util\StringExcerpt|null
      */
@@ -250,9 +247,9 @@ class Exception extends \Exception
     }
 
     /**
-     * Sets index
+     * Sets index.
      *
-     * @param integer $index
+     * @param int $index
      */
     final public function setIndex($index)
     {
@@ -261,9 +258,9 @@ class Exception extends \Exception
     }
 
     /**
-     * Returns current line from the file
+     * Returns current line from the file.
      *
-     * @return integer|null
+     * @return int|null
      */
     final public function getErrorLine()
     {
@@ -271,9 +268,9 @@ class Exception extends \Exception
     }
 
     /**
-     * Returns the error column
+     * Returns the error column.
      *
-     * @return integer|null
+     * @return int|null
      */
     final public function getErrorColumn()
     {
@@ -284,8 +281,10 @@ class Exception extends \Exception
      * Returns file editor link. The link format can be customized.
      *
      * @param FileInfo|string $file The current file
-     * @param integer $line
+     * @param int $line
+     *
      * @return string|void
+     *
      * @see setFileEditorUrlFormat
      */
     protected function getFileEditorLink($file, $line = null)
@@ -317,7 +316,7 @@ class Exception extends \Exception
     }
 
     /**
-     * Converts the exception to string
+     * Converts the exception to string.
      *
      * @return string
      */
@@ -327,10 +326,11 @@ class Exception extends \Exception
     }
 
     /**
-     * Converts the exception to string
+     * Converts the exception to string.
      *
-     * @param boolean $includeExcerpt Include excerpt?
-     * @param boolean $html Convert to HTML?
+     * @param bool $includeExcerpt Include excerpt?
+     * @param bool $html Convert to HTML?
+     *
      * @return string
      */
     public function toString($includeExcerpt = true, $html = true)
@@ -356,11 +356,10 @@ class Exception extends \Exception
             $string[] = $this->message;
         }
 
-        return join("\n", $string);
+        return implode("\n", $string);
     }
 
     /**
-     *
      * @return string
      */
     public function prettyPrint($trace = false)
@@ -371,12 +370,11 @@ class Exception extends \Exception
         }
 
         if ($previous = $this->getPrevious()) {
-            $error .= '<h3>Caused by: '.get_class($previous).'</h3>';
+            $error .= '<h3>Caused by: ' . get_class($previous) . '</h3>';
             $error .= $previous->getMessage();
-            $error .= '<pre class="exception-trace">'.$previous->getTraceAsString().'</pre>';
+            $error .= '<pre class="exception-trace">' . $previous->getTraceAsString() . '</pre>';
         }
 
         return $error;
     }
-
 }

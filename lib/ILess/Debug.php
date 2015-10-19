@@ -9,23 +9,22 @@
 
 namespace ILess;
 
-use ILess\Node;
 use ILess\Node\SelectorNode;
 use InvalidArgumentException;
 use UnexpectedValueException;
 
 /**
- * Debug utility, only for porting js to php
- *
- * @package ILess
+ * Debug utility, only for porting js to php.
  */
 class Debug
 {
     /**
-     * Assert that the node has valid rules
+     * Assert that the node has valid rules.
      *
      * @param mixed $node
+     *
      * @return bool
+     *
      * @throws
      */
     public static function assertValidRules($node)
@@ -97,10 +96,9 @@ class Debug
     {
         $out = [];
         foreach ($invalid as $i) {
-            $out[] = 'index:'.$i[0].', type: '.$i[1].(is_object($i[2]) ? ('class: '.get_class($i[2])) : '');
+            $out[] = 'index:' . $i[0] . ', type: ' . $i[1] . (is_object($i[2]) ? ('class: ' . get_class($i[2])) : '');
         }
 
-        return join('; ', $out);
+        return implode('; ', $out);
     }
-
 }

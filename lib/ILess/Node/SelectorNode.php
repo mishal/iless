@@ -16,58 +16,56 @@ use ILess\Output\OutputInterface;
 use ILess\Visitor\VisitorInterface;
 
 /**
- * Selector
- *
- * @package ILess\Node
+ * Selector.
  */
 class SelectorNode extends Node implements MarkableAsReferencedInterface, ReferencedInterface
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'Selector';
 
     /**
-     * Array of elements
+     * Array of elements.
      *
      * @var array
      */
     public $elements = [];
 
     /**
-     * Array of extend definitions
+     * Array of extend definitions.
      *
      * @var array
      */
     public $extendList = [];
 
     /**
-     * The condition
+     * The condition.
      *
      * @var ConditionNode
      */
     public $condition;
 
     /**
-     * Current index
+     * Current index.
      *
-     * @var integer
+     * @var int
      */
     public $index = 0;
 
     /**
-     * Referenced flag
+     * Referenced flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $isReferenced = false;
 
     /**
-     * Compiled condition
+     * Compiled condition.
      *
-     * @var boolean
+     * @var bool
      */
     public $compiledCondition = false;
 
@@ -82,14 +80,14 @@ class SelectorNode extends Node implements MarkableAsReferencedInterface, Refere
     public $cachedElements;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $elements Array of elements
      * @param array $extendList Extended list
      * @param ConditionNode $condition The condition
-     * @param integer $index Current index
+     * @param int $index Current index
      * @param array $currentFileInfo Current file information
-     * @param boolean $isReferenced Referenced flag
+     * @param bool $isReferenced Referenced flag
      */
     public function __construct(
         array $elements,
@@ -111,7 +109,7 @@ class SelectorNode extends Node implements MarkableAsReferencedInterface, Refere
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function accept(VisitorInterface $visitor)
     {
@@ -124,11 +122,12 @@ class SelectorNode extends Node implements MarkableAsReferencedInterface, Refere
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return SelectorNode
      */
     public function compile(Context $context, $arguments = null, $important = null)
@@ -152,17 +151,18 @@ class SelectorNode extends Node implements MarkableAsReferencedInterface, Refere
     }
 
     /**
-     * Creates derived selector from given arguments
+     * Creates derived selector from given arguments.
      *
      * @param array $elements Array of elements
      * @param array $extendList Array of extends definitions
-     * @param boolean|ConditionNode $compiledCondition Compiled condition
+     * @param bool|ConditionNode $compiledCondition Compiled condition
+     *
      * @return SelectorNode
      */
     public function createDerived(array $elements, array $extendList = [], $compiledCondition = null)
     {
         $compiledCondition = !is_null($compiledCondition) ? $compiledCondition : $this->compiledCondition;
-        $selector = new SelectorNode($elements, count($extendList) ? $extendList : $this->extendList, null,
+        $selector = new self($elements, count($extendList) ? $extendList : $this->extendList, null,
             $this->index, $this->currentFileInfo, $this->isReferenced);
         $selector->compiledCondition = $compiledCondition;
         $selector->mediaEmpty = $this->mediaEmpty;
@@ -171,7 +171,7 @@ class SelectorNode extends Node implements MarkableAsReferencedInterface, Refere
     }
 
     /**
-     * Returns an array of default selectors
+     * Returns an array of default selectors.
      *
      * @return array
      */
@@ -179,14 +179,14 @@ class SelectorNode extends Node implements MarkableAsReferencedInterface, Refere
     {
         $element = new ElementNode('', '&', $this->index, $this->currentFileInfo);
 
-        $selector = new SelectorNode([$element], [], null, $this->index, $this->currentFileInfo);
+        $selector = new self([$element], [], null, $this->index, $this->currentFileInfo);
         $selector->mediaEmpty = true;
 
         return [$selector];
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
@@ -211,7 +211,7 @@ class SelectorNode extends Node implements MarkableAsReferencedInterface, Refere
     /**
      * Is referenced?
      *
-     * @return boolean
+     * @return bool
      */
     public function getIsReferenced()
     {
@@ -219,9 +219,9 @@ class SelectorNode extends Node implements MarkableAsReferencedInterface, Refere
     }
 
     /**
-     * Returns the condition
+     * Returns the condition.
      *
-     * @return boolean|ConditionNode
+     * @return bool|ConditionNode
      */
     public function getIsOutput()
     {
@@ -232,7 +232,8 @@ class SelectorNode extends Node implements MarkableAsReferencedInterface, Refere
      * Matches with other node?
      *
      * @param SelectorNode $other
-     * @return integer
+     *
+     * @return int
      */
     public function match(SelectorNode $other)
     {
@@ -243,7 +244,7 @@ class SelectorNode extends Node implements MarkableAsReferencedInterface, Refere
         if ($olen === 0 || $count < $olen) {
             return 0;
         } else {
-            for ($i = 0; $i < $olen; $i++) {
+            for ($i = 0; $i < $olen; ++$i) {
                 if ($this->elements[$i]->value !== $other->cachedElements[$i]) {
                     return 0;
                 }
@@ -254,7 +255,7 @@ class SelectorNode extends Node implements MarkableAsReferencedInterface, Refere
     }
 
     /**
-     * Cache elements
+     * Cache elements.
      */
     public function cacheElements()
     {
@@ -265,7 +266,7 @@ class SelectorNode extends Node implements MarkableAsReferencedInterface, Refere
         $css = '';
         foreach ($this->elements as $element) {
             /* @var $element ElementNode */
-            $css .= $element->combinator.($element->value instanceof Node ? $element->value->value : $element->value);
+            $css .= $element->combinator . ($element->value instanceof Node ? $element->value->value : $element->value);
         }
 
         if (preg_match_all('/[,&#\*\.\w-](?:[\w-]|(?:\\\\.))*/', $css, $matches)) {

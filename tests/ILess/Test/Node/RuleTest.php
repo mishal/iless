@@ -12,10 +12,8 @@ use ILess\Node\RuleNode;
 use ILess\Output\StandardOutput;
 
 /**
- * Rule node tests
+ * Rule node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Rule
  * @group node
  */
@@ -51,5 +49,4 @@ class Test_Node_RuleTest extends Test_TestCase
         $r->generateCss($env, $output);
         $this->assertEquals('foobar: yellow;', $output->toString());
     }
-
 }

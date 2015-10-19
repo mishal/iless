@@ -14,28 +14,26 @@ use ILess\Node;
 use ILess\Output\OutputInterface;
 
 /**
- * Assignment
- *
- * @package ILess\Node
+ * Assignment.
  */
 class AssignmentNode extends Node
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'Assignment';
 
     /**
-     * The assignment key
+     * The assignment key.
      *
      * @var string
      */
     private $key;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $key
      * @param string|Node $value
@@ -47,11 +45,11 @@ class AssignmentNode extends Node
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
-        $output->add($this->key.'=');
+        $output->add($this->key . '=');
         if ($this->value instanceof GenerateCSSInterface) {
             $this->value->generateCSS($context, $output);
         } else {
@@ -60,20 +58,20 @@ class AssignmentNode extends Node
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return AssignmentNode
      */
     public function compile(Context $context, $arguments = null, $important = null)
     {
         if ($this->value instanceof CompilableInterface) {
-            return new AssignmentNode($this->key, $this->value->compile($context));
+            return new self($this->key, $this->value->compile($context));
         }
 
         return $this;
     }
-
 }

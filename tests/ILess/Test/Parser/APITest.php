@@ -10,16 +10,13 @@ use ILess\Cache\FileSystemCache;
 use ILess\Parser;
 
 /**
- * Parser API tests
+ * Parser API tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Parser
  * @group parser
  */
 class Test_ParserAPITest extends Test_TestCase
 {
-
     /**
      * @covers getCache
      */
@@ -29,9 +26,8 @@ class Test_ParserAPITest extends Test_TestCase
         $this->assertInstanceOf('ILess\Cache\CacheInterface', $parser->getCache());
 
         $parser = new Parser([], new FileSystemCache([
-            'cache_dir' => sys_get_temp_dir()
+            'cache_dir' => sys_get_temp_dir(),
         ]));
         $this->assertInstanceOf('ILess\Cache\CacheInterface', $parser->getCache());
     }
-
 }

@@ -9,10 +9,8 @@
 use ILess\Parser;
 
 /**
- * Issue #39 test
+ * Issue #39 test.
  *
- * @package ILess
- * @subpackage test
  * @group issue
  */
 class Test_Issues_039Test extends Test_TestCase
@@ -20,7 +18,7 @@ class Test_Issues_039Test extends Test_TestCase
     public function testIssue()
     {
         $parser = new Parser([
-            'compress' => false
+            'compress' => false,
         ]);
 
         $parser->parseString(
@@ -45,7 +43,7 @@ class Test_Issues_039Test extends Test_TestCase
     public function testIssueWithCompression()
     {
         $parser = new Parser([
-            'compress' => true
+            'compress' => true,
         ]);
 
         $parser->parseString(
@@ -63,7 +61,7 @@ class Test_Issues_039Test extends Test_TestCase
     public function testEmptyMediaDeclaration()
     {
         $parser = new Parser([
-            'compress' => false
+            'compress' => false,
         ]);
 
         $parser->parseString('@media (min-width: 640px) {}');
@@ -73,5 +71,4 @@ class Test_Issues_039Test extends Test_TestCase
 
         $this->assertEquals($expected, $css);
     }
-
 }

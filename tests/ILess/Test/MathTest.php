@@ -8,10 +8,8 @@
 use ILess\Math;
 
 /**
- * Math tests
+ * Math tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Math
  * @group util
  */
@@ -53,8 +51,7 @@ class Test_MathTest extends Test_TestCase
             ['1.499999', 0, '1'],
             ['71.52', 0, '72'],
             ['78.47', 0, '78'],
-            ['71.25', 0, '71']
+            ['71.25', 0, '71'],
         ];
     }
-
 }

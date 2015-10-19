@@ -23,14 +23,12 @@ use ILess\Node\RulesetNode;
 use ILess\Node\RuleNode;
 
 /**
- * Process extends visitor
- *
- * @package ILess\Visitor
+ * Process extends visitor.
  */
 class ProcessExtendsVisitor extends Visitor
 {
     /**
-     * Extends stack
+     * Extends stack.
      *
      * @var array
      */
@@ -47,7 +45,7 @@ class ProcessExtendsVisitor extends Visitor
     private $extendChainCount = 0;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function run($root)
     {
@@ -87,8 +85,8 @@ class ProcessExtendsVisitor extends Visitor
             } catch (Exception $e) {
             }
 
-            if (!isset($this->extendIndicies[$extend->index.' '.$selector])) {
-                $this->extendIndicies[$extend->index.' '.$selector] = true;
+            if (!isset($this->extendIndicies[$extend->index . ' ' . $selector])) {
+                $this->extendIndicies[$extend->index . ' ' . $selector] = true;
                 // FIXME: less.js uses logger to warn here:
                 // echo "extend '$selector' has no matches";
                 // logger.warn("extend '" + selector + "' has no matches");
@@ -100,7 +98,9 @@ class ProcessExtendsVisitor extends Visitor
      * @param array $extendsList
      * @param array $extendsListTarget
      * @param int $iterationCount
+     *
      * @return array
+     *
      * @throws ParserException
      */
     private function doExtendChaining(array $extendsList, array $extendsListTarget, $iterationCount = 0)
@@ -119,8 +119,8 @@ class ProcessExtendsVisitor extends Visitor
         // and the second is the target.
         // the separation into two lists allows us to process a subset of chains with a bigger set, as is the
         // case when processing media queries
-        for ($extendIndex = 0, $extendsListCount = count($extendsList); $extendIndex < $extendsListCount; $extendIndex++) {
-            for ($targetExtendIndex = 0; $targetExtendIndex < count($extendsListTarget); $targetExtendIndex++) {
+        for ($extendIndex = 0, $extendsListCount = count($extendsList); $extendIndex < $extendsListCount; ++$extendIndex) {
+            for ($targetExtendIndex = 0; $targetExtendIndex < count($extendsListTarget); ++$targetExtendIndex) {
                 $extend = $extendsList[$extendIndex];
                 $targetExtend = $extendsListTarget[$targetExtendIndex];
 
@@ -167,7 +167,7 @@ class ProcessExtendsVisitor extends Visitor
         }
 
         if ($extendsToAdd) {
-            $this->extendChainCount++;
+            ++$this->extendChainCount;
             if ($iterationCount > 100) {
                 $selectorOne = '{unable to calculate}';
                 $selectorTwo = '{unable to calculate}';
@@ -192,10 +192,11 @@ class ProcessExtendsVisitor extends Visitor
     }
 
     /**
-     * Visits a rule node
+     * Visits a rule node.
      *
      * @param RuleNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return array|RuleNode
      */
     public function visitRule(RuleNode $node, VisitorArguments $arguments)
@@ -204,7 +205,7 @@ class ProcessExtendsVisitor extends Visitor
     }
 
     /**
-     * Visits a mixin definition node
+     * Visits a mixin definition node.
      *
      * @param MixinDefinitionNode $node The node
      * @param VisitorArguments $arguments The arguments
@@ -215,7 +216,7 @@ class ProcessExtendsVisitor extends Visitor
     }
 
     /**
-     * Visits a selector node
+     * Visits a selector node.
      *
      * @param SelectorNode $node The node
      * @param VisitorArguments $arguments The arguments
@@ -226,7 +227,7 @@ class ProcessExtendsVisitor extends Visitor
     }
 
     /**
-     * Visits a ruleset node
+     * Visits a ruleset node.
      *
      * @param RulesetNode $node The node
      * @param VisitorArguments $arguments The arguments
@@ -242,8 +243,8 @@ class ProcessExtendsVisitor extends Visitor
         $selectorsToAdd = [];
 
         // look at each selector path in the ruleset, find any extend matches and then copy, find and replace
-        for ($extendIndex = 0, $allExtendCount = count($allExtends); $extendIndex < $allExtendCount; $extendIndex++) {
-            for ($pathIndex = 0; $pathIndex < $pathsCount; $pathIndex++) {
+        for ($extendIndex = 0, $allExtendCount = count($allExtends); $extendIndex < $allExtendCount; ++$extendIndex) {
+            for ($pathIndex = 0; $pathIndex < $pathsCount; ++$pathIndex) {
                 $selectorPath = $node->paths[$pathIndex];
                 // extending extends happens initially, before the main pass
                 if ($node->extendOnEveryPath) {
@@ -266,7 +267,7 @@ class ProcessExtendsVisitor extends Visitor
     }
 
     /**
-     * Visits a ruleset node
+     * Visits a ruleset node.
      *
      * @param RulesetNode $node The node
      * @param VisitorArguments $arguments The arguments
@@ -276,7 +277,7 @@ class ProcessExtendsVisitor extends Visitor
     }
 
     /**
-     * Visits a media node
+     * Visits a media node.
      *
      * @param RuleNode $node The node
      * @param VisitorArguments $arguments The arguments
@@ -288,7 +289,7 @@ class ProcessExtendsVisitor extends Visitor
     }
 
     /**
-     * Visits a media node (!again)
+     * Visits a media node (!again).
      *
      * @param RuleNode $node The node
      * @param VisitorArguments $arguments The arguments
@@ -299,7 +300,7 @@ class ProcessExtendsVisitor extends Visitor
     }
 
     /**
-     * Visits a directive node
+     * Visits a directive node.
      *
      * @param RuleNode $node The node
      * @param VisitorArguments $arguments The arguments
@@ -311,7 +312,7 @@ class ProcessExtendsVisitor extends Visitor
     }
 
     /**
-     * Visits a directive node (!again)
+     * Visits a directive node (!again).
      *
      * @param RuleNode $node The node
      * @param VisitorArguments $arguments The arguments
@@ -324,6 +325,7 @@ class ProcessExtendsVisitor extends Visitor
     /**
      * @param ExtendNode $extend
      * @param $haystackSelectorPath
+     *
      * @return array
      */
     private function findMatch(ExtendNode $extend, $haystackSelectorPath)
@@ -338,9 +340,9 @@ class ProcessExtendsVisitor extends Visitor
         $matches = [];
 
         // loop through the haystack elements
-        for ($haystackSelectorIndex = 0, $haystackPathCount = count($haystackSelectorPath); $haystackSelectorIndex < $haystackPathCount; $haystackSelectorIndex++) {
+        for ($haystackSelectorIndex = 0, $haystackPathCount = count($haystackSelectorPath); $haystackSelectorIndex < $haystackPathCount; ++$haystackSelectorIndex) {
             $hackstackSelector = $haystackSelectorPath[$haystackSelectorIndex];
-            for ($hackstackElementIndex = 0, $haystackElementsCount = count($hackstackSelector->elements); $hackstackElementIndex < $haystackElementsCount; $hackstackElementIndex++) {
+            for ($hackstackElementIndex = 0, $haystackElementsCount = count($hackstackSelector->elements); $hackstackElementIndex < $haystackElementsCount; ++$hackstackElementIndex) {
                 $haystackElement = $hackstackSelector->elements[$hackstackElementIndex];
                 // if we allow elements before our match we can add a potential match every time. otherwise only at the first element.
                 if ($extend->allowBefore || ($haystackSelectorIndex === 0 && $hackstackElementIndex === 0)) {
@@ -350,10 +352,10 @@ class ProcessExtendsVisitor extends Visitor
                         'matched' => 0,
                         'initialCombinator' => $haystackElement->combinator,
                     ];
-                    $potentialMatchesCount++;
+                    ++$potentialMatchesCount;
                 }
 
-                for ($i = 0; $i < $potentialMatchesCount; $i++) {
+                for ($i = 0; $i < $potentialMatchesCount; ++$i) {
                     $potentialMatch = &$potentialMatches[$i];
 
                     // selectors add " " onto the first element. When we use & it joins the selectors together, but if we don't
@@ -371,7 +373,7 @@ class ProcessExtendsVisitor extends Visitor
                     ) {
                         $potentialMatch = null;
                     } else {
-                        $potentialMatch['matched']++;
+                        ++$potentialMatch['matched'];
                     }
 
                     // if we are still valid and have finished, test whether we have elements after and whether these are allowed
@@ -400,8 +402,8 @@ class ProcessExtendsVisitor extends Visitor
                         }
                     } else {
                         array_splice($potentialMatches, $i, 1);
-                        $potentialMatchesCount--;
-                        $i--;
+                        --$potentialMatchesCount;
+                        --$i;
                     }
                 }
             }
@@ -438,12 +440,11 @@ class ProcessExtendsVisitor extends Visitor
         $elementValue2 = $elementValue2->value;
 
         if ($elementValue1 instanceof SelectorNode) {
-
             if (!($elementValue2 instanceof SelectorNode) || count($elementValue1->elements) !== count($elementValue2->elements)) {
                 return false;
             }
 
-            for ($i = 0; $i < count($elementValue1->elements); $i++) {
+            for ($i = 0; $i < count($elementValue1->elements); ++$i) {
                 if ($elementValue1->elements[$i]->combinator->value !== $elementValue2->elements[$i]->combinator->value) {
                     if ($i !== 0 || ($elementValue1->elements[$i]->combinator->value ? $elementValue1->elements[$i]->combinator->value : ' ') !== ($elementValue2->elements[$i]->combinator->value ? $elementValue2->elements[$i]->combinator->value : ' ')) {
                         return false;
@@ -470,7 +471,7 @@ class ProcessExtendsVisitor extends Visitor
         $path = [];
         $selectorPathCount = count($selectorPath);
 
-        for ($matchIndex = 0, $matchesCount = count($matches); $matchIndex < $matchesCount; $matchIndex++) {
+        for ($matchIndex = 0, $matchesCount = count($matches); $matchIndex < $matchesCount; ++$matchIndex) {
             $match = $matches[$matchIndex];
             $selector = $selectorPath[$match['pathIndex']];
             $firstElement = new ElementNode(
@@ -485,7 +486,7 @@ class ProcessExtendsVisitor extends Visitor
                 $lastPath->elements = array_merge($lastPath->elements,
                     array_slice($selectorPath[$currentSelectorPathIndex]->elements, $currentSelectorPathElementIndex));
                 $currentSelectorPathElementIndex = 0;
-                $currentSelectorPathIndex++;
+                ++$currentSelectorPathIndex;
             }
 
             $newElements = array_merge(
@@ -508,7 +509,7 @@ class ProcessExtendsVisitor extends Visitor
             $currentSelectorPathElementIndex = $match['endPathElementIndex'];
             if ($currentSelectorPathElementIndex >= count($selectorPath[$currentSelectorPathIndex]->elements)) {
                 $currentSelectorPathElementIndex = 0;
-                $currentSelectorPathIndex++;
+                ++$currentSelectorPathIndex;
             }
         }
 
@@ -516,7 +517,7 @@ class ProcessExtendsVisitor extends Visitor
             $lastPath = end($path);
             $lastPath->elements = array_merge($lastPath->elements,
                 array_slice($selectorPath[$currentSelectorPathIndex]->elements, $currentSelectorPathElementIndex));
-            $currentSelectorPathIndex++;
+            ++$currentSelectorPathIndex;
         }
 
         $sliceLength = count($selectorPath) - $currentSelectorPathIndex;
@@ -524,5 +525,4 @@ class ProcessExtendsVisitor extends Visitor
 
         return $path;
     }
-
 }

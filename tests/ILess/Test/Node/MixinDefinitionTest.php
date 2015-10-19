@@ -8,10 +8,8 @@
 use ILess\Node\MixinDefinitionNode;
 
 /**
- * MixinDefinition node tests
+ * MixinDefinition node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_MixinDefinition
  * @group node
  */
@@ -33,5 +31,4 @@ class Test_Node_MixinDefinitionTest extends Test_TestCase
         $md = new MixinDefinitionNode('foobar');
         $this->assertEquals('MixinDefinition', $md->getType());
     }
-
 }

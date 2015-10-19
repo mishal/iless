@@ -17,21 +17,19 @@ use ILess\Node\RulesetNode;
 use ILess\Node\RuleNode;
 
 /**
- * Join Selector visitor
- *
- * @package ILess\Visitor
+ * Join Selector visitor.
  */
 class JoinSelectorVisitor extends Visitor
 {
     /**
-     * Array of contexts
+     * Array of contexts.
      *
      * @var array
      */
     protected $contexts = [[]];
 
     /**
-     * Visits a rule node
+     * Visits a rule node.
      *
      * @param RuleNode $node The node
      * @param VisitorArguments $arguments The arguments
@@ -42,7 +40,7 @@ class JoinSelectorVisitor extends Visitor
     }
 
     /**
-     * Visits a mixin definition node
+     * Visits a mixin definition node.
      *
      * @param MixinDefinitionNode $node The node
      * @param VisitorArguments $arguments The arguments
@@ -53,7 +51,7 @@ class JoinSelectorVisitor extends Visitor
     }
 
     /**
-     * Visits a ruleset node
+     * Visits a ruleset node.
      *
      * @param RulesetNode $node The node
      * @param VisitorArguments $arguments The arguments
@@ -87,7 +85,7 @@ class JoinSelectorVisitor extends Visitor
     }
 
     /**
-     * Visits the ruleset (again!)
+     * Visits the ruleset (again!).
      *
      * @param RulesetNode $node The node
      * @param VisitorArguments $arguments The arguments
@@ -98,7 +96,7 @@ class JoinSelectorVisitor extends Visitor
     }
 
     /**
-     * Visits a media node
+     * Visits a media node.
      *
      * @param MediaNode $node
      * @param VisitorArguments $arguments The arguments
@@ -111,9 +109,8 @@ class JoinSelectorVisitor extends Visitor
         }
     }
 
-
     /**
-     * Visits a directive node
+     * Visits a directive node.
      *
      * @param DirectiveNode $node
      * @param VisitorArguments $arguments The arguments
@@ -129,6 +126,4 @@ class JoinSelectorVisitor extends Visitor
             }
         }
     }
-
-
 }

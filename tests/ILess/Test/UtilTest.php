@@ -9,10 +9,8 @@ use ILess\Node\AnonymousNode;
 use ILess\Util;
 
 /**
- * Utility tests
+ * Utility tests.
  *
- * @package ILess
- * @subpackage test
  * @group util
  */
 class Test_UtilTest extends Test_TestCase
@@ -32,7 +30,7 @@ class Test_UtilTest extends Test_TestCase
             ['foo', 'foo'],
             ['http://foobar.com', 'http://foobar.com'],
             [__FILE__, str_replace('\\', '/', __FILE__)],
-            ['/a/d/tmp/../foo/test.jpg', '/a/d/foo/test.jpg']
+            ['/a/d/tmp/../foo/test.jpg', '/a/d/foo/test.jpg'],
         ];
     }
 
@@ -49,9 +47,8 @@ class Test_UtilTest extends Test_TestCase
     {
         return [
             [
-                null, new AnonymousNode('a'), new AnonymousNode('b')
-            ]
+                null, new AnonymousNode('a'), new AnonymousNode('b'),
+            ],
         ];
     }
-
 }

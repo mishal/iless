@@ -19,28 +19,26 @@ use ILess\Util;
 use ILess\Visitor\VisitorInterface;
 
 /**
- * Dimension
- *
- * @package ILess\Node
+ * Dimension.
  */
 class DimensionNode extends Node implements ComparableInterface, ToColorConvertibleInterface
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'Dimension';
 
     /**
-     * The unit
+     * The unit.
      *
      * @var UnitNode
      */
     public $unit;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $value
      * @param UnitNode|string $unit
@@ -57,7 +55,7 @@ class DimensionNode extends Node implements ComparableInterface, ToColorConverti
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function accept(VisitorInterface $visitor)
     {
@@ -65,7 +63,7 @@ class DimensionNode extends Node implements ComparableInterface, ToColorConverti
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function toColor()
     {
@@ -73,7 +71,7 @@ class DimensionNode extends Node implements ComparableInterface, ToColorConverti
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
@@ -87,7 +85,7 @@ class DimensionNode extends Node implements ComparableInterface, ToColorConverti
         }
 
         $value = Util::round($context, $this->value);
-        $strValue = (string)$value;
+        $strValue = (string) $value;
 
         if ($value !== 0 && $value < 0.000001 && $value > -0.000001) {
             $strValue = Math::toFixed($value, 20);
@@ -115,7 +113,7 @@ class DimensionNode extends Node implements ComparableInterface, ToColorConverti
     }
 
     /**
-     * Convert the value to string
+     * Convert the value to string.
      *
      * @return string
      */
@@ -132,7 +130,9 @@ class DimensionNode extends Node implements ComparableInterface, ToColorConverti
      * @param Context $context
      * @param string $op
      * @param DimensionNode $other
+     *
      * @return DimensionNode
+     *
      * @throws CompilerException
      */
     public function operate(Context $context, $op, DimensionNode $other)
@@ -175,19 +175,20 @@ class DimensionNode extends Node implements ComparableInterface, ToColorConverti
             $unit->cancel();
         }
 
-        return new DimensionNode($value, $unit);
+        return new self($value, $unit);
     }
 
     /**
-     * Compares with another dimension
+     * Compares with another dimension.
      *
      * @param Node $other
-     * @return integer
+     *
+     * @return int
      */
     public function compare(Node $other)
     {
-        if (!$other instanceof DimensionNode) {
-            return null;
+        if (!$other instanceof self) {
+            return;
         }
 
         if ($this->unit->isEmpty() || $other->unit->isEmpty()) {
@@ -197,7 +198,7 @@ class DimensionNode extends Node implements ComparableInterface, ToColorConverti
             $a = $this->unify();
             $b = $other->unify();
             if ($a->unit->compare($b->unit) !== 0) {
-                return null;
+                return;
             }
         }
 
@@ -205,7 +206,7 @@ class DimensionNode extends Node implements ComparableInterface, ToColorConverti
     }
 
     /**
-     * Converts to the unified dimensions
+     * Converts to the unified dimensions.
      *
      * @return DimensionNode
      */
@@ -221,9 +222,10 @@ class DimensionNode extends Node implements ComparableInterface, ToColorConverti
     }
 
     /**
-     * Converts to another unit
+     * Converts to another unit.
      *
      * @param array|string $conversions
+     *
      * @return DimensionNode
      */
     public function convertTo($conversions)
@@ -245,7 +247,7 @@ class DimensionNode extends Node implements ComparableInterface, ToColorConverti
         foreach ($conversions as $groupName => $targetUnit) {
             $group = UnitConversion::getGroup($groupName);
             // numerator
-            for ($i = 0, $count = count($unit->numerator); $i < $count; $i++) {
+            for ($i = 0, $count = count($unit->numerator); $i < $count; ++$i) {
                 $atomicUnit = $unit->numerator[$i];
                 if (is_object($atomicUnit)) {
                     continue;
@@ -258,7 +260,7 @@ class DimensionNode extends Node implements ComparableInterface, ToColorConverti
             }
 
             // denominator
-            for ($i = 0, $count = count($unit->denominator); $i < $count; $i++) {
+            for ($i = 0, $count = count($unit->denominator); $i < $count; ++$i) {
                 $atomicUnit = $unit->denominator[$i];
                 if (!isset($group[$atomicUnit])) {
                     continue;
@@ -270,7 +272,6 @@ class DimensionNode extends Node implements ComparableInterface, ToColorConverti
 
         $unit->cancel();
 
-        return new DimensionNode($value, $unit);
+        return new self($value, $unit);
     }
-
 }

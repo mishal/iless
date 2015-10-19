@@ -13,34 +13,32 @@ use InvalidArgumentException;
 
 /**
  * Encode / Decode Base64 VLQ.
- *
- * @package ILess\SourceMap
  */
 class Base64VLQ
 {
     /**
-     * Shift
+     * Shift.
      *
-     * @var integer
+     * @var int
      */
     private $shift = 5;
 
     /**
-     * Mask
+     * Mask.
      *
-     * @var integer
+     * @var int
      */
     private $mask = 0x1F; // == (1 << shift) == 0b00011111
 
     /**
-     * Continuation bit
+     * Continuation bit.
      *
-     * @var integer
+     * @var int
      */
     private $continuationBit = 0x20; // == (mask - 1 ) == 0b00100000
 
     /**
-     * Char to integer map
+     * Char to integer map.
      *
      * @var array
      */
@@ -112,7 +110,7 @@ class Base64VLQ
     ];
 
     /**
-     * Integer to char map
+     * Integer to char map.
      *
      * @var array
      */
@@ -184,7 +182,7 @@ class Base64VLQ
     ];
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -228,6 +226,7 @@ class Base64VLQ
      * Return the base 64 VLQ encoded value.
      *
      * @param string $aValue The value to encode
+     *
      * @return string The encoded value
      */
     public function encode($aValue)
@@ -250,6 +249,7 @@ class Base64VLQ
      * Return the value decoded from base 64 VLQ.
      *
      * @param string $encoded The encoded value to decode
+     *
      * @return string The decoded value
      */
     public function decode($encoded)
@@ -259,7 +259,7 @@ class Base64VLQ
         do {
             $digit = $this->base64Decode($encoded[$i]);
             $vlq |= ($digit & $this->mask) << ($i * $this->shift);
-            $i++;
+            ++$i;
         } while ($digit & $this->continuationBit);
 
         return $this->fromVLQSigned($vlq);
@@ -268,9 +268,10 @@ class Base64VLQ
     /**
      * Right shift with zero fill.
      *
-     * @param integer $a number to shift
-     * @param integer $b number of bits to shift
-     * @return integer
+     * @param int $a number to shift
+     * @param int $b number of bits to shift
+     *
+     * @return int
      */
     public function zeroFill($a, $b)
     {
@@ -280,8 +281,10 @@ class Base64VLQ
     /**
      * Encode single 6-bit digit as base64.
      *
-     * @param integer $number
+     * @param int $number
+     *
      * @return string
+     *
      * @throws InvalidArgumentException If the number is invalid
      */
     public function base64Encode($number)
@@ -295,10 +298,12 @@ class Base64VLQ
     }
 
     /**
-     * Decode single 6-bit digit from base64
+     * Decode single 6-bit digit from base64.
      *
      * @param string $char
+     *
      * @return number
+     *
      * @throws InvalidArgumentException If the number is invalid
      */
     public function base64Decode($char)
@@ -309,5 +314,4 @@ class Base64VLQ
 
         return $this->charToIntMap[$char];
     }
-
 }

@@ -15,14 +15,12 @@ use ILess\Plugin\PreProcessorInterface;
 use ILess\Visitor\VisitorInterface;
 
 /**
- * PluginManager
- *
- * @package ILess
+ * PluginManager.
  */
 final class PluginManager
 {
     /**
-     * Default priority
+     * Default priority.
      */
     const PRIORITY_DEFAULT = 1;
 
@@ -60,9 +58,10 @@ final class PluginManager
     }
 
     /**
-     * Adds a plugin
+     * Adds a plugin.
      *
      * @param PluginInterface $plugin
+     *
      * @return $this
      */
     public function addPlugin(PluginInterface $plugin)
@@ -76,9 +75,10 @@ final class PluginManager
     }
 
     /**
-     * Adds more plugins at once
+     * Adds more plugins at once.
      *
      * @param array $plugins
+     *
      * @return $this
      */
     public function addPlugins(array $plugins)
@@ -91,7 +91,7 @@ final class PluginManager
     }
 
     /**
-     * Returns an array of attached plugins
+     * Returns an array of attached plugins.
      *
      * @return array
      */
@@ -101,9 +101,10 @@ final class PluginManager
     }
 
     /**
-     * Adds a visitor
+     * Adds a visitor.
      *
      * @param VisitorInterface $visitor
+     *
      * @return $this
      */
     public function addVisitor(VisitorInterface $visitor)
@@ -114,9 +115,10 @@ final class PluginManager
     }
 
     /**
-     * Adds more visitors at once
+     * Adds more visitors at once.
      *
      * @param array $visitors
+     *
      * @return $this
      */
     public function addVisitors(array $visitors)
@@ -137,7 +139,7 @@ final class PluginManager
     }
 
     /**
-     * Returns post compile visitors
+     * Returns post compile visitors.
      *
      * @return array
      */
@@ -155,7 +157,7 @@ final class PluginManager
     }
 
     /**
-     * Returns pre compile visitors
+     * Returns pre compile visitors.
      *
      * @return array
      */
@@ -173,17 +175,18 @@ final class PluginManager
     }
 
     /**
-     * Adds a preprocessor
+     * Adds a preprocessor.
      *
      * @param PreProcessorInterface $preProcessor
      * @param int $priority
+     *
      * @return $this
      */
     public function addPreProcessor(
         PreProcessorInterface $preProcessor,
         $priority = self::PRIORITY_DEFAULT
     ) {
-        $priority = (int)$priority;
+        $priority = (int) $priority;
 
         if (!isset($this->preProcessors[$priority])) {
             $this->preProcessors[$priority] = [];
@@ -195,10 +198,11 @@ final class PluginManager
     }
 
     /**
-     * Adds multiple pre preprocessors at once
+     * Adds multiple pre preprocessors at once.
      *
      * @param array $preProcessors
      * @param int $priority
+     *
      * @return $this
      */
     public function addPreProcessors(array $preProcessors, $priority = self::PRIORITY_DEFAULT)
@@ -211,7 +215,7 @@ final class PluginManager
     }
 
     /**
-     * Returns the pre processors
+     * Returns the pre processors.
      *
      * @return array
      */
@@ -231,17 +235,18 @@ final class PluginManager
     }
 
     /**
-     * Adds a postprocessor
+     * Adds a postprocessor.
      *
      * @param PostProcessorInterface $postProcessor
      * @param int $priority
+     *
      * @return $this
      */
     public function addPostProcessor(
         PostProcessorInterface $postProcessor,
         $priority = self::PRIORITY_DEFAULT
     ) {
-        $priority = (int)$priority;
+        $priority = (int) $priority;
 
         if (!isset($this->postProcessors[$priority])) {
             $this->postProcessors[$priority] = [];
@@ -253,10 +258,11 @@ final class PluginManager
     }
 
     /**
-     * Adds multiple post processors at once
+     * Adds multiple post processors at once.
      *
      * @param array $postProcessors
      * @param int $priority
+     *
      * @return $this
      */
     public function addPostProcessors(
@@ -271,7 +277,7 @@ final class PluginManager
     }
 
     /**
-     * Returns the post processors
+     * Returns the post processors.
      *
      * @return array
      */
@@ -297,5 +303,4 @@ final class PluginManager
     {
         return $this->parser;
     }
-
 }

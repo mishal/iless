@@ -10,10 +10,7 @@
 use ILess\Parser;
 
 /**
- * Issue #50 test
- *
- * @package ILess
- * @subpackage test
+ * Issue #50 test.
  */
 class ILess_Test_Issues_050Test extends Test_TestCase
 {
@@ -49,5 +46,4 @@ class ILess_Test_Issues_050Test extends Test_TestCase
 
         $css = $parser->getCSS();
     }
-
 }

@@ -14,21 +14,19 @@ use ILess\Node;
 use ILess\Output\OutputInterface;
 
 /**
- * Negative node
- *
- * @package ILess\Node
+ * Negative node.
  */
 class NegativeNode extends Node
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'Negative';
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
@@ -37,11 +35,12 @@ class NegativeNode extends Node
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return NegativeNode|Node
      */
     public function compile(Context $context, $arguments = null, $important = null)
@@ -54,8 +53,7 @@ class NegativeNode extends Node
 
             return $operation->compile($context);
         } else {
-            return new NegativeNode($this->value->compile($context));
+            return new self($this->value->compile($context));
         }
     }
-
 }

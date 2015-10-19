@@ -15,21 +15,19 @@ use ILess\Node;
 use ILess\Output\OutputInterface;
 
 /**
- * Keyword
- *
- * @package ILess\Node
+ * Keyword.
  */
 class KeywordNode extends Node
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'Keyword';
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
@@ -41,13 +39,12 @@ class KeywordNode extends Node
     }
 
     /**
-     * Converts the value to string
+     * Converts the value to string.
      *
      * @return string
      */
     public function __toString()
     {
-        return (string)$this->value;
+        return (string) $this->value;
     }
-
 }

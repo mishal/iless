@@ -11,10 +11,8 @@ use ILess\Node\ExtendNode;
 use ILess\Node\SelectorNode;
 
 /**
- * Extend node tests
+ * Extend node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Extend
  * @group node
  */
@@ -47,5 +45,4 @@ class Test_Node_ExtendTest extends Test_TestCase
         $result = $d->compile($env);
         $this->assertInstanceOf('ILess\Node\ExtendNode', $result);
     }
-
 }

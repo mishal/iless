@@ -14,40 +14,37 @@ use ILess\Node\GenerateCSSInterface;
 use ILess\Node\VisitableInterface;
 use ILess\Output\OutputInterface;
 use ILess\Output\StandardOutput;
-use ILess\Visitor\Visitor;
 use ILess\Visitor\VisitorInterface;
 
 /**
- * Base node
- *
- * @package ILess
+ * Base node.
  */
 abstract class Node implements VisitableInterface,
     GenerateCSSInterface, CompilableInterface
 {
     /**
-     * The value
+     * The value.
      *
      * @var Node|string
      */
     public $value;
 
     /**
-     * ILess\Debug information
+     * ILess\Debug information.
      *
      * @var DebugInfo
      */
     public $debugInfo;
 
     /**
-     * The node type. Each node should define the type
+     * The node type. Each node should define the type.
      *
      * @var string
      */
     protected $type;
 
     /**
-     * Current file info
+     * Current file info.
      *
      * @var FileInfo
      */
@@ -59,7 +56,7 @@ abstract class Node implements VisitableInterface,
     public $compileFirst = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param mixed $value
      */
@@ -79,11 +76,12 @@ abstract class Node implements VisitableInterface,
     }
 
     /**
-     * Checks if given method exists
+     * Checks if given method exists.
      *
      * @param mixed $var The variable name
      * @param string $methodName The method name
-     * @return boolean
+     *
+     * @return bool
      */
     public static function methodExists($var, $methodName)
     {
@@ -91,11 +89,12 @@ abstract class Node implements VisitableInterface,
     }
 
     /**
-     * Checks if given property exists
+     * Checks if given property exists.
      *
      * @param mixed $var The variable to check
      * @param string $property The property name
-     * @return boolean
+     *
+     * @return bool
      */
     public static function propertyExists($var, $property)
     {
@@ -103,11 +102,12 @@ abstract class Node implements VisitableInterface,
     }
 
     /**
-     * Returns debug information for the node
+     * Returns debug information for the node.
      *
      * @param Context $context The context
      * @param Node $node The context node
      * @param string $lineSeparator Line separator
+     *
      * @return string
      */
     public static function getDebugInfo(Context $context, Node $node, $lineSeparator = '')
@@ -115,7 +115,7 @@ abstract class Node implements VisitableInterface,
         $result = '';
 
         if ($node->debugInfo && $context->dumpLineNumbers && !$context->compress) {
-            switch ((string)$context->dumpLineNumbers) {
+            switch ((string) $context->dumpLineNumbers) {
                 case DebugInfo::FORMAT_COMMENT;
                     $result = $node->debugInfo->getAsComment();
                     break;
@@ -138,63 +138,62 @@ abstract class Node implements VisitableInterface,
     }
 
     /**
-     * Outputs the ruleset rules
+     * Outputs the ruleset rules.
      *
      * @param Context $context
      * @param OutputInterface $output
      * @param array $rules
-     * @return void
      */
     public static function outputRuleset(Context $context, OutputInterface $output, array $rules)
     {
-        $context->tabLevel++;
+        ++$context->tabLevel;
         $rulesCount = count($rules);
 
         // compression
         if ($context->compress) {
             $output->add('{');
-            for ($i = 0; $i < $rulesCount; $i++) {
+            for ($i = 0; $i < $rulesCount; ++$i) {
                 $rules[$i]->generateCSS($context, $output);
             }
             $output->add('}');
-            $context->tabLevel--;
+            --$context->tabLevel;
 
             return;
         }
 
         // Non-compressed
-        $tabSetStr = "\n".str_repeat('  ', $context->tabLevel - 1);
-        $tabRuleStr = $tabSetStr.'  ';
+        $tabSetStr = "\n" . str_repeat('  ', $context->tabLevel - 1);
+        $tabRuleStr = $tabSetStr . '  ';
 
         // Non-compressed
         if (!$rulesCount) {
-            $output->add(' {'.$tabSetStr.'}');
+            $output->add(' {' . $tabSetStr . '}');
         } else {
-            $output->add(' {'.$tabRuleStr);
+            $output->add(' {' . $tabRuleStr);
             $rules[0]->generateCSS($context, $output);
-            for ($i = 1; $i < $rulesCount; $i++) {
+            for ($i = 1; $i < $rulesCount; ++$i) {
                 $output->add($tabRuleStr);
                 $rules[$i]->generateCSS($context, $output);
             }
 
-            $output->add($tabSetStr.'}');
+            $output->add($tabSetStr . '}');
         }
 
-        $context->tabLevel--;
+        --$context->tabLevel;
     }
 
     /**
-     * Convert to string
+     * Convert to string.
      *
      * @return string
      */
     public function toString()
     {
-        return (string)$this->value;
+        return (string) $this->value;
     }
 
     /**
-     * Convert to string
+     * Convert to string.
      *
      * @return string
      */
@@ -204,7 +203,7 @@ abstract class Node implements VisitableInterface,
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function toCSS(Context $context)
     {
@@ -215,7 +214,7 @@ abstract class Node implements VisitableInterface,
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function accept(VisitorInterface $visitor)
     {
@@ -223,11 +222,10 @@ abstract class Node implements VisitableInterface,
     }
 
     /**
-     * Generate the CSS and put it in the output container
+     * Generate the CSS and put it in the output container.
      *
      * @param Context $context The context
      * @param OutputInterface $output The output
-     * @return void
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
@@ -235,11 +233,12 @@ abstract class Node implements VisitableInterface,
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return Node
      */
     public function compile(Context $context, $arguments = null, $important = null)
@@ -262,5 +261,4 @@ abstract class Node implements VisitableInterface,
     {
         return $this->compileFirst;
     }
-
 }

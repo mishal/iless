@@ -16,14 +16,12 @@ use ILess\Output\OutputInterface;
 use ILess\Util;
 
 /**
- * Url node
- *
- * @package ILess\Node
+ * Url node.
  */
 class UrlNode extends Node
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
@@ -40,7 +38,7 @@ class UrlNode extends Node
     public $isCompiled = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Node $value
      * @param int $index
@@ -61,11 +59,12 @@ class UrlNode extends Node
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return UrlNode
      */
     public function compile(Context $context, $arguments = null, $important = null)
@@ -73,17 +72,16 @@ class UrlNode extends Node
         $value = $this->value->compile($context);
 
         if (!$this->isCompiled) {
-
             $rootPath = isset($this->currentFileInfo) && $this->currentFileInfo->rootPath ? $this->currentFileInfo->rootPath : false;
 
             if ($rootPath && is_string($value->value) && Util::isPathRelative($value->value)) {
                 $quoteExists = self::propertyExists($value, 'quote');
                 if ($quoteExists && empty($value->quote) || !$quoteExists) {
                     $rootPath = preg_replace_callback('/[\(\)\'"\s]/', function ($match) {
-                        return '\\'.$match[0];
+                        return '\\' . $match[0];
                     }, $rootPath);
                 }
-                $value->value = $rootPath.$value->value;
+                $value->value = $rootPath . $value->value;
             }
 
             $value->value = Util::normalizePath($value->value, false);
@@ -91,22 +89,21 @@ class UrlNode extends Node
             if ($context->urlArgs) {
                 if (!preg_match('/^\s*data:/', $value->value, $matches)) {
                     $delimiter = strpos($value->value, '?') === false ? '?' : '&';
-                    $urlArgs = $delimiter.$context->urlArgs;
+                    $urlArgs = $delimiter . $context->urlArgs;
                     if (strpos($value->value, '#') !== false) {
-                        $value->value = str_replace('#', $urlArgs.'#', $value->value);
+                        $value->value = str_replace('#', $urlArgs . '#', $value->value);
                     } else {
                         $value->value .= $urlArgs;
                     }
                 }
             }
-
         }
 
-        return new UrlNode($value, $this->index, $this->currentFileInfo, true);
+        return new self($value, $this->index, $this->currentFileInfo, true);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
@@ -114,5 +111,4 @@ class UrlNode extends Node
         $this->value->generateCSS($context, $output);
         $output->add(')');
     }
-
 }

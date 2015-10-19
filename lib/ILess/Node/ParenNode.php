@@ -14,34 +14,33 @@ use ILess\Node;
 use ILess\Output\OutputInterface;
 
 /**
- * Paren node
- *
- * @package ILess\Node
+ * Paren node.
  */
 class ParenNode extends Node
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'Paren';
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return ParenNode
      */
     public function compile(Context $context, $arguments = null, $important = null)
     {
-        return new ParenNode($this->value->compile($context));
+        return new self($this->value->compile($context));
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
@@ -49,5 +48,4 @@ class ParenNode extends Node
         $this->value->generateCSS($context, $output);
         $output->add(')');
     }
-
 }

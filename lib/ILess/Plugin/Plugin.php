@@ -12,17 +12,14 @@ use ILess\Configurable;
 use ILess\Parser;
 
 /**
- * Plugin which can be configured
- *
- * @package ILess\Plugin
+ * Plugin which can be configured.
  */
 abstract class Plugin extends Configurable implements PluginInterface
 {
     /**
-     * Installs itself
+     * Installs itself.
      *
      * @param Parser $parser
      */
     abstract public function install(Parser $parser);
-
 }

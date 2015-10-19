@@ -10,17 +10,12 @@
 namespace ILess\Node;
 
 /**
- * Makeable important interface
- *
- * @package ILess\Node
+ * Makeable important interface.
  */
 interface MarkableAsReferencedInterface
 {
     /**
-     * Marks as referenced
-     *
-     * @return void
+     * Marks as referenced.
      */
     public function markReferenced();
-
 }

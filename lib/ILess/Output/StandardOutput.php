@@ -12,26 +12,25 @@ namespace ILess\Output;
 use ILess\FileInfo;
 
 /**
- * Standard output
- *
- * @package ILess\Output
+ * Standard output.
  */
 class StandardOutput implements OutputInterface
 {
     /**
-     * Output holder
+     * Output holder.
      *
      * @var array
      */
     protected $output = [];
 
     /**
-     * Adds a chunk to the stack
+     * Adds a chunk to the stack.
      *
      * @param string $chunk The chunk to output
      * @param FileInfo $fileInfo The file information
-     * @param integer $index The index
+     * @param int $index The index
      * @param mixed $mapLines
+     *
      * @return StandardOutput
      */
     public function add($chunk, FileInfo $fileInfo = null, $index = 0, $mapLines = null)
@@ -46,7 +45,7 @@ class StandardOutput implements OutputInterface
     /**
      * Is the output empty?
      *
-     * @return boolean
+     * @return bool
      */
     public function isEmpty()
     {
@@ -54,7 +53,7 @@ class StandardOutput implements OutputInterface
     }
 
     /**
-     * Converts the output to string
+     * Converts the output to string.
      *
      * @return string
      */
@@ -65,11 +64,11 @@ class StandardOutput implements OutputInterface
             $result[] = $o[0];
         }
 
-        return join('', $result);
+        return implode('', $result);
     }
 
     /**
-     * Returns the output
+     * Returns the output.
      *
      * @return array
      */
@@ -77,5 +76,4 @@ class StandardOutput implements OutputInterface
     {
         return $this->output;
     }
-
 }

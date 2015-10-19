@@ -10,10 +10,8 @@ use ILess\Node\ElementNode;
 use ILess\Node\MixinCallNode;
 
 /**
- * MixinCall node tests
+ * MixinCall node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_MixinCall
  * @group node
  */
@@ -49,5 +47,4 @@ class Test_Node_MixinCallTest extends Test_TestCase
         // throws an exception
         $result = $mc->compile($env);
     }
-
 }

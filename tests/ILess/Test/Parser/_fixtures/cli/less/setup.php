@@ -5,7 +5,7 @@ use ILess\Node\ColorNode;
 use ILess\Node\DimensionNode;
 
 $parser->addVariables([
-    'color' => 'white'
+    'color' => 'white',
 ]);
 
 $parser->addFunction('superdarken', function (FunctionRegistry $registry, ColorNode $color) {

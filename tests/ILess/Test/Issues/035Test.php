@@ -9,10 +9,8 @@
 use ILess\Parser;
 
 /**
- * Issue #35 test
+ * Issue #35 test.
  *
- * @package ILess
- * @subpackage test
  * @group issue
  */
 class Test_Issues_035Test extends Test_TestCase
@@ -36,5 +34,4 @@ class Test_Issues_035Test extends Test_TestCase
 ';
         $this->assertEquals($expected, $css);
     }
-
 }

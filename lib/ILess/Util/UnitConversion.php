@@ -9,35 +9,33 @@
 namespace ILess\Util;
 
 /**
- * Unit conversion
- *
- * @package ILess\Util
+ * Unit conversion.
  */
 final class UnitConversion
 {
     /**
-     * Unit groups
+     * Unit groups.
      *
      * @var array
      */
     private static $groups = ['length', 'duration', 'angle'];
 
     /**
-     * Length conversions
+     * Length conversions.
      *
      * @var array
      */
     private static $length = [];
 
     /**
-     * Duration conversions
+     * Duration conversions.
      *
      * @var array
      */
     private static $duration = [];
 
     /**
-     * Angle conversions
+     * Angle conversions.
      *
      * @var array
      */
@@ -49,7 +47,7 @@ final class UnitConversion
     private static $setup = false;
 
     /**
-     * Returns the groups
+     * Returns the groups.
      *
      * @return array
      */
@@ -59,15 +57,16 @@ final class UnitConversion
     }
 
     /**
-     * Returns the group by its name
+     * Returns the group by its name.
      *
      * @param string $name
+     *
      * @return array|null
      */
     public static function getGroup($name)
     {
         if (!in_array($name, self::$groups)) {
-            return null;
+            return;
         }
 
         self::setup();
@@ -76,9 +75,7 @@ final class UnitConversion
     }
 
     /**
-     * Setups the conversions
-     *
-     * @return void
+     * Setups the conversions.
      */
     private static function setup()
     {
@@ -111,5 +108,4 @@ final class UnitConversion
 
         self::$setup = true;
     }
-
 }

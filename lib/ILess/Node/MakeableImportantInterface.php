@@ -12,14 +12,12 @@ namespace ILess\Node;
 use ILess\Node;
 
 /**
- * Makeable important interface
- *
- * @package ILess\Node
+ * Makeable important interface.
  */
 interface MakeableImportantInterface
 {
     /**
-     * Makes the node important
+     * Makes the node important.
      *
      * @return Node
      */

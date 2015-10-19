@@ -11,10 +11,8 @@ use ILess\Node\CallNode;
 use ILess\Output\StandardOutput;
 
 /**
- * Call node tests
+ * Call node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Call
  * @group node
  */
@@ -52,5 +50,4 @@ class Test_Node_CallTest extends Test_TestCase
         $a->generateCss($env, $output);
         $this->assertEquals($output->toString(), 'foo(arg1, arg2)');
     }
-
 }

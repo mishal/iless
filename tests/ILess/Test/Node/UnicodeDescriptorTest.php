@@ -11,10 +11,8 @@ use ILess\Node\UnicodeDescriptorNode;
 use ILess\Output\StandardOutput;
 
 /**
- * UnicodeDescriptor node tests
+ * UnicodeDescriptor node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_UnicodeDescriptor
  * @group node
  */
@@ -49,5 +47,4 @@ class Test_Node_UnicodeDescriptorTest extends Test_TestCase
         $d->generateCss($env, $output);
         $this->assertEquals('foobar', $output->toString());
     }
-
 }

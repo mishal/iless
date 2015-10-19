@@ -15,31 +15,29 @@ use ILess\Node;
 use ILess\Output\OutputInterface;
 
 /**
- * Anonymous node
- *
- * @package ILess\Node
+ * Anonymous node.
  */
 class AnonymousNode extends Node implements ComparableInterface,
     MarkableAsReferencedInterface, ReferencedInterface
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'Anonymous';
 
     /**
-     * Current index
+     * Current index.
      *
-     * @var integer
+     * @var int
      */
     public $index = 0;
 
     /**
-     * Map lines flag
+     * Map lines flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $mapLines;
 
@@ -51,19 +49,19 @@ class AnonymousNode extends Node implements ComparableInterface,
     /**
      * Is referenced?
      *
-     * @var boolean
+     * @var bool
      */
     public $isReferenced = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string|ValueNode|null $value
-     * @param integer $index
+     * @param int $index
      * @param FileInfo $currentFileInfo
-     * @param boolean $mapLines
-     * @param boolean $rulesetLike
-     * @param boolean $referenced
+     * @param bool $mapLines
+     * @param bool $rulesetLike
+     * @param bool $referenced
      */
     public function __construct(
         $value,
@@ -78,12 +76,12 @@ class AnonymousNode extends Node implements ComparableInterface,
         $this->index = $index;
         $this->currentFileInfo = $currentFileInfo;
         $this->mapLines = $mapLines;
-        $this->rulesetLike = (boolean)$rulesetLike;
+        $this->rulesetLike = (boolean) $rulesetLike;
         $this->isReferenced = $referenced;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
@@ -91,9 +89,10 @@ class AnonymousNode extends Node implements ComparableInterface,
     }
 
     /**
-     * Converts to CSS
+     * Converts to CSS.
      *
      * @param Context $context
+     *
      * @return string
      */
     public function toCSS(Context $context)
@@ -102,21 +101,22 @@ class AnonymousNode extends Node implements ComparableInterface,
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return AnonymousNode
      */
     public function compile(Context $context, $arguments = null, $important = null)
     {
-        return new AnonymousNode($this->value, $this->index, $this->currentFileInfo, $this->mapLines,
+        return new self($this->value, $this->index, $this->currentFileInfo, $this->mapLines,
             $this->rulesetLike, $this->isReferenced);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function compare(Node $other)
     {
@@ -144,13 +144,10 @@ class AnonymousNode extends Node implements ComparableInterface,
     }
 
     /**
-     * Marks as referenced
-     *
-     * @return void
+     * Marks as referenced.
      */
     public function markReferenced()
     {
         $this->isReferenced = true;
     }
-
 }

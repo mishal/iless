@@ -13,10 +13,7 @@ use ILess\Node\ColorNode;
 use ILess\Node\DimensionNode;
 
 /**
- * Function tests
- *
- * @package ILess
- * @subpackage test
+ * Function tests.
  */
 class Test_FunctionRegistryTest extends Test_TestCase
 {
@@ -45,22 +42,22 @@ class Test_FunctionRegistryTest extends Test_TestCase
         return [
             // hue, saturation, lightness
             [['0.5', '0', '0.5'], [
-                127.5, 127.5, 127.5
+                127.5, 127.5, 127.5,
             ], '#808080'],
             [[
                 new DimensionNode('340'),
                 new DimensionNode('12', '%'),
                 new DimensionNode('95', '%'),
             ], [
-                243.78, 240.72, 241.74
+                243.78, 240.72, 241.74,
             ], '#f4f1f2'],
             [[
                 new DimensionNode('340'),
                 new DimensionNode('50', '%'),
                 new DimensionNode('50', '%'),
             ], [
-                191.25, 63.75, 106.24999999999993
-            ], '#bf406a']
+                191.25, 63.75, 106.24999999999993,
+            ], '#bf406a'],
         ];
     }
 
@@ -77,7 +74,7 @@ class Test_FunctionRegistryTest extends Test_TestCase
     public function getDataForScreenTest()
     {
         return [
-            [new ColorNode(new Color('#f60000')), new ColorNode(new Color('#0000f6')), '#f600f6']
+            [new ColorNode(new Color('#f60000')), new ColorNode(new Color('#0000f6')), '#f600f6'],
         ];
     }
 
@@ -94,7 +91,7 @@ class Test_FunctionRegistryTest extends Test_TestCase
     public function getDataForSpinTest()
     {
         return [
-            [new ColorNode(new Color('#86797d')), new DimensionNode(40), '#867e79']
+            [new ColorNode(new Color('#86797d')), new DimensionNode(40), '#867e79'],
         ];
     }
 
@@ -136,5 +133,4 @@ class Test_FunctionRegistryTest extends Test_TestCase
         $arg2 = func_get_arg(2);
         $this->assertEquals($arg2, 'b');
     }
-
 }

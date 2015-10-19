@@ -8,9 +8,9 @@ use ILess\Node\AnonymousNode;
 
 $this->addFunctions([
     'test-shadow' => function () {
-        return new AnonymousNode("global");
+        return new AnonymousNode('global');
     },
     'test-global' => function () {
-        return new AnonymousNode("global");
-    }
+        return new AnonymousNode('global');
+    },
 ]);

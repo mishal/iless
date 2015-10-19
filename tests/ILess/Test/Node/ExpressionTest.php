@@ -11,10 +11,8 @@ use ILess\Node\ExpressionNode;
 use ILess\Output\StandardOutput;
 
 /**
- * Expression node tests
+ * Expression node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Expression
  * @group node
  */
@@ -62,5 +60,4 @@ class Test_Node_ExpressionTest extends Test_TestCase
 
         // FIXME: more tests!
     }
-
 }

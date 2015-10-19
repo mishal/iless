@@ -10,10 +10,7 @@
 use ILess\Parser;
 
 /**
- * Issue #52 test
- *
- * @package ILess
- * @subpackage test
+ * Issue #52 test.
  */
 class ILess_Test_Issues_055Test extends Test_TestCase
 {

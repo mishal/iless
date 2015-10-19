@@ -8,27 +8,23 @@
 
 namespace ILess\Visitor;
 
-use ILess\Node;
-
 /**
- * Visitor interface
- *
- * @package ILess\Visitor
+ * Visitor interface.
  */
 interface VisitorInterface
 {
     /**
-     * Pre compilation visitor
+     * Pre compilation visitor.
      */
     const TYPE_PRE_COMPILE = 'pre';
 
     /**
-     * Post compilation visitor
+     * Post compilation visitor.
      */
     const TYPE_POST_COMPILE = 'post';
 
     /**
-     * Runs the visitor
+     * Runs the visitor.
      *
      * @param ILess\Node|array
      */
@@ -36,15 +32,17 @@ interface VisitorInterface
 
     /**
      * @param mixed $node
+     *
      * @return mixed
      */
     public function visit($node);
 
     /**
-     * Visits an array of nodes
+     * Visits an array of nodes.
      *
      * @param array $nodes
      * @param bool $nonReplacing
+     *
      * @return mixed
      */
     public function visitArray(array $nodes, $nonReplacing = false);
@@ -52,15 +50,14 @@ interface VisitorInterface
     /**
      * Is the visitor replacing?
      *
-     * @return boolean
+     * @return bool
      */
     public function isReplacing();
 
     /**
-     * Return the visitor type
+     * Return the visitor type.
      *
      * @return string
      */
     public function getType();
-
 }

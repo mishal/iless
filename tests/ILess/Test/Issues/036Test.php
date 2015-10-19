@@ -9,10 +9,8 @@
 use ILess\Parser;
 
 /**
- * Issue #36 test
+ * Issue #36 test.
  *
- * @package ILess
- * @subpackage test
  * @group issue
  */
 class Test_Issues_036Test extends Test_TestCase
@@ -20,7 +18,7 @@ class Test_Issues_036Test extends Test_TestCase
     public function testIssue()
     {
         $parser = new Parser([
-            'compress' => false
+            'compress' => false,
         ]);
 
         $parser->parseString(
@@ -42,7 +40,7 @@ class Test_Issues_036Test extends Test_TestCase
     public function testIssueWithCompression()
     {
         $parser = new Parser([
-            'compress' => true
+            'compress' => true,
         ]);
 
         $parser->parseString(
@@ -56,5 +54,4 @@ class Test_Issues_036Test extends Test_TestCase
         $expected = '.elem{width:calc(100% + 10px)}';
         $this->assertEquals($expected, $css);
     }
-
 }

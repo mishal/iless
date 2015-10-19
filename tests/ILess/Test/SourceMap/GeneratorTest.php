@@ -44,5 +44,4 @@ class Test_SourceMap_GeneratorTest extends Test_TestCase
     {
         $g = new Test_SourceMap_Generator(new RulesetNode([], []), []);
     }
-
 }

@@ -10,17 +10,14 @@
 use ILess\Parser;
 
 /**
- * Issue #52 test
- *
- * @package ILess
- * @subpackage test
+ * Issue #52 test.
  */
 class ILess_Test_Issues_052Test extends Test_TestCase
 {
     public function testIssue()
     {
         $parser = new Parser([
-            'compress' => false
+            'compress' => false,
         ]);
 
         $parser->parseString('
@@ -38,5 +35,4 @@ class ILess_Test_Issues_052Test extends Test_TestCase
         $this->assertContains('alpha: 1;', $css);
         $this->assertContains('color2: rgba(0, 1, 2, 0.3);', $css);
     }
-
 }

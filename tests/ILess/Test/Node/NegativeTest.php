@@ -9,10 +9,8 @@ use ILess\Node\AnonymousNode;
 use ILess\Node\NegativeNode;
 
 /**
- * Negative node tests
+ * Negative node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Negative
  * @group node
  */

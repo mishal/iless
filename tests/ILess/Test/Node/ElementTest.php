@@ -11,10 +11,8 @@ use ILess\Node\ElementNode;
 use ILess\Output\StandardOutput;
 
 /**
- * Element node tests
+ * Element node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Element
  * @group node
  */
@@ -48,5 +46,4 @@ class Test_Node_ElementTest extends Test_TestCase
         $d->generateCss($env, $output);
         $this->assertEquals(' > bar', $output->toString());
     }
-
 }

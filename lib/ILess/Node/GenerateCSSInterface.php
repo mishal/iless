@@ -13,25 +13,23 @@ use ILess\Context;
 use ILess\Output\OutputInterface;
 
 /**
- * Generates CSS interface
- *
- * @package ILess\Node
+ * Generates CSS interface.
  */
 interface GenerateCSSInterface
 {
     /**
-     * Generate the CSS and put it in the output container
+     * Generate the CSS and put it in the output container.
      *
      * @param Context $context The context
      * @param OutputInterface $output The output
-     * @return void
      */
     public function generateCSS(Context $context, OutputInterface $output);
 
     /**
-     * Compiles the node to CSS
+     * Compiles the node to CSS.
      *
      * @param Context $context
+     *
      * @return string
      */
     public function toCSS(Context $context);

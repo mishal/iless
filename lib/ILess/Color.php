@@ -12,58 +12,56 @@ namespace ILess;
 use InvalidArgumentException;
 
 /**
- * Color utility class
- *
- * @package ILess\Color
+ * Color utility class.
  */
 final class Color
 {
     /**
-     * HSL and HSV cache
+     * HSL and HSV cache.
      *
      * @var array
      */
     protected $hsv, $hsl;
 
     /**
-     * Luma cache
+     * Luma cache.
      *
      * @var string
      */
     protected $luma;
 
     /**
-     * Luminance cache
+     * Luminance cache.
      *
      * @var string
      */
     protected $luminance;
 
     /**
-     * The rgb channels
+     * The rgb channels.
      *
      * @var array
      */
     public $rgb = [];
 
     /**
-     * The alpha channel
+     * The alpha channel.
      *
-     * @var integer
+     * @var int
      */
     public $alpha = 1;
 
     /**
-     * Original format
+     * Original format.
      *
-     * @var boolean
+     * @var bool
      */
     protected $short = false;
 
     /**
      * Created from keyword?
      *
-     * @var boolean
+     * @var bool
      */
     public $keyword = false;
 
@@ -75,15 +73,15 @@ final class Color
     /**
      * Transparent keyword?
      *
-     * @var boolean
+     * @var bool
      */
     public $isTransparentKeyword = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array|string $rgb The RGB components as an array or string definition
-     * @param integer $alpha The alpha channel
+     * @param int $alpha The alpha channel
      * @param string $originalForm
      */
     public function __construct($rgb = [255, 255, 255], $alpha = 1, $originalForm = null)
@@ -108,7 +106,7 @@ final class Color
             } elseif (strlen($rgb) == 3) {
                 $this->short = true;
                 foreach (str_split($rgb, 1) as $c) {
-                    $this->rgb[] = hexdec($c.$c);
+                    $this->rgb[] = hexdec($c . $c);
                 }
             } elseif (strtolower($rgb) == 'transparent') {
                 $this->rgb = [255, 255, 255];
@@ -125,7 +123,7 @@ final class Color
     }
 
     /**
-     * Returns the fixed RGB components (fitted into 0 - 255 range)
+     * Returns the fixed RGB components (fitted into 0 - 255 range).
      *
      * @return array Array of red, green and blue components
      */
@@ -133,7 +131,6 @@ final class Color
     {
         $components = [];
         foreach ($this->rgb as $i) {
-
             $i = Math::round($i);
             if ($i > 255) {
                 $i = 255;
@@ -152,9 +149,10 @@ final class Color
     }
 
     /**
-     * Creates new color from the keyword
+     * Creates new color from the keyword.
      *
      * @param string $keyword
+     *
      * @return Color
      */
     public static function fromKeyword($keyword)
@@ -162,10 +160,10 @@ final class Color
         $color = null;
         // is this named color?
         if (self::isNamedColor($keyword)) {
-            $color = new Color(substr(Color::color($keyword), 1));
+            $color = new self(substr(self::color($keyword), 1));
             $color->keyword = $keyword;
         } elseif ($keyword === 'transparent') {
-            $color = new Color([255, 255, 255], 0);
+            $color = new self([255, 255, 255], 0);
             $color->isTransparentKeyword = true;
         }
 
@@ -173,9 +171,9 @@ final class Color
     }
 
     /**
-     * Returns the red channel
+     * Returns the red channel.
      *
-     * @return integer
+     * @return int
      */
     public function getRed()
     {
@@ -183,9 +181,9 @@ final class Color
     }
 
     /**
-     * Returns the green channel
+     * Returns the green channel.
      *
-     * @return integer
+     * @return int
      */
     public function getGreen()
     {
@@ -193,9 +191,9 @@ final class Color
     }
 
     /**
-     * Returns the blue channel
+     * Returns the blue channel.
      *
-     * @return integer
+     * @return int
      */
     public function getBlue()
     {
@@ -203,9 +201,9 @@ final class Color
     }
 
     /**
-     * Returns the alpha channel
+     * Returns the alpha channel.
      *
-     * @return integer
+     * @return int
      */
     public function getAlpha()
     {
@@ -213,7 +211,7 @@ final class Color
     }
 
     /**
-     * Returns the color saturation
+     * Returns the color saturation.
      *
      * @return string
      */
@@ -225,9 +223,10 @@ final class Color
     }
 
     /**
-     * Returns the color hue
+     * Returns the color hue.
      *
-     * @param boolean $round
+     * @param bool $round
+     *
      * @return string
      */
     public function getHue()
@@ -238,7 +237,7 @@ final class Color
     }
 
     /**
-     * Returns the color lightness
+     * Returns the color lightness.
      *
      * @return string
      */
@@ -250,9 +249,9 @@ final class Color
     }
 
     /**
-     * Returns the luma
+     * Returns the luma.
      *
-     * @return integer
+     * @return int
      */
     public function getLuma()
     {
@@ -274,7 +273,6 @@ final class Color
     }
 
     /**
-     *
      * @return string
      */
     public function getLuminance()
@@ -291,7 +289,7 @@ final class Color
     }
 
     /**
-     * Converts to HSL
+     * Converts to HSL.
      *
      * @return array
      */
@@ -336,7 +334,7 @@ final class Color
     }
 
     /**
-     * Converts to HSV
+     * Converts to HSV.
      *
      * @return array
      */
@@ -384,7 +382,7 @@ final class Color
     }
 
     /**
-     * Returns the string representation in ARGB model
+     * Returns the string representation in ARGB model.
      *
      * @return string
      */
@@ -401,7 +399,7 @@ final class Color
             $result .= str_pad($i, 2, '0', STR_PAD_LEFT);
         }
 
-        return '#'.$result;
+        return '#' . $result;
     }
 
     private function toHex($rgb)
@@ -410,12 +408,12 @@ final class Color
             function ($c) {
                 $c = $this->clamp(round($c), 255);
 
-                return ($c < 16 ? '0' : '').dechex($c);
+                return ($c < 16 ? '0' : '') . dechex($c);
             },
             $rgb
         );
 
-        return '#'.join('', $parts);
+        return '#' . implode('', $parts);
     }
 
     public function toRGB()
@@ -424,10 +422,11 @@ final class Color
     }
 
     /**
-     * Returns the color as HEX string (when transparency present, in RGBA model)
+     * Returns the color as HEX string (when transparency present, in RGBA model).
      *
-     * @param boolean $compress Compress the color?
-     * @param boolean $canShorten Can the color be shortened if possible?
+     * @param bool $compress Compress the color?
+     * @param bool $canShorten Can the color be shortened if possible?
+     *
      * @return string
      */
     public function toString($compress = false, $canShorten = false)
@@ -447,7 +446,7 @@ final class Color
 
             return sprintf(
                 'rgba(%s)',
-                join(
+                implode(
                     $compress ? ',' : ', ',
                     [
                         $fixedRGB[0],
@@ -469,21 +468,20 @@ final class Color
             $color[] = str_pad(dechex(Math::round($i)), 2, '0', STR_PAD_LEFT);
         }
 
-        $color = join('', $color);
+        $color = implode('', $color);
 
         // convert color to short format
         if ($canShorten && $color[0] === $color[1] && $color[2] === $color[3] && $color[4] === $color[5]) {
-            $color = $color[0].$color[2].$color[4];
+            $color = $color[0] . $color[2] . $color[4];
         }
 
-        $color = '#'.$color;
-
+        $color = '#' . $color;
 
         return $color;
     }
 
     /**
-     * Converts the color to string
+     * Converts the color to string.
      *
      * @return string
      */
@@ -496,6 +494,7 @@ final class Color
      * Does the color exits?
      *
      * @param string $color The color name
+     *
      * @return string
      */
     public static function isNamedColor($color)
@@ -504,14 +503,14 @@ final class Color
     }
 
     /**
-     * Returns the color hex representation or false
+     * Returns the color hex representation or false.
      *
      * @param string $color Color name
+     *
      * @return string|false
      */
     public static function color($color)
     {
         return self::isNamedColor($color) ? NamedColors::$colors[$color] : false;
     }
-
 }

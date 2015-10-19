@@ -7,10 +7,8 @@
  */
 
 /**
- * Combinator node tests
+ * Combinator node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Combinator
  * @group node
  */
@@ -24,5 +22,4 @@ class Test_Node_CombinatorTest extends Test_TestCase
         // FIXME: why is this empty? Missing tests!
         //$c = new ILess\ILess\Node\CombinatorNode('a');
     }
-
 }

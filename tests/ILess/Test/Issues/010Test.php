@@ -9,10 +9,8 @@
 use ILess\Parser;
 
 /**
- * Issue #10 test
+ * Issue #10 test.
  *
- * @package ILess
- * @subpackage test
  * @group issue
  */
 class Test_Issues_010Test extends Test_TestCase
@@ -24,5 +22,4 @@ class Test_Issues_010Test extends Test_TestCase
 
         $this->assertSame("body {\n  color: rgba(255, 204, 0, 0.1);\n}\n", $parser->getCSS());
     }
-
 }

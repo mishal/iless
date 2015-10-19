@@ -10,10 +10,8 @@ use ILess\Node\AttributeNode;
 use ILess\Output\StandardOutput;
 
 /**
- * Attribute node tests
+ * Attribute node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Attribute
  * @group node
  */
@@ -48,5 +46,4 @@ class Test_Node_AttributeTest extends Test_TestCase
         $d->generateCss($env, $output);
         $this->assertEquals('[foo=bar]', $output->toString());
     }
-
 }

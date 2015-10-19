@@ -11,57 +11,53 @@ namespace ILess;
 
 use ILess\Exception\Exception;
 use ILess\Node\RulesetNode;
-use ILess\Util;
 
 /**
- * Import
- *
- * @package ILess
- * @subpackage Import
+ * Import.
  */
 final class ImportedFile implements \Serializable
 {
     /**
-     * The absolute path or URL
+     * The absolute path or URL.
      *
      * @var string
      */
     protected $path;
 
     /**
-     * The content of the file
+     * The content of the file.
      *
      * @var string
      */
     protected $content;
 
     /**
-     * The ruleset
+     * The ruleset.
      *
      * @var RulesetNode
      */
     protected $ruleset;
 
     /**
-     * Error exception
+     * Error exception.
      *
      * @var Exception
      */
     protected $error;
 
     /**
-     * Last modification of the file as Unix timestamp
+     * Last modification of the file as Unix timestamp.
      *
-     * @var integer
+     * @var int
      */
     protected $lastModified;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $path The absolute path or URL
      * @param string $content The content of the local or remote file
-     * @param integer $lastModified The last modification time
+     * @param int $lastModified The last modification time
      */
     public function __construct($path, $content, $lastModified)
     {
@@ -71,9 +67,10 @@ final class ImportedFile implements \Serializable
     }
 
     /**
-     * Sets the ruleset
+     * Sets the ruleset.
      *
      * @param string|RulesetNode|null $ruleset
+     *
      * @return ImportedFile
      */
     public function setRuleset($ruleset)
@@ -84,7 +81,7 @@ final class ImportedFile implements \Serializable
     }
 
     /**
-     * Returns the ruleset
+     * Returns the ruleset.
      *
      * @return RulesetNode|string|null
      */
@@ -94,9 +91,10 @@ final class ImportedFile implements \Serializable
     }
 
     /**
-     * Sets an error
+     * Sets an error.
      *
      * @param \Exception $error
+     *
      * @return ImportedFile
      */
     public function setError(\Exception $error)
@@ -107,7 +105,7 @@ final class ImportedFile implements \Serializable
     }
 
     /**
-     * Returns the error
+     * Returns the error.
      *
      * @return \Exception
      */
@@ -117,7 +115,7 @@ final class ImportedFile implements \Serializable
     }
 
     /**
-     * Returns the path or URL
+     * Returns the path or URL.
      *
      * @return string
      */
@@ -127,7 +125,7 @@ final class ImportedFile implements \Serializable
     }
 
     /**
-     * Returns the content of the local or remote file
+     * Returns the content of the local or remote file.
      *
      * @return string
      */
@@ -139,7 +137,7 @@ final class ImportedFile implements \Serializable
     /**
      * Is virtual?
      *
-     * @return boolean
+     * @return bool
      */
     public function getLastModified()
     {
@@ -152,7 +150,7 @@ final class ImportedFile implements \Serializable
             $this->path,
             $this->lastModified,
             base64_encode($this->content),
-            $this->ruleset
+            $this->ruleset,
         ]);
     }
 
@@ -161,5 +159,4 @@ final class ImportedFile implements \Serializable
         list($this->path, $this->lastModified, $this->content, $this->ruleset) = unserialize($serialized);
         $this->content = base64_decode($this->content);
     }
-
 }

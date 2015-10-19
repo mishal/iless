@@ -14,86 +14,84 @@ use ILess\Exception\CompilerException;
 use ILess\Visitor\VisitorInterface;
 
 /**
- * MixinDefinition
- *
- * @package ILess\Node
+ * MixinDefinition.
  */
 class MixinDefinitionNode extends RulesetNode
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'MixinDefinition';
 
     /**
-     * The definition name
+     * The definition name.
      *
      * @var string
      */
     public $name;
 
     /**
-     * Array of selectors
+     * Array of selectors.
      *
      * @var array
      */
     public $selectors;
 
     /**
-     * Array of parameters
+     * Array of parameters.
      *
      * @var array
      */
     public $params = [];
 
     /**
-     * The arity
+     * The arity.
      *
-     * @var integer
+     * @var int
      */
     public $arity = 0;
 
     /**
-     * Array of rules
+     * Array of rules.
      *
      * @var array
      */
     public $rules = [];
 
     /**
-     * Lookups cache array
+     * Lookups cache array.
      *
      * @var array
      */
     public $lookups = [];
 
     /**
-     * Number of required parameters
+     * Number of required parameters.
      *
-     * @var integer
+     * @var int
      */
     public $required = 0;
 
     /**
-     * Frames array
+     * Frames array.
      *
      * @var array
      */
     public $frames = [];
 
     /**
-     * The condition
+     * The condition.
      *
      * @var ConditionNode
      */
     public $condition;
 
     /**
-     * Variadic flag
+     * Variadic flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $variadic = false;
 
@@ -108,13 +106,13 @@ class MixinDefinitionNode extends RulesetNode
     protected $optionalParameters = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $name
      * @param array $params Array of parameters
      * @param array $rules
      * @param ConditionNode $condition
-     * @param boolean $variadic
+     * @param bool $variadic
      */
     public function __construct(
         $name,
@@ -123,14 +121,13 @@ class MixinDefinitionNode extends RulesetNode
         $condition = null,
         $variadic = false,
         $frames = []
-    )
-    {
+    ) {
         $this->name = $name;
         $this->selectors = [new SelectorNode([new ElementNode(null, $name)])];
 
         $this->params = $params;
         $this->condition = $condition;
-        $this->variadic = (boolean)$variadic;
+        $this->variadic = (boolean) $variadic;
         $this->rules = $rules;
         $this->required = 0;
 
@@ -138,7 +135,7 @@ class MixinDefinitionNode extends RulesetNode
             $this->arity = count($params);
             foreach ($params as $p) {
                 if (!isset($p['name']) || ($p['name'] && !isset($p['value']))) {
-                    $this->required++;
+                    ++$this->required;
                 } else {
                     $this->optionalParameters[] = $p['name'];
                 }
@@ -149,7 +146,7 @@ class MixinDefinitionNode extends RulesetNode
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function accept(VisitorInterface $visitor)
     {
@@ -165,16 +162,17 @@ class MixinDefinitionNode extends RulesetNode
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return MixinDefinitionNode
      */
     public function compile(Context $context, $arguments = null, $important = null)
     {
-        return new MixinDefinitionNode(
+        return new self(
             $this->name,
             $this->params,
             $this->rules,
@@ -185,7 +183,7 @@ class MixinDefinitionNode extends RulesetNode
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function compileCall(Context $context, $arguments = null, $important = null)
     {
@@ -193,7 +191,7 @@ class MixinDefinitionNode extends RulesetNode
         $mixinEnv = Context::createCopyForCompilation($context, $mixinFrames);
 
         $compiledArguments = [];
-        $frame = $this->compileParams($context, $mixinEnv, (array)$arguments, $compiledArguments);
+        $frame = $this->compileParams($context, $mixinEnv, (array) $arguments, $compiledArguments);
 
         // use array_values so the array keys are reset
         $ex = new ExpressionNode(array_values($compiledArguments));
@@ -213,13 +211,15 @@ class MixinDefinitionNode extends RulesetNode
     }
 
     /**
-     * Compile parameters
+     * Compile parameters.
      *
      * @param Context $context The context
      * @param Context $mixinEnv The mixin environment
      * @param array $arguments Array of arguments
      * @param array $compiledArguments The compiled arguments
+     *
      * @throws
+     *
      * @return mixed
      */
     public function compileParams(
@@ -227,8 +227,7 @@ class MixinDefinitionNode extends RulesetNode
         Context $mixinEnv,
         $arguments = [],
         array &$compiledArguments = []
-    )
-    {
+    ) {
         $frame = new RulesetNode([], []);
         $params = $this->params;
         $argsCount = 0;
@@ -242,7 +241,7 @@ class MixinDefinitionNode extends RulesetNode
 
         if ($arguments) {
             $argsCount = count($arguments);
-            for ($i = 0; $i < $argsCount; $i++) {
+            for ($i = 0; $i < $argsCount; ++$i) {
                 if (!isset($arguments[$i])) {
                     continue;
                 }
@@ -259,7 +258,7 @@ class MixinDefinitionNode extends RulesetNode
                     }
                     if ($isNamedFound) {
                         array_splice($arguments, $i, 1);
-                        $i--;
+                        --$i;
                         continue;
                     } else {
                         throw new CompilerException(sprintf('The named argument for `%s` %s was not found.',
@@ -281,7 +280,7 @@ class MixinDefinitionNode extends RulesetNode
             if (isset($param['name']) && ($name = $param['name'])) {
                 if (isset($param['variadic']) && $param['variadic']) {
                     $varArgs = [];
-                    for ($j = $argIndex; $j < $argsCount; $j++) {
+                    for ($j = $argIndex; $j < $argsCount; ++$j) {
                         $varArgs[] = $arguments[$j]['value']->compile($context);
                     }
                     $expression = new ExpressionNode($varArgs);
@@ -306,11 +305,11 @@ class MixinDefinitionNode extends RulesetNode
             }
 
             if (isset($param['variadic']) && $param['variadic'] && $arguments) {
-                for ($j = $argIndex; $j < $argsCount; $j++) {
+                for ($j = $argIndex; $j < $argsCount; ++$j) {
                     $compiledArguments[$j] = $arguments[$j]['value']->compile($context);
                 }
             }
-            $argIndex++;
+            ++$argIndex;
         }
 
         ksort($compiledArguments);
@@ -319,11 +318,12 @@ class MixinDefinitionNode extends RulesetNode
     }
 
     /**
-     * Match a condition
+     * Match a condition.
      *
      * @param array $arguments
      * @param Context $context
-     * @return boolean
+     *
+     * @return bool
      */
     public function matchCondition(array $arguments, Context $context)
     {
@@ -349,11 +349,12 @@ class MixinDefinitionNode extends RulesetNode
     }
 
     /**
-     * Matches arguments
+     * Matches arguments.
      *
      * @param array $args
      * @param Context $context
-     * @return boolean
+     *
+     * @return bool
      */
     public function matchArgs(array $args, Context $context)
     {
@@ -362,7 +363,7 @@ class MixinDefinitionNode extends RulesetNode
         $requiredArgsCount = 0;
         foreach ($args as $arg) {
             if (!isset($arg['name']) || !in_array($arg['name'], $this->optionalParameters)) {
-                $requiredArgsCount++;
+                ++$requiredArgsCount;
             }
         }
 
@@ -381,7 +382,7 @@ class MixinDefinitionNode extends RulesetNode
 
         $len = min($requiredArgsCount, $this->arity);
 
-        for ($i = 0; $i < $len; $i++) {
+        for ($i = 0; $i < $len; ++$i) {
             if (!isset($this->params[$i]['name']) && !isset($this->params[$i]['variadic'])) {
                 if ($args[$i]['value']->compile($context)->toCSS($context) != $this->params[$i]['value']->compile($context)->toCSS($context)) {
                     return false;
@@ -393,7 +394,7 @@ class MixinDefinitionNode extends RulesetNode
     }
 
     /**
-     * Returns ruleset with nodes marked as important
+     * Returns ruleset with nodes marked as important.
      *
      * @return MixinDefinitionNode
      */
@@ -408,8 +409,7 @@ class MixinDefinitionNode extends RulesetNode
             }
         }
 
-        return new MixinDefinitionNode($this->name, $this->params, $importantRules, $this->condition, $this->variadic,
+        return new self($this->name, $this->params, $importantRules, $this->condition, $this->variadic,
             $this->frames);
     }
-
 }

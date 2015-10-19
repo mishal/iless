@@ -12,28 +12,27 @@ use ILess\FileInfo;
 use ILess\ImportedFile;
 
 /**
- * Importer interface
- *
- * @package ILess\Importer
+ * Importer interface.
  */
 interface ImporterInterface
 {
     /**
-     * Imports a file from the path
+     * Imports a file from the path.
      *
      * @param string $path The path to a file
      * @param FileInfo $currentFileInfo The current file information
+     *
      * @return ImportedFile
      */
     public function import($path, FileInfo $currentFileInfo);
 
     /**
-     * Returns the last modified timestamp of the import
+     * Returns the last modified timestamp of the import.
      *
      * @param string $path The path to a file
      * @param FileInfo $currentFileInfo The current file information
-     * @return integer The unix timestamp of last modification
+     *
+     * @return int The unix timestamp of last modification
      */
     public function getLastModified($path, FileInfo $currentFileInfo);
-
 }

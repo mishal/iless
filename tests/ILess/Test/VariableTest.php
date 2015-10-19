@@ -16,10 +16,8 @@ use ILess\Variable;
 use ILess\Node\QuotedNode;
 
 /**
- * ILess\Variable tests
+ * ILess\Variable tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Variable
  */
 class Test_VariableTest extends Test_TestCase
@@ -79,8 +77,7 @@ class Test_VariableTest extends Test_TestCase
                 'rgba',
                 'rgba(46, 120, 176, 0.5)',
                 new RuleNode('@rgba', new ValueNode([new ColorNode([46, 120, 176], 0.5)])),
-            ]
+            ],
         ];
     }
-
 }

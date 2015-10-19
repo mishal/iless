@@ -11,10 +11,8 @@ use ILess\Node\QuotedNode;
 use ILess\Output\StandardOutput;
 
 /**
- * Quoted node tests
+ * Quoted node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Quoted
  * @group node
  */
@@ -49,5 +47,4 @@ class Test_Node_QuotedTest extends Test_TestCase
         $q->generateCss($env, $output);
         $this->assertEquals('"foobar"', $output->toString());
     }
-
 }

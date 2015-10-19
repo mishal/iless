@@ -12,17 +12,14 @@ namespace ILess\Plugin;
 use ILess\Parser;
 
 /**
- * Plugin interface
- *
- * @package ILess\Plugin
+ * Plugin interface.
  */
 interface PluginInterface
 {
     /**
-     * Installs itself
+     * Installs itself.
      *
      * @param Parser $parser
      */
     public function install(Parser $parser);
-
 }

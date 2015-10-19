@@ -12,57 +12,55 @@ namespace ILess\Util;
 use ILess\CLI\ANSIColor;
 
 /**
- * String excerpt
- *
- * @package ILess\Util
+ * String excerpt.
  */
 final class StringExcerpt
 {
     /**
-     * Array of lines
+     * Array of lines.
      *
      * @var array
      */
     protected $lines = [];
 
     /**
-     * Current line
+     * Current line.
      *
-     * @var integer
+     * @var int
      */
     protected $currentLine;
 
     /**
-     * Current column
+     * Current column.
      *
-     * @var integer
+     * @var int
      */
     protected $currentColumn;
 
     /**
-     * The line numbers width
+     * The line numbers width.
      *
      * @var string
      */
     protected $lineWidth;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $lines The array of lines
-     * @param integer $currentLine The current line
-     * @param integer $currentColumn The current column
+     * @param int $currentLine The current line
+     * @param int $currentColumn The current column
      */
     public function __construct(array $lines, $currentLine, $currentColumn = null)
     {
         $this->lines = $lines;
         $this->currentLine = $currentLine;
         $this->currentColumn = $currentColumn;
-        $this->lineWidth = strlen((string)key($this->lines));
+        $this->lineWidth = strlen((string) key($this->lines));
     }
 
     /**
-     * Converts the exceprt to colorized string for terminal
+     * Converts the exceprt to colorized string for terminal.
      *
      * @return string
      */
@@ -92,7 +90,7 @@ final class StringExcerpt
     }
 
     /**
-     * Converts the except to plain text
+     * Converts the except to plain text.
      *
      * @return string
      */
@@ -102,7 +100,7 @@ final class StringExcerpt
     }
 
     /**
-     * Coverts the lines to HTML
+     * Coverts the lines to HTML.
      *
      * @return string The HTML
      */
@@ -116,8 +114,8 @@ final class StringExcerpt
                     $html .= sprintf("<span class=\"iless-line iless-current-line\">%{$this->lineWidth}s: %s</span>\n",
                         $lineNumber + 1,
                         substr_replace($lineContent,
-                            '<span class="iless-current-column">'.substr($lineContent, $this->currentColumn - 1,
-                                1).'</span>', $this->currentColumn - 1, 1));
+                            '<span class="iless-current-column">' . substr($lineContent, $this->currentColumn - 1,
+                                1) . '</span>', $this->currentColumn - 1, 1));
                 } else {
                     $html .= sprintf("<span class=\"iless-line iless-current-line\">%{$this->lineWidth}s: %s</span>\n",
                         $lineNumber + 1, $lineContent
@@ -133,7 +131,7 @@ final class StringExcerpt
     }
 
     /**
-     * Converts the object to string
+     * Converts the object to string.
      *
      * @return string
      */
@@ -141,5 +139,4 @@ final class StringExcerpt
     {
         return $this->toText();
     }
-
 }

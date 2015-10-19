@@ -19,35 +19,33 @@ use ILess\Visitor\VisitorInterface;
 use LogicException;
 
 /**
- * Import
- *
- * @package ILess\Node
+ * Import.
  */
 class ImportNode extends Node implements \Serializable
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'Import';
 
     /**
-     * The path
+     * The path.
      *
      * @var QuotedNode|UrlNode
      */
     public $path;
 
     /**
-     * Current file index
+     * Current file index.
      *
-     * @var integer
+     * @var int
      */
     public $index = 0;
 
     /**
-     * Array of options
+     * Array of options.
      *
      * @var array
      */
@@ -56,55 +54,56 @@ class ImportNode extends Node implements \Serializable
     ];
 
     /**
-     * The features
+     * The features.
      *
      * @var Node
      */
     public $features;
 
     /**
-     * Import CSS flag
+     * Import CSS flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $css = false;
 
     /**
      * Skip import?
      *
-     * @var boolean
+     * @var bool
+     *
      * @see Visitor_Import::visitImport
      */
     public $skip = false;
 
     /**
-     * The root node
+     * The root node.
      *
      * @var Node
      */
     public $root;
 
     /**
-     * Error
+     * Error.
      *
      * @var Exception
      */
     public $error;
 
     /**
-     * Imported filename
+     * Imported filename.
      *
      * @var string
      */
     public $importedFilename;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Node $path The path
      * @param Node $features The features
      * @param array $options Array of options
-     * @param integer $index The index
+     * @param int $index The index
      * @param FileInfo $currentFileInfo Current file info
      */
     public function __construct(
@@ -130,7 +129,7 @@ class ImportNode extends Node implements \Serializable
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function accept(VisitorInterface $visitor)
     {
@@ -145,7 +144,7 @@ class ImportNode extends Node implements \Serializable
     }
 
     /**
-     * Returns the path
+     * Returns the path.
      *
      * @return string|null
      */
@@ -172,12 +171,14 @@ class ImportNode extends Node implements \Serializable
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return array|ImportNode|MediaNode
+     *
      * @throws Exception
      * @throws LogicException
      */
@@ -203,13 +204,13 @@ class ImportNode extends Node implements \Serializable
         if ($this->getOption('inline')) {
             $contents = new AnonymousNode($this->root, 0, new FileInfo([
                 'filename' => $this->importedFilename,
-                'reference' => $this->path->currentFileInfo->reference
+                'reference' => $this->path->currentFileInfo->reference,
             ]), true, true, false);
 
             return $this->features ? new MediaNode([$contents], $this->features->value) : [$contents];
         } elseif ($this->css) {
             $features = $this->features ? $this->features->compile($context) : null;
-            $import = new ImportNode($this->compilePath($context), $features, $this->options, $this->index);
+            $import = new self($this->compilePath($context), $features, $this->options, $this->index);
 
             if (!$import->css && $this->hasError()) {
                 throw $this->getError();
@@ -217,7 +218,6 @@ class ImportNode extends Node implements \Serializable
 
             return $import;
         } else {
-
             $ruleset = new RulesetNode([], $this->root ? $this->root->rules : []);
             $ruleset->compileImports($context);
 
@@ -226,9 +226,10 @@ class ImportNode extends Node implements \Serializable
     }
 
     /**
-     * Compiles the path
+     * Compiles the path.
      *
      * @param Context $context
+     *
      * @return UrlNode
      */
     public function compilePath(Context $context)
@@ -240,7 +241,7 @@ class ImportNode extends Node implements \Serializable
                 $pathValue = $path->value;
                 // Add the base path if the import is relative
                 if ($pathValue && Util::isPathRelative($pathValue)) {
-                    $path->value = $rootPath.$pathValue;
+                    $path->value = $rootPath . $pathValue;
                 }
             }
             $path->value = Util::normalizePath($path->value);
@@ -250,9 +251,10 @@ class ImportNode extends Node implements \Serializable
     }
 
     /**
-     * Compiles the node for import
+     * Compiles the node for import.
      *
      * @param Context $context
+     *
      * @return ImportNode
      */
     public function compileForImport(Context $context)
@@ -262,12 +264,12 @@ class ImportNode extends Node implements \Serializable
             $path = $path->value;
         }
 
-        return new ImportNode($path->compile($context),
+        return new self($path->compile($context),
             $this->features, $this->options, $this->index, $this->currentFileInfo);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
@@ -286,10 +288,11 @@ class ImportNode extends Node implements \Serializable
     }
 
     /**
-     * Returns the option with given $name
+     * Returns the option with given $name.
      *
      * @param string $name The option name
      * @param string $default The default value
+     *
      * @return mixed
      */
     public function getOption($name, $default = null)
@@ -300,7 +303,7 @@ class ImportNode extends Node implements \Serializable
     /**
      * Has the import an error?
      *
-     * @return boolean
+     * @return bool
      */
     public function hasError()
     {
@@ -308,7 +311,7 @@ class ImportNode extends Node implements \Serializable
     }
 
     /**
-     * Returns the error
+     * Returns the error.
      *
      * @return null|Exception
      */
@@ -321,6 +324,7 @@ class ImportNode extends Node implements \Serializable
     {
         $vars = get_object_vars($this);
         unset($vars['skip'], $vars['error']);
+
         return serialize($vars);
     }
 
@@ -331,5 +335,4 @@ class ImportNode extends Node implements \Serializable
             $this->$var = $val;
         }
     }
-
 }

@@ -13,21 +13,19 @@ use ILess\Node;
 use ILess\Node\VisitableInterface;
 
 /**
- * Visitor base class
- *
- * @package ILess\Visitor
+ * Visitor base class.
  */
 abstract class Visitor implements VisitorInterface
 {
     /**
      * Is the visitor replacing?
      *
-     * @var boolean
+     * @var bool
      */
     protected $isReplacing = false;
 
     /**
-     * Method cache
+     * Method cache.
      *
      * @var array
      */
@@ -39,8 +37,7 @@ abstract class Visitor implements VisitorInterface
     protected $type = VisitorInterface::TYPE_POST_COMPILE;
 
     /**
-     * Constructor
-     *
+     * Constructor.
      */
     public function __construct()
     {
@@ -53,9 +50,10 @@ abstract class Visitor implements VisitorInterface
     }
 
     /**
-     * Runs the visitor
+     * Runs the visitor.
      *
      * @param ILess\Node|array
+     *
      * @return mixed
      */
     public function run($root)
@@ -66,7 +64,7 @@ abstract class Visitor implements VisitorInterface
     /**
      * Is the visitor replacing?
      *
-     * @return boolean
+     * @return bool
      */
     public function isReplacing()
     {
@@ -82,9 +80,10 @@ abstract class Visitor implements VisitorInterface
     }
 
     /**
-     * Visits a node or an array of nodes
+     * Visits a node or an array of nodes.
      *
      * @param Node|array|string|null $node The node to visit
+     *
      * @return mixed The visited node
      */
     public function visit($node)
@@ -97,7 +96,7 @@ abstract class Visitor implements VisitorInterface
             return $node;
         }
 
-        if (($type = $node->getType()) && ($funcName = 'visit'.$type) && isset($this->methodCache[$funcName])) {
+        if (($type = $node->getType()) && ($funcName = 'visit' . $type) && isset($this->methodCache[$funcName])) {
             $arguments = new VisitorArguments([
                 'visitDeeper' => true,
             ]);
@@ -117,7 +116,6 @@ abstract class Visitor implements VisitorInterface
             if (isset($this->methodCache[$funcName])) {
                 $this->$funcName($node, isset($arguments) ? $arguments : new VisitorArguments());
             }
-
         } else {
             $node->accept($this);
         }
@@ -126,10 +124,11 @@ abstract class Visitor implements VisitorInterface
     }
 
     /**
-     * Visits an array of nodes
+     * Visits an array of nodes.
      *
      * @param array $nodes Array of nodes
      * @param bool $nonReplacing
+     *
      * @return array
      */
     public function visitArray(array $nodes, $nonReplacing = false)
@@ -161,11 +160,10 @@ abstract class Visitor implements VisitorInterface
     }
 
     /**
-     * Flattens an array
+     * Flattens an array.
      *
      * @param array $array The array to flatten
      * @param array $out The output array
-     * @return void
      */
     protected static function flatten(array $array, array &$out)
     {
@@ -189,5 +187,4 @@ abstract class Visitor implements VisitorInterface
             }
         }
     }
-
 }

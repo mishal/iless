@@ -14,21 +14,19 @@ use ILess\ImportedFile;
 use PDO;
 
 /**
- * Database importer
- *
- * @package ILess\Importer
+ * Database importer.
  */
 class DatabaseImporter extends Configurable implements ImporterInterface
 {
     /**
-     * The PDO object
+     * The PDO object.
      *
      * @var PDO
      */
     protected $dbh;
 
     /**
-     * Array of options
+     * Array of options.
      *
      * @var array
      */
@@ -40,7 +38,7 @@ class DatabaseImporter extends Configurable implements ImporterInterface
     ];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $importPaths Array of import paths to search
      */
@@ -79,10 +77,11 @@ class DatabaseImporter extends Configurable implements ImporterInterface
     }
 
     /**
-     * Tries to find a file
+     * Tries to find a file.
      *
      * @param string $path The path to a file
      * @param FileInfo $currentFileInfo
+     *
      * @return string|false
      */
     protected function find($path, FileInfo $currentFileInfo)
@@ -106,5 +105,4 @@ class DatabaseImporter extends Configurable implements ImporterInterface
 
         return false;
     }
-
 }

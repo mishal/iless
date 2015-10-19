@@ -17,9 +17,7 @@ use ILess\Node\RulesetNode;
 use ILess\Node\RuleNode;
 
 /**
- * ExtendFinder visitor
- *
- * @package ILess\Visitor
+ * ExtendFinder visitor.
  */
 class ExtendFinderVisitor extends Visitor
 {
@@ -34,14 +32,14 @@ class ExtendFinderVisitor extends Visitor
     protected $allExtendsStack = [[]];
 
     /**
-     * Found extends flag
+     * Found extends flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $foundExtends = false;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function run($root)
     {
@@ -52,7 +50,7 @@ class ExtendFinderVisitor extends Visitor
     }
 
     /**
-     * Visits a rule node
+     * Visits a rule node.
      *
      * @param RuleNode $node The node
      * @param VisitorArguments $arguments The arguments
@@ -63,7 +61,7 @@ class ExtendFinderVisitor extends Visitor
     }
 
     /**
-     * Visits a mixin definition node
+     * Visits a mixin definition node.
      *
      * @param MixinDefinitionNode $node The node
      * @param VisitorArguments $arguments The arguments
@@ -74,7 +72,7 @@ class ExtendFinderVisitor extends Visitor
     }
 
     /**
-     * Visits a ruleset node
+     * Visits a ruleset node.
      *
      * @param RulesetNode $node The node
      * @param VisitorArguments $arguments The arguments
@@ -87,7 +85,7 @@ class ExtendFinderVisitor extends Visitor
 
         $allSelectorsExtendList = [];
         // get &:extend(.a); rules which apply to all selectors in this ruleset
-        for ($i = 0, $count = count($node->rules); $i < $count; $i++) {
+        for ($i = 0, $count = count($node->rules); $i < $count; ++$i) {
             if ($node->rules[$i] instanceof ExtendNode) {
                 $allSelectorsExtendList[] = $node->rules[$i];
                 $node->extendOnEveryPath = true;
@@ -96,7 +94,7 @@ class ExtendFinderVisitor extends Visitor
 
         // now find every selector and apply the extends that apply to all extends
         // and the ones which apply to an individual extend
-        for ($i = 0, $count = count($node->paths); $i < $count; $i++) {
+        for ($i = 0, $count = count($node->paths); $i < $count; ++$i) {
             $selectorPath = $node->paths[$i];
             $selector = end($selectorPath);
             $list = array_merge($selector->extendList, $allSelectorsExtendList);
@@ -105,7 +103,7 @@ class ExtendFinderVisitor extends Visitor
                 $extendList[] = clone $allSelectorsExtend;
             }
 
-            for ($j = 0, $extendsCount = count($extendList); $j < $extendsCount; $j++) {
+            for ($j = 0, $extendsCount = count($extendList); $j < $extendsCount; ++$j) {
                 $this->foundExtends = true;
                 $extend = $extendList[$j];
                 /* @var $extend ExtendNode */
@@ -122,7 +120,7 @@ class ExtendFinderVisitor extends Visitor
     }
 
     /**
-     * Visits the ruleset (again!)
+     * Visits the ruleset (again!).
      *
      * @param RulesetNode $node The node
      * @param VisitorArguments $arguments The arguments
@@ -135,7 +133,7 @@ class ExtendFinderVisitor extends Visitor
     }
 
     /**
-     * Visits a media node
+     * Visits a media node.
      *
      * @param MediaNode $node
      * @param VisitorArguments $arguments The arguments
@@ -147,7 +145,7 @@ class ExtendFinderVisitor extends Visitor
     }
 
     /**
-     * Visits a media node (again!)
+     * Visits a media node (again!).
      *
      * @param MediaNode $node
      * @param VisitorArguments $arguments The arguments
@@ -158,10 +156,11 @@ class ExtendFinderVisitor extends Visitor
     }
 
     /**
-     * Visits a directive node
+     * Visits a directive node.
      *
      * @param DirectiveNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return DirectiveNode
      */
     public function visitDirective(DirectiveNode $node, VisitorArguments $arguments)
@@ -171,15 +170,15 @@ class ExtendFinderVisitor extends Visitor
     }
 
     /**
-     * Visits a directive node (again!)
+     * Visits a directive node (again!).
      *
      * @param DirectiveNode $node The node
      * @param VisitorArguments $arguments The arguments
+     *
      * @return DirectiveNode
      */
     public function visitDirectiveOut(DirectiveNode $node, VisitorArguments $arguments)
     {
         array_pop($this->allExtendsStack);
     }
-
 }

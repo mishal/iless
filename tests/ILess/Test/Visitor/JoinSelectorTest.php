@@ -8,16 +8,13 @@
 use ILess\Visitor\JoinSelectorVisitor;
 
 /**
- * ILess\ILess\Visitor\Visitor\JoinSelectorVisitor tests
+ * ILess\ILess\Visitor\Visitor\JoinSelectorVisitor tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Visitor_JoinSelector
  * @group visitor
  */
 class Test_Visitor_JoinSelectorTest extends Test_TestCase
 {
-
     /**
      * @covers __constructor
      */
@@ -26,5 +23,4 @@ class Test_Visitor_JoinSelectorTest extends Test_TestCase
         $v = new JoinSelectorVisitor();
         $this->assertFalse($v->isReplacing());
     }
-
 }

@@ -11,7 +11,6 @@ namespace ILess;
 
 use ILess\Cache\CacheInterface;
 use ILess\Cache\NoCache;
-use ILess\Importer;
 use ILess\Importer\FileSystemImporter;
 use ILess\Node\RulesetNode;
 use ILess\OutputFilter\OutputFilterInterface;
@@ -19,28 +18,26 @@ use ILess\Parser\Core;
 use InvalidArgumentException;
 
 /**
- * Parser
- *
- * @package ILess
+ * Parser.
  */
 class Parser extends Core
 {
     /**
-     * Array of output filters
+     * Array of output filters.
      *
      * @var array
      */
     protected $outputFilters = [];
 
     /**
-     * The cache
+     * The cache.
      *
      * @var CacheInterface
      */
     protected $cache;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $options Array of options
      * @param CacheInterface $cache The cache implementation
@@ -56,7 +53,7 @@ class Parser extends Core
         $importDirs = [];
         // we have an import dirs option
         if (isset($options['import_dirs'])) {
-            $importDirs = (array)$options['import_dirs'];
+            $importDirs = (array) $options['import_dirs'];
             unset($options['import_dirs']);
         }
 
@@ -85,6 +82,7 @@ class Parser extends Core
      *
      * @param RulesetNode $ruleset
      * @param array $variables
+     *
      * @return string The generated CSS code
      */
     protected function toCSS(RulesetNode $ruleset, array $variables)
@@ -94,7 +92,7 @@ class Parser extends Core
         // 2) assigned variables via the API
         // 3) environment options
         $cacheKey = $this->generateCacheKey(
-            serialize($this->rules).serialize($variables).serialize(
+            serialize($this->rules) . serialize($variables) . serialize(
                 [
                     $this->context->compress,
                     $this->context->sourceMap,
@@ -146,10 +144,12 @@ class Parser extends Core
     }
 
     /**
-     * Filters the output
+     * Filters the output.
      *
      * @param string $output
+     *
      * @return string
+     *
      * @deprecated
      */
     protected function filter($output)
@@ -163,10 +163,12 @@ class Parser extends Core
     }
 
     /**
-     * Appends an output filter
+     * Appends an output filter.
      *
      * @param OutputFilterInterface $filter
+     *
      * @return Parser
+     *
      * @deprecated
      */
     public function appendFilter(OutputFilterInterface $filter)
@@ -177,10 +179,12 @@ class Parser extends Core
     }
 
     /**
-     * Prepends a filter
+     * Prepends a filter.
      *
      * @param OutputFilterInterface $filter
+     *
      * @return Parser
+     *
      * @deprecated
      */
     public function prependFilter(OutputFilterInterface $filter)
@@ -196,7 +200,9 @@ class Parser extends Core
      * @param string $functionName
      * @param callable $callable
      * @param string|array $aliases The array of aliases
+     *
      * @return $this
+     *
      * @throws InvalidArgumentException If the callable is not valid
      */
     public function addFunction($functionName, $callable, $aliases = [])
@@ -207,9 +213,10 @@ class Parser extends Core
     }
 
     /**
-     * Adds multiple functions at once
+     * Adds multiple functions at once.
      *
      * @param array $functions
+     *
      * @return $this
      */
     public function addFunctions(array $functions)
@@ -220,7 +227,7 @@ class Parser extends Core
     }
 
     /**
-     * Returns the cache
+     * Returns the cache.
      *
      * @return CacheInterface
      */
@@ -228,5 +235,4 @@ class Parser extends Core
     {
         return $this->cache;
     }
-
 }

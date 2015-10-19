@@ -13,31 +13,30 @@ use ILess\FileInfo;
 use InvalidArgumentException;
 
 /**
- * Callback importer
- *
- * @package ILess\Importer
+ * Callback importer.
  */
 class CallbackImporter implements ImporterInterface
 {
     /**
-     * Import callback
+     * Import callback.
      *
      * @var callable
      */
     protected $importCallback;
 
     /**
-     * Get last modified callback
+     * Get last modified callback.
      *
      * @var callable
      */
     protected $lastModifiedCallback;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param callable $importCallback The import callback
      * @param callable $lastModifiedCallback The "getModified" callback
+     *
      * @throws InvalidArgumentException If the callbables are not valid
      */
     public function __construct($importCallback, $lastModifiedCallback)
@@ -49,10 +48,12 @@ class CallbackImporter implements ImporterInterface
     }
 
     /**
-     * Checks if the given $callable is really callable
+     * Checks if the given $callable is really callable.
      *
      * @param mixed $callable The callable
+     *
      * @throws InvalidArgumentException If the callable is not valid
+     *
      * @return bool
      */
     protected function assertCallable($callable)
@@ -85,5 +86,4 @@ class CallbackImporter implements ImporterInterface
             $currentFileInfo,
         ]);
     }
-
 }

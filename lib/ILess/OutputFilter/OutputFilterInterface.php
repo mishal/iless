@@ -10,19 +10,18 @@
 namespace ILess\OutputFilter;
 
 /**
- * Output filter interface
+ * Output filter interface.
  *
- * @package ILess\OutputFilter
  * @deprecated
  */
 interface OutputFilterInterface
 {
     /**
-     * Filters the output
+     * Filters the output.
      *
      * @param string $output
+     *
      * @return string
      */
     public function filter($output);
-
 }

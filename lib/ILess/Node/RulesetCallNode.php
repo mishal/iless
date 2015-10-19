@@ -13,14 +13,12 @@ use ILess\Context;
 use ILess\Node;
 
 /**
- * Ruleset call
- *
- * @package ILess\Node
+ * Ruleset call.
  */
 class RulesetCallNode extends Node
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
@@ -32,7 +30,7 @@ class RulesetCallNode extends Node
     public $variable;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $variable
      */
@@ -42,11 +40,12 @@ class RulesetCallNode extends Node
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return Node
      */
     public function compile(Context $context, $arguments = null, $important = null)

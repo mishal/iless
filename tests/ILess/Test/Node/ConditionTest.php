@@ -11,10 +11,8 @@ use ILess\Node\ConditionNode;
 use ILess\Node\DimensionNode;
 
 /**
- * Condition node tests
+ * Condition node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Condition
  */
 class Test_Node_ConditionTest extends Test_TestCase
@@ -88,5 +86,4 @@ class Test_Node_ConditionTest extends Test_TestCase
         $result = $c->compile($env);
         $this->assertFalse($result);
     }
-
 }

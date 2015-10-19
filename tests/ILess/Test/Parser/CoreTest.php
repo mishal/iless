@@ -14,10 +14,8 @@ use ILess\Importer\FileSystemImporter;
 use ILess\Parser\Core;
 
 /**
- * Parser tests
+ * Parser tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Parser_Core
  */
 class Test_Parser_CoreTest extends Test_TestCase
@@ -69,7 +67,5 @@ class Test_Parser_CoreTest extends Test_TestCase
   color: blue;
 }
 ', $generated);
-
     }
-
 }

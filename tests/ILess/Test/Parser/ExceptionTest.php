@@ -10,22 +10,19 @@ use ILess\Exception\Exception;
 use ILess\Parser;
 
 /**
- * Parsing tests
- *
- * @package ILess
- * @subpackage test
+ * Parsing tests.
  */
 class Test_Parser_ExceptionTest extends Test_TestCase
 {
     protected $knownDiffs = [
         'color-invalid-hex-code.txt' => [
-            'column' => 32 // we are using different regexp to "catch" color nodes
+            'column' => 32, // we are using different regexp to "catch" color nodes
         ],
         'color-invalid-hex-code2.txt' => [
-            'column' => 32 // we are using different regexp to "catch" color nodes
+            'column' => 32, // we are using different regexp to "catch" color nodes
         ],
         'import-missing.txt' => [
-            'message' => "'file-does-not-exist.less' wasn't found"
+            'message' => "'file-does-not-exist.less' wasn't found",
             // less.js uses paths to search in, we are using importers
         ],
     ];
@@ -51,7 +48,7 @@ class Test_Parser_ExceptionTest extends Test_TestCase
 
         list($exceptionClass, $message, $line, $column) = $this->getTestException($exception);
 
-        echo "Testing exception ".basename($exception)."\n";
+        echo 'Testing exception ' . basename($exception) . "\n";
 
         $parser = $this->createParser($options);
 
@@ -71,7 +68,7 @@ class Test_Parser_ExceptionTest extends Test_TestCase
 
             return;
         } catch (Exception $e) {
-            $this->diag('Unhandled exception while parsing file: '.$lessFile);
+            $this->diag('Unhandled exception while parsing file: ' . $lessFile);
             $this->diag(sprintf('%s: %s (file %s, line: %s)', get_class($e), $e->getMessage(), $e->getFile(),
                 $e->getLine()));
             $this->fail('Invalid exception has been thrown.');
@@ -108,14 +105,14 @@ class Test_Parser_ExceptionTest extends Test_TestCase
 
         preg_match('/column (\d+):/', $message, $match);
         if (isset($match[1])) {
-            $column = (integer)$match[1];
+            $column = (integer) $match[1];
         }
 
         if (($pos = strpos($message, ' in {')) !== false) {
             $message = substr($message, 0, $pos);
         }
 
-        $exceptionClass = 'Exception_'.$class;
+        $exceptionClass = 'Exception_' . $class;
 
         /*
         switch ($class) {
@@ -132,7 +129,6 @@ class Test_Parser_ExceptionTest extends Test_TestCase
                 $exceptionClass = 'ILess\ILess\Exception\Exception\ImportException';
                 break;
         }*/
-
 
         // handle known differences
         if (isset($this->knownDiffs[basename($exceptionFile)])) {
@@ -163,10 +159,9 @@ class Test_Parser_ExceptionTest extends Test_TestCase
 
     public function getCompilationData()
     {
-        $fixturesDir = dirname(__FILE__).'/_fixtures/less.js/less/errors';
-        $data = array_map(null, glob($fixturesDir.'/*.less'), glob($fixturesDir.'/*.txt'));
+        $fixturesDir = dirname(__FILE__) . '/_fixtures/less.js/less/errors';
+        $data = array_map(null, glob($fixturesDir . '/*.less'), glob($fixturesDir . '/*.txt'));
 
         return $data;
     }
-
 }

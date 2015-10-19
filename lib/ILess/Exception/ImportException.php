@@ -10,9 +10,7 @@
 namespace ILess\Exception;
 
 /**
- * Import exception
- *
- * @package ILess\Exception
+ * Import exception.
  */
 class ImportException extends Exception
 {

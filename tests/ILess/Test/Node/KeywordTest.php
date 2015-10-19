@@ -10,10 +10,8 @@ use ILess\Context;
 use ILess\Node\KeywordNode;
 
 /**
- * Keyword node tests
+ * Keyword node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Keyword
  * @group node
  */
@@ -43,5 +41,4 @@ class Test_Node_KeywordTest extends Test_TestCase
         $result = $d->compile($env);
         $this->assertInstanceOf('ILess\Node\KeywordNode', $result);
     }
-
 }

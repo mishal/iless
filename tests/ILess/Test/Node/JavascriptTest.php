@@ -10,10 +10,8 @@ use ILess\Context;
 use ILess\Node\JavascriptNode;
 
 /**
- * Javascript node tests
+ * Javascript node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Javascript
  * @group node
  */
@@ -43,5 +41,4 @@ class Test_Node_JavascriptTest extends Test_TestCase
         $result = $d->compile($env);
         $this->assertInstanceOf('ILess\Node\JavascriptNode', $result);
     }
-
 }

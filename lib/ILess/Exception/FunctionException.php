@@ -10,9 +10,7 @@
 namespace ILess\Exception;
 
 /**
- * Function call exception
- *
- * @package ILess\Exception
+ * Function call exception.
  */
 class FunctionException extends Exception
 {

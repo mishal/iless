@@ -13,18 +13,17 @@ use ILess\Context;
 use ILess\Node;
 
 /**
- * Compilable interface
- *
- * @package ILess\Node
+ * Compilable interface.
  */
 interface CompilableInterface
 {
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return Node
      */
     public function compile(Context $context, $arguments = null, $important = null);

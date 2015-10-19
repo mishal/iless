@@ -17,43 +17,41 @@ use ILess\Output\OutputInterface;
 use ILess\Visitor\VisitorInterface;
 
 /**
- * Directive
- *
- * @package ILess\Node
+ * Directive.
  */
 class DirectiveNode extends Node implements
     MarkableAsReferencedInterface, ReferencedInterface
 {
     /**
-     * The type
+     * The type.
      *
      * @var string
      */
     protected $type = 'Directive';
 
     /**
-     * The directive name
+     * The directive name.
      *
      * @var string
      */
     public $name;
 
     /**
-     * Array of rules
+     * Array of rules.
      *
      * @var array
      */
     public $rules = [];
 
     /**
-     * Current index
+     * Current index.
      *
-     * @var integer
+     * @var int
      */
     public $index = 0;
 
     /**
-     * Array of variables
+     * Array of variables.
      *
      * @var array
      */
@@ -62,7 +60,7 @@ class DirectiveNode extends Node implements
     /**
      * Is referenced?
      *
-     * @var boolean
+     * @var bool
      */
     public $isReferenced = false;
 
@@ -77,16 +75,16 @@ class DirectiveNode extends Node implements
     public $allExtends = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $name The name
      * @param array|string $value The value
      * @param RulesetNode|null|array $rules
-     * @param integer $index The index
+     * @param int $index The index
      * @param FileInfo $currentFileInfo Current file info
      * @param DebugInfo $debugInfo The debug information
-     * @param boolean $isReferenced Is referenced?
-     * @param boolean $isRooted Is rooted?
+     * @param bool $isReferenced Is referenced?
+     * @param bool $isRooted Is rooted?
      */
     public function __construct(
         $name,
@@ -110,7 +108,7 @@ class DirectiveNode extends Node implements
                 $selectors = new SelectorNode([], [], null, $index, $currentFileInfo);
                 $this->rules[0]->selectors = $selectors->createEmptySelectors();
             }
-            for ($i = 0; $i < count($this->rules); $i++) {
+            for ($i = 0; $i < count($this->rules); ++$i) {
                 $this->rules[$i]->allowImports = true;
             }
         } else {
@@ -126,7 +124,7 @@ class DirectiveNode extends Node implements
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function accept(VisitorInterface $visitor)
     {
@@ -140,7 +138,7 @@ class DirectiveNode extends Node implements
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
@@ -162,11 +160,12 @@ class DirectiveNode extends Node implements
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return DirectiveNode
      */
     public function compile(Context $context, $arguments = null, $important = null)
@@ -194,14 +193,15 @@ class DirectiveNode extends Node implements
         $context->mediaPath = $mediaPathBackup;
         $context->mediaBlocks = $mediaBlocksBackup;
 
-        return new DirectiveNode($this->name, $value, $rules, $this->index, $this->currentFileInfo,
+        return new self($this->name, $value, $rules, $this->index, $this->currentFileInfo,
             $this->debugInfo, $this->isReferenced, $this->isRooted);
     }
 
     /**
-     * Returns the variable
+     * Returns the variable.
      *
      * @param string $name
+     *
      * @return RuleNode|null
      */
     public function variable($name)
@@ -213,11 +213,12 @@ class DirectiveNode extends Node implements
     }
 
     /**
-     * Finds a selector
+     * Finds a selector.
      *
      * @param Node $selector
      * @param Context $context
      * @param null $filter
+     *
      * @return mixed
      */
     public function find(Node $selector, Context $context, $filter = null)
@@ -229,7 +230,7 @@ class DirectiveNode extends Node implements
     }
 
     /**
-     * Returns the rulesets
+     * Returns the rulesets.
      */
     public function rulesets()
     {
@@ -240,14 +241,13 @@ class DirectiveNode extends Node implements
     }
 
     /**
-     * Mark the directive as referenced
-     *
+     * Mark the directive as referenced.
      */
     public function markReferenced()
     {
         $this->isReferenced = true;
         if ($this->rules) {
-            for ($i = 0; $i < count($this->rules); $i++) {
+            for ($i = 0; $i < count($this->rules); ++$i) {
                 if ($this->rules[$i] instanceof MarkableAsReferencedInterface) {
                     $this->rules[$i]->markReferenced();
                 }
@@ -280,5 +280,4 @@ class DirectiveNode extends Node implements
     {
         return !$this->currentFileInfo || !$this->currentFileInfo->reference || $this->isReferenced;
     }
-
 }

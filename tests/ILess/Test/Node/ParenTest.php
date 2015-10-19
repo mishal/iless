@@ -12,10 +12,8 @@ use ILess\Node\ParenNode;
 use ILess\Output\StandardOutput;
 
 /**
- * Paren node tests
+ * Paren node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Paren
  * @group node
  */
@@ -50,5 +48,4 @@ class Test_Node_ParenTest extends Test_TestCase
         $p->generateCss($env, $output);
         $this->assertEquals('(foobar)', $output->toString());
     }
-
 }

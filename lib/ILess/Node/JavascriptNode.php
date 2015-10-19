@@ -15,14 +15,12 @@ use ILess\Node;
 use ILess\Output\OutputInterface;
 
 /**
- * Javascript
- *
- * @package ILess\Node
+ * Javascript.
  */
 class JavascriptNode extends Node
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
@@ -31,30 +29,30 @@ class JavascriptNode extends Node
     /**
      * Escaped?
      *
-     * @var boolean
+     * @var bool
      */
     protected $escaped = false;
 
     /**
-     * Current index
+     * Current index.
      *
-     * @var integer
+     * @var int
      */
     protected $index = 0;
 
     /**
-     * The javascript expression
+     * The javascript expression.
      *
      * @var string
      */
     protected $expression;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $expression The javascript expression
-     * @param boolean $escaped Is the value escaped?
-     * @param integer $index The index
+     * @param bool $escaped Is the value escaped?
+     * @param int $index The index
      * @param FileInfo $currentFileInfo Current file info
      */
     public function __construct($expression, $escaped = false, $index = 0, FileInfo $currentFileInfo = null)
@@ -66,12 +64,11 @@ class JavascriptNode extends Node
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
         // we do not care about compression flag here, so the developer knows whats going on
         $output->add('/* Sorry, unable to do javascript evaluation in PHP... With men it is impossible, but not with God: for with God all things are possible. Mark 10:27 */');
     }
-
 }

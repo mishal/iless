@@ -15,21 +15,19 @@ use ILess\Output\OutputInterface;
 use ILess\Visitor\VisitorInterface;
 
 /**
- * Value
- *
- * @package ILess\Node
+ * Value.
  */
 class ValueNode extends Node
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'Value';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $value Array of value
      */
@@ -39,7 +37,7 @@ class ValueNode extends Node
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function accept(VisitorInterface $visitor)
     {
@@ -47,11 +45,12 @@ class ValueNode extends Node
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return ValueNode
      */
     public function compile(Context $context, $arguments = null, $important = null)
@@ -65,20 +64,19 @@ class ValueNode extends Node
             $return[] = $v->compile($context);
         }
 
-        return new ValueNode($return);
+        return new self($return);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
-        for ($i = 0, $count = count($this->value); $i < $count; $i++) {
+        for ($i = 0, $count = count($this->value); $i < $count; ++$i) {
             $this->value[$i]->generateCSS($context, $output);
             if ($i + 1 < $count) {
                 $output->add($context->compress ? ',' : ', ');
             }
         }
     }
-
 }

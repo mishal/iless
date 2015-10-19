@@ -13,10 +13,8 @@ use ILess\Node\QuotedNode;
 use ILess\Output\StandardOutput;
 
 /**
- * Import node tests
+ * Import node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Import
  * @group node
  */
@@ -78,5 +76,4 @@ class Test_Node_ImportTest extends Test_TestCase
         $this->assertInstanceOf('ILess\Node\ImportNode', $result);
         $this->assertEquals('@import url("foobar.css");', $result->toCSS($env));
     }
-
 }

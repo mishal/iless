@@ -18,10 +18,8 @@ use ILess\Visitor\JoinSelectorVisitor;
 use ILess\Visitor\VisitorArguments;
 
 /**
- * Ruleset node tests
+ * Ruleset node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Ruleset
  * @group node
  */
@@ -33,7 +31,7 @@ class Test_Node_RulesetTest extends Test_TestCase
     public function testConstructor()
     {
         $r = new RulesetNode([
-            new ElementNode('div', 'foobar')
+            new ElementNode('div', 'foobar'),
         ], []);
     }
 
@@ -43,7 +41,7 @@ class Test_Node_RulesetTest extends Test_TestCase
     public function testGetType()
     {
         $r = new RulesetNode([
-            new ElementNode(' ', 'foobar')
+            new ElementNode(' ', 'foobar'),
         ], []);
         $this->assertEquals('Ruleset', $r->getType());
     }
@@ -64,7 +62,7 @@ class Test_Node_RulesetTest extends Test_TestCase
         ]);
 
         $args = new VisitorArguments([
-            'visitDeeper' => true
+            'visitDeeper' => true,
         ]);
 
         $visitor = new JoinSelectorVisitor();
@@ -82,5 +80,4 @@ class Test_Node_RulesetTest extends Test_TestCase
 
         $this->assertEquals($expected, $output->toString());
     }
-
 }

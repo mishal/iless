@@ -8,5 +8,5 @@ $this->addFunctions([
     },
     'test-local' => function () {
         return new AnonymousNode('local');
-    }
+    },
 ]);

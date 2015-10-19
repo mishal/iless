@@ -10,21 +10,19 @@
 namespace ILess\Visitor;
 
 /**
- * Visitor arguments
- *
- * @package ILess
+ * Visitor arguments.
  */
 final class VisitorArguments
 {
     /**
-     * Visit deeper flag
+     * Visit deeper flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $visitDeeper = true;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $arguments
      */
@@ -34,5 +32,4 @@ final class VisitorArguments
             $this->$argument = $value;
         }
     }
-
 }

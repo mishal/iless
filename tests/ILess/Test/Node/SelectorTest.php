@@ -12,10 +12,8 @@ use ILess\Node\SelectorNode;
 use ILess\Output\StandardOutput;
 
 /**
- * Selector node tests
+ * Selector node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Selector
  * @group node
  */
@@ -27,7 +25,7 @@ class Test_Node_SelectorTest extends Test_TestCase
     public function testConstructor()
     {
         $s = new SelectorNode([
-            new ElementNode(' ', 'foobar')
+            new ElementNode(' ', 'foobar'),
         ], []);
     }
 
@@ -37,7 +35,7 @@ class Test_Node_SelectorTest extends Test_TestCase
     public function testGetType()
     {
         $s = new SelectorNode([
-            new ElementNode(' ', 'foobar')
+            new ElementNode(' ', 'foobar'),
         ], []);
         $this->assertEquals('Selector', $s->getType());
     }
@@ -51,11 +49,10 @@ class Test_Node_SelectorTest extends Test_TestCase
         $output = new StandardOutput();
 
         $s = new SelectorNode([
-            new ElementNode('', 'foobar')
+            new ElementNode('', 'foobar'),
         ], []);
 
         $s->generateCss($env, $output);
-        $this->assertEquals(" foobar", $output->toString());
+        $this->assertEquals(' foobar', $output->toString());
     }
-
 }

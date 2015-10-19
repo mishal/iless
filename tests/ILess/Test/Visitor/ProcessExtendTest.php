@@ -8,16 +8,13 @@
 use ILess\Visitor\ProcessExtendsVisitor;
 
 /**
- * ILess\ILess\Visitor\Visitor\ProcessExtendsVisitor tests
+ * ILess\ILess\Visitor\Visitor\ProcessExtendsVisitor tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Visitor_ProcessExtend
  * @group visitor
  */
 class Test_Visitor_ProcessExtendTest extends Test_TestCase
 {
-
     /**
      * @covers __constructor
      */
@@ -26,5 +23,4 @@ class Test_Visitor_ProcessExtendTest extends Test_TestCase
         $v = new ProcessExtendsVisitor();
         $this->assertFalse($v->isReplacing());
     }
-
 }

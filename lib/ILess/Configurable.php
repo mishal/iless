@@ -12,28 +12,26 @@ namespace ILess;
 use InvalidArgumentException;
 
 /**
- * Configurable
- *
- * @package ILess
+ * Configurable.
  */
 abstract class Configurable
 {
     /**
-     * Array of options
+     * Array of options.
      *
      * @var array
      */
     protected $options = [];
 
     /**
-     * Array of default options
+     * Array of default options.
      *
      * @var array
      */
     protected $defaultOptions = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $options
      */
@@ -44,12 +42,13 @@ abstract class Configurable
     }
 
     /**
-     * Set options
+     * Set options.
      *
      * If $options is an object it will be converted into an array by called
      * it's toArray method.
      *
      * @throws InvalidArgumentException
+     *
      * @param array|object $options
      *
      * @return Configurable
@@ -74,7 +73,7 @@ abstract class Configurable
     }
 
     /**
-     * Returns default options
+     * Returns default options.
      *
      * @return array
      */
@@ -84,7 +83,7 @@ abstract class Configurable
     }
 
     /**
-     * Initialization hook
+     * Initialization hook.
      *
      * Can be used by classes for special behaviour. For instance some options
      * have extra setup work in their 'set' method that also need to be called
@@ -92,20 +91,19 @@ abstract class Configurable
      *
      * This hook is called by the constructor after saving the constructor
      * arguments in {@link $options}
-     *
-     * @return void
      */
     protected function setup()
     {
     }
 
     /**
-     * Get an option value by name
+     * Get an option value by name.
      *
      * If the option is empty or not set a NULL value will be returned.
      *
      * @param string $name
      * @param mixed $default Default value if confiuration of $name is not present
+     *
      * @return mixed
      */
     public function getOption($name, $default = null)
@@ -118,10 +116,11 @@ abstract class Configurable
     }
 
     /**
-     * Checks is the object has option with given $name
+     * Checks is the object has option with given $name.
      *
      * @param string $name
-     * @return boolean
+     *
+     * @return bool
      */
     public function hasOption($name)
     {
@@ -129,10 +128,11 @@ abstract class Configurable
     }
 
     /**
-     * Set an option
+     * Set an option.
      *
      * @param string $name
      * @param mixed $value
+     *
      * @return Configurable
      */
     public function setOption($name, $value)
@@ -143,7 +143,7 @@ abstract class Configurable
     }
 
     /**
-     * Get all options
+     * Get all options.
      *
      * @return array
      */
@@ -156,6 +156,7 @@ abstract class Configurable
      * Adds options. Overrides options already set with the same name.
      *
      * @param array $options Array of options
+     *
      * @return Configurable
      */
     public function addOptions(array $options)
@@ -166,5 +167,4 @@ abstract class Configurable
 
         return $this;
     }
-
 }

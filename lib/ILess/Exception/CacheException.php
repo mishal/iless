@@ -10,9 +10,7 @@
 namespace ILess\Exception;
 
 /**
- * Cache exception
- *
- * @package ILess\Exception
+ * Cache exception.
  */
 class CacheException extends IOException
 {

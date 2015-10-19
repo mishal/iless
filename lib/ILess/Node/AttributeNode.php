@@ -14,35 +14,33 @@ use ILess\Node;
 use ILess\Output\OutputInterface;
 
 /**
- * Attribute
- *
- * @package ILess\Node
+ * Attribute.
  */
 class AttributeNode extends Node
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'Attribute';
 
     /**
-     * The key
+     * The key.
      *
      * @var string|Node
      */
     public $key;
 
     /**
-     * The operator
+     * The operator.
      *
      * @var string
      */
     public $operator;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string|Node $key
      * @param string $operator
@@ -56,16 +54,17 @@ class AttributeNode extends Node
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return AttributeNode
      */
     public function compile(Context $context, $arguments = null, $important = null)
     {
-        return new AttributeNode(
+        return new self(
             $this->key instanceof CompilableInterface ? $this->key->compile($context) : $this->key,
             $this->operator,
             $this->value instanceof CompilableInterface ? $this->value->compile($context) : $this->value
@@ -73,7 +72,7 @@ class AttributeNode extends Node
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
@@ -81,7 +80,7 @@ class AttributeNode extends Node
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function toCSS(Context $context)
     {
@@ -92,7 +91,6 @@ class AttributeNode extends Node
             $value .= ($this->value instanceof GenerateCSSInterface ? $this->value->toCSS($context) : $this->value);
         }
 
-        return '['.$value.']';
+        return '[' . $value . ']';
     }
-
 }

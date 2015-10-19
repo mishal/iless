@@ -19,55 +19,53 @@ use ILess\Node;
 use ILess\Visitor\VisitorInterface;
 
 /**
- * Mixin call
- *
- * @package ILess\Node
+ * Mixin call.
  */
 class MixinCallNode extends Node
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'MixinCall';
 
     /**
-     * The selector
+     * The selector.
      *
      * @var SelectorNode
      */
     public $selector;
 
     /**
-     * Array of arguments
+     * Array of arguments.
      *
      * @var array
      */
     public $arguments = [];
 
     /**
-     * Current index
+     * Current index.
      *
-     * @var integer
+     * @var int
      */
     public $index = 0;
 
     /**
-     * The important flag
+     * The important flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $important = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $elements The elements
      * @param array $arguments The array of arguments
-     * @param integer $index The current index
+     * @param int $index The current index
      * @param FileInfo $currentFileInfo
-     * @param boolean $important
+     * @param bool $important
      */
     public function __construct(
         array $elements,
@@ -81,11 +79,11 @@ class MixinCallNode extends Node
         $this->arguments = $arguments;
         $this->index = $index;
         $this->currentFileInfo = $currentFileInfo;
-        $this->important = (boolean)$important;
+        $this->important = (boolean) $important;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function accept(VisitorInterface $visitor)
     {
@@ -99,12 +97,14 @@ class MixinCallNode extends Node
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return Node
+     *
      * @throws
      */
     public function compile(Context $context, $arguments = null, $important = null)
@@ -120,7 +120,7 @@ class MixinCallNode extends Node
             $aValue = $a['value']->compile($context);
             if ($a['expand'] && is_array($aValue->value)) {
                 $aValue = $aValue->value;
-                for ($m = 0; $m < count($aValue); $m++) {
+                for ($m = 0; $m < count($aValue); ++$m) {
                     $args[] = ['value' => $aValue[$m]];
                 }
             } else {
@@ -131,7 +131,7 @@ class MixinCallNode extends Node
             }
         }
 
-        /**
+        /*
          * @param $rule
          * @return bool
          */
@@ -146,7 +146,7 @@ class MixinCallNode extends Node
         $defTrue = 1;
         $defFalse = 2;
 
-        /**
+        /*
          * Calculate
          * @param $mixin
          * @param $mixinPath
@@ -162,10 +162,10 @@ class MixinCallNode extends Node
             &$conditionResult
         ) {
             $namespace = null;
-            for ($f = 0; $f < 2; $f++) {
+            for ($f = 0; $f < 2; ++$f) {
                 $conditionResult[$f] = true;
                 DefaultFunc::value($f);
-                for ($p = 0; $p < count($mixinPath) && $conditionResult[$f]; $p++) {
+                for ($p = 0; $p < count($mixinPath) && $conditionResult[$f]; ++$p) {
                     $namespace = $mixinPath[$p];
                     if ($namespace instanceof ConditionMatchableInterface) {
                         $conditionResult[$f] = $conditionResult[$f] && $namespace->matchCondition([], $context);
@@ -192,7 +192,7 @@ class MixinCallNode extends Node
             $mixins = $frame->find($this->selector, $context, null, $noArgumentsFilter);
             if ($mixins) {
                 $isOneFound = true;
-                for ($m = 0; $m < count($mixins); $m++) {
+                for ($m = 0; $m < count($mixins); ++$m) {
                     $mixin = $mixins[$m]['rule'];
                     $mixinPath = $mixins[$m]['path'];
                     $isRecursive = false;
@@ -224,8 +224,8 @@ class MixinCallNode extends Node
                 DefaultFunc::reset();
 
                 $count = [0, 0, 0];
-                for ($m = 0; $m < count($candidates); $m++) {
-                    $count[$candidates[$m]['group']]++;
+                for ($m = 0; $m < count($candidates); ++$m) {
+                    ++$count[$candidates[$m]['group']];
                 }
 
                 if ($count[$defNone] > 0) {
@@ -241,7 +241,7 @@ class MixinCallNode extends Node
                     }
                 }
 
-                for ($m = 0; $m < count($candidates); $m++) {
+                for ($m = 0; $m < count($candidates); ++$m) {
                     $candidate = $candidates[$m]['group'];
                     if (($candidate === $defNone) || ($candidate === $defaultResult)) {
                         try {
@@ -286,9 +286,10 @@ class MixinCallNode extends Node
     }
 
     /**
-     * Format arguments to be used for exception message
+     * Format arguments to be used for exception message.
      *
      * @param array $args
+     *
      * @return string
      */
     private function formatArgs($args)
@@ -302,7 +303,7 @@ class MixinCallNode extends Node
             foreach ($args as $a) {
                 $argValue = '';
                 if (isset($a['name'])) {
-                    $argValue .= $a['name'].':';
+                    $argValue .= $a['name'] . ':';
                 }
                 if ($a['value'] instanceof GenerateCSSInterface) {
                     $argValue .= $a['value']->toCSS($context);
@@ -311,11 +312,10 @@ class MixinCallNode extends Node
                 }
                 $argsFormatted[] = $argValue;
             }
-            $message[] = join(', ', $argsFormatted);
+            $message[] = implode(', ', $argsFormatted);
             $message[] = ')';
         }
 
-        return join('', $message);
+        return implode('', $message);
     }
-
 }

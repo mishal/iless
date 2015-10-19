@@ -17,14 +17,12 @@ use ILess\Node;
 use ILess\Output\OutputInterface;
 
 /**
- * Color node
- *
- * @package ILess\Node
+ * Color node.
  */
 class ColorNode extends Node implements ComparableInterface
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
@@ -36,11 +34,12 @@ class ColorNode extends Node implements ComparableInterface
     protected $originalForm;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string|array $rgb The rgb value
-     * @param integer $alpha Alpha channel
+     * @param int $alpha Alpha channel
      * @param string $originalForm Original form of the color
+     *
      * @throws InvalidArgumentException
      */
     public function __construct($rgb, $alpha = 1, $originalForm = null)
@@ -56,7 +55,7 @@ class ColorNode extends Node implements ComparableInterface
     }
 
     /**
-     * Returns the color object
+     * Returns the color object.
      *
      * @return Color
      */
@@ -66,7 +65,7 @@ class ColorNode extends Node implements ComparableInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
@@ -74,7 +73,7 @@ class ColorNode extends Node implements ComparableInterface
     }
 
     /**
-     * Returns the RGB channels
+     * Returns the RGB channels.
      *
      * @return array
      */
@@ -84,7 +83,7 @@ class ColorNode extends Node implements ComparableInterface
     }
 
     /**
-     * Returns the HSV components of the color
+     * Returns the HSV components of the color.
      *
      * @return array
      */
@@ -94,9 +93,10 @@ class ColorNode extends Node implements ComparableInterface
     }
 
     /**
-     * Returns the red channel
+     * Returns the red channel.
      *
-     * @param boolean $raw Return raw value?
+     * @param bool $raw Return raw value?
+     *
      * @return mixed
      */
     public function getRed($raw = false)
@@ -105,9 +105,10 @@ class ColorNode extends Node implements ComparableInterface
     }
 
     /**
-     * Returns the green channel
+     * Returns the green channel.
      *
-     * @param boolean $raw Return raw value?
+     * @param bool $raw Return raw value?
+     *
      * @return mixed
      */
     public function getGreen($raw = false)
@@ -116,9 +117,10 @@ class ColorNode extends Node implements ComparableInterface
     }
 
     /**
-     * Returns the blue channel
+     * Returns the blue channel.
      *
-     * @param boolean $raw Return raw value?
+     * @param bool $raw Return raw value?
+     *
      * @return mixed
      */
     public function getBlue($raw = false)
@@ -127,9 +129,10 @@ class ColorNode extends Node implements ComparableInterface
     }
 
     /**
-     * Returns the alpha channel
+     * Returns the alpha channel.
      *
-     * @param boolean $raw Return raw value?
+     * @param bool $raw Return raw value?
+     *
      * @return mixed
      */
     public function getAlpha($raw = false)
@@ -138,9 +141,10 @@ class ColorNode extends Node implements ComparableInterface
     }
 
     /**
-     * Returns the color saturation
+     * Returns the color saturation.
      *
-     * @param boolean $raw Return raw value?
+     * @param bool $raw Return raw value?
+     *
      * @return mixed
      */
     public function getSaturation($raw = false)
@@ -150,9 +154,10 @@ class ColorNode extends Node implements ComparableInterface
     }
 
     /**
-     * Returns the color hue
+     * Returns the color hue.
      *
-     * @param boolean $raw Raw value?
+     * @param bool $raw Raw value?
+     *
      * @return mixed
      */
     public function getHue($raw = false)
@@ -161,9 +166,10 @@ class ColorNode extends Node implements ComparableInterface
     }
 
     /**
-     * Returns the lightness
+     * Returns the lightness.
      *
-     * @param boolean $raw Return raw value?
+     * @param bool $raw Return raw value?
+     *
      * @return mixed ILessNode\DimensionNode if $raw is false
      */
     public function getLightness($raw = false)
@@ -173,9 +179,10 @@ class ColorNode extends Node implements ComparableInterface
     }
 
     /**
-     * Returns the luma
+     * Returns the luma.
      *
-     * @param boolean $raw Return raw value?
+     * @param bool $raw Return raw value?
+     *
      * @return mixed ILessNode\DimensionNode if $raw is false
      */
     public function getLuma($raw = false)
@@ -186,9 +193,10 @@ class ColorNode extends Node implements ComparableInterface
     }
 
     /**
-     * Returns the luminance
+     * Returns the luminance.
      *
-     * @param boolean $raw Return raw value?
+     * @param bool $raw Return raw value?
+     *
      * @return mixed ILessNode\DimensionNode if $raw is false
      */
     public function getLuminance($raw = false)
@@ -199,7 +207,7 @@ class ColorNode extends Node implements ComparableInterface
     }
 
     /**
-     * Converts the node to ARGB
+     * Converts the node to ARGB.
      *
      * @return AnonymousNode
      */
@@ -209,7 +217,7 @@ class ColorNode extends Node implements ComparableInterface
     }
 
     /**
-     * Returns the HSL components of the color
+     * Returns the HSL components of the color.
      *
      * @return array
      */
@@ -219,9 +227,10 @@ class ColorNode extends Node implements ComparableInterface
     }
 
     /**
-     * Converts the node to string
+     * Converts the node to string.
      *
      * @param Context $context
+     *
      * @return string
      */
     public function toCSS(Context $context)
@@ -238,21 +247,23 @@ class ColorNode extends Node implements ComparableInterface
      * @param Context $context
      * @param string $op
      * @param Node $other
+     *
      * @return ColorNode
+     *
      * @throws InvalidArgumentException
      */
     public function operate(Context $context, $op, Node $other)
     {
         $result = [];
 
-        if (!($other instanceof ColorNode)) {
+        if (!($other instanceof self)) {
             if (!$other instanceof ToColorConvertibleInterface) {
                 throw new InvalidArgumentException(
                     'The other node must implement toColor() method to operate, see ILess\Node\Node_ToColorConvertibleInterface'
                 );
             }
             $other = $other->toColor();
-            if (!$other instanceof ColorNode) {
+            if (!$other instanceof self) {
                 throw new InvalidArgumentException('The toColor() method must return an instance of ILess\Node\Node_Color');
             }
         }
@@ -260,7 +271,7 @@ class ColorNode extends Node implements ComparableInterface
         $t = $this->getRGB();
         $o = $other->getRGB();
 
-        for ($c = 0; $c < 3; $c++) {
+        for ($c = 0; $c < 3; ++$c) {
             $result[$c] = Math::operate($op, $t[$c], $o[$c]);
             if ($result[$c] > 255) {
                 $result[$c] = 255;
@@ -269,32 +280,34 @@ class ColorNode extends Node implements ComparableInterface
             }
         }
 
-        return new ColorNode($result, $this->value->getAlpha() + $other->value->getAlpha());
+        return new self($result, $this->value->getAlpha() + $other->value->getAlpha());
     }
 
     /**
-     * Compares with another node
+     * Compares with another node.
      *
      * @param Node $other
-     * @return integer
+     *
+     * @return int
+     *
      * @throws InvalidArgumentException
      */
     public function compare(Node $other)
     {
-        if (!($other instanceof ColorNode)) {
+        if (!($other instanceof self)) {
             if (!$other instanceof ToColorConvertibleInterface) {
                 throw new InvalidArgumentException(
                     'The other node must implement toColor() method to operate, see ILess\Node\Node_ToColorConvertibleInterface'
                 );
             }
             $other = $other->toColor();
-            if (!$other instanceof ColorNode) {
+            if (!$other instanceof self) {
                 throw new InvalidArgumentException('The toColor() method must return an instance of ILess\Node\Node_Color');
             }
         }
 
         // cannot compare with another node
-        if (!$other instanceof ColorNode) {
+        if (!$other instanceof self) {
             return -1;
         }
 
@@ -303,5 +316,4 @@ class ColorNode extends Node implements ComparableInterface
 
         return ($color->rgb === $other->rgb && $color->alpha === $other->alpha) ? 0 : -1;
     }
-
 }

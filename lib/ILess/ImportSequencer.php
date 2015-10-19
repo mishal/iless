@@ -13,9 +13,7 @@ use ILess\Exception\Exception;
 use InvalidArgumentException;
 
 /**
- * Import sequencer imports files in order
- *
- * @package ILess
+ * Import sequencer imports files in order.
  */
 final class ImportSequencer
 {
@@ -40,7 +38,7 @@ final class ImportSequencer
     private $currentDepth = 0;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param callable $completeCallback
      */
@@ -54,13 +52,11 @@ final class ImportSequencer
     }
 
     /**
-     * Tries to load files and when finished, runs the complete callback
-     *
-     * @return void
+     * Tries to load files and when finished, runs the complete callback.
      */
     public function tryRun()
     {
-        $this->currentDepth++;
+        ++$this->currentDepth;
 
         try {
             while (true) {
@@ -83,7 +79,7 @@ final class ImportSequencer
         } catch (Exception $e) {
         }
 
-        $this->currentDepth--;
+        --$this->currentDepth;
 
         if ($this->currentDepth === 0) {
             call_user_func($this->completeCallback);
@@ -91,9 +87,10 @@ final class ImportSequencer
     }
 
     /**
-     * Adds an import which path contains some variables
+     * Adds an import which path contains some variables.
      *
      * @param callable $callback
+     *
      * @return $this
      */
     public function addVariableImport(callable $callback)
@@ -104,9 +101,10 @@ final class ImportSequencer
     }
 
     /**
-     * Adds an import
+     * Adds an import.
      *
      * @param callable $callback
+     *
      * @return $this
      */
     public function addImport(callable $callback)
@@ -115,5 +113,4 @@ final class ImportSequencer
 
         return $this;
     }
-
 }

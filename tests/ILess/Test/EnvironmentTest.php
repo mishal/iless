@@ -8,10 +8,7 @@
 use ILess\Context;
 
 /**
- * Environment tests
- *
- * @package ILess
- * @subpackage test
+ * Environment tests.
  */
 class Test_EnvironmentTest extends Test_TestCase
 {

@@ -13,42 +13,37 @@ use ILess\Exception\Exception;
 use ILess\Exception\ImportException;
 use ILess\Exception\ParserException;
 use ILess\Importer\ImporterInterface;
-use ILess\Node;
 use ILess\Node\RulesetNode;
 use ILess\Parser\Core;
-use ILess\Util;
 
 /**
- * Import
- *
- * @package ILess
- * @subpackage Import
+ * Import.
  */
 class Importer
 {
     /**
-     * The context
+     * The context.
      *
      * @var Context
      */
     protected $context;
 
     /**
-     * The cache
+     * The cache.
      *
      * @var CacheInterface
      */
     protected $cache;
 
     /**
-     * Array of importers
+     * Array of importers.
      *
      * @var array
      */
     protected $importers = [];
 
     /**
-     * Array of imported files
+     * Array of imported files.
      *
      * @var array
      */
@@ -60,7 +55,7 @@ class Importer
     protected $pluginManager;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param Context $context The context
      * @param array $importers Array of importers
@@ -76,9 +71,10 @@ class Importer
     }
 
     /**
-     * Sets The context
+     * Sets The context.
      *
      * @param Context $context
+     *
      * @return Importer
      */
     public function setEnvironment(Context $context)
@@ -89,9 +85,10 @@ class Importer
     }
 
     /**
-     * Sets the cache
+     * Sets the cache.
      *
      * @param CacheInterface $cache
+     *
      * @return Importer
      */
     public function setCache(CacheInterface $cache)
@@ -102,7 +99,7 @@ class Importer
     }
 
     /**
-     * Returns the cache
+     * Returns the cache.
      *
      * @return CacheInterface
      */
@@ -112,7 +109,7 @@ class Importer
     }
 
     /**
-     * Returns the context
+     * Returns the context.
      *
      * @return Context
      */
@@ -122,13 +119,15 @@ class Importer
     }
 
     /**
-     * Imports the file
+     * Imports the file.
      *
      * @param string $path The path to import. Path will be searched by the importers
      * @param bool $tryAppendLessExtension Whether to try appending the less extension (if the path has no extension)
      * @param array $importOptions Import options
-     * @param integer $index Current index
+     * @param int $index Current index
+     *
      * @return array
+     *
      * @throws ImportException If the $path could not be imported
      */
     public function import(
@@ -153,8 +152,8 @@ class Importer
         // we must generate separate cache for inline and css files to avoid problems
         // when someone wants to import the less file first as inline import and than normally
         $cacheKey = $this->generateCacheKey(
-            (Util::isPathAbsolute($path) ? $path : $currentFileInfo->currentDirectory.$path)
-            . 'css-'.(int)$inline.'inline-'.(int)$css
+            (Util::isPathAbsolute($path) ? $path : $currentFileInfo->currentDirectory . $path)
+            . 'css-' . (int) $inline . 'inline-' . (int) $css
         );
 
         // do we have a file in the cache?
@@ -192,13 +191,13 @@ class Importer
                         true,
                         $file,
                     ];
-
                 } else {
                     $result = $this->doImport($file, $path, $currentFileInfo, $importOptions);
                     /* @var $file ImportedFile */
                     list(, $file) = $result;
                     // save the cache
                     $this->cache->set($cacheKey, $file);
+
                     return $result;
                 }
             }
@@ -208,15 +207,17 @@ class Importer
     }
 
     /**
-     * Does the import
+     * Does the import.
      *
      * @param ImportedFile $file The imported file
      * @param string $path The original path
      * @param FileInfo $currentFileInfo Current file info
      * @param array $importOptions Import options
-     * @param boolean $fromCache Is the imported file coming from cache?
+     * @param bool $fromCache Is the imported file coming from cache?
+     *
      * @throws ParserException
      * @throws Exception
+     *
      * @return array
      */
     protected function doImport(
@@ -241,7 +242,7 @@ class Importer
             //   then rootPath should become 'less/../'
             if (!Util::isPathAbsolute($path) && (($lastSlash = strrpos($path, '/')) !== false)) {
                 $relativeSubDirectory = substr($path, 0, $lastSlash + 1);
-                $newFileInfo->rootPath = $newFileInfo->rootPath.$relativeSubDirectory;
+                $newFileInfo->rootPath = $newFileInfo->rootPath . $relativeSubDirectory;
             }
         }
 
@@ -302,7 +303,7 @@ class Importer
     }
 
     /**
-     * Updates the currentFileInfo object to the $value
+     * Updates the currentFileInfo object to the $value.
      *
      * @param Node $node The node to update
      * @param FileInfo $newInfo The new file info
@@ -324,11 +325,13 @@ class Importer
     }
 
     /**
-     * Returns the last modification time of the file
+     * Returns the last modification time of the file.
      *
      * @param string $path
      * @param FileInfo $currentFileInfo
-     * @return integer
+     *
+     * @return int
+     *
      * @throws Exception If there was an error
      */
     public function getLastModified($path, FileInfo $currentFileInfo)
@@ -345,11 +348,12 @@ class Importer
     }
 
     /**
-     * Registers an importer
+     * Registers an importer.
      *
      * @param ImporterInterface $importer
      * @param string $name The importer name (only for developer reference)
-     * @param boolean $prepend Prepend before current importers?
+     * @param bool $prepend Prepend before current importers?
+     *
      * @return Importer
      */
     public function registerImporter(ImporterInterface $importer, $name = null, $prepend = false)
@@ -370,9 +374,10 @@ class Importer
     }
 
     /**
-     * Returns the importer with given name
+     * Returns the importer with given name.
      *
      * @param string $name
+     *
      * @return ImporterInterface
      */
     public function getImporter($name)
@@ -381,7 +386,7 @@ class Importer
     }
 
     /**
-     * Returns registered importers
+     * Returns registered importers.
      *
      * @return array
      */
@@ -391,9 +396,10 @@ class Importer
     }
 
     /**
-     * Registers an array of importers
+     * Registers an array of importers.
      *
      * @param array $importers
+     *
      * @return Importer
      */
     public function registerImporters(array $importers)
@@ -406,7 +412,7 @@ class Importer
     }
 
     /**
-     * Clears all importers
+     * Clears all importers.
      *
      * @return Importer
      */
@@ -418,7 +424,7 @@ class Importer
     }
 
     /**
-     * Returns a list of imported files
+     * Returns a list of imported files.
      *
      * @return array
      */
@@ -428,12 +434,13 @@ class Importer
     }
 
     /**
-     * Sets the imported file
+     * Sets the imported file.
      *
      * @param string $pathAbsolute The absolute path
      * @param ImportedFile $file The imported file
      * @param string $path The original path to import
      * @param FileInfo $currentFileInfo
+     *
      * @return Importer
      */
     public function setImportedFile($pathAbsolute, ImportedFile $file, $path, FileInfo $currentFileInfo)
@@ -446,10 +453,11 @@ class Importer
     }
 
     /**
-     * Returns the imported file
+     * Returns the imported file.
      *
      * @param string $absolutePath The absolute path of the file
      * @param mixed $default The default when no file with given $path is already imported
+     *
      * @return array Array(ImportedFile, $originalPath, CurrentFileInfo)
      */
     public function getImportedFile($absolutePath, $default = null)
@@ -458,14 +466,14 @@ class Importer
     }
 
     /**
-     * Generates unique cache key for given $filename
+     * Generates unique cache key for given $filename.
      *
      * @param string $filename
+     *
      * @return string
      */
     protected function generateCacheKey($filename)
     {
         return Util::generateCacheKey($filename);
     }
-
 }

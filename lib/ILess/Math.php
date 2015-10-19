@@ -12,17 +12,16 @@ namespace ILess;
 use InvalidArgumentException;
 
 /**
- * Math
- *
- * @package ILess
+ * Math.
  */
 class Math
 {
     /**
-     * Rounds the value as javascript's Math.round function
+     * Rounds the value as javascript's Math.round function.
      *
      * @param float $value
      * @param int $precision
+     *
      * @return float
      */
     public static function round($value, $precision = 0)
@@ -43,7 +42,8 @@ class Math
      * Is the number negative?
      *
      * @param float $number
-     * @return boolean
+     *
+     * @return bool
      */
     public static function isNegative($number)
     {
@@ -51,14 +51,15 @@ class Math
     }
 
     /**
-     * Remove trailing and leading zeros - just to return cleaner number
+     * Remove trailing and leading zeros - just to return cleaner number.
      *
      * @param float $number
+     *
      * @return string
      */
     public static function clean($number)
     {
-        $number = self::fixDecimalPoint((string)$number);
+        $number = self::fixDecimalPoint((string) $number);
 
         // don't clean numbers without dot
         if (strpos($number, '.') === false) {
@@ -78,13 +79,14 @@ class Math
         // remove decimal point if an integer ie. 140. becomes 140
         $clean = rtrim($clean, '.');
 
-        return $clean[0] == '.' ? '0'.$clean : $clean;
+        return $clean[0] == '.' ? '0' . $clean : $clean;
     }
 
     /**
-     * Fixes decimal points
+     * Fixes decimal points.
      *
      * @param mixed $float
+     *
      * @return string
      */
     public static function fixDecimalPoint($float)
@@ -93,12 +95,14 @@ class Math
     }
 
     /**
-     * Makes an operation on $a and $b using the $operator (+, -, *, /)
+     * Makes an operation on $a and $b using the $operator (+, -, *, /).
      *
      * @param string $operator The operator
      * @param float $a
      * @param float $b
+     *
      * @return float
+     *
      * @throws InvalidArgumentException When the operator is not valid
      */
     public static function operate($operator, $a, $b)
@@ -121,12 +125,12 @@ class Math
      * Converts a number into a string, keeping a specified number of decimals.
      *
      * @param float $number The number
-     * @param integer $decimals Number of decimals
+     * @param int $decimals Number of decimals
+     *
      * @return string
      */
     public static function toFixed($number, $decimals)
     {
-        return sprintf('%.'.$decimals.'f', $number);
+        return sprintf('%.' . $decimals . 'f', $number);
     }
-
 }

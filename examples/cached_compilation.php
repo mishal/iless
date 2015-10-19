@@ -6,11 +6,11 @@ use ILess\Cache\FileSystemCache;
 require_once '_bootstrap.php';
 
 // create the parser
-$parser = new Parser(array(), new FileSystemCache(array(
-    'cache_dir' => dirname(__FILE__).'/cache',
-)));
+$parser = new Parser([], new FileSystemCache([
+    'cache_dir' => dirname(__FILE__) . '/cache',
+]));
 
-$file = dirname(__FILE__).'/less/test.less';
+$file = dirname(__FILE__) . '/less/test.less';
 // create your cache key
 $cacheKey = md5($file);
 $importer = $parser->getImporter();
@@ -40,16 +40,16 @@ if ($rebuild) {
 
     $css = $parser->getCSS();
     // what have been imported?
-    $importedFiles = array();
+    $importedFiles = [];
     foreach ($importer->getImportedFiles() as $importedFile) {
-        $importedFiles[] = array($importedFile[0]->getLastModified(), $importedFile[1], $importedFile[2]);
+        $importedFiles[] = [$importedFile[0]->getLastModified(), $importedFile[1], $importedFile[2]];
         $cssLastModified = max($cssLastModified, $importedFile[0]->getLastModified());
     }
 
-    $cache->set($cacheKey, array($css, $importedFiles));
+    $cache->set($cacheKey, [$css, $importedFiles]);
 }
 
 header('Content-Type: text/css');
-header('Last-Modified: '.gmdate('D, d M Y H:i:s ', $cssLastModified).'GMT');
+header('Last-Modified: ' . gmdate('D, d M Y H:i:s ', $cssLastModified) . 'GMT');
 
 echo $css;

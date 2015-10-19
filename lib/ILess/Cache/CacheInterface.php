@@ -10,26 +10,27 @@
 namespace ILess\Cache;
 
 /**
- * Cache interface
- *
+ * Cache interface.
  */
 interface CacheInterface
 {
     /**
-     * Returns the cached item for given $cacheKey
+     * Returns the cached item for given $cacheKey.
      *
      * @param string $cacheKey
+     *
      * @return mixed
      */
     public function get($cacheKey);
 
     /**
-     * Sets the cache for the $cacheKey
+     * Sets the cache for the $cacheKey.
      *
      * @param string $cacheKey The cache key
      * @param mixed $data The data to store
-     * @param integer $ttl The time to live
-     * @return boolean
+     * @param int $ttl The time to live
+     *
+     * @return bool
      */
     public function set($cacheKey, $data, $ttl = null);
 
@@ -41,17 +42,14 @@ interface CacheInterface
     public function has($cacheKey);
 
     /**
-     * Removes item from cache
+     * Removes item from cache.
      *
      * @param string $cacheKey
      */
     public function remove($cacheKey);
 
     /**
-     * Removes everything from the cache
-     *
-     * @return void
+     * Removes everything from the cache.
      */
     public function clean();
-
 }

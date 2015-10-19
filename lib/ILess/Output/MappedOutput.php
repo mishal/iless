@@ -12,42 +12,40 @@ use ILess\FileInfo;
 use ILess\SourceMap\Generator;
 
 /**
- * Output with source map
- *
- * @package ILess\Output
+ * Output with source map.
  */
 class MappedOutput extends StandardOutput
 {
     /**
-     * The source map generator
+     * The source map generator.
      *
      * @var Generator
      */
     protected $generator;
 
     /**
-     * Current line
+     * Current line.
      *
-     * @var integer
+     * @var int
      */
     protected $lineNumber = 0;
 
     /**
-     * Current column
+     * Current column.
      *
-     * @var integer
+     * @var int
      */
     protected $column = 0;
 
     /**
-     * Array of contents map (file and its content)
+     * Array of contents map (file and its content).
      *
      * @var array
      */
     protected $contentsMap = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $contentsMap Array of filename to contents map
      * @param Generator $generator
@@ -59,12 +57,13 @@ class MappedOutput extends StandardOutput
     }
 
     /**
-     * Adds a chunk to the stack
+     * Adds a chunk to the stack.
      *
      * @param string $chunk
      * @param string $fileInfo
-     * @param integer $index
+     * @param int $index
      * @param mixed $mapLines
+     *
      * @return StandardOutput
      */
     public function add($chunk, FileInfo $fileInfo = null, $index = 0, $mapLines = null)
@@ -78,7 +77,6 @@ class MappedOutput extends StandardOutput
         $columns = end($lines);
 
         if ($fileInfo) {
-
             $inputSource = substr($this->contentsMap[$fileInfo->importedFile->getPath()], 0, $index);
             $sourceLines = explode("\n", $inputSource);
             $sourceColumns = end($sourceLines);
@@ -92,7 +90,7 @@ class MappedOutput extends StandardOutput
                     $fileInfo->filename
                 );
             } else {
-                for ($i = 0, $count = count($lines); $i < $count; $i++) {
+                for ($i = 0, $count = count($lines); $i < $count; ++$i) {
                     $this->generator->addMapping(
                         $this->lineNumber + $i + 1, $i === 0 ? $this->column : 0, // generated
                         $sourceLinesCount + $i, $i === 0 ? $sourceColumnsLength : 0, // original
@@ -114,7 +112,7 @@ class MappedOutput extends StandardOutput
     }
 
     /**
-     * Returns the generator
+     * Returns the generator.
      *
      * @return Generator
      */
@@ -124,9 +122,10 @@ class MappedOutput extends StandardOutput
     }
 
     /**
-     * Sets the generator
+     * Sets the generator.
      *
      * @param Generator $generator
+     *
      * @return MappedOutput
      */
     public function setGenerator(Generator $generator)
@@ -135,5 +134,4 @@ class MappedOutput extends StandardOutput
 
         return $this;
     }
-
 }

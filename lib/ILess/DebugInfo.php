@@ -10,54 +10,51 @@
 namespace ILess;
 
 /**
- * Debug information
- *
- * @package ILess
+ * Debug information.
  */
 final class DebugInfo
 {
     /**
-     * Comment format
+     * Comment format.
      */
     const FORMAT_COMMENT = 'comments';
 
     /**
-     * Media query format
+     * Media query format.
      */
     const FORMAT_MEDIA_QUERY = 'mediaquery';
 
     /**
-     * All supported formats
-     *
+     * All supported formats.
      */
     const FORMAT_ALL = 'all';
 
     /**
-     * Media query format (SASS compatible format)
+     * Media query format (SASS compatible format).
      *
      * @var string
      */
     protected static $mediaQueryFormat = "@media -sass-debug-info{filename{font-family:%file%}line{font-family:\\00003%line%}}\n";
 
     /**
-     * The line number
+     * The line number.
      *
-     * @var integer
+     * @var int
      */
     public $lineNumber;
 
     /**
-     * Current filename
+     * Current filename.
      *
      * @var string
      */
     public $filename;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $filename The filename
-     * @param integer $lineNumber The line number
+     * @param int $lineNumber The line number
      */
     public function __construct($filename, $lineNumber)
     {
@@ -66,7 +63,7 @@ final class DebugInfo
     }
 
     /**
-     * Sets the media query format
+     * Sets the media query format.
      *
      * @param string $format
      */
@@ -76,7 +73,7 @@ final class DebugInfo
     }
 
     /**
-     * Returns the debug information as comment
+     * Returns the debug information as comment.
      *
      * @return string
      */
@@ -86,7 +83,7 @@ final class DebugInfo
     }
 
     /**
-     * Return the debug information as media query
+     * Return the debug information as media query.
      *
      * @return string
      */
@@ -99,9 +96,10 @@ final class DebugInfo
     }
 
     /**
-     * Replaces path components for media query usage
+     * Replaces path components for media query usage.
      *
      * @param array $match
+     *
      * @return string
      */
     protected static function replaceCallback($match)
@@ -111,13 +109,14 @@ final class DebugInfo
             $match = '\/';
         }
 
-        return '\\'.$match;
+        return '\\' . $match;
     }
 
     /**
-     * Escapes the filename for mediaquery usage
+     * Escapes the filename for mediaquery usage.
      *
      * @param string $filename The filename
+     *
      * @return string
      */
     public static function escapeFilenameForMediaQuery($filename)
@@ -125,5 +124,4 @@ final class DebugInfo
         return preg_replace_callback('/([\.|:|\/|(\\\\)])/',
             ['ILess\DebugInfo', 'replaceCallback'], $filename);
     }
-
 }

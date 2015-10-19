@@ -9,15 +9,12 @@
 use ILess\Parser;
 
 /**
- * Issue #49 test
+ * Issue #49 test.
  *
- * @package ILess
- * @subpackage test
  * @group issue
  */
 class Test_Issues_049Test extends Test_TestCase
 {
-
     public function testIssue()
     {
         $parser = new Parser();
@@ -34,5 +31,4 @@ class Test_Issues_049Test extends Test_TestCase
 }
 ', $css);
     }
-
 }

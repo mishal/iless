@@ -14,9 +14,7 @@ use ILess\Node;
 use ILess\Visitor\VisitorInterface;
 
 /**
- * Detached ruleset
- *
- * @package ILess\Node
+ * Detached ruleset.
  */
 class DetachedRulesetNode extends Node
 {
@@ -41,7 +39,7 @@ class DetachedRulesetNode extends Node
     public $compileFirst = true;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RulesetNode $ruleset
      * @param array $frames
@@ -53,7 +51,7 @@ class DetachedRulesetNode extends Node
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function accept(VisitorInterface $visitor)
     {
@@ -62,6 +60,7 @@ class DetachedRulesetNode extends Node
 
     /**
      * @param Context $context
+     *
      * @return Node|RulesetNode
      */
     public function callCompile(Context $context)
@@ -76,11 +75,12 @@ class DetachedRulesetNode extends Node
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return DetachedRulesetNode
      */
     public function compile(Context $context, $arguments = null, $important = null)
@@ -91,7 +91,6 @@ class DetachedRulesetNode extends Node
             $frames = $context->frames;
         }
 
-        return new DetachedRulesetNode($this->ruleset, $frames);
+        return new self($this->ruleset, $frames);
     }
-
 }

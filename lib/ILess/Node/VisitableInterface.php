@@ -11,18 +11,14 @@ namespace ILess\Node;
 use ILess\Visitor\VisitorInterface;
 
 /**
- * Visitable interface
- *
- * @package ILess\Node
+ * Visitable interface.
  */
 interface VisitableInterface
 {
     /**
-     * Accepts a visit by a visitor
+     * Accepts a visit by a visitor.
      *
      * @param VisitorInterface $visitor
-     * @return void
      */
     public function accept(VisitorInterface $visitor);
-
 }

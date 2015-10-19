@@ -14,21 +14,19 @@ use ILess\Node;
 use ILess\Output\OutputInterface;
 
 /**
- * Alpha
- *
- * @package ILess\Node
+ * Alpha.
  */
 class AlphaNode extends Node
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'Alpha';
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
@@ -36,21 +34,20 @@ class AlphaNode extends Node
         if ($this->value instanceof GenerateCSSInterface) {
             $this->value->generateCSS($context, $output);
         } else {
-            $output->add((string)$this->value);
+            $output->add((string) $this->value);
         }
         $output->add(')');
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function compile(Context $context, $arguments = null, $important = null)
     {
         if ($this->value instanceof CompilableInterface) {
-            return new AlphaNode($this->value->compile($context));
+            return new self($this->value->compile($context));
         }
 
         return $this;
     }
-
 }

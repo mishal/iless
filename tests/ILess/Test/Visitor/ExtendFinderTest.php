@@ -8,16 +8,13 @@
 use ILess\Visitor\ExtendFinderVisitor;
 
 /**
- * ILess\ILess\Visitor\Visitor\ExtendFinderVisitor tests
+ * ILess\ILess\Visitor\Visitor\ExtendFinderVisitor tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Visitor_ExtendFinder
  * @group visitor
  */
 class Test_Visitor_ExtendFinderTest extends Test_TestCase
 {
-
     /**
      * @covers __constructor
      */
@@ -26,5 +23,4 @@ class Test_Visitor_ExtendFinderTest extends Test_TestCase
         $v = new ExtendFinderVisitor();
         $this->assertFalse($v->isReplacing());
     }
-
 }

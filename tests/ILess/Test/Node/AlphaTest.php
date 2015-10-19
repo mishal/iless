@@ -11,10 +11,8 @@ use ILess\Node\AnonymousNode;
 use ILess\Output\StandardOutput;
 
 /**
- * Alpha node tests
+ * Alpha node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Alpha
  * @group node
  */
@@ -48,5 +46,4 @@ class Test_Node_AlphaTest extends Test_TestCase
         $a->generateCss($env, $output);
         $this->assertEquals($output->toString(), 'alpha(opacity=10)');
     }
-
 }

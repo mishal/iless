@@ -28,10 +28,8 @@ class Test_CLI extends CLI
 }
 
 /**
- * ILess\CLI
+ * ILess\CLI.
  *
- * @package ILess
- * @subpackage test
  * @covers CLI
  */
 class CLITest extends Test_TestCase
@@ -51,7 +49,7 @@ class CLITest extends Test_TestCase
     public function testGetScriptName()
     {
         $cli = new CLI([
-            'foobar.php', 'arg1', 'arg2', 'arg3'
+            'foobar.php', 'arg1', 'arg2', 'arg3',
         ]);
         $this->assertEquals($cli->getScriptName(), 'foobar.php');
     }
@@ -63,7 +61,7 @@ class CLITest extends Test_TestCase
     public function testParseArguments($arguments, $expected)
     {
         $cli = new Test_CLI([
-            'foobar.php', 'arg1', 'arg2', 'arg3'
+            'foobar.php', 'arg1', 'arg2', 'arg3',
         ]);
         $this->assertSame($expected, $cli->parseArguments($arguments));
     }
@@ -75,20 +73,20 @@ class CLITest extends Test_TestCase
                 // to test:
                 ['a.less', 'b.css', '--source-map', '--compress', '-x'],
                 // expected:
-                ['arguments' => ['a.less', 'b.css'], 'flags' => ['x'], 'options' => ['source-map' => true, 'compress' => true]]
+                ['arguments' => ['a.less', 'b.css'], 'flags' => ['x'], 'options' => ['source-map' => true, 'compress' => true]],
             ],
             [
                 // to test:
                 ['--source-map=foobar.map', '--compress=false', '-x', 'a.less', 'b.css'],
                 // expected:
-                ['arguments' => ['a.less', 'b.css'], 'flags' => ['x'], 'options' => ['source-map' => 'foobar.map', 'compress' => false]]
+                ['arguments' => ['a.less', 'b.css'], 'flags' => ['x'], 'options' => ['source-map' => 'foobar.map', 'compress' => false]],
             ],
             [
                 // to test:
                 ['-', '-x'], // read from stdin
                 // expected:
-                ['arguments' => ['-'], 'flags' => ['x'], 'options' => []]
-            ]
+                ['arguments' => ['-'], 'flags' => ['x'], 'options' => []],
+            ],
         ];
     }
 
@@ -109,22 +107,22 @@ class CLITest extends Test_TestCase
                 // to test:
                 ['foobar.php', 'a.less', 'b.css', '--source-map', '--compress', '-x'],
                 // expected:
-                false
+                false,
             ],
             [
                 // to test:
                 // -s flag present
                 ['foobar.php', '--source-map=foobar.map', '--compress=false', '-s', 'a.less', 'b.css'],
                 // expected:
-                true
+                true,
             ],
             [
                 // to test:
                 // --compress option present
                 ['foobar.php', '--compress=true', '--silent'],
                 // expected:
-                true
-            ]
+                true,
+            ],
         ];
     }
 

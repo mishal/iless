@@ -33,19 +33,17 @@ class myTest2Plugin implements PluginInterface
 
 class myTest3Plugin implements PluginInterface
 {
-
     public function install(Parser $parser)
     {
         $parser->getPluginManager()->addVisitor(new myTestVisitor());
     }
-
 }
 
 class myTestPreProcessor implements PreProcessorInterface
 {
     public function process($inputString, array $extra)
     {
-        return "/*! Bannerized by pre processor */\n\n".$inputString;
+        return "/*! Bannerized by pre processor */\n\n" . $inputString;
     }
 }
 
@@ -53,7 +51,7 @@ class myTestPostProcessor implements PostProcessorInterface
 {
     public function process($css, array $extra)
     {
-        return $css."\n/* POST TOUCHED */";
+        return $css . "\n/* POST TOUCHED */";
     }
 }
 
@@ -104,7 +102,6 @@ class myTestVisitor extends Visitor
 
 class PluginsTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testPreProcessingPlugin()
     {
         $parser = new Parser();
@@ -145,7 +142,7 @@ CSS;
 
         // we fake the path as base dir for the file
         $parser->parseString('body { background: url("data/image.svg"); }',
-            __DIR__.'/_fixtures/less.js/string.less');
+            __DIR__ . '/_fixtures/less.js/string.less');
 
         $css = $parser->getCSS();
         $expected = <<< CSS
@@ -157,5 +154,4 @@ CSS;
 
         $this->assertEquals($expected, $css, 'The visitor did something');
     }
-
 }

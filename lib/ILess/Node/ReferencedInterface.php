@@ -10,9 +10,7 @@
 namespace ILess\Node;
 
 /**
- * ReferencedInterface
- *
- * @package ILess\Node
+ * ReferencedInterface.
  */
 interface ReferencedInterface
 {

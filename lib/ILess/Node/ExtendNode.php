@@ -14,71 +14,70 @@ use ILess\Node;
 use ILess\Visitor\VisitorInterface;
 
 /**
- * Extend
- *
- * @package ILess\Node
+ * Extend.
  */
 class ExtendNode extends Node
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'Extend';
 
     /**
-     * The selector
+     * The selector.
      *
      * @var SelectorNode
      */
     public $selector;
 
     /**
-     * The option (all)
+     * The option (all).
      *
      * @var string
      */
     public $option;
 
     /**
-     * Current index
+     * Current index.
      *
-     * @var integer
+     * @var int
      */
     public $index = 0;
 
     /**
-     * Allow before flag
+     * Allow before flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $allowBefore = false;
 
     /**
-     * Allow after flag
+     * Allow after flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $allowAfter = false;
 
     /**
-     * Array of self selectors
+     * Array of self selectors.
      *
      * @var array
      */
     public $selfSelectors = [];
 
     /**
-     * First extend on this path flag
+     * First extend on this path flag.
      *
-     * @var boolean
+     * @var bool
+     *
      * @see Visitor_ExtendFinder::visitRuleset
      */
     public $firstExtendOnThisSelectorPath = false;
 
     /**
-     * The ruleset
+     * The ruleset.
      *
      * @var RulesetNode
      */
@@ -100,11 +99,11 @@ class ExtendNode extends Node
     public $hasFoundMatches = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param SelectorNode $selector The selector
      * @param string $option The option
-     * @param integer $index The index
+     * @param int $index The index
      */
     public function __construct(SelectorNode $selector, $option, $index = 0)
     {
@@ -132,7 +131,7 @@ class ExtendNode extends Node
     public $parentIds = [];
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function accept(VisitorInterface $visitor)
     {
@@ -140,27 +139,28 @@ class ExtendNode extends Node
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return ExtendNode
      */
     public function compile(Context $context, $arguments = null, $important = null)
     {
-        return new ExtendNode($this->selector->compile($context), $this->option, $this->index);
+        return new self($this->selector->compile($context), $this->option, $this->index);
     }
 
     /**
-     * Finds selectors
+     * Finds selectors.
      *
      * @param array $selectors Array of ILess\ILess\Node\SelectorNode instances
      */
     public function findSelfSelectors($selectors)
     {
         $selfElements = [];
-        for ($i = 0; $i < count($selectors); $i++) {
+        for ($i = 0; $i < count($selectors); ++$i) {
             $selectorElements = $selectors[$i]->elements;
             if ($i > 0 && count($selectorElements) && $selectorElements[0]->combinator->value === '') {
                 $selectorElements[0]->combinator->value = ' ';
@@ -169,8 +169,7 @@ class ExtendNode extends Node
         }
 
         $this->selfSelectors = [
-            (object)['elements' => (array)$selfElements],
+            (object) ['elements' => (array) $selfElements],
         ];
     }
-
 }

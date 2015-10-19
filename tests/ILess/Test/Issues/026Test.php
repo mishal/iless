@@ -9,10 +9,8 @@
 use ILess\Parser;
 
 /**
- * Issue #26 test
+ * Issue #26 test.
  *
- * @package ILess
- * @subpackage test
  * @group issue
  */
 class Test_Issues_026Test extends Test_TestCase
@@ -27,5 +25,4 @@ class Test_Issues_026Test extends Test_TestCase
         $this->setExpectedException('ILess\Exception\FunctionException');
         $parser->getCSS();
     }
-
 }

@@ -12,30 +12,27 @@ namespace ILess;
 use ILess\Exception\Exception;
 
 /**
- * PS4 autoloader
- *
- * @package ILess
+ * PS4 autoloader.
  */
 class Autoloader
 {
     /**
-     * Registered flag
+     * Registered flag.
      *
-     * @var boolean
+     * @var bool
      */
     protected static $registered = false;
 
     /**
-     * Library directory
+     * Library directory.
      *
      * @var string
      */
     protected static $libDir;
 
     /**
-     * Register the autoloader in the spl autoloader
+     * Register the autoloader in the spl autoloader.
      *
-     * @return void
      * @throws Exception If there was an error in registration
      */
     public static function register()
@@ -44,7 +41,7 @@ class Autoloader
             return;
         }
 
-        self::$libDir = dirname(__DIR__).'/ILess';
+        self::$libDir = dirname(__DIR__) . '/ILess';
 
         if (false === spl_autoload_register(['ILess\Autoloader', 'loadClass'])) {
             throw new Exception('Unable to register ILess\Autoloader::loadClass as an autoloading method.');
@@ -54,9 +51,7 @@ class Autoloader
     }
 
     /**
-     * Unregisters the autoloader
-     *
-     * @return void
+     * Unregisters the autoloader.
      */
     public static function unregister()
     {
@@ -65,9 +60,10 @@ class Autoloader
     }
 
     /**
-     * Loads the class
+     * Loads the class.
      *
      * @param string $className The class to load
+     *
      * @return null|true
      */
     public static function loadClass($class)
@@ -79,7 +75,7 @@ class Autoloader
         $len = strlen($prefix);
         if (strncmp($prefix, $class, $len) !== 0) {
             // no, move to the next registered autoloader
-            return null;
+            return;
         }
 
         // get the relative class name
@@ -87,7 +83,7 @@ class Autoloader
         // replace the namespace prefix with the base directory, replace namespace
         // separators with directory separators in the relative class name, append
         // with .php
-        $file = self::$libDir.'/'.str_replace('\\', '/', $relativeClass).'.php';
+        $file = self::$libDir . '/' . str_replace('\\', '/', $relativeClass) . '.php';
         // if the file exists, require it
         if (file_exists($file)) {
             require $file;
@@ -95,5 +91,4 @@ class Autoloader
             return true;
         }
     }
-
 }

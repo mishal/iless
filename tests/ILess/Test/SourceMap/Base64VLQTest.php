@@ -9,7 +9,7 @@
 use ILess\SourceMap\Base64VLQ;
 
 /**
- * Test_SourceMap_Base64VLQTest
+ * Test_SourceMap_Base64VLQTest.
  *
  * @group sourceMap
  */
@@ -27,17 +27,17 @@ class Test_SourceMap_Base64VLQTest extends Test_TestCase
      */
     public function testToVLQSigned()
     {
-        $this->assertEquals((int)0x00000000, $this->encoder->toVLQSigned(0));
-        $this->assertEquals((int)0xfffffffe, $this->encoder->toVLQSigned(2147483647));
-        $this->assertEquals((int)0x00000001, $this->encoder->toVLQSigned(-2147483648));
-        $this->assertEquals((int)0x00000003, $this->encoder->toVLQSigned(-1));
+        $this->assertEquals((int) 0x00000000, $this->encoder->toVLQSigned(0));
+        $this->assertEquals((int) 0xfffffffe, $this->encoder->toVLQSigned(2147483647));
+        $this->assertEquals((int) 0x00000001, $this->encoder->toVLQSigned(-2147483648));
+        $this->assertEquals((int) 0x00000003, $this->encoder->toVLQSigned(-1));
 
-        $this->assertEquals((int)0x7fffffff, $this->encoder->toVLQSigned(-1073741823));
-        $this->assertEquals((int)0x80000000, $this->encoder->toVLQSigned(1073741824));
-        $this->assertEquals((int)0xffffffff, $this->encoder->toVLQSigned(-2147483647));
+        $this->assertEquals((int) 0x7fffffff, $this->encoder->toVLQSigned(-1073741823));
+        $this->assertEquals((int) 0x80000000, $this->encoder->toVLQSigned(1073741824));
+        $this->assertEquals((int) 0xffffffff, $this->encoder->toVLQSigned(-2147483647));
 
-        $this->assertEquals((int)0x00000004, $this->encoder->toVLQSigned(2));
-        $this->assertEquals((int)0x00000005, $this->encoder->toVLQSigned(-2));
+        $this->assertEquals((int) 0x00000004, $this->encoder->toVLQSigned(2));
+        $this->assertEquals((int) 0x00000005, $this->encoder->toVLQSigned(-2));
     }
 
     /**
@@ -45,14 +45,14 @@ class Test_SourceMap_Base64VLQTest extends Test_TestCase
      */
     public function testFromVLQSigned()
     {
-        $this->assertEquals(0, $this->encoder->fromVLQSigned((int)0x00000000));
-        $this->assertEquals(2147483647, $this->encoder->fromVLQSigned((int)0xfffffffe));
-        $this->assertEquals(-2147483648, $this->encoder->fromVLQSigned((int)0x00000001));
-        $this->assertEquals(-1, $this->encoder->fromVLQSigned((int)0x00000003));
+        $this->assertEquals(0, $this->encoder->fromVLQSigned((int) 0x00000000));
+        $this->assertEquals(2147483647, $this->encoder->fromVLQSigned((int) 0xfffffffe));
+        $this->assertEquals(-2147483648, $this->encoder->fromVLQSigned((int) 0x00000001));
+        $this->assertEquals(-1, $this->encoder->fromVLQSigned((int) 0x00000003));
 
-        $this->assertEquals(-1073741823, $this->encoder->fromVLQSigned((int)0x7fffffff));
-        $this->assertEquals(1073741824, $this->encoder->fromVLQSigned((int)0x80000000));
-        $this->assertEquals(-2147483647, $this->encoder->fromVLQSigned((int)0xffffffff));
+        $this->assertEquals(-1073741823, $this->encoder->fromVLQSigned((int) 0x7fffffff));
+        $this->assertEquals(1073741824, $this->encoder->fromVLQSigned((int) 0x80000000));
+        $this->assertEquals(-2147483647, $this->encoder->fromVLQSigned((int) 0xffffffff));
     }
 
     /**
@@ -122,7 +122,7 @@ class Test_SourceMap_Base64VLQTest extends Test_TestCase
     {
         return [
             ['"', -1],
-            ['!', 64]
+            ['!', 64],
         ];
     }
 
@@ -189,5 +189,4 @@ class Test_SourceMap_Base64VLQTest extends Test_TestCase
             [2147483647, '+/////D'],
         ];
     }
-
 }

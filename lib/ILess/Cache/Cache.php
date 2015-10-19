@@ -13,14 +13,12 @@ use ILess\Configurable;
 use InvalidArgumentException;
 
 /**
- * Cache
- *
- * @package ILess\Cache
+ * Cache.
  */
 abstract class Cache extends Configurable implements CacheInterface
 {
     /**
-     * Creates an instance of cache driver
+     * Creates an instance of cache driver.
      *
      * @param string $driver The driver name
      * @param array|mixed $options Array of options for the driver
@@ -35,10 +33,11 @@ abstract class Cache extends Configurable implements CacheInterface
     }
 
     /**
-     * Returns the configured lifetime
+     * Returns the configured lifetime.
      *
-     * @param integer $lifetime Lifetime in seconds
-     * @return integer Lifetime in seconds
+     * @param int $lifetime Lifetime in seconds
+     *
+     * @return int Lifetime in seconds
      */
     protected function getLifetime($lifetime)
     {
@@ -46,9 +45,10 @@ abstract class Cache extends Configurable implements CacheInterface
     }
 
     /**
-     * Serialized data to be stored in the cache
+     * Serialized data to be stored in the cache.
      *
      * @param mixed $data
+     *
      * @return string
      */
     protected function serialize($data)
@@ -57,14 +57,14 @@ abstract class Cache extends Configurable implements CacheInterface
     }
 
     /**
-     * Unserialized data taken from the cache
+     * Unserialized data taken from the cache.
      *
      * @param string $data
+     *
      * @return mixed
      */
     protected function unserialize($data)
     {
         return unserialize($data);
     }
-
 }

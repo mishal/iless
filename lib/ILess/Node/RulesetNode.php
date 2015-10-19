@@ -17,30 +17,28 @@ use ILess\Output\OutputInterface;
 use ILess\Visitor\VisitorInterface;
 
 /**
- * Ruleset
- *
- * @package ILess\Node
+ * Ruleset.
  */
 class RulesetNode extends Node implements MarkableAsReferencedInterface,
     MakeableImportantInterface, ConditionMatchableInterface,
     ReferencedInterface, \Serializable
 {
     /**
-     * Ruleset paths like: `#foo #bar`
+     * Ruleset paths like: `#foo #bar`.
      *
      * @var array
      */
     public $paths = [];
 
     /**
-     * Strict imports flag
+     * Strict imports flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $strictImports = false;
 
     /**
-     * Array of selectors
+     * Array of selectors.
      *
      * @var array
      */
@@ -49,92 +47,94 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     /**
      * Is first root?
      *
-     * @var boolean
+     * @var bool
      */
     public $firstRoot = false;
 
     /**
      * Is root?
      *
-     * @var boolean
+     * @var bool
      */
     public $root = false;
 
     /**
-     * Array of rules
+     * Array of rules.
      *
      * @var array
      */
     public $rules;
 
     /**
-     * Allow imports flag
+     * Allow imports flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $allowImports = false;
 
     /**
-     * Multi media flag
+     * Multi media flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $multiMedia = false;
 
     /**
-     * Array of extends
+     * Array of extends.
      *
      * @var array
      */
     public $allExtends;
 
     /**
-     * Extend on every path flag
+     * Extend on every path flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $extendOnEveryPath = false;
 
     /**
-     * Original ruleset id
+     * Original ruleset id.
      *
      * @var RulesetNode|null
      */
     public $originalRuleset;
 
     /**
-     * The id
+     * The id.
      *
-     * @var integer
+     * @var int
      */
     public $rulesetId;
 
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'Ruleset';
 
     /**
-     * Array of lookups
+     * Array of lookups.
      *
      * @var array
      */
     protected $lookups = [];
 
     /**
-     * Variables cache array
+     * Variables cache array.
      *
      * @var array
+     *
      * @see resetCache
      */
     protected $variables;
 
     /**
-     * Internal flag. Selectors are referenced
+     * Internal flag. Selectors are referenced.
      *
-     * @var boolean
+     * @var bool
+     *
      * @see markAsReferenced
      */
     protected $isReferenced = false;
@@ -150,21 +150,21 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     public $functions;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $selectors Array of selectors
      * @param array $rules Array of rules
-     * @param boolean $strictImports Strict imports?
+     * @param bool $strictImports Strict imports?
      */
     public function __construct(array $selectors, array $rules, $strictImports = false)
     {
         $this->selectors = $selectors;
         $this->rules = $rules;
-        $this->strictImports = (boolean)$strictImports;
+        $this->strictImports = (boolean) $strictImports;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function accept(VisitorInterface $visitor)
     {
@@ -179,12 +179,14 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @throws ParserException
+     *
      * @return RulesetNode
      */
     public function compile(Context $context, $arguments = null, $important = null)
@@ -195,7 +197,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
 
         if ($count = count($this->selectors)) {
             DefaultFunc::error(new ParserException('it is currently only allowed in parametric mixin guards'));
-            for ($i = 0; $i < $count; $i++) {
+            for ($i = 0; $i < $count; ++$i) {
                 $selector = $this->selectors[$i]->compile($context);
                 /* @var $selector SelectorNode */
                 $selectors[] = $selector;
@@ -208,7 +210,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
             $hasOnePassingSelector = true;
         }
 
-        $ruleset = new RulesetNode($selectors, $this->rules, $this->strictImports);
+        $ruleset = new self($selectors, $this->rules, $this->strictImports);
         $ruleset->originalRuleset = $this;
         $ruleset->root = $this->root;
         $ruleset->firstRoot = $this->firstRoot;
@@ -261,7 +263,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
         $mediaBlockCount = count($context->mediaBlocks);
 
         // Evaluate mixin calls.
-        for ($i = 0; $i < $rulesetCount; $i++) {
+        for ($i = 0; $i < $rulesetCount; ++$i) {
             $rule = $ruleset->rules[$i];
 
             if ($rule instanceof MixinCallNode) {
@@ -303,7 +305,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
         }
 
         // Evaluate everything else
-        for ($i = 0; $i < count($ruleset->rules); $i++) {
+        for ($i = 0; $i < count($ruleset->rules); ++$i) {
             $rule = $ruleset->rules[$i];
             /* @var $rule Node */
             if ($rule && !$rule->compileFirst()) {
@@ -312,14 +314,14 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
         }
 
         // Evaluate everything else
-        for ($i = 0; $i < count($ruleset->rules); $i++) {
+        for ($i = 0; $i < count($ruleset->rules); ++$i) {
             $rule = $ruleset->rules[$i];
             // for rulesets, check if it is a css guard and can be removed
-            if ($rule instanceof RulesetNode && count($rule->selectors) === 1) {
+            if ($rule instanceof self && count($rule->selectors) === 1) {
                 // check if it can be folded in (e.g. & where)
                 if ($rule->selectors[0]->isJustParentSelector()) {
                     array_splice($ruleset->rules, $i--, 1);
-                    for ($j = 0; $j < count($rule->rules); $j++) {
+                    for ($j = 0; $j < count($rule->rules); ++$j) {
                         $subRule = $rule->rules[$j];
                         if (!($subRule instanceof RuleNode) || !$subRule->variable) {
                             array_splice($ruleset->rules, ++$i, 0, [$subRule]);
@@ -334,7 +336,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
         array_shift($context->selectors);
 
         if ($mediaBlockCount) {
-            for ($i = $mediaBlockCount, $count = count($context->mediaBlocks); $i < $count; $i++) {
+            for ($i = $mediaBlockCount, $count = count($context->mediaBlocks); $i < $count; ++$i) {
                 $context->mediaBlocks[$i]->bubbleSelectors($selectors);
             }
         }
@@ -343,13 +345,13 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     }
 
     /**
-     * Compiles the imports
+     * Compiles the imports.
      *
      * @param Context $context
      */
     public function compileImports(Context $context)
     {
-        for ($i = 0; $i < count($this->rules); $i++) {
+        for ($i = 0; $i < count($this->rules); ++$i) {
             $rule = $this->rules[$i];
 
             if (!($rule instanceof ImportNode)) {
@@ -370,9 +372,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     }
 
     /**
-     * Resets the cache for variables and lookups
-     *
-     * @return void
+     * Resets the cache for variables and lookups.
      */
     public function resetCache()
     {
@@ -382,9 +382,10 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     }
 
     /**
-     * Returns the variable by name
+     * Returns the variable by name.
      *
      * @param string $name
+     *
      * @return RuleNode
      */
     public function variable($name)
@@ -395,7 +396,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     }
 
     /**
-     * Returns an array of variables
+     * Returns an array of variables.
      *
      * @return array
      */
@@ -423,12 +424,12 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
         if (!$this->root) {
-            $context->tabLevel++;
+            ++$context->tabLevel;
         }
 
         $tabRuleStr = $tabSetStr = '';
@@ -441,20 +442,20 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
         $charsetNodeIndex = 0;
         $importNodeIndex = 0;
 
-        for ($i = 0; $i < count($this->rules); $i++) {
+        for ($i = 0; $i < count($this->rules); ++$i) {
             $rule = $this->rules[$i];
             if ($rule instanceof CommentNode) {
                 if ($importNodeIndex === $i) {
-                    $importNodeIndex++;
+                    ++$importNodeIndex;
                 }
                 array_push($ruleNodes, $rule);
             } elseif ($rule instanceof DirectiveNode && $rule->isCharset()) {
                 array_splice($ruleNodes, $charsetNodeIndex, 0, [$rule]);
-                $charsetNodeIndex++;
-                $importNodeIndex++;
+                ++$charsetNodeIndex;
+                ++$importNodeIndex;
             } elseif ($rule instanceof ImportNode) {
                 array_splice($ruleNodes, $importNodeIndex, 0, [$rule]);
-                $importNodeIndex++;
+                ++$importNodeIndex;
             } else {
                 array_push($ruleNodes, $rule);
             }
@@ -473,8 +474,8 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
                 }
             }
 
-            $sep = $context->compress ? ',' : (",\n".$tabSetStr);
-            for ($i = 0, $count = count($this->paths); $i < $count; $i++) {
+            $sep = $context->compress ? ',' : (",\n" . $tabSetStr);
+            for ($i = 0, $count = count($this->paths); $i < $count; ++$i) {
                 $path = $this->paths[$i];
                 /* @var $path SelectorNode */
                 if (!($pathSubCnt = count($path))) {
@@ -489,16 +490,16 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
                 $path[0]->generateCSS($context, $output);
                 $context->firstSelector = false;
 
-                for ($j = 1; $j < $pathSubCnt; $j++) {
+                for ($j = 1; $j < $pathSubCnt; ++$j) {
                     $path[$j]->generateCSS($context, $output);
                 }
             }
 
-            $output->add(($context->compress ? '{' : " {\n").$tabRuleStr);
+            $output->add(($context->compress ? '{' : " {\n") . $tabRuleStr);
         }
 
         // Compile rules and rulesets
-        for ($i = 0, $ruleNodesCount = count($ruleNodes); $i < $ruleNodesCount; $i++) {
+        for ($i = 0, $ruleNodesCount = count($ruleNodes); $i < $ruleNodesCount; ++$i) {
             $rule = $ruleNodes[$i];
             /* @var $rule RuleNode */
             if ($i + 1 === $ruleNodesCount) {
@@ -514,21 +515,21 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
             if ($rule instanceof GenerateCSSInterface) {
                 $rule->generateCSS($context, $output);
             } elseif ($rule->value) {
-                $output->add((string)$rule->value);
+                $output->add((string) $rule->value);
             }
 
             $context->lastRule = $currentLastRule;
 
             if (!$context->lastRule) {
-                $output->add($context->compress ? '' : ("\n".$tabRuleStr));
+                $output->add($context->compress ? '' : ("\n" . $tabRuleStr));
             } else {
                 $context->lastRule = false;
             }
         }
 
         if (!$this->root) {
-            $output->add($context->compress ? '}' : "\n".$tabSetStr.'}');
-            $context->tabLevel--;
+            $output->add($context->compress ? '}' : "\n" . $tabSetStr . '}');
+            --$context->tabLevel;
         }
 
         if (!$output->isEmpty() && !$context->compress && $this->firstRoot) {
@@ -537,8 +538,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     }
 
     /**
-     * Marks as referenced
-     *
+     * Marks as referenced.
      */
     public function markReferenced()
     {
@@ -557,7 +557,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     /**
      * Is referenced?
      *
-     * @return boolean
+     * @return bool
      */
     public function getIsReferenced()
     {
@@ -579,7 +579,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     }
 
     /**
-     * Returns ruleset with nodes marked as important
+     * Returns ruleset with nodes marked as important.
      *
      * @return RulesetNode
      */
@@ -594,15 +594,16 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
             }
         }
 
-        return new RulesetNode($this->selectors, $importantRules, $this->strictImports);
+        return new self($this->selectors, $importantRules, $this->strictImports);
     }
 
     /**
-     * Match arguments
+     * Match arguments.
      *
      * @param array $args
      * @param Context $context
-     * @return boolean
+     *
+     * @return bool
      */
     public function matchArgs(array $args, Context $context)
     {
@@ -610,11 +611,12 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     }
 
     /**
-     * Match condition
+     * Match condition.
      *
      * @param array $arguments
      * @param Context $context
-     * @return boolean
+     *
+     * @return bool
      */
     public function matchCondition(array $arguments, Context $context)
     {
@@ -633,7 +635,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     }
 
     /**
-     * Returns an array of rulesets
+     * Returns an array of rulesets.
      *
      * @return array
      */
@@ -641,7 +643,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     {
         $result = [];
         foreach ($this->rules as $rule) {
-            if ($rule instanceof RulesetNode || $rule instanceof MixinDefinitionNode) {
+            if ($rule instanceof self || $rule instanceof MixinDefinitionNode) {
                 $result[] = $rule;
             }
         }
@@ -650,12 +652,13 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     }
 
     /**
-     * Finds a selector
+     * Finds a selector.
      *
      * @param SelectorNode $selector
      * @param RulesetNode $self
      * @param Context $context
      * @param mixed $filter
+     *
      * @return array
      */
     public function find(SelectorNode $selector, Context $context, RulesetNode $self = null, $filter = null)
@@ -705,10 +708,11 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     }
 
     /**
-     * Joins selectors
+     * Joins selectors.
      *
      * @param array $context
      * @param array $selectors
+     *
      * @return array
      */
     public function joinSelectors(array $context, array $selectors)
@@ -725,12 +729,13 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     /**
      * Replace all parent selectors inside `$inSelector` by content of `$context` array
      * resulting selectors are returned inside `$paths` array
-     * returns true if `$inSelector` contained at least one parent selector
+     * returns true if `$inSelector` contained at least one parent selector.
      *
      * @param array $paths
      * @param array $context
      * @param $inSelector
-     * @return boolean
+     *
+     * @return bool
      */
     private function replaceParentSelector(array &$paths, array $context, $inSelector)
     {
@@ -738,7 +743,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
         $currentElements = [];
         $newSelectors = [[]];
 
-        for ($i = 0; $i < count($inSelector->elements); $i++) {
+        for ($i = 0; $i < count($inSelector->elements); ++$i) {
             $el = $inSelector->elements[$i];
             if ($el->value !== '&') {
                 $nestedSelector = $this->findNestedSelector($el);
@@ -748,7 +753,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
                     $replaced = $this->replaceParentSelector($nestedPaths, $context, $nestedSelector);
                     $hadParentSelector = $hadParentSelector || $replaced;
                     // the nestedPaths array should have only one member - replaceParentSelector does not multiply selectors
-                    for ($k = 0; $k < count($nestedPaths); $k++) {
+                    for ($k = 0; $k < count($nestedPaths); ++$k) {
                         $replacementSelector = $this->createSelector($this->createParenthesis($nestedPaths[$k], $el),
                             $el);
                         $this->addAllReplacementsIntoPath($newSelectors, [$replacementSelector], $el, $inSelector,
@@ -759,7 +764,6 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
                 } else {
                     $currentElements[] = $el;
                 }
-
             } else {
                 $hadParentSelector = true;
                 // the new list of selectors to add
@@ -768,7 +772,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
                 // on to the current list of selectors to add
                 $this->mergeElementsOnToSelectors($currentElements, $newSelectors);
 
-                for ($j = 0; $j < count($newSelectors); $j++) {
+                for ($j = 0; $j < count($newSelectors); ++$j) {
                     $sel = $newSelectors[$j];
                     // if we don't have any parent paths, the & might be in a mixin so that it can be used
                     // whether there are parents or not
@@ -782,7 +786,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
                         $selectorsMultiplied[] = $sel;
                     } else {
                         // and the parent selectors
-                        for ($k = 0; $k < count($context); $k++) {
+                        for ($k = 0; $k < count($context); ++$k) {
                             // We need to put the current selectors
                             // then join the last selector's elements on to the parents selectors
                             $newSelectorPath = $this->addReplacementIntoPath($sel, $context[$k], $el, $inSelector);
@@ -802,7 +806,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
         // add them on to all the current selectors
         $this->mergeElementsOnToSelectors($currentElements, $newSelectors);
 
-        for ($i = 0; $i < count($newSelectors); $i++) {
+        for ($i = 0; $i < count($newSelectors); ++$i) {
             $count = count($newSelectors[$i]);
             if ($count > 0) {
                 $paths[] = &$newSelectors[$i]; // reference the selector!
@@ -819,13 +823,13 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     private function findNestedSelector($element)
     {
         if (!($element->value instanceof ParenNode)) {
-            return null;
+            return;
         }
 
         /* @var $element ParenNode */
         $mayBeSelector = $element->value->value;
         if (!($mayBeSelector instanceof SelectorNode)) {
-            return null;
+            return;
         }
 
         return $mayBeSelector;
@@ -834,6 +838,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     /**
      * @param $containedElement
      * @param $originalElement
+     *
      * @return SelectorNode
      */
     private function createSelector($containedElement, $originalElement)
@@ -847,6 +852,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     /**
      * @param $elementsToPak
      * @param $originalElement
+     *
      * @return ParenNode
      */
     private function createParenthesis($elementsToPak, $originalElement)
@@ -855,7 +861,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
             $replacementParen = new ParenNode($elementsToPak[0]);
         } else {
             $insideParent = [];
-            for ($j = 0; $j < count($elementsToPak); $j++) {
+            for ($j = 0; $j < count($elementsToPak); ++$j) {
                 $insideParent[] = new ElementNode(null, $elementsToPak[$j], $originalElement->index,
                     $originalElement->currentFileInfo);
             }
@@ -870,6 +876,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
      * @param $addPath
      * @param ElementNode $replacedElement
      * @param SelectorNode $originalSelector
+     *
      * @return array
      */
     private function addReplacementIntoPath(
@@ -923,7 +930,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
         $originalSelector,
         &$result
     ) {
-        for ($j = 0; $j < count($beginningPath); $j++) {
+        for ($j = 0; $j < count($beginningPath); ++$j) {
             $newSelectorPath = $this->addReplacementIntoPath($beginningPath[$j], $addPaths, $replacedElement,
                 $originalSelector);
             $result[] = $newSelectorPath;
@@ -933,7 +940,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     }
 
     /**
-     * Joins a selector
+     * Joins a selector.
      *
      * @param array $paths
      * @param array $context
@@ -947,7 +954,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
         if (!$hasParentSelector) {
             if (count($context) > 0) {
                 $newPaths = [];
-                for ($i = 0; $i < count($context); $i++) {
+                for ($i = 0; $i < count($context); ++$i) {
                     $newPaths[] = array_merge($context[$i], [$selector]);
                 }
             } else {
@@ -955,7 +962,7 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
             }
         }
 
-        for ($i = 0; $i < count($newPaths); $i++) {
+        for ($i = 0; $i < count($newPaths); ++$i) {
             $paths[] = $newPaths[$i];
         }
     }
@@ -1008,5 +1015,4 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
             $this->$var = $val;
         };
     }
-
 }

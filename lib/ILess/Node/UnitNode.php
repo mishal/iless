@@ -15,41 +15,38 @@ use ILess\Output\OutputInterface;
 use ILess\Util\UnitConversion;
 
 /**
- * Dimension unit
- *
- * @package ILess\Node
+ * Dimension unit.
  */
 class UnitNode extends Node implements ComparableInterface
 {
     /**
-     * Length regular expression
-     *
+     * Length regular expression.
      */
     const LENGTH_REGEXP = '/px|em|%|in|cm|mm|pc|pt|ex/';
 
     /**
-     * Numerator
+     * Numerator.
      *
      * @var array
      */
     public $numerator = [];
 
     /**
-     * Denominator
+     * Denominator.
      *
      * @var array
      */
     public $denominator = [];
 
     /**
-     * The backup unit to use when unit is empty
+     * The backup unit to use when unit is empty.
      *
      * @var string
      */
     public $backupUnit;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $numerator
      * @param array $denominator
@@ -71,34 +68,33 @@ class UnitNode extends Node implements ComparableInterface
     }
 
     /**
-     * Converts to string
+     * Converts to string.
      *
      * @return string
      */
     public function toString()
     {
-        $returnStr = join('*', $this->numerator);
+        $returnStr = implode('*', $this->numerator);
         foreach ($this->denominator as $d) {
-            $returnStr .= '/'.$d;
+            $returnStr .= '/' . $d;
         }
 
         return $returnStr;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function compare(Node $other)
     {
         // we can compare only units
-        if ($other instanceof UnitNode) {
+        if ($other instanceof self) {
             return $this->is($other->toString()) ? 0 : null;
         }
     }
 
     /**
-     * Take care about backup unit when cloning, see the constructor
-     *
+     * Take care about backup unit when cloning, see the constructor.
      */
     public function __clone()
     {
@@ -111,7 +107,8 @@ class UnitNode extends Node implements ComparableInterface
      * Is the unit equal to $unitString?
      *
      * @param string $unitString
-     * @return boolean
+     *
+     * @return bool
      */
     public function is($unitString)
     {
@@ -121,7 +118,7 @@ class UnitNode extends Node implements ComparableInterface
     /**
      * Is the unit length unit?
      *
-     * @return boolean
+     * @return bool
      */
     public function isLength()
     {
@@ -133,7 +130,7 @@ class UnitNode extends Node implements ComparableInterface
     /**
      * Is the unit angle unit?
      *
-     * @return boolean
+     * @return bool
      */
     public function isAngle()
     {
@@ -145,7 +142,7 @@ class UnitNode extends Node implements ComparableInterface
     /**
      * Is the unit empty?
      *
-     * @return boolean
+     * @return bool
      */
     public function isEmpty()
     {
@@ -155,7 +152,7 @@ class UnitNode extends Node implements ComparableInterface
     /**
      * Is singular?
      *
-     * @return boolean
+     * @return bool
      */
     public function isSingular()
     {
@@ -167,13 +164,13 @@ class UnitNode extends Node implements ComparableInterface
         $result = [];
         foreach (UnitConversion::getGroups() as $groupName) {
             $group = UnitConversion::getGroup($groupName);
-            for ($i = 0; $i < count($this->numerator); $i++) {
+            for ($i = 0; $i < count($this->numerator); ++$i) {
                 $atomicUnit = $this->numerator[$i];
                 if (isset($group[$atomicUnit]) && !isset($result[$groupName])) {
                     $result[$groupName] = $atomicUnit;
                 }
             }
-            for ($i = 0; $i < count($this->denominator); $i++) {
+            for ($i = 0; $i < count($this->denominator); ++$i) {
                 $atomicUnit = $this->denominator[$i];
                 if (isset($group[$atomicUnit]) && !isset($result[$groupName])) {
                     $result[$groupName] = $atomicUnit;
@@ -188,12 +185,12 @@ class UnitNode extends Node implements ComparableInterface
     {
         $counter = [];
 
-        for ($i = 0; $i < count($this->numerator); $i++) {
+        for ($i = 0; $i < count($this->numerator); ++$i) {
             $atomicUnit = $this->numerator[$i];
             $counter[$atomicUnit] = (isset($counter[$atomicUnit]) ? $counter[$atomicUnit] : 0) + 1;
         }
 
-        for ($i = 0; $i < count($this->denominator); $i++) {
+        for ($i = 0; $i < count($this->denominator); ++$i) {
             $atomicUnit = $this->denominator[$i];
             $counter[$atomicUnit] = (isset($counter[$atomicUnit]) ? $counter[$atomicUnit] : 0) - 1;
         }
@@ -203,11 +200,11 @@ class UnitNode extends Node implements ComparableInterface
 
         foreach ($counter as $atomicUnit => $count) {
             if ($count > 0) {
-                for ($i = 0; $i < $count; $i++) {
+                for ($i = 0; $i < $count; ++$i) {
                     $this->numerator[] = $atomicUnit;
                 }
             } elseif ($count < 0) {
-                for ($i = 0; $i < -$count; $i++) {
+                for ($i = 0; $i < -$count; ++$i) {
                     $this->denominator[] = $atomicUnit;
                 }
             }
@@ -218,7 +215,7 @@ class UnitNode extends Node implements ComparableInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
@@ -232,7 +229,7 @@ class UnitNode extends Node implements ComparableInterface
     }
 
     /**
-     * Convert to string
+     * Convert to string.
      *
      * @return string
      */
@@ -240,5 +237,4 @@ class UnitNode extends Node implements ComparableInterface
     {
         return $this->toString();
     }
-
 }

@@ -10,10 +10,7 @@
 use ILess\Parser;
 
 /**
- * Issue #52 test
- *
- * @package ILess
- * @subpackage test
+ * Issue #52 test.
  */
 class ILess_Test_Issues_056Test extends Test_TestCase
 {
@@ -22,7 +19,7 @@ class ILess_Test_Issues_056Test extends Test_TestCase
         $parser = new Parser();
 
         $parser->setVariables([
-            'swatch' => ''
+            'swatch' => '',
         ]);
 
         $parser->parseString('body { color: @swatch }');
@@ -36,8 +33,6 @@ body {
 
 EXPECTED;
 
-
         $this->assertEquals($expected, $css);
     }
-
 }

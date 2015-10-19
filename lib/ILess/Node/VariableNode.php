@@ -15,38 +15,36 @@ use ILess\FileInfo;
 use ILess\Node;
 
 /**
- * Variable
- *
- * @package ILess\Node
+ * Variable.
  */
 class VariableNode extends Node
 {
     /**
-     * The name
+     * The name.
      *
      * @var string
      */
     public $name;
 
     /**
-     * Current index
+     * Current index.
      *
-     * @var integer
+     * @var int
      */
     public $index = 0;
 
     /**
-     * Evaluating flag
+     * Evaluating flag.
      *
-     * @var boolean
+     * @var bool
      */
     protected $evaluating = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $name The variable name
-     * @param integer $index The current index
+     * @param int $index The current index
      * @param FileInfo $currentFileInfo The current file information
      */
     public function __construct($name, $index = 0, FileInfo $currentFileInfo = null)
@@ -57,20 +55,22 @@ class VariableNode extends Node
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return Node
+     *
      * @throws CompilerException
      */
     public function compile(Context $context, $arguments = null, $important = null)
     {
         $name = $this->name;
         if (strpos($name, '@@') === 0) {
-            $v = new VariableNode(substr($name, 1), $this->index, $this->currentFileInfo);
-            $name = '@'.$v->compile($context)->value;
+            $v = new self(substr($name, 1), $this->index, $this->currentFileInfo);
+            $name = '@' . $v->compile($context)->value;
         }
 
         if ($this->evaluating) {
@@ -115,5 +115,4 @@ class VariableNode extends Node
             );
         }
     }
-
 }

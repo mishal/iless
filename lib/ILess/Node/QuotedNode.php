@@ -6,6 +6,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace ILess\Node;
 
 use ILess\Context;
@@ -15,35 +16,33 @@ use ILess\Output\OutputInterface;
 use ILess\Util;
 
 /**
- * Quoted node
- *
- * @package ILess\Node
+ * Quoted node.
  */
 class QuotedNode extends Node implements ComparableInterface
 {
     /**
-     * The content
+     * The content.
      *
      * @var string
      */
     public $content;
 
     /**
-     * The quote
+     * The quote.
      *
      * @var string
      */
     public $quote;
 
     /**
-     * Current index
+     * Current index.
      *
-     * @var integer
+     * @var int
      */
     public $index = 0;
 
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
@@ -52,17 +51,17 @@ class QuotedNode extends Node implements ComparableInterface
     /**
      * Escaped?
      *
-     * @var boolean
+     * @var bool
      */
     public $escaped = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $string The quote
      * @param string $content The string
-     * @param boolean $escaped Is the string escaped?
-     * @param integer $index Current index
+     * @param bool $escaped Is the string escaped?
+     * @param int $index Current index
      * @param FileInfo $currentFileInfo The current file info
      */
     public function __construct($string, $content = '', $escaped = false, $index = 0, FileInfo $currentFileInfo = null)
@@ -77,7 +76,7 @@ class QuotedNode extends Node implements ComparableInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
@@ -97,15 +96,16 @@ class QuotedNode extends Node implements ComparableInterface
      */
     public function containsVariables()
     {
-        return (bool)preg_match('/(`([^`]+)`)|@\{([\w-]+)\}/', $this->value);
+        return (bool) preg_match('/(`([^`]+)`)|@\{([\w-]+)\}/', $this->value);
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @return QuotedNode
      */
     public function compile(Context $context, $arguments = null, $important = null)
@@ -131,7 +131,7 @@ class QuotedNode extends Node implements ComparableInterface
 
         // interpolation replacement
         $value = $iterativeReplace($value, '/@\{([\w-]+)\}/', function ($matches) use (&$context) {
-            $v = new VariableNode('@'.$matches[1], $this->index, $this->currentFileInfo);
+            $v = new VariableNode('@' . $matches[1], $this->index, $this->currentFileInfo);
             $canShorted = $context->canShortenColors;
             $context->canShortenColors = false;
             $v = $v->compile($context);
@@ -141,19 +141,20 @@ class QuotedNode extends Node implements ComparableInterface
             return $v;
         });
 
-        return new QuotedNode($this->quote.$value.$this->quote, $value, $this->escaped, $this->index,
+        return new self($this->quote . $value . $this->quote, $value, $this->escaped, $this->index,
             $this->currentFileInfo);
     }
 
     /**
-     * Compares with another node
+     * Compares with another node.
      *
      * @param Node $other
-     * @return integer|null
+     *
+     * @return int|null
      */
     public function compare(Node $other)
     {
-        if ($other instanceof QuotedNode && !$this->escaped && !$other->escaped) {
+        if ($other instanceof self && !$this->escaped && !$other->escaped) {
             return Util::numericCompare($this->value, $other->value);
         } else {
             $context = new Context();
@@ -161,5 +162,4 @@ class QuotedNode extends Node implements ComparableInterface
             return $other->toCSS($context) === $this->toCSS($context) ? 0 : null;
         }
     }
-
 }

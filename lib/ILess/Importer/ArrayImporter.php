@@ -14,28 +14,26 @@ use ILess\ImportedFile;
 use ILess\Util;
 
 /**
- * Array importer
- *
- * @package ILess\Importer
+ * Array importer.
  */
 class ArrayImporter implements ImporterInterface
 {
     /**
-     * An array of files
+     * An array of files.
      *
      * @var array
      */
     protected $files = [];
 
     /**
-     * An array of last modified timestamp
+     * An array of last modified timestamp.
      *
      * @var array
      */
     protected $lastModified = [];
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $files An array of files (keys are the names, and values are the source code)
      * @param array $lastModified An array of last modified (keys are the names, and values are the timestamp)
@@ -51,7 +49,8 @@ class ArrayImporter implements ImporterInterface
      *
      * @param string $path The file name
      * @param string $content The file source
-     * @param integer $lastModified The file last modified timestamp
+     * @param int $lastModified The file last modified timestamp
+     *
      * @return ArrayImporter
      */
     public function setFile($path, $content, $lastModified = -1)
@@ -67,7 +66,7 @@ class ArrayImporter implements ImporterInterface
      */
     public function import($path, FileInfo $currentFileInfo)
     {
-        $normalizedPath = Util::normalizePath($currentFileInfo->currentDirectory.$path);
+        $normalizedPath = Util::normalizePath($currentFileInfo->currentDirectory . $path);
         if (isset($this->files[$normalizedPath])) {
             $path = $normalizedPath;
         }
@@ -84,7 +83,7 @@ class ArrayImporter implements ImporterInterface
      */
     public function getLastModified($path, FileInfo $currentFileInfo)
     {
-        $normalizedPath = Util::normalizePath($currentFileInfo->currentDirectory.$path);
+        $normalizedPath = Util::normalizePath($currentFileInfo->currentDirectory . $path);
         if (isset($this->files[$normalizedPath])) {
             $path = $normalizedPath;
         }
@@ -95,5 +94,4 @@ class ArrayImporter implements ImporterInterface
 
         return false;
     }
-
 }

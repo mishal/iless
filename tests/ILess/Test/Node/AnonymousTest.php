@@ -10,10 +10,8 @@ use ILess\Node\AnonymousNode;
 use ILess\Output\StandardOutput;
 
 /**
- * Anonymous node tests
+ * Anonymous node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Anonymous
  * @group node
  */
@@ -49,5 +47,4 @@ class Test_Node_AnonymousTest extends Test_TestCase
         $a = new AnonymousNode('50', 0, null, false, true);
         $this->assertTrue($a->isRulesetLike());
     }
-
 }

@@ -16,53 +16,51 @@ use ILess\Output\OutputInterface;
 use ILess\Visitor\VisitorInterface;
 
 /**
- * Operation node
- *
- * @package ILess\Node
+ * Operation node.
  */
 class OperationNode extends Node
 {
     /**
-     * Node type
+     * Node type.
      *
      * @var string
      */
     protected $type = 'Operation';
 
     /**
-     * Operator
+     * Operator.
      *
      * @var string
      */
     protected $operator;
 
     /**
-     * Array of operands
+     * Array of operands.
      *
      * @var array
      */
     protected $operands;
 
     /**
-     * Is spaced flag
+     * Is spaced flag.
      *
-     * @var boolean
+     * @var bool
      */
     public $isSpaced = false;
 
     /**
-     * Parens
+     * Parens.
      *
-     * @var boolean
+     * @var bool
      */
     public $parensInOp = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $operator The operator
      * @param array $operands Array of operands
-     * @param boolean $isSpaced Is spaced?
+     * @param bool $isSpaced Is spaced?
      */
     public function __construct($operator, array $operands, $isSpaced = false)
     {
@@ -72,7 +70,7 @@ class OperationNode extends Node
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function accept(VisitorInterface $visitor)
     {
@@ -80,12 +78,14 @@ class OperationNode extends Node
     }
 
     /**
-     * Compiles the node
+     * Compiles the node.
      *
      * @param Context $context The context
      * @param array|null $arguments Array of arguments
-     * @param boolean|null $important Important flag
+     * @param bool|null $important Important flag
+     *
      * @throws CompilerException
+     *
      * @return Node
      */
     public function compile(Context $context, $arguments = null, $important = null)
@@ -108,12 +108,12 @@ class OperationNode extends Node
 
             return $a->operate($context, $this->operator, $b);
         } else {
-            return new OperationNode($this->operator, [$a, $b], $this->isSpaced);
+            return new self($this->operator, [$a, $b], $this->isSpaced);
         }
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function generateCSS(Context $context, OutputInterface $output)
     {
@@ -131,5 +131,4 @@ class OperationNode extends Node
 
         $this->operands[1]->generateCSS($context, $output);
     }
-
 }

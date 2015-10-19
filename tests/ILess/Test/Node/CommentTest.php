@@ -10,10 +10,8 @@ use ILess\Node\CommentNode;
 use ILess\Output\StandardOutput;
 
 /**
- * Comment node tests
+ * Comment node tests.
  *
- * @package ILess
- * @subpackage test
  * @covers Node_Comment
  * @group node
  */
@@ -57,5 +55,4 @@ class Test_Node_CommentTest extends Test_TestCase
         $this->assertTrue($b->isSilent($env));
         $this->assertFalse($c->isSilent($env));
     }
-
 }
