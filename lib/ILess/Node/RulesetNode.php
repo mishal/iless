@@ -14,6 +14,7 @@ use ILess\DefaultFunc;
 use ILess\Exception\ParserException;
 use ILess\Node;
 use ILess\Output\OutputInterface;
+use ILess\Util\Serializer;
 use ILess\Visitor\VisitorInterface;
 
 /**
@@ -1001,18 +1002,15 @@ class RulesetNode extends Node implements MarkableAsReferencedInterface,
     public function serialize()
     {
         $vars = get_object_vars($this);
-        unset($vars['functionRegistry']);
 
-        $serialized = serialize($vars);
-
-        return $serialized;
+        return Serializer::serialize($vars);
     }
 
     public function unserialize($serialized)
     {
-        $unserialized = unserialize($serialized);
+        $unserialized = Serializer::unserialize($serialized);
         foreach ($unserialized as $var => $val) {
             $this->$var = $val;
-        };
+        }
     }
 }

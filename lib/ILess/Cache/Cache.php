@@ -10,6 +10,7 @@
 namespace ILess\Cache;
 
 use ILess\Configurable;
+use ILess\Util\Serializer;
 use InvalidArgumentException;
 
 /**
@@ -53,7 +54,7 @@ abstract class Cache extends Configurable implements CacheInterface
      */
     protected function serialize($data)
     {
-        return serialize($data);
+        return Serializer::serialize($data);
     }
 
     /**
@@ -65,6 +66,6 @@ abstract class Cache extends Configurable implements CacheInterface
      */
     protected function unserialize($data)
     {
-        return unserialize($data);
+        return Serializer::unserialize($data);
     }
 }

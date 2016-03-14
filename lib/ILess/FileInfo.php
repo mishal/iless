@@ -9,6 +9,8 @@
 
 namespace ILess;
 
+use ILess\Util\Serializer;
+
 /**
  * File information.
  */
@@ -85,12 +87,13 @@ final class FileInfo implements \Serializable
         unset($vars['reference']);
         unset($vars['rootPath']);
 
-        return serialize($vars);
+        return Serializer::serialize($vars);
     }
 
     public function unserialize($serialized)
     {
-        $unserialized = unserialize($serialized);
+        $unserialized = Serializer::unserialize($serialized);
+
         foreach ($unserialized as $var => $val) {
             $this->$var = $val;
         }

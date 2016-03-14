@@ -11,6 +11,7 @@ namespace ILess;
 
 use ILess\Exception\Exception;
 use ILess\Node\RulesetNode;
+use ILess\Util\Serializer;
 
 /**
  * Import.
@@ -146,17 +147,19 @@ final class ImportedFile implements \Serializable
 
     public function serialize()
     {
-        return serialize([
+        return Serializer::serialize([
             $this->path,
             $this->lastModified,
             base64_encode($this->content),
-            $this->ruleset,
+            // we cannot include the parsed ruleset, it contains circular references
+            // Is there any way to handle it?
         ]);
     }
 
     public function unserialize($serialized)
     {
-        list($this->path, $this->lastModified, $this->content, $this->ruleset) = unserialize($serialized);
+        list($this->path, $this->lastModified, $this->content) = Serializer::unserialize($serialized);
+
         $this->content = base64_decode($this->content);
     }
 }

@@ -261,4 +261,5 @@ abstract class Node implements VisitableInterface,
     {
         return $this->compileFirst;
     }
+
 }

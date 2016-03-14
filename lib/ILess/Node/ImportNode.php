@@ -325,12 +325,12 @@ class ImportNode extends Node implements \Serializable
         $vars = get_object_vars($this);
         unset($vars['skip'], $vars['error']);
 
-        return serialize($vars);
+        return Util\Serializer::serialize($vars);
     }
 
     public function unserialize($serialized)
     {
-        $unserialized = unserialize($serialized);
+        $unserialized = Util\Serializer::unserialize($serialized);
         foreach ($unserialized as $var => $val) {
             $this->$var = $val;
         }
