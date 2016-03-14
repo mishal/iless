@@ -130,9 +130,10 @@ class Test_Parser_ParsingTest extends Test_TestCase
 
         // less.js basic tests
         foreach ($filesToTest as $fileToTest) {
-            $expectedFile = $fixturesDir . '/less.js/css/' . str_replace('.less', '.css', basename($fileToTest));
+            $basename = basename($fileToTest);
+            $expectedFile = $fixturesDir . '/less.js/css/' . str_replace('.less', '.css', $basename);
             if (file_exists($expectedFile)) {
-                $data[] = [
+                $data[$basename] = [
                     $fileToTest,
                     $expectedFile,
                 ];
@@ -140,19 +141,19 @@ class Test_Parser_ParsingTest extends Test_TestCase
         }
 
         // utf-8
-        $data[] = [
+        $data['/utf8/less/utf8.less'] = [
             $fixturesDir . '/utf8/less/utf8.less',
             $fixturesDir . '/utf8/css/utf8.css',
         ];
 
         // bootstrap3
-        $data[] = [
+        $data['/bootstrap3/less/bootstrap.less'] = [
             $fixturesDir . '/bootstrap3/less/bootstrap.less',
             $fixturesDir . '/bootstrap3/css/bootstrap.css',
         ];
 
         // bootstrap2
-        $data[] = [
+        $data['/bootstrap2/less/bootstrap.less'] = [
             $fixturesDir . '/bootstrap2/less/bootstrap.less',
             $fixturesDir . '/bootstrap2/css/bootstrap.css',
             // turn off strict math
@@ -163,7 +164,7 @@ class Test_Parser_ParsingTest extends Test_TestCase
         ];
 
         // variables via the API
-        $data[] = [
+        $data['/php/less/variables.less'] = [
             $fixturesDir . '/php/less/variables.less',
             $fixturesDir . '/php/css/variables.css',
             [],
@@ -176,7 +177,7 @@ class Test_Parser_ParsingTest extends Test_TestCase
         ];
 
         // relative urls
-        $data[] = [
+        $data['/relative_urls/less/simple.less'] = [
             $fixturesDir . '/relative_urls/less/simple.less',
             $fixturesDir . '/relative_urls/css/simple.css',
             [
@@ -184,13 +185,13 @@ class Test_Parser_ParsingTest extends Test_TestCase
             ],
         ];
 
-        $data[] = [
+        $data['/less.js/less/compression/compression.less'] = [
             $fixturesDir . '/less.js/less/compression/compression.less',
             $fixturesDir . '/less.js/css/compression/compression.css',
             ['compress' => true],
         ];
 
-        $data[] = [
+        $data['/less.js/less/strict-units/strict-units.less'] = [
             $fixturesDir . '/less.js/less/strict-units/strict-units.less',
             $fixturesDir . '/less.js/css/strict-units/strict-units.css',
             [
@@ -199,7 +200,7 @@ class Test_Parser_ParsingTest extends Test_TestCase
             ],
         ];
 
-        $data[] = [
+        $data['/less.js/less/legacy/legacy.less'] = [
             $fixturesDir . '/less.js/less/legacy/legacy.less',
             $fixturesDir . '/less.js/css/legacy/legacy.css',
             [
@@ -208,7 +209,7 @@ class Test_Parser_ParsingTest extends Test_TestCase
             ],
         ];
 
-        $data[] = [
+        $data['/less.js/less/url-args/urls.less'] = [
             $fixturesDir . '/less.js/less/url-args/urls.less',
             $fixturesDir . '/less.js/css/url-args/urls.css',
             [
@@ -216,7 +217,7 @@ class Test_Parser_ParsingTest extends Test_TestCase
             ],
         ];
 
-        $data[] = [
+        $data['/less.js/less/static-urls/urls.less'] = [
             $fixturesDir . '/less.js/less/static-urls/urls.less',
             $fixturesDir . '/less.js/css/static-urls/urls.css',
             [
@@ -226,7 +227,7 @@ class Test_Parser_ParsingTest extends Test_TestCase
             ],
         ];
 
-        $data[] = [
+        $data['/relative_urls/less/simple.less'] = [
             $fixturesDir . '/relative_urls/less/simple.less',
             $fixturesDir . '/relative_urls/css/simple.css',
             [
@@ -234,7 +235,7 @@ class Test_Parser_ParsingTest extends Test_TestCase
             ],
         ];
 
-        $data[] = [
+        $data['/less.js/less/debug/linenumbers.less'] = [
             $fixturesDir . '/less.js/less/debug/linenumbers.less',
             $fixturesDir . '/less.js/css/debug/linenumbers-all.css',
             ['dumpLineNumbers' => DebugInfo::FORMAT_ALL],
@@ -242,7 +243,7 @@ class Test_Parser_ParsingTest extends Test_TestCase
             [$this, 'normalizeDebugPaths'],
         ];
 
-        $data[] = [
+        $data['/less.js/less/debug/linenumbers.less'] = [
             $fixturesDir . '/less.js/less/debug/linenumbers.less',
             $fixturesDir . '/less.js/css/debug/linenumbers-comments.css',
             ['dumpLineNumbers' => DebugInfo::FORMAT_COMMENT],
@@ -250,7 +251,7 @@ class Test_Parser_ParsingTest extends Test_TestCase
             [$this, 'normalizeDebugPaths'],
         ];
 
-        $data[] = [
+        $data['/less.js/less/debug/linenumbers.less'] = [
             $fixturesDir . '/less.js/less/debug/linenumbers.less',
             $fixturesDir . '/less.js/css/debug/linenumbers-mediaquery.css',
             ['dumpLineNumbers' => DebugInfo::FORMAT_MEDIA_QUERY],
@@ -259,7 +260,7 @@ class Test_Parser_ParsingTest extends Test_TestCase
         ];
 
         // bootswatch
-        $data[] = [
+        $data['/bootswatch/less/bootswatch.less'] = [
             $fixturesDir . '/bootswatch/less/bootswatch.less',
             $fixturesDir . '/bootswatch/css/united/bootswatch.css',
             [],

@@ -2073,7 +2073,7 @@ class Core
             [
                 'parseEntitiesQuoted',
                 'parseEntitiesVariable',
-                '/\\G(?:(?:\\\\[\(\)\'"])|[^\(\)\'"])+/',
+                '/\\G(?>[^\\(\\)\'"]+|(?<=\\\\)[\\(\\)\'"])+/',
             ]
         );
 

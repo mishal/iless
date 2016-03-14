@@ -9,6 +9,7 @@
 
 namespace ILess\Parser;
 
+use ILess\Exception\ParserException;
 use stdClass;
 
 /**
@@ -126,6 +127,10 @@ final class ParserInput
         }
 
         $m = preg_match($tok, $this->current, $matches);
+
+        if (preg_last_error() !== PREG_NO_ERROR) {
+            throw new ParserException("Error in processing expression $tok!");
+        }
 
         if (!$m) {
             return;
