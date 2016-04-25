@@ -530,8 +530,8 @@ SIGNATURE;
      */
     protected function detectColors()
     {
-        return (getenv('ConEmuANSI') === 'ON' || getenv('ANSICON') !== false ||
-            (defined('STDOUT') && function_exists('posix_isatty') && posix_isatty(STDOUT)));
+        return getenv('ConEmuANSI') === 'ON' || getenv('ANSICON') !== false ||
+            (defined('STDOUT') && function_exists('posix_isatty') && posix_isatty(STDOUT));
     }
 
     /**

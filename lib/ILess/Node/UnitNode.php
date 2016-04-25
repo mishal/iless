@@ -124,7 +124,7 @@ class UnitNode extends Node implements ComparableInterface
     {
         $css = $this->toCSS(new Context());
 
-        return !!preg_match(self::LENGTH_REGEXP, $css);
+        return (bool) preg_match(self::LENGTH_REGEXP, $css);
     }
 
     /**

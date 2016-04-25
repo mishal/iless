@@ -1561,7 +1561,7 @@ class Core
                 $isSpaced = $this->input->isWhitespace(-1);
             }
 
-            return ($operation ? $operation : $m);
+            return $operation ? $operation : $m;
         }
     }
 
