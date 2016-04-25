@@ -91,7 +91,7 @@ class Context
      *
      * @var bool
      */
-    public $strictMath = true;
+    public $strictMath = false;
 
     /**
      * Validate the units used?

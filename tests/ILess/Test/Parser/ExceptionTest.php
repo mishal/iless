@@ -32,8 +32,22 @@ class Test_Parser_ExceptionTest extends Test_TestCase
         'javascript-undefined-var.less', // we cannot handle javascript
     ];
 
+    /**
+     * Parser default options.
+     *
+     * @var array
+     */
+    protected $parserDefaultOptions = [
+        'strictMath' => true,
+    ];
+
     protected function createParser($options = [])
     {
+        // default options
+        if ($options !== false && !count($options)) {
+            $options = $this->parserDefaultOptions;
+        }
+
         return new Parser($options);
     }
 
@@ -67,7 +81,7 @@ class Test_Parser_ExceptionTest extends Test_TestCase
             $this->assertEquals($column, $e->getErrorColumn(), 'The column matches');
 
             return;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->diag('Unhandled exception while parsing file: ' . $lessFile);
             $this->diag(sprintf('%s: %s (file %s, line: %s)', get_class($e), $e->getMessage(), $e->getFile(),
                 $e->getLine()));

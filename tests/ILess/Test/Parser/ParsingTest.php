@@ -28,6 +28,7 @@ class Test_Parser_ParsingTest extends Test_TestCase
      */
     protected $parserDefaultOptions = [
         'strictUnits' => false,
+        'strictMath' => true,
         'relativeUrls' => true,
     ];
 
