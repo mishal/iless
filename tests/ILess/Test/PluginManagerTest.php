@@ -51,7 +51,7 @@ class myTestPostProcessor implements PostProcessorInterface
     }
 }
 
-class PluginManagerTest extends PHPUnit_Framework_TestCase
+class PluginManagerTest extends Test_TestCase
 {
     protected function getParserMock()
     {

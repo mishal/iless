@@ -100,7 +100,7 @@ class myTestVisitor extends Visitor
     }
 }
 
-class PluginsTest extends \PHPUnit_Framework_TestCase
+class PluginsTest extends \Test_TestCase
 {
     public function testPreProcessingPlugin()
     {

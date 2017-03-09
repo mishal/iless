@@ -2,7 +2,7 @@
 
 namespace ILess\Test;
 
-class UnitConversionTest extends \PHPUnit_Framework_TestCase
+class UnitConversionTest extends \Test_TestCase
 {
     public function testGetGroups()
     {

@@ -3,7 +3,7 @@
 /**
  * @group core
  */
-class ILessTest extends PHPUnit_Framework_TestCase
+class ILessTest extends Test_TestCase
 {
     public function testConstants()
     {

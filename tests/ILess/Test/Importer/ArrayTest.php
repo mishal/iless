@@ -15,7 +15,7 @@ use ILess\Parser;
  *
  * @group importer
  */
-class Test_Importer_ArrayTest extends PHPUnit_Framework_TestCase
+class Test_Importer_ArrayTest extends Test_TestCase
 {
     public function testSetFile()
     {
