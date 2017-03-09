@@ -23,13 +23,13 @@ trait TestCaseTrait {
     }
 }
 
-if(class_exists('PHPUnit_Framework_TestCase')) {
+if(class_exists('\PHPUnit_Framework_TestCase')) {
     class Test_TestCase extends \PHPUnit_Framework_TestCase {
         use TestCaseTrait;
     }
 } else {
     // phpunit 6+
-    class TestCase extends \PHPUnit\Framework\TestCase {
+    class Test_TestCase extends \PHPUnit\Framework\TestCase {
         use TestCaseTrait;
     }
 }
