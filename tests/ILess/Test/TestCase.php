@@ -6,8 +6,7 @@
  * file that was distributed with this source code.
  */
 
-class Test_TestCase extends PHPUnit_Framework_TestCase
-{
+trait TestCaseTrait {
     protected function prepareDataForProvider($values, $expected)
     {
         return array_map([$this, 'mapValuesWithExpected'], $values, $expected);
@@ -21,5 +20,16 @@ class Test_TestCase extends PHPUnit_Framework_TestCase
     protected function diag($message)
     {
         echo "\n" . $message . "\n";
+    }
+}
+
+if(class_exists('PHPUnit_Framework_TestCase')) {
+    class Test_TestCase extends \PHPUnit_Framework_TestCase {
+        use TestCaseTrait;
+    }
+} else {
+    // phpunit 6+
+    class TestCase extends \PHPUnit\Framework\TestCase {
+        use TestCaseTrait;
     }
 }
