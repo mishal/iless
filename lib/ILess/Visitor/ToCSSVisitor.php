@@ -146,7 +146,7 @@ class ToCSSVisitor extends Visitor
         $node->accept($this);
         $arguments->visitDeeper = false;
 
-        if (!count($node->rules)) {
+        if (!is_array($node->rules) || !count($node->rules)) {
             return;
         }
 
@@ -201,7 +201,7 @@ class ToCSSVisitor extends Visitor
             $this->charset = true;
         }
 
-        if (count($node->rules)) {
+        if (is_array($node->rules) && count($node->rules)) {
             // it is still true that it is only one ruleset in array
             // this is last such moment
             $this->mergeRules($node->rules[0]->rules);
