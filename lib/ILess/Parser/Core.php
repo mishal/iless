@@ -159,8 +159,6 @@ class Core
             /* @var $file ImportedFile */
             $this->context->setCurrentFile($file->getPath());
             $this->context->currentFileInfo->importedFile = $file;
-
-            $ruleset = $file->getRuleset();
         } else {
             $this->context->setCurrentFile($file->getPath());
 
@@ -169,13 +167,12 @@ class Core
             }
 
             $this->context->currentFileInfo->importedFile = $file;
-
-            $ruleset = $file->getRuleset();
-            if (!$ruleset) {
-                $file->setRuleset(
-                    ($ruleset = new RulesetNode([], $this->parse($file->getContent())))
-                );
-            }
+        }
+        $ruleset = $file->getRuleset();
+        if (!$ruleset) {
+            $file->setRuleset(
+                ($ruleset = new RulesetNode([], $this->parse($file->getContent())))
+            );
         }
 
         if ($previousFileInfo) {
@@ -846,7 +843,7 @@ class Core
 
             if ($isCall) {
                 // ILess\Variable
-                if (count($arg->value) == 1) {
+                if (is_array($arg->value) && count($arg->value) == 1) {
                     $val = $arg->value[0];
                 }
             } else {

@@ -184,7 +184,7 @@ final class ParserInput
             switch ($nextChar) {
                 case '\\':
                     $i++;
-                    continue;
+                    continue 2;
                 case "\r":
                 case "\n":
                     break;
